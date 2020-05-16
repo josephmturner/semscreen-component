@@ -1,5 +1,5 @@
 {
-  "name": "semscreen-component-test",
+  "name": "semscreen-component",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -9,7 +9,6 @@
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.8",
-    "bootstrap": "^4.5.0",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
@@ -37,8 +36,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react": "^16.9.35"
   }
 }
