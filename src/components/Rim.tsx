@@ -1,5 +1,5 @@
 import React from 'react';
-import RegionNew from './RegionNew';
+import Region from './Region';
 import Banner from './Banner';
 import RimView from './RimView';
 // correct props type
@@ -12,15 +12,15 @@ const Rim = (props: any) => {
       color={semscreen.styles.textColor}
     >
       <Banner semscreen={semscreen}/>
-      <RegionNew regionName="Facts" semscreen={semscreen}/>
-      <RegionNew regionName="Merits" semscreen={semscreen}/>
-      <RegionNew regionName="People" semscreen={semscreen}/>
-      <RegionNew regionName="Thoughts" semscreen={semscreen}/>
-      <RegionNew regionName="Focus" semscreen={semscreen}/>
-      <RegionNew regionName="Actions" semscreen={semscreen}/>
-      <RegionNew regionName="Feelings" semscreen={semscreen}/>
-      <RegionNew regionName="Needs" semscreen={semscreen}/>
-      <RegionNew regionName="Topics" semscreen={semscreen}/>
+      <Region regionName="Facts" semscreen={semscreen}/>
+      <Region regionName="Merits" semscreen={semscreen}/>
+      <Region regionName="People" semscreen={semscreen}/>
+      <Region regionName="Thoughts" semscreen={semscreen}/>
+      <Region regionName="Focus" semscreen={semscreen}/>
+      <Region regionName="Actions" semscreen={semscreen}/>
+      <Region regionName="Feelings" semscreen={semscreen}/>
+      <Region regionName="Needs" semscreen={semscreen}/>
+      <Region regionName="Topics" semscreen={semscreen}/>
     </RimView>
   );
 };

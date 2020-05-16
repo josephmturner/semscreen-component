@@ -1,7 +1,7 @@
 import React from 'react'; 
 import ListGroup from 'react-bootstrap/ListGroup'; 
 
-const RegionNew = (props: any) => {
+const Region = (props: any) => {
  const semscreen = props.semscreen; 
  return (
   <ListGroup>
@@ -13,5 +13,5 @@ const RegionNew = (props: any) => {
   </ListGroup> 
  )
 }
-export default RegionNew;
+export default Region;
 
