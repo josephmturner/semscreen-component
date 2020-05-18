@@ -1,17 +1,17 @@
 import React from 'react'; 
-import ListGroup from 'react-bootstrap/ListGroup'; 
+import Point from './Point';
 
-const Region = (props: any) => {
- const semscreen = props.semscreen; 
- return (
-  <ListGroup>
-   <ListGroup.Item>{semscreen.points[0].content}</ListGroup.Item>
-   <ListGroup.Item>{semscreen.points[1].content}</ListGroup.Item>
-   <ListGroup.Item>{semscreen.points[2].content}</ListGroup.Item>
-   <ListGroup.Item>{semscreen.points[3].content}</ListGroup.Item>
-   <ListGroup.Item>{semscreen.points[4].content}</ListGroup.Item>
-  </ListGroup> 
+const Region = (props: {regionName: string, points: any}) => {
+ const points = props.points || []; 
+
+ //TODO: add author to initialstate, interfaces, and below
+  return (
+  <ul className="list-unstyled">
+   {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} />)}
+  </ul>
  )
 }
+
+
 export default Region;
 

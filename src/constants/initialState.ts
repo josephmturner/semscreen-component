@@ -1,3 +1,9 @@
+//TODO: figure out 'cannot import interface as type error when you
+//import AppI from interfaces and then try to use it as the interface
+//for initialAppState
+//TODO: import AppI from interfaces
+//TODO: remove focus and add it to semscreenI, and confirm that it
+//exists in the array of points contained in the semscreen
 interface AppSchema {
   user: {
     name: string;
@@ -10,7 +16,6 @@ interface AppSchema {
     points?: {
       content: string;
       shape: string;
-      focus: boolean;
       id: string;
       date: Date;
       hash?: string;
@@ -37,7 +42,6 @@ const initialAppState: AppSchema = {
         {
           content: 'Online Deliberation',
           shape: 'Topics',
-          focus: true,
           id: 'point1',
           date: new Date(),
         },
@@ -45,7 +49,6 @@ const initialAppState: AppSchema = {
           content:
             'Build an open, collaborative, compassionate system to share information and make decisions.',
           shape: 'Actions',
-          focus: false,
           id: 'point2',
           date: new Date(),
         },
@@ -53,42 +56,36 @@ const initialAppState: AppSchema = {
           content:
             'Create a frontend which can ride on federated and distributed backends, such as IPFS.',
           shape: 'Actions',
-          focus: false,
           id: 'point3',
           date: new Date(),
         },
         {
           content: 'Paula Maas',
           shape: 'People',
-          focus: false,
           id: 'point4',
           date: new Date(),
         },
         {
           content: 'Alex Garcia',
           shape: 'People',
-          focus: false,
           id: 'point5',
           date: new Date(),
         },
         {
           content: 'Joseph Chambers',
           shape: 'People',
-          focus: false,
           id: 'point6',
           date: new Date(),
         },
         {
           content: 'Martin Turner',
           shape: 'People',
-          focus: false,
           id: 'point7',
           date: new Date(),
         },
         {
           content: 'Joseph Turner',
           shape: 'People',
-          focus: false,
           id: 'point8',
           date: new Date(),
         },
