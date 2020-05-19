@@ -5,6 +5,7 @@ interface UserI {
 }
 
 interface PointI {
+  author: string;
   content: string;
   shape: string;
   id: string;
@@ -12,7 +13,7 @@ interface PointI {
 }
 
 interface SemscreenI {
-  username: string;
+  author: string;
   points?: PointI[];
   focus: string;
   styles: {
@@ -25,7 +26,7 @@ interface SemscreenI {
 
 interface AppI {
 user: UserI;
-semscreen: SemscreenI;
+semscreens: SemscreenI[];
 }
 
 export { UserI, PointI, SemscreenI, AppI };

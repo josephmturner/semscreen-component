@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import SummaryRegion from "./SummaryRegion";
 import Rim from "./Rim";
+import { SemscreenI } from '../interfaces';
 
 const Wrapper = styled.div`
   position: relative;
@@ -13,8 +14,7 @@ const Wrapper = styled.div`
   grid-template-rows: 2rem auto 2rem;
 `;
 
-// correct props type of SemanticScreen props
-const SemanticScreen = (props: any) => (
+const SemanticScreen = (props: {semscreen: SemscreenI}) => (
   <Wrapper>
     <SummaryRegion type="Facts" />
     <SummaryRegion type="Merits" />
