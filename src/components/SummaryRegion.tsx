@@ -39,35 +39,35 @@ const SummaryRegionView = styled.div`
     z-index: -1;
   }
   &.Facts:before {
-    background-image: url(${require('./../images/square.svg')});
+    background-image: url(${require('./../images/Facts.svg')});
     background-position: top left;
   }
   &.Merits:before {
-    background-image: url(${require('./../images/star.svg')});
+    background-image: url(${require('./../images/Merits.svg')});
     background-position: top center;
   }
   &.People:before {
-    background-image: url(${require('./../images/banner.svg')});
+    background-image: url(${require('./../images/People.svg')});
     background-position: top right;
   }
   &.Thoughts:before {
-    background-image: url(${require('./../images/circle.svg')});
+    background-image: url(${require('./../images/Thoughts.svg')});
     background-position: center left;
   }
   &.Actions:before {
-    background-image: url(${require('./../images/arrow.svg')});
+    background-image: url(${require('./../images/Actions.svg')});
     background-position: center right;
   }
   &.Needs:before {
-    background-image: url(${require('./../images/heart.svg')});
+    background-image: url(${require('./../images/Feelings.svg')});
     background-position: bottom left;
   }
   &.Feelings:before {
-    background-image: url(${require('./../images/triangle.svg')});
+    background-image: url(${require('./../images/Needs.svg')});
     background-position: bottom center;
   }
   &.Topics:before {
-    background-image: url(${require('./../images/trapezoid.svg')});
+    background-image: url(${require('./../images/Topics.svg')});
     background-position: bottom right;
   }
 `;
