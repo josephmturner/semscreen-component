@@ -14,15 +14,15 @@ const Rim = (props: { message: MessageI }) => {
       color={message.author.styles.textColor}
     >
       <Banner author={message.author}/>
-      <Region regionName="Facts" points={points.filter(p =>  p.shape === "Facts")}/>
-      <Region regionName="Merits" points={points.filter(p =>  p.shape === "Merits")}/>
-      <Region regionName="People" points={points.filter(p =>  p.shape === "People")}/>
-      <Region regionName="Thoughts" points={points.filter(p =>  p.shape === "Thoughts")}/>
-      <Region regionName="Focus" points={points.filter(p =>  p.shape === "Focus")}/>
-      <Region regionName="Actions" points={points.filter(p =>  p.shape === "Actions")}/>
-      <Region regionName="Feelings" points={points.filter(p =>  p.shape === "Feelings")}/>
-      <Region regionName="Needs" points={points.filter(p =>  p.shape === "Needs")}/>
-      <Region regionName="Topics" points={points.filter(p =>  p.shape === "Topics")}/>
+      <Region regionName="Facts" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Facts")}/>
+      <Region regionName="Merits" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Merits")}/>
+      <Region regionName="People" styles={ message.author.styles } points={points.filter(p =>  p.shape === "People")}/>
+      <Region regionName="Thoughts" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Thoughts")}/>
+      <Region regionName="Focus" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Focus")}/>
+      <Region regionName="Actions" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Actions")}/>
+      <Region regionName="Feelings" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Feelings")}/>
+      <Region regionName="Needs" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Needs")}/>
+      <Region regionName="Topics" styles={ message.author.styles } points={points.filter(p =>  p.shape === "Topics")}/>
     </RimView>
   );
 };

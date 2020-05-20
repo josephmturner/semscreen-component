@@ -11,7 +11,7 @@ const RimView = styled.div<Props>`
   width: 100%;
   position: relative;
   display: grid;
-  grid-gap: 1rem;
+  grid-gap: 6px;
   grid-template-areas:
     'facts merits people'
     'thoughts . actions'
