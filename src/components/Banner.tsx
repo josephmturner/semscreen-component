@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import { AuthorI } from '../interfaces';
 
 //correct props type
-const Banner = (props: any) => {
-  const semscreen = props.semscreen;
+const Banner = (props: { author: AuthorI }) => {
+  const author = props.author;
 
   function handleClick() {
     window.alert('you clicked the banner');
@@ -11,8 +12,8 @@ const Banner = (props: any) => {
 
   return (
     <>
-      <BannerView color={semscreen.styles.textColor} onClick={handleClick}>
-        {semscreen.username || 'No selected hat'}
+      <BannerView color={author.styles.textColor} onClick={handleClick}>
+        {author.name || 'anonymous (no author)'}
       </BannerView>
     </>
   );

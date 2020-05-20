@@ -1,32 +1,34 @@
-interface UserI {
+interface AuthorI {
   name: string;
-  id: string;
-  date: Date;
-}
-
-interface PointI {
-  author: string;
-  content: string;
-  shape: string;
-  id: string;
-  date: Date
-}
-
-interface SemscreenI {
-  author: string;
-  points?: PointI[];
-  focus: string;
   styles: {
     textColor: string;
     backgroundColor: string; 
   };
-  id: string;
-  date: Date;
+  authorId: string;
+  authorDate: Date;
+}
+
+interface PointI {
+  author: AuthorI;
+  content: string;
+  shape: string;
+  pointId: string;
+  pointDate: Date
+}
+
+//TODO: validate that focus points are contained in the points array
+interface MessageI {
+  author: AuthorI;
+  points?: PointI[];
+  focus: PointI[];
+  mainPoint: PointI;
+  messageId: string;
+  messageDate: Date;
 }
 
 interface AppI {
-user: UserI;
-semscreens: SemscreenI[];
+  authors: AuthorI[];
+  messages: MessageI[];
 }
 
-export { UserI, PointI, SemscreenI, AppI };
+export { AuthorI, PointI, MessageI, AppI };

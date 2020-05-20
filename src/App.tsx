@@ -2,10 +2,10 @@ import React from "react";
 import { initialAppState } from './constants/initialState';
 import SemanticScreen from "./components/SemanticScreen";
 
-const semscreen = initialAppState.semscreens[0];
+const message = initialAppState.messages[0];
 
 const App = () => (
-  <SemanticScreen semscreen={semscreen} />
+  <SemanticScreen message={ message } />
 );
 
 export default App;

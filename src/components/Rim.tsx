@@ -2,18 +2,18 @@ import React from 'react';
 import Region from './Region';
 import Banner from './Banner';
 import RimView from './RimView';
-import { SemscreenI } from '../interfaces';
+import { MessageI } from '../interfaces';
 
-const Rim = (props: {semscreen: SemscreenI}) => {
-  const semscreen = props.semscreen;
-  const points = semscreen.points || [];
+const Rim = (props: { message: MessageI }) => {
+  const message = props.message;
+  const points = message.points || [];
 
   return (
     <RimView
       id="rim"
-      color={semscreen.styles.textColor}
+      color={message.author.styles.textColor}
     >
-      <Banner semscreen={semscreen}/>
+      <Banner author={message.author}/>
       <Region regionName="Facts" points={points.filter(p =>  p.shape === "Facts")}/>
       <Region regionName="Merits" points={points.filter(p =>  p.shape === "Merits")}/>
       <Region regionName="People" points={points.filter(p =>  p.shape === "People")}/>

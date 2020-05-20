@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import SummaryRegion from "./SummaryRegion";
 import Rim from "./Rim";
-import { SemscreenI } from '../interfaces';
+import { MessageI } from '../interfaces';
 
 const Wrapper = styled.div`
   position: relative;
@@ -14,13 +14,13 @@ const Wrapper = styled.div`
   grid-template-rows: 2rem auto 2rem;
 `;
 
-const SemanticScreen = (props: {semscreen: SemscreenI}) => (
+const SemanticScreen = (props: { message : MessageI }) => (
   <Wrapper>
     <SummaryRegion type="Facts" />
     <SummaryRegion type="Merits" />
     <SummaryRegion type="People" />
     <SummaryRegion type="Thoughts" />
-    <Rim semscreen={props.semscreen} />
+    <Rim message={props.message} />
     <SummaryRegion type="Actions" />
     <SummaryRegion type="Needs" />
     <SummaryRegion type="Feelings" />
