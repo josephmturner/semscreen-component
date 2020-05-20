@@ -7,7 +7,7 @@ import { MessageI } from '../interfaces';
 const Wrapper = styled.div`
   position: relative;
   height: 100%;
-  width: 100#;
+  width: 100%;
   z-index: 999;
   display: grid;
   grid-template-columns: 2rem auto 2rem;
