@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 interface Props {
   color?: string;
+  showShapes: boolean;
 }
 
 const RimView = styled.div<Props>`
@@ -21,6 +22,7 @@ const RimView = styled.div<Props>`
   color: ${props => (props.color ? props.color : 'inherit')};
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
+  padding: ${props => props.showShapes? "2rem": "0"};
   transition: all 1s;
 
   /* ##### Focus styles ##### */
@@ -120,6 +122,67 @@ const RimView = styled.div<Props>`
     grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: 1fr 1fr var(--active-size);
   }
+  > .Shape {
+  opacity: 0.33;
+  }
+  > #FactsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  }
+  > #MeritsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  }
+  > #PeopleShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  top: 0%;
+  right: 0%;
+  }
+  > #ThoughtsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  top: 50%;
+  left: 0%;
+  transform: translate(0%, -50%);
+ }
+  > #ActionsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  top: 50%;
+  right: 0%;
+  transform: translate(0%, -50%);
+ }
+  > #FeelingsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  bottom: 0%;
+  left: 0%;
+ }
+  > #NeedsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  bottom: 0%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+ }
+  > #TopicsShape {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  bottom: 0%;
+  right: 0%;
+ }
 `;
 
 export default RimView;

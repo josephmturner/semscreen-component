@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { AuthorI } from '../interfaces';
 
 //correct props type
-const Banner = (props: { author: AuthorI }) => {
+const Banner = (props: { author: AuthorI; showShapes: boolean}) => {
   const author = props.author;
+  const showShapes = props.showShapes;
 
   function handleClick() {
     window.alert('you clicked the banner');
@@ -12,19 +13,23 @@ const Banner = (props: { author: AuthorI }) => {
 
   return (
     <>
-      <BannerView color={author.styles.textColor} onClick={handleClick}>
+      <BannerView color={author.styles.textColor} onClick={handleClick} showShapes={showShapes}>
         {author.name || 'anonymous (no author)'}
       </BannerView>
     </>
   );
 };
 
-const BannerView = styled.div`
+interface Props {
+  showShapes: boolean;
+}
+
+const BannerView = styled.div<Props>`
   position: absolute;
   text-align: center;
   font-size: 1.5rem;
-  top: -0.75rem;
-  right: 0.5rem;
+  top: ${props => props.showShapes ? "0.75rem" : "0"};
+  right: ${props => props.showShapes ? "2rem" : "0"};
   padding: 0;
   z-index: 1;
   cursor: pointer;

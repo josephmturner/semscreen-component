@@ -1,11 +1,12 @@
 import React from "react";
 import { messages } from './constants/initialState';
-import SemanticScreen from "./components/SemanticScreen";
+import Rim from "./components/Rim";
 
 const message = messages[0];
+let showShapes = true;
 
 const App = () => (
-  <SemanticScreen message={ message } />
+  <Rim message={ message } showShapes={ showShapes } />
 );
 
 export default App;
