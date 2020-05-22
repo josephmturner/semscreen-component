@@ -24,6 +24,7 @@ const StyledRegion = styled.div<StyledRegionProps>`
   width: 100%;
   height: 100%;
   background-color: ${props => props.backgroundColor};
+  overflow: auto;
 `
 export default Region;
 
