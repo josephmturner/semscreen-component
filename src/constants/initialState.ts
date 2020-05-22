@@ -77,9 +77,4 @@ const messages: MessageI[] = [
   },
 ]
 
-const initialAppState: AppI = {
-  authors: authors,
-  messages: messages,
-}
-
-export { initialAppState };
+export { messages };
