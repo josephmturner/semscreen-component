@@ -44,9 +44,4 @@ interface MessageI {
   messageDate: Date;
 }
 
-interface AppI {
-  authors: AuthorI[];
-  messages: MessageI[];
-}
-
-export { AuthorI, PointI, MessageI, AppI };
+export { AuthorI, PointI, MessageI };

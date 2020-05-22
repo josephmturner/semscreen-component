@@ -18,7 +18,7 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-import { AuthorI, PointI, MessageI, AppI } from '../interfaces';
+import { AuthorI, PointI, MessageI } from '../interfaces';
 
 const authors: AuthorI[] = [
   { 
