@@ -20,7 +20,7 @@ import React from 'react';
 import Point from './Point';
 import styled from 'styled-components';
 
-const Region = (props: {regionName: string, styles: { backgroundColor: string; textColor: string; }, points: any }) => {
+const Region = (props: {styles: { backgroundColor: string; textColor: string; }, points: any }) => {
  const points = props.points || []; 
  const styles = props.styles;
 
