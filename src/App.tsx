@@ -20,11 +20,11 @@ import React from "react";
 import { messages } from './constants/initialState';
 import SemanticScreen from "./components/SemanticScreen";
 
-const message = messages[0];
+const messageInitialState = messages[0];
 let showShapes = true;
 
 const App = () => (
-  <SemanticScreen message={ message } showShapes={ showShapes } />
+  <SemanticScreen messageInitialState={ messageInitialState } showShapes={ showShapes } />
 );
 
 export default App;

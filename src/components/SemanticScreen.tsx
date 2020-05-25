@@ -23,22 +23,22 @@ import StyledSemanticScreen from './StyledSemanticScreen';
 import ShapesRim from './ShapesRim';
 import { MessageI } from '../interfaces';
 
-const SemanticScreen = (props: { message: MessageI; showShapes: boolean; }) => {
-  const message = props.message;
-  const points = message.points || [];
+const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: boolean; }) => {
+  const messageInitialState = props.messageInitialState;
+  const points = messageInitialState.points || [];
   const showShapes = props.showShapes;
   const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
   
   return (
     <StyledSemanticScreen
       id="rim"
-      color={message.author.styles.textColor}
+      color={messageInitialState.author.styles.textColor}
       showShapes={showShapes}
     >
-      <Banner author={message.author} showShapes={showShapes}/>
+      <Banner author={messageInitialState.author} showShapes={showShapes}/>
       {regionNames.map(region =>
         <Region 
-          styles={message.author.styles}
+          styles={messageInitialState.author.styles}
           points={points.filter(p => p.shape === region)}
           key={region}
         />)
