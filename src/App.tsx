@@ -22,9 +22,16 @@ import SemanticScreen from "./components/SemanticScreen";
 
 const messageInitialState = messages[0];
 let showShapes = true;
+const handlePointChange = (e: any): void => {
+  window.alert(e);
+}
 
 const App = () => (
-  <SemanticScreen messageInitialState={ messageInitialState } showShapes={ showShapes } />
+  <SemanticScreen
+   messageInitialState={ messageInitialState }
+   showShapes={ showShapes }
+   onPointChange={handlePointChange}
+  />
 );
 
 export default App;

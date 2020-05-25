@@ -23,12 +23,13 @@ import StyledSemanticScreen from './StyledSemanticScreen';
 import ShapesRim from './ShapesRim';
 import { MessageI } from '../interfaces';
 
-const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: boolean; }) => {
+const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: boolean; onPointChange: ((e: any) => void); }) => {
   const messageInitialState = props.messageInitialState;
   const points = messageInitialState.points || [];
   const showShapes = props.showShapes;
   const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
   
+  const onPointChange = props.onPointChange;
   return (
     <StyledSemanticScreen
       id="rim"
@@ -40,6 +41,7 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
         <Region 
           styles={messageInitialState.author.styles}
           points={points.filter(p => p.shape === region)}
+          onPointChange={onPointChange}
           key={region}
         />)
       }

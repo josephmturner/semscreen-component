@@ -20,14 +20,16 @@ import React, { useRef } from 'react';
 import Media from 'react-bootstrap/Media';
 import ContentEditable from 'react-contenteditable';
 
+//TODO: correct props below
 const Point = (props: any) => {
  const { shape, id } = props;
+ const onPointChange = props.onPointChange;
  const content = useRef(props.content);
  const handleChange = (e: any) => {
    content.current = e.target.value;
  };
  const handleBlur = () => {
-  console.log(content.current);
+  onPointChange(content.current);
  };
 
  const imageUrl = require(`../images/${shape}.svg`);

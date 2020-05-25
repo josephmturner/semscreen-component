@@ -20,15 +20,17 @@ import React from 'react';
 import Point from './Point';
 import styled from 'styled-components';
 
-const Region = (props: {styles: { backgroundColor: string; textColor: string; }, points: any }) => {
+// TODO: correct types below
+const Region = (props: {styles: { backgroundColor: string; textColor: string; }, points: any, onPointChange: any }) => {
  const points = props.points || []; 
  const styles = props.styles;
+ const onPointChange = props.onPointChange;
 
  //TODO: add author to initialstate, interfaces, and below
   return (
    <StyledRegion backgroundColor={styles.backgroundColor}>
   <ul className="list-unstyled">
-   {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} />)}
+   {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} onPointChange={onPointChange} />)}
   </ul>
  </StyledRegion>
  )
