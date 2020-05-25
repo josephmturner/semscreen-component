@@ -24,7 +24,7 @@ interface Props {
   showShapes: boolean;
 }
 
-const RimView = styled.div<Props>`
+const StyledSemanticScreen = styled.div<Props>`
   --active-size: 5fr;
   height: 100%;
   width: 100%;
@@ -203,4 +203,4 @@ const RimView = styled.div<Props>`
  }
 `;
 
-export default RimView;
+export default StyledSemanticScreen;

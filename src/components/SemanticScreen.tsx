@@ -19,18 +19,18 @@
 import React from 'react';
 import Region from './Region';
 import Banner from './Banner';
-import RimView from './RimView';
+import StyledSemanticScreen from './StyledSemanticScreen';
 import ShapesRim from './ShapesRim';
 import { MessageI } from '../interfaces';
 
-const Rim = (props: { message: MessageI; showShapes: boolean; }) => {
+const SemanticScreen = (props: { message: MessageI; showShapes: boolean; }) => {
   const message = props.message;
   const points = message.points || [];
   const showShapes = props.showShapes;
   const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
   
   return (
-    <RimView
+    <StyledSemanticScreen
       id="rim"
       color={message.author.styles.textColor}
       showShapes={showShapes}
@@ -44,8 +44,8 @@ const Rim = (props: { message: MessageI; showShapes: boolean; }) => {
         />)
       }
       <ShapesRim showShapes={showShapes}/>
-    </RimView>
+    </StyledSemanticScreen>
   );
 };
 
-export default Rim;
+export default SemanticScreen;
