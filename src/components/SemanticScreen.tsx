@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from 'react';
+import React, { useState } from 'react';
 import Region from './Region';
 import Banner from './Banner';
 import StyledSemanticScreen from './StyledSemanticScreen';
@@ -29,11 +29,13 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
   const showShapes = props.showShapes;
   const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
   
+ const [expandedRegion, setExpandedRegion] = useState("Actions");
   const onPointChange = props.onPointChange;
   return (
     <StyledSemanticScreen
       id="rim"
       color={messageInitialState.author.styles.textColor}
+      expandedRegion={expandedRegion}
       showShapes={showShapes}
     >
       <Banner author={messageInitialState.author} showShapes={showShapes}/>

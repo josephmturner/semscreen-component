@@ -21,11 +21,12 @@ import styled from 'styled-components';
 
 interface Props {
   color?: string;
+  expandedRegion: string;
   showShapes: boolean;
 }
 
 const StyledSemanticScreen = styled.div<Props>`
-  --active-size: 5fr;
+  --active-size: 18fr;
   height: 100%;
   width: 100%;
   position: relative;
@@ -41,108 +42,56 @@ const StyledSemanticScreen = styled.div<Props>`
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   padding: ${props => props.showShapes? "2rem": "0"};
-  transition: all 1s;
 
-  /* ##### Focus styles ##### */
-  > .Focus {
-    align-self: center;
-    justify-self: center;
-  }
-  &.Focus--active {
-    grid-template-columns: 1fr var(--active-size) 1fr !important;
-    grid-template-rows: 1fr var(--active-size) 1fr !important;
-  }
-
-  /* ##### Actions styles ##### */
-  > .Actions {
-    align-self: center;
-    justify-self: end;
-    grid-area: actions;
-  }
-  &.Actions--active {
-    grid-template-columns: 1fr 1fr var(--active-size);
-    grid-template-rows: 1fr var(--active-size) 1fr;
-  }
-
-  /* ##### People styles ##### */
-  > .People {
-    align-self: start;
-    justify-self: end;
-    grid-area: people;
-  }
-  &.People--active {
-    grid-template-columns: 1fr 1fr var(--active-size);
+  ${({ expandedRegion }) => expandedRegion === "Facts" && `
+    grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: var(--active-size) 1fr 1fr;
-  }
+  `}
 
-  /* ###### Merits styles ##### */
-  > .Merits {
-    align-self: start;
-    justify-self: center;
-    grid-area: merits;
-  }
-  &.Merits--active {
+  ${({ expandedRegion }) => expandedRegion === "Merits" && `
     grid-template-columns: 1fr var(--active-size) 1fr;
     grid-template-rows: var(--active-size) 1fr 1fr;
-  }
+  `}
 
-  /* ##### Facts styles #####*/
-  > .Facts {
-    align-self: start;
-    justify-self: start;
-    grid-area: facts;
-  }
-  &.Facts--active {
-    grid-template-columns: var(--active-size) 1fr 1fr;
+  ${({ expandedRegion }) => expandedRegion === "People" && `
+    grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: var(--active-size) 1fr 1fr;
-  }
+  `}
 
-  /* ##### Thoughts styles ##### */
-  > .Thoughts {
-    align-self: center;
-    justify-self: start;
-    grid-area: thoughts;
-  }
-  &.Thoughts--active {
+  ${({ expandedRegion }) => expandedRegion === "Thoughts" && `
     grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: 1fr var(--active-size) 1fr;
-  }
+  `}
 
-  /* ##### Feelings active ##### */
-  > .Feelings {
-    align-self: end;
-    justify-self: start;
-    grid-area: feelings;
-  }
-  &.Feelings--active {
+  ${({ expandedRegion }) => expandedRegion === "Focus" && `
+    grid-template-columns: 1fr var(--active-size) 1fr;
+    grid-template-rows: 1fr var(--active-size) 1fr;
+  `}
+
+  ${({ expandedRegion }) => expandedRegion === "Actions" && `
+    grid-template-columns: 1fr 1fr var(--active-size);
+    grid-template-rows: 1fr var(--active-size) 1fr;
+  `}
+
+  ${({ expandedRegion }) => expandedRegion === "Feelings" && `
     grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: 1fr 1fr var(--active-size);
-  }
+  `}
 
-  /* ##### Needs styles ##### */
-  > .Needs {
-    align-self: end;
-    justify-self: center;
-    grid-area: needs;
-  }
-  &.Needs--active {
+  ${({ expandedRegion }) => expandedRegion === "Needs" && `
     grid-template-columns: 1fr var(--active-size) 1fr;
     grid-template-rows: 1fr 1fr var(--active-size);
-  }
+  `}
 
-  /* ##### Topics styles ##### */
-  > .Topics {
-    align-self: end;
-    justify-self: end;
-    grid-area: topics;
-  }
-  &.Topics--active {
+  ${({ expandedRegion }) => expandedRegion === "Topics" && `
     grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: 1fr 1fr var(--active-size);
-  }
+  `}
+
   > .Shape {
   opacity: 0.33;
   }
+
   > #FactsShape {
   position: absolute;
   width: 2rem;
