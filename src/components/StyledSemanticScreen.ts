@@ -42,6 +42,7 @@ const StyledSemanticScreen = styled.div<Props>`
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   padding: ${props => props.showShapes? "2rem": "0"};
+  transition: 0.5s;
 
   ${({ expandedRegion }) => expandedRegion === "Facts" && `
     grid-template-columns: var(--active-size) 1fr 1fr;
