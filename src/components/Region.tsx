@@ -26,9 +26,9 @@ const { region, points, styles, onPointChange, onRegionClick } = props;
 
  //TODO: add author to initialstate, interfaces, and below
   return (
-   <StyledRegion backgroundColor={styles.backgroundColor} onClick={() => onRegionClick(region)}>
+   <StyledRegion backgroundColor={styles.backgroundColor} onClick={() => onRegionClick(region, false)}>
   <ul className="list-unstyled">
-   {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} onPointChange={onPointChange} />)}
+   {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} onPointChange={onPointChange} onPointClick={() => onRegionClick(region, true)} />)}
   </ul>
  </StyledRegion>
  )

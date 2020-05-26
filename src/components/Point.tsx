@@ -22,7 +22,7 @@ import ContentEditable from 'react-contenteditable';
 
 //TODO: correct props below
 const Point = (props: any) => {
- const { shape, id } = props;
+ const { shape, id, onPointClick } = props;
  const onPointChange = props.onPointChange;
  const content = useRef(props.content);
  const handleChange = (e: any) => {
@@ -31,6 +31,10 @@ const Point = (props: any) => {
  const handleBlur = () => {
   onPointChange(content.current);
  };
+ const handleClick = (e: any) => {
+   e.stopPropagation();
+   onPointClick();
+ }
 
  const imageUrl = require(`../images/${shape}.svg`);
 
@@ -45,6 +49,7 @@ const Point = (props: any) => {
     />
     <Media.Body>
       <ContentEditable
+        onClick={handleClick}
         suppressContentEditableWarning={true}
         html={content.current}
         onChange={handleChange}

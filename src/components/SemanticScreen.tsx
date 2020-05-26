@@ -31,8 +31,12 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
   
   const [expandedRegion, setExpandedRegion] = useState();
   const onPointChange = props.onPointChange;
-  const handleRegionClick = (region: string): void => {
-    region === expandedRegion? setExpandedRegion(null): setExpandedRegion(region);
+  const handleRegionClick = (region: string, pointClicked: boolean): void => {
+    if (region !== expandedRegion) {
+     setExpandedRegion(region);
+    } else if (region === expandedRegion && !pointClicked) {
+     setExpandedRegion(null);
+    }
   }
 
   return (
