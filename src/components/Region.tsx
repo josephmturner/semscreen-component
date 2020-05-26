@@ -21,12 +21,12 @@ import Point from './Point';
 import styled from 'styled-components';
 
 // TODO: correct types below
-const Region = (props: {region: string, styles: { backgroundColor: string; textColor: string; }, points: any, onPointChange: any }) => {
- const { region, points, styles, onPointChange } = props; 
+const Region = (props: {region: string, styles: { backgroundColor: string; textColor: string; }, points: any, onPointChange: any, onRegionClick: any }) => {
+const { region, points, styles, onPointChange, onRegionClick } = props; 
 
  //TODO: add author to initialstate, interfaces, and below
   return (
-   <StyledRegion backgroundColor={styles.backgroundColor}>
+   <StyledRegion backgroundColor={styles.backgroundColor} onClick={() => onRegionClick(region)}>
   <ul className="list-unstyled">
    {points.map((p : any) => <Point content={ p.content } shape={p.shape} id={p.id} onPointChange={onPointChange} />)}
   </ul>

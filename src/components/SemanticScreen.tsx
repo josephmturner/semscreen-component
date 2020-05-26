@@ -29,8 +29,12 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
   const showShapes = props.showShapes;
   const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
   
- const [expandedRegion, setExpandedRegion] = useState("Actions");
+  const [expandedRegion, setExpandedRegion] = useState();
   const onPointChange = props.onPointChange;
+  const handleRegionClick = (region: string): void => {
+    expandedRegion? setExpandedRegion(null): setExpandedRegion(region);
+  }
+
   return (
     <StyledSemanticScreen
       id="rim"
@@ -45,6 +49,7 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
           styles={messageInitialState.author.styles}
           points={points.filter(p => p.shape === region)}
           onPointChange={onPointChange}
+          onRegionClick={handleRegionClick}
           key={region}
         />)
       }
