@@ -21,8 +21,8 @@ import Point from './Point';
 import styled from 'styled-components';
 
 // TODO: correct types below
-const Region = (props: {styles: { backgroundColor: string; textColor: string; }, points: any, onPointChange: any }) => {
- const { points, styles, onPointChange } = props; 
+const Region = (props: {region: string, styles: { backgroundColor: string; textColor: string; }, points: any, onPointChange: any }) => {
+ const { region, points, styles, onPointChange } = props; 
 
  //TODO: add author to initialstate, interfaces, and below
   return (

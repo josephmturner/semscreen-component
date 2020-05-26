@@ -41,6 +41,7 @@ const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: bool
       <Banner author={messageInitialState.author} showShapes={showShapes}/>
       {regionNames.map(region =>
         <Region 
+          region={region}
           styles={messageInitialState.author.styles}
           points={points.filter(p => p.shape === region)}
           onPointChange={onPointChange}
