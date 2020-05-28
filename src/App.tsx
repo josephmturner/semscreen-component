@@ -20,18 +20,21 @@ import React from "react";
 import { messages } from './constants/initialState';
 import SemanticScreen from "./components/SemanticScreen";
 
-const messageInitialState = messages[0];
-let showShapes = true;
-const handlePointChange = (e: any): void => {
-  console.log(e);
-}
 
-const App = () => (
-  <SemanticScreen
-   messageInitialState={ messageInitialState }
-   showShapes={ showShapes }
-   onPointChange={handlePointChange}
-  />
-);
+const App = () => {
+  const messageInitialState = messages[0];
+  let showShapes = true;
+  const handlePointChange = (e: any): void => {
+    console.log(e);
+  }
+
+  return (
+    <SemanticScreen
+     messageInitialState={ messageInitialState }
+     showShapes={ showShapes }
+     onPointChange={handlePointChange}
+    />
+  )
+};
 
 export default App;
