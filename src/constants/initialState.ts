@@ -18,13 +18,14 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
+import { v4 as uuidv4 } from "uuid";
 import { AuthorI, PointI, MessageI } from "../interfaces";
 
 const authors: AuthorI[] = [
   {
     name: "KindWoman",
     authorDate: new Date(),
-    authorId: "user1",
+    authorId: uuidv4(),
     styles: {
       textColor: "#111",
       backgroundColor: "#eee",
@@ -37,7 +38,7 @@ const points: PointI[] = [
     author: authors[0],
     content: "Online Deliberation (focus)",
     shape: "Topics",
-    pointId: "point1",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -45,7 +46,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
     shape: "Actions",
-    pointId: "point2",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -53,7 +54,7 @@ const points: PointI[] = [
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
     shape: "Actions",
-    pointId: "point3",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -61,7 +62,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: "point4",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -69,7 +70,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: "point5",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -77,7 +78,7 @@ const points: PointI[] = [
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
     shape: "Actions",
-    pointId: "point6",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
   {
@@ -85,7 +86,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: "point7",
+    pointId: uuidv4(),
     pointDate: new Date(),
   },
 ];
@@ -96,7 +97,7 @@ const messages: MessageI[] = [
     points: points,
     focus: points.slice(0, 1),
     mainPoint: points[1],
-    messageId: "semscreen1",
+    messageId: uuidv4(),
     messageDate: new Date(),
   },
 ];

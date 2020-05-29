@@ -17,6 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import Region from "./Region";
 import Banner from "./Banner";
 import StyledSemanticScreen from "./StyledSemanticScreen";
@@ -51,7 +52,7 @@ const SemanticScreen = (props: {
       textColor: "#000",
       backgroundColor: "#fff",
     },
-    authorId: "1",
+    authorId: uuidv4(),
     authorDate: new Date(),
   };
 
