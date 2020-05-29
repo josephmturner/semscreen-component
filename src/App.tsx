@@ -17,24 +17,24 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { messages } from './constants/initialState';
+import { messages } from "./constants/initialState";
 import SemanticScreen from "./components/SemanticScreen";
-
 
 const App = () => {
   const messageInitialState = messages[0];
   let showShapes = true;
+
   const handlePointChange = (e: any): void => {
     console.log(e);
-  }
+  };
 
   return (
     <SemanticScreen
-     messageInitialState={ messageInitialState }
-     showShapes={ showShapes }
-     onPointChange={handlePointChange}
+      messageInitialState={messageInitialState}
+      showShapes={showShapes}
+      onPointChange={handlePointChange}
     />
-  )
+  );
 };
 
 export default App;

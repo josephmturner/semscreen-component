@@ -16,13 +16,13 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { createContext } from 'react';
-import PropTypes from 'prop-types';
-import useRim from '../hooks/useRim';
+import React, { createContext } from "react";
+import PropTypes from "prop-types";
+import useRim from "../hooks/useRim";
 
 interface ContextI {
- //correct rim type; couldn't export UseRimI from ../hooks/useRim
- //because of a typescript error
+  //correct rim type; couldn't export UseRimI from ../hooks/useRim
+  //because of a typescript error
   rim: any;
 }
 const Context = createContext<ContextI | null>(null);
@@ -48,4 +48,3 @@ ContextProvider.propTypes = {
 export default Context;
 
 export { ContextProvider };
-

@@ -16,49 +16,52 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from 'react'; 
-import Media from 'react-bootstrap/Media';
-import ContentEditable from 'react-contenteditable';
+import React, { useRef } from "react";
+import Media from "react-bootstrap/Media";
+import ContentEditable from "react-contenteditable";
 
 //TODO: correct props below
 const Point = (props: any) => {
- const { shape, id, onPointClick } = props;
- const onPointChange = props.onPointChange;
- const content = useRef(props.content);
- const handleChange = (e: any) => {
-   content.current = e.target.value;
- };
- const handleBlur = () => {
-  onPointChange(content.current);
- };
- const handleClick = (e: any) => {
-   e.stopPropagation();
-   onPointClick();
- }
+  const { point, onPointClick } = props;
+  const onPointChange = props.onPointChange;
 
- const imageUrl = require(`../images/${shape}.svg`);
+  const content = useRef(point.content);
 
- return (
-  <Media as="li">
-    <img
-      width={20}
-      height={20}
-      className="mr-3"
-      src={imageUrl}
-      alt={shape}
-    />
-    <Media.Body>
-      <ContentEditable
-        onClick={handleClick}
-        suppressContentEditableWarning={true}
-        html={content.current}
-        onChange={handleChange}
-        onBlur={handleBlur}
+  const handleChange = (e: any) => {
+    content.current = e.target.value;
+  };
+  const handleBlur = () => {
+    // TODO: Only call onPointChange when content has actually changed.
+    point.content = content.current;
+    onPointChange(point);
+  };
+  const handleClick = (e: any) => {
+    e.stopPropagation();
+    onPointClick();
+  };
+
+  const imageUrl = require(`../images/${point.shape}.svg`);
+
+  return (
+    <Media as="li">
+      <img
+        width={20}
+        height={20}
+        className="mr-3"
+        src={imageUrl}
+        alt={point.shape}
       />
-    </Media.Body>
-  </Media>
- )
-}
-
+      <Media.Body>
+        <ContentEditable
+          onClick={handleClick}
+          suppressContentEditableWarning={true}
+          html={content.current}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      </Media.Body>
+    </Media>
+  );
+};
 
 export default Point;
