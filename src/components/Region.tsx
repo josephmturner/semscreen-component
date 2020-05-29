@@ -17,26 +17,34 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import Point from "./Point";
 import styled from "styled-components";
+import Point from "./Point";
+import { AuthorI } from "../interfaces";
 
 // TODO: correct types below
 const Region = (props: {
   region: string;
-  styles: {
-    backgroundColor: string;
-    textColor: string;
-  };
+  isExpanded: boolean;
+  author: AuthorI;
   points: any;
+  onPointAdd: any;
   onPointChange: any;
   onRegionClick: any;
 }) => {
-  const { region, points, styles, onPointChange, onRegionClick } = props;
+  const {
+    region,
+    isExpanded,
+    points,
+    author,
+    onPointAdd,
+    onPointChange,
+    onRegionClick,
+  } = props;
 
   //TODO: add author to initialstate, interfaces, and below
   return (
     <StyledRegion
-      backgroundColor={styles.backgroundColor}
+      backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
       <ul className="list-unstyled">
@@ -44,7 +52,7 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
-            onPointChange={onPointChange}
+            onSubmit={onPointChange}
             onPointClick={() => onRegionClick(region, true)}
           />
         ))}

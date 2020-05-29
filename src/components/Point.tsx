@@ -22,8 +22,7 @@ import ContentEditable from "react-contenteditable";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { point, onPointClick } = props;
-  const onPointChange = props.onPointChange;
+  const { point, onSubmit, onPointClick } = props;
 
   const content = useRef(point.content);
 
@@ -33,7 +32,7 @@ const Point = (props: any) => {
   const handleBlur = () => {
     // TODO: Only call onPointChange when content has actually changed.
     point.content = content.current;
-    onPointChange(point);
+    onSubmit(point);
   };
   const handleClick = (e: any) => {
     e.stopPropagation();

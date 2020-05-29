@@ -68,6 +68,9 @@ const SemanticScreen = (props: {
     }
   };
 
+  const handlePointAdd = (p: PointI) => {
+    setPoints((points) => [...points, p]);
+  };
   const handlePointChange = (p: PointI) => {
     const matchedIndex = points.findIndex((pt) => pt.pointId === p.pointId);
     points[matchedIndex] = p;
@@ -86,8 +89,10 @@ const SemanticScreen = (props: {
       {regionNames.map((region) => (
         <Region
           region={region}
-          styles={author.styles}
+          isExpanded={region === expandedRegion}
+          author={author}
           points={points.filter((p) => p.shape === region)}
+          onPointAdd={handlePointAdd}
           onPointChange={handlePointChange}
           onRegionClick={handleRegionClick}
           key={region}
