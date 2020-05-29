@@ -20,7 +20,7 @@ interface AuthorI {
   name: string;
   styles: {
     textColor: string;
-    backgroundColor: string; 
+    backgroundColor: string;
   };
   authorId: string;
   authorDate: Date;
@@ -31,7 +31,7 @@ interface PointI {
   content: string;
   shape: string;
   pointId: string;
-  pointDate: Date
+  pointDate: Date;
 }
 
 //TODO: validate that focus points are contained in the points array

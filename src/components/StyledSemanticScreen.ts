@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 //copied directly from u4few-app, nothing modified
-import styled from 'styled-components';
+import styled from "styled-components";
 
 interface Props {
   color?: string;
@@ -38,53 +38,71 @@ const StyledSemanticScreen = styled.div<Props>`
     'feelings needs topics';
 
   background-color: lightgray;
-  color: ${props => (props.color ? props.color : 'inherit')};
+  color: ${(props) => (props.color ? props.color : "inherit")};
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-  padding: ${props => props.showShapes? "2rem": "0"};
+  padding: ${(props) => (props.showShapes ? "2rem" : "0")};
   transition: 0.5s;
 
-  ${({ expandedRegion }) => expandedRegion === "Facts" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Facts" &&
+    `
     grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: var(--active-size) 1fr 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Merits" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Merits" &&
+    `
     grid-template-columns: 1fr var(--active-size) 1fr;
     grid-template-rows: var(--active-size) 1fr 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "People" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "People" &&
+    `
     grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: var(--active-size) 1fr 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Thoughts" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Thoughts" &&
+    `
     grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: 1fr var(--active-size) 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Focus" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Focus" &&
+    `
     grid-template-columns: 1fr var(--active-size) 1fr;
     grid-template-rows: 1fr var(--active-size) 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Actions" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Actions" &&
+    `
     grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: 1fr var(--active-size) 1fr;
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Feelings" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Feelings" &&
+    `
     grid-template-columns: var(--active-size) 1fr 1fr;
     grid-template-rows: 1fr 1fr var(--active-size);
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Needs" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Needs" &&
+    `
     grid-template-columns: 1fr var(--active-size) 1fr;
     grid-template-rows: 1fr 1fr var(--active-size);
   `}
 
-  ${({ expandedRegion }) => expandedRegion === "Topics" && `
+  ${({ expandedRegion }) =>
+    expandedRegion === "Topics" &&
+    `
     grid-template-columns: 1fr 1fr var(--active-size);
     grid-template-rows: 1fr 1fr var(--active-size);
   `}

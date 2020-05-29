@@ -17,13 +17,13 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 //TODO: remove tag cloud and also simplify what data needs to be
-//provided to lower-level components  
+//provided to lower-level components
 //do we need to import React as well?
-import { useReducer } from 'react';
+import { useReducer } from "react";
 
 const initialRimState: RimState = {
-  className: 'passive',
-  regionActive: 'none',
+  className: "passive",
+  regionActive: "none",
   cloud: false,
   isEditing: false,
 };
@@ -45,21 +45,21 @@ interface Actions {
 
 function reducer(state: RimState, action: Actions) {
   switch (action.type) {
-    case 'activate':
+    case "activate":
       return {
         ...state,
         regionActive: action.regionActive,
         className: action.className,
         cloud: action.cloud,
       };
-    case 'deactivate':
+    case "deactivate":
       return {
         ...state,
         regionActive: action.regionActive,
         className: action.className,
         cloud: false,
       };
-    case 'set_editing':
+    case "set_editing":
       return {
         ...state,
         isEditing: action.isEditing,
@@ -85,13 +85,13 @@ export default function useRim(): UseRimI {
   const toggleRegionState: ToggleRegionState = (region, cloud) => {
     if (state.regionActive === region) {
       dispatch({
-        type: 'deactivate',
-        regionActive: 'none',
-        className: 'passive',
+        type: "deactivate",
+        regionActive: "none",
+        className: "passive",
       });
     } else {
       dispatch({
-        type: 'activate',
+        type: "activate",
         regionActive: region,
         className: `${region}--active`,
         cloud,
@@ -99,9 +99,9 @@ export default function useRim(): UseRimI {
     }
   };
 
-  const setIsEditing: SetIsEditingI = value => {
+  const setIsEditing: SetIsEditingI = (value) => {
     dispatch({
-      type: 'set_editing',
+      type: "set_editing",
       isEditing: value,
     });
   };

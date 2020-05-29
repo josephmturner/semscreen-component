@@ -16,48 +16,84 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from 'react';
-import Region from './Region';
-import Banner from './Banner';
-import StyledSemanticScreen from './StyledSemanticScreen';
-import ShapesRim from './ShapesRim';
-import { MessageI } from '../interfaces';
+import React, { useState } from "react";
+import Region from "./Region";
+import Banner from "./Banner";
+import StyledSemanticScreen from "./StyledSemanticScreen";
+import ShapesRim from "./ShapesRim";
+import { MessageI, PointI } from "../interfaces";
 
-const SemanticScreen = (props: { messageInitialState: MessageI; showShapes: boolean; onPointChange: ((e: any) => void); }) => {
+const SemanticScreen = (props: {
+  messageInitialState: MessageI;
+  showShapes: boolean;
+  onPointChange: (e: any) => void;
+}) => {
   const messageInitialState = props.messageInitialState;
-  const points = messageInitialState.points || [];
   const showShapes = props.showShapes;
-  const regionNames = ["Facts", "Merits", "People", "Thoughts", "Focus", "Actions", "Feelings", "Needs", "Topics"];
-  
-  const [expandedRegion, setExpandedRegion] = useState();
-  const onPointChange = props.onPointChange;
+
+  const propagatePointChange = props.onPointChange;
+
+  const regionNames = [
+    "Facts",
+    "Merits",
+    "People",
+    "Thoughts",
+    "Focus",
+    "Actions",
+    "Feelings",
+    "Needs",
+    "Topics",
+  ];
+
+  const author = messageInitialState.author || {
+    name: "anonymous",
+    styles: {
+      textColor: "#000",
+      backgroundColor: "#fff",
+    },
+    authorId: "1",
+    authorDate: new Date(),
+  };
+
+  const [points, setPoints] = useState(messageInitialState.points || []);
+
+  const [expandedRegion, setExpandedRegion] = useState("");
+
   const handleRegionClick = (region: string, pointClicked: boolean): void => {
     if (region !== expandedRegion) {
-     setExpandedRegion(region);
+      setExpandedRegion(region);
     } else if (region === expandedRegion && !pointClicked) {
-     setExpandedRegion(null);
+      setExpandedRegion("");
     }
-  }
+  };
+
+  const handlePointChange = (p: PointI) => {
+    const matchedIndex = points.findIndex((pt) => pt.pointId === p.pointId);
+    points[matchedIndex] = p;
+    setPoints(points);
+    propagatePointChange(p);
+  };
 
   return (
     <StyledSemanticScreen
-      id="rim"
-      color={messageInitialState.author.styles.textColor}
+      color={author.styles.textColor}
       expandedRegion={expandedRegion}
       showShapes={showShapes}
     >
-      <Banner author={messageInitialState.author} showShapes={showShapes}/>
-      {regionNames.map(region =>
-        <Region 
+      <Banner author={author} showShapes={showShapes} />
+
+      {regionNames.map((region) => (
+        <Region
           region={region}
-          styles={messageInitialState.author.styles}
-          points={points.filter(p => p.shape === region)}
-          onPointChange={onPointChange}
+          styles={author.styles}
+          points={points.filter((p) => p.shape === region)}
+          onPointChange={handlePointChange}
           onRegionClick={handleRegionClick}
           key={region}
-        />)
-      }
-      <ShapesRim showShapes={showShapes}/>
+        />
+      ))}
+
+      <ShapesRim showShapes={showShapes} />
     </StyledSemanticScreen>
   );
 };
