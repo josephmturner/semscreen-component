@@ -17,6 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
+import { v4 as uuidv4 } from "uuid";
 import styled from "styled-components";
 import Point from "./Point";
 import { AuthorI } from "../interfaces";
@@ -41,7 +42,8 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
-  //TODO: add author to initialstate, interfaces, and below
+ //TODO: add author to initialstate, interfaces, and below
+ //TODO: how to create points in the focus region - it has no shape
   return (
     <StyledRegion
       backgroundColor={author.styles.backgroundColor}
@@ -56,6 +58,19 @@ const Region = (props: {
             onPointClick={() => onRegionClick(region, true)}
           />
         ))}
+        {isExpanded && (
+          <Point
+            point={{
+              author: { author },
+              content: "turn me into a placeholder with this css: https://github.com/lovasoa/react-contenteditable/pull/64#issuecomment-373906517",
+              shape: region,
+              pointId: uuidv4(),
+              pointDate: new Date(),
+            }}
+            onSubmit={onPointAdd}
+            onPointClick={() => onRegionClick(region, true)}
+          />
+        )}
       </ul>
     </StyledRegion>
   );
