@@ -25,7 +25,7 @@ const authors: AuthorI[] = [
   {
     name: "KindWoman",
     authorDate: new Date(),
-    authorId: uuidv4(),
+    authorId: "1",
     styles: {
       textColor: "#111",
       backgroundColor: "#eee",
@@ -38,7 +38,7 @@ const points: PointI[] = [
     author: authors[0],
     content: "Online Deliberation (focus)",
     shape: "Topics",
-    pointId: uuidv4(),
+    pointId: "1",
     pointDate: new Date(),
   },
   {
@@ -46,7 +46,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "2",
     pointDate: new Date(),
   },
   {
@@ -54,7 +54,7 @@ const points: PointI[] = [
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "3",
     pointDate: new Date(),
   },
   {
@@ -62,7 +62,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "4",
     pointDate: new Date(),
   },
   {
@@ -70,7 +70,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "5",
     pointDate: new Date(),
   },
   {
@@ -78,7 +78,7 @@ const points: PointI[] = [
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "6",
     pointDate: new Date(),
   },
   {
@@ -86,7 +86,7 @@ const points: PointI[] = [
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
     shape: "Actions",
-    pointId: uuidv4(),
+    pointId: "7",
     pointDate: new Date(),
   },
 ];

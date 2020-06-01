@@ -21,7 +21,11 @@ import styled from "styled-components";
 import { AuthorI } from "../interfaces";
 
 //correct props type
-const Banner = (props: { author: AuthorI; showShapes: boolean }) => {
+const Banner = (props: {
+    author: AuthorI;
+    showShapes: boolean,
+    onAuthorUpdate: (e: any) => void
+}) => {
   const author = props.author;
   const showShapes = props.showShapes;
 

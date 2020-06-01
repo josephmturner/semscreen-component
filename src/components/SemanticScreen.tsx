@@ -17,34 +17,30 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
+
 import { v4 as uuidv4 } from "uuid";
+
 import Region from "./Region";
 import Banner from "./Banner";
-import StyledSemanticScreen from "./StyledSemanticScreen";
 import ShapesRim from "./ShapesRim";
-import { MessageI, PointI } from "../interfaces";
+import StyledSemanticScreen from "./StyledSemanticScreen";
+
+import { MessageI, PointI, AuthorI } from "../interfaces";
 
 const SemanticScreen = (props: {
   messageInitialState: MessageI;
   showShapes: boolean;
-  onPointChange: (e: any) => void;
+  onAuthorUpdate: (e: any) => void;
+  onPointCreate: (e: any) => void;
+  onPointUpdate: (e: any) => void;
+  onPointDelete: (e: any) => void;
 }) => {
   const messageInitialState = props.messageInitialState;
   const showShapes = props.showShapes;
-
-  const propagatePointChange = props.onPointChange;
-
-  const regionNames = [
-    "Facts",
-    "Merits",
-    "People",
-    "Thoughts",
-    "Focus",
-    "Actions",
-    "Feelings",
-    "Needs",
-    "Topics",
-  ];
+  const onAuthorUpdate = props.onAuthorUpdate;  
+  const onPointCreate = props.onPointCreate;
+  const onPointUpdate = props.onPointUpdate;
+  const onPointDelete = props.onPointDelete;
 
   const author = messageInitialState.author || {
     name: "anonymous",
@@ -56,7 +52,7 @@ const SemanticScreen = (props: {
     authorDate: new Date(),
   };
 
-  const [points, setPoints] = useState(messageInitialState.points || []);
+  const points = props.messageInitialState.points || []
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
@@ -68,37 +64,36 @@ const SemanticScreen = (props: {
     }
   };
 
-  const handlePointAdd = (p: PointI) => {
-    setPoints((points) => [...points, p]);
-  };
-  const handlePointChange = (p: PointI) => {
-    const matchedIndex = points.findIndex((pt) => pt.pointId === p.pointId);
-    points[matchedIndex] = p;
-    setPoints(points);
-    propagatePointChange(p);
-  };
-
   return (
     <StyledSemanticScreen
       color={author.styles.textColor}
       expandedRegion={expandedRegion}
       showShapes={showShapes}
     >
-      <Banner author={author} showShapes={showShapes} />
-
-      {regionNames.map((region) => (
+      <Banner author={author} showShapes={showShapes} onAuthorUpdate={onAuthorUpdate} />
+      {[
+        "Facts",
+        "Merits",
+        "People",
+        "Thoughts",
+        "Focus",
+        "Actions",
+        "Feelings",
+        "Needs",
+        "Topics",
+      ].map((region) => (
         <Region
           region={region}
           isExpanded={region === expandedRegion}
           author={author}
           points={points.filter((p) => p.shape === region)}
-          onPointAdd={handlePointAdd}
-          onPointChange={handlePointChange}
+          onPointCreate={onPointCreate}
+          onPointUpdate={onPointUpdate}
+          onPointDelete={onPointDelete}
           onRegionClick={handleRegionClick}
           key={region}
         />
       ))}
-
       <ShapesRim showShapes={showShapes} />
     </StyledSemanticScreen>
   );
