@@ -28,21 +28,21 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 import { MessageI, PointI, AuthorI } from "../interfaces";
 
 const SemanticScreen = (props: {
-  messageInitialState: MessageI;
+  message: MessageI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   onPointCreate: (e: any) => void;
   onPointUpdate: (e: any) => void;
   onPointDelete: (e: any) => void;
 }) => {
-  const messageInitialState = props.messageInitialState;
+  const message = props.message;
   const showShapes = props.showShapes;
-  const onAuthorUpdate = props.onAuthorUpdate;  
+  const onAuthorUpdate = props.onAuthorUpdate;
   const onPointCreate = props.onPointCreate;
   const onPointUpdate = props.onPointUpdate;
   const onPointDelete = props.onPointDelete;
 
-  const author = messageInitialState.author || {
+  const author = message.author || {
     name: "anonymous",
     styles: {
       textColor: "#000",
@@ -52,7 +52,7 @@ const SemanticScreen = (props: {
     authorDate: new Date(),
   };
 
-  const points = props.messageInitialState.points || []
+  const points = props.message.points || [];
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
@@ -70,7 +70,11 @@ const SemanticScreen = (props: {
       expandedRegion={expandedRegion}
       showShapes={showShapes}
     >
-      <Banner author={author} showShapes={showShapes} onAuthorUpdate={onAuthorUpdate} />
+      <Banner
+        author={author}
+        showShapes={showShapes}
+        onAuthorUpdate={onAuthorUpdate}
+      />
       {[
         "Facts",
         "Merits",
