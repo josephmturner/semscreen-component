@@ -30,14 +30,14 @@ interface PointI {
   author: AuthorI;
   content: string;
   shape: string;
-  pointId: string;
-  pointDate: Date;
+  pointId?: string;
+  pointDate?: Date;
 }
 
 //TODO: validate that focus points are contained in the points array
 interface MessageI {
   author: AuthorI;
-  points?: PointI[];
+  points: PointI[];
   focus: PointI[];
   mainPoint: PointI;
   messageId: string;

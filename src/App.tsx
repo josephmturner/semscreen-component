@@ -17,22 +17,35 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
+import { AuthorI, PointI, MessageI } from "./interfaces";
 
 const App = () => {
   const messageInitialState = messages[0];
   const showShapes = true;
 
-  const [message, setMessage] = useState(messageInitialState);
+  const [author, setAuthor] = useState<AuthorI>(messageInitialState.author);
+  const [points, setPoints] = useState<PointI[]>(messageInitialState.points);
+
+  const handlePointCreate = (p: PointI) => {
+    const newPoint = {
+      ...p,
+      pointId: uuidv4(),
+      pointDate: new Date(),
+    };
+    setPoints((points) => [...points, newPoint]);
+  };
 
   return (
     <SemanticScreen
-      message={message}
+      author={author}
+      points={points}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
-      onPointCreate={console.log}
+      onPointCreate={handlePointCreate}
       onPointUpdate={console.log}
       onPointDelete={console.log}
     />
