@@ -28,8 +28,9 @@ const Region = (props: {
   isExpanded: boolean;
   author: AuthorI;
   points: any;
-  onPointAdd: any;
-  onPointChange: any;
+  onPointCreate: any;
+  onPointUpdate: any;
+  onPointDelete: any;
   onRegionClick: any;
 }) => {
   const {
@@ -37,13 +38,14 @@ const Region = (props: {
     isExpanded,
     points,
     author,
-    onPointAdd,
-    onPointChange,
+    onPointCreate,
+    onPointUpdate,
+    onPointDelete,
     onRegionClick,
   } = props;
 
- //TODO: add author to initialstate, interfaces, and below
- //TODO: how to create points in the focus region - it has no shape
+  //TODO: add author to initialstate, interfaces, and below
+  //TODO: how to create points in the focus region - it has no shape
   return (
     <StyledRegion
       backgroundColor={author.styles.backgroundColor}
@@ -54,7 +56,7 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
-            onSubmit={onPointChange}
+            onSubmit={onPointUpdate}
             onPointClick={() => onRegionClick(region, true)}
           />
         ))}
@@ -62,12 +64,13 @@ const Region = (props: {
           <Point
             point={{
               author: { author },
-              content: "turn me into a placeholder with this css: https://github.com/lovasoa/react-contenteditable/pull/64#issuecomment-373906517",
+              content:
+                "turn me into a placeholder with this css: https://github.com/lovasoa/react-contenteditable/pull/64#issuecomment-373906517",
               shape: region,
               pointId: uuidv4(),
               pointDate: new Date(),
             }}
-            onSubmit={onPointAdd}
+            onSubmit={onPointCreate}
             onPointClick={() => onRegionClick(region, true)}
           />
         )}

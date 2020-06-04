@@ -16,23 +16,38 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
-import { messages } from "./constants/initialState";
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+
 import SemanticScreen from "./components/SemanticScreen";
+import { messages } from "./constants/initialState";
+import { AuthorI, PointI, MessageI } from "./interfaces";
 
 const App = () => {
   const messageInitialState = messages[0];
-  let showShapes = true;
+  const showShapes = true;
 
-  const handlePointChange = (e: any): void => {
-    console.log(e);
+  const [author, setAuthor] = useState<AuthorI>(messageInitialState.author);
+  const [points, setPoints] = useState<PointI[]>(messageInitialState.points);
+
+  const handlePointCreate = (p: PointI) => {
+    const newPoint = {
+      ...p,
+      pointId: uuidv4(),
+      pointDate: new Date(),
+    };
+    setPoints((points) => [...points, newPoint]);
   };
 
   return (
     <SemanticScreen
-      messageInitialState={messageInitialState}
+      author={author}
+      points={points}
       showShapes={showShapes}
-      onPointChange={handlePointChange}
+      onAuthorUpdate={console.log}
+      onPointCreate={handlePointCreate}
+      onPointUpdate={console.log}
+      onPointDelete={console.log}
     />
   );
 };
