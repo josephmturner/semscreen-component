@@ -30,13 +30,23 @@ const App = () => {
   const [author, setAuthor] = useState<AuthorI>(messageInitialState.author);
   const [points, setPoints] = useState<PointI[]>(messageInitialState.points);
 
-  const handlePointCreate = (p: PointI) => {
-    const newPoint = {
-      ...p,
+  const handlePointCreate = (newPoint: PointI) => {
+    const p = {
+      ...newPoint,
       pointId: uuidv4(),
       pointDate: new Date(),
     };
-    setPoints((points) => [...points, newPoint]);
+    setPoints((points) => [...points, p]);
+  };
+
+  const handlePointUpdate = (updatedPoint: PointI) => {
+    let updatedPoints = points.map((p) => {
+      if (p.pointId === updatedPoint.pointId) {
+        return updatedPoint;
+      }
+      return p;
+    });
+    setPoints(updatedPoints);
   };
 
   return (
@@ -46,7 +56,7 @@ const App = () => {
       showShapes={showShapes}
       onAuthorUpdate={console.log}
       onPointCreate={handlePointCreate}
-      onPointUpdate={console.log}
+      onPointUpdate={handlePointUpdate}
       onPointDelete={console.log}
     />
   );
