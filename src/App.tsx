@@ -49,6 +49,11 @@ const App = () => {
     setPoints(updatedPoints);
   };
 
+  const handlePointDelete = (pointId: string) => {
+    let updatedPoints = points.filter((p) => p.pointId !== pointId);
+    setPoints(updatedPoints);
+  };
+
   return (
     <SemanticScreen
       author={author}
@@ -57,7 +62,7 @@ const App = () => {
       onAuthorUpdate={console.log}
       onPointCreate={handlePointCreate}
       onPointUpdate={handlePointUpdate}
-      onPointDelete={console.log}
+      onPointDelete={handlePointDelete}
     />
   );
 };

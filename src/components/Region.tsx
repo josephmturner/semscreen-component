@@ -57,6 +57,7 @@ const Region = (props: {
             point={p}
             onSubmit={onPointUpdate}
             onPointClick={() => onRegionClick(region, true)}
+            onPointDelete={onPointDelete}
           />
         ))}
         {isExpanded && (
@@ -68,6 +69,7 @@ const Region = (props: {
             }}
             onSubmit={onPointCreate}
             onPointClick={() => onRegionClick(region, true)}
+            onPointDelete={() => console.log("no point exists with this id")}
             // adding key={points} makes the state of this instance of Point
             // dependent upon the points array so that it re-renders when points
             // changes. This makes it so that new points don't come filled in with

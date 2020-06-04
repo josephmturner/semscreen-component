@@ -21,7 +21,7 @@ import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { onSubmit, onPointClick } = props;
+  const { onSubmit, onPointClick, onPointDelete } = props;
 
   const [point, setPoint] = useState(props.point);
 
@@ -62,6 +62,20 @@ const Point = (props: any) => {
             onChange={handleChange}
           ></textarea>
           <input type="submit" value="✓" />
+          <button
+            type="button"
+            onClick={() => {
+              // the following line serves to remove the content from the textarea
+              // of a point which has not yet been created. We ought to find a
+              // better way since this is redundant for deleting points which
+              // already have an id. It may also lead to unintended consequences
+              // down the road.
+              setPoint((point: any) => ({ ...point, content: "" }));
+              onPointDelete(point.pointId);
+            }}
+          >
+            ✗
+          </button>
         </form>
       </Media.Body>
     </Media>
