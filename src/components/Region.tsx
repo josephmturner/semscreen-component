@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import styled from "styled-components";
 import Point from "./Point";
 import { AuthorI } from "../interfaces";
@@ -58,20 +57,24 @@ const Region = (props: {
             point={p}
             onSubmit={onPointUpdate}
             onPointClick={() => onRegionClick(region, true)}
+            onPointDelete={onPointDelete}
           />
         ))}
         {isExpanded && (
           <Point
             point={{
               author: { author },
-              content:
-                "turn me into a placeholder with this css: https://github.com/lovasoa/react-contenteditable/pull/64#issuecomment-373906517",
+              content: "",
               shape: region,
-              pointId: uuidv4(),
-              pointDate: new Date(),
             }}
             onSubmit={onPointCreate}
             onPointClick={() => onRegionClick(region, true)}
+            onPointDelete={() => console.log("no point exists with this id")}
+            // adding key={points} makes the state of this instance of Point
+            // dependent upon the points array so that it re-renders when points
+            // changes. This makes it so that new points don't come filled in with
+            // content stored in state from the previously submitted point.
+            key={points}
           />
         )}
       </ul>

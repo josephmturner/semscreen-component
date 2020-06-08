@@ -16,33 +16,37 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import Media from "react-bootstrap/Media";
-import ContentEditable from "react-contenteditable";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { point, onSubmit, onPointClick } = props;
+  const { onSubmit, onPointClick, onPointDelete } = props;
 
-  const content = useRef(point.content);
+  const [point, setPoint] = useState(props.point);
 
   const handleChange = (e: any) => {
-    content.current = e.target.value;
+    const content = e.target.value;
+    setPoint((point: any) => ({ ...point, content: content }));
   };
-  const handleBlur = () => {
-    // TODO: Only call onPointChange when content has actually changed.
-    point.content = content.current;
-    onSubmit(point);
-  };
+
   const handleClick = (e: any) => {
     e.stopPropagation();
     onPointClick();
   };
 
+  const handleSubmit = (e: any) => {
+    if (point.content) {
+      onSubmit(point);
+    } else {
+      console.log("empty point submitted");
+    }
+    e.preventDefault();
+  };
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
-    <Media as="li">
+    <Media as="li" onClick={handleClick}>
       <img
         width={20}
         height={20}
@@ -51,13 +55,28 @@ const Point = (props: any) => {
         alt={point.shape}
       />
       <Media.Body>
-        <ContentEditable
-          onClick={handleClick}
-          suppressContentEditableWarning={true}
-          html={content.current}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
+        <form onSubmit={handleSubmit}>
+          <textarea
+            placeholder={`New ${point.shape.toLowerCase()} point`}
+            value={point.content}
+            onChange={handleChange}
+          ></textarea>
+          <input type="submit" value="✓" />
+          <button
+            type="button"
+            onClick={() => {
+              // the following line serves to remove the content from the textarea
+              // of a point which has not yet been created. We ought to find a
+              // better way since this is redundant for deleting points which
+              // already have an id. It may also lead to unintended consequences
+              // down the road.
+              setPoint((point: any) => ({ ...point, content: "" }));
+              onPointDelete(point.pointId);
+            }}
+          >
+            ✗
+          </button>
+        </form>
       </Media.Body>
     </Media>
   );
