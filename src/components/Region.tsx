@@ -55,6 +55,7 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
+            isEditing={false}
             onSubmit={onPointUpdate}
             onClick={() => onRegionClick(region, true)}
             onPointDelete={onPointDelete}
@@ -67,6 +68,7 @@ const Region = (props: {
               content: "",
               shape: region,
             }}
+            isEditing={true}
             onSubmit={onPointCreate}
             onClick={() => onRegionClick(region, true)}
             onPointDelete={() => console.log("no point exists with this id")}
