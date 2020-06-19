@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
-import { AuthorI, PointI, MessageI } from "./interfaces";
+import { AuthorI, PointI } from "./interfaces";
 
 const App = () => {
   const messageInitialState = messages[0];
