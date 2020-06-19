@@ -21,7 +21,7 @@ import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { onSubmit, onPointClick, onPointDelete } = props;
+  const { onSubmit, onClick, onPointDelete } = props;
 
   const [point, setPoint] = useState(props.point);
 
@@ -32,7 +32,7 @@ const Point = (props: any) => {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    onPointClick();
+    onClick();
   };
 
   const handleSubmit = (e: any) => {
