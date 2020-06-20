@@ -25,11 +25,10 @@ import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
-import { PointI, AuthorI } from "../interfaces";
+import { MessageI } from "../interfaces";
 
 const SemanticScreen = (props: {
-  author: AuthorI;
-  points: PointI[];
+  message: MessageI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   onPointCreate: (e: any) => void;
@@ -42,7 +41,7 @@ const SemanticScreen = (props: {
   const onPointUpdate = props.onPointUpdate;
   const onPointDelete = props.onPointDelete;
 
-  const author = props.author || {
+  const author = props.message.author || {
     name: "anonymous",
     styles: {
       textColor: "#000",
@@ -52,7 +51,7 @@ const SemanticScreen = (props: {
     authorDate: new Date(),
   };
 
-  const points = props.points || [];
+  const points = props.message.points || [];
 
   const [expandedRegion, setExpandedRegion] = useState("");
 

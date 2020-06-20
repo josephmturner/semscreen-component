@@ -21,14 +21,12 @@ import { v4 as uuidv4 } from "uuid";
 
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
-import { AuthorI, PointI } from "./interfaces";
+import { MessageI, PointI } from "./interfaces";
 
 const App = () => {
-  const messageInitialState = messages[0];
   const showShapes = true;
 
-  const [author, setAuthor] = useState<AuthorI>(messageInitialState.author);
-  const [points, setPoints] = useState<PointI[]>(messageInitialState.points);
+  const [message, setMessage] = useState<MessageI>(messages[0]);
 
   const handlePointCreate = (newPoint: PointI) => {
     const p = {
@@ -36,28 +34,28 @@ const App = () => {
       pointId: uuidv4(),
       pointDate: new Date(),
     };
-    setPoints((points) => [...points, p]);
+    const updatedPoints = [...message.points, p];
+   setMessage((message) => ({...message, points: updatedPoints}));
   };
 
   const handlePointUpdate = (updatedPoint: PointI) => {
-    let updatedPoints = points.map((p) => {
+    const updatedPoints = message.points.map((p) => {
       if (p.pointId === updatedPoint.pointId) {
         return updatedPoint;
       }
       return p;
     });
-    setPoints(updatedPoints);
+    setMessage((message) => ({...message, points: updatedPoints}));
   };
 
   const handlePointDelete = (pointId: string) => {
-    let updatedPoints = points.filter((p) => p.pointId !== pointId);
-    setPoints(updatedPoints);
+    const updatedPoints = message.points.filter((p) => p.pointId !== pointId);
+    setMessage((message) => ({...message, points: updatedPoints}));
   };
 
   return (
     <SemanticScreen
-      author={author}
-      points={points}
+      message={message}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
       onPointCreate={handlePointCreate}
