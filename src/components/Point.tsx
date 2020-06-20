@@ -16,14 +16,22 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { onSubmit, onPointClick, onPointDelete } = props;
+  const { onSubmit, onClick, onPointDelete } = props;
 
   const [point, setPoint] = useState(props.point);
+
+  const [isEditing, setIsEditing] = useState(props.isEditing);
+
+  const pointRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    isEditing && pointRef.current && pointRef.current.focus();
+  }, [isEditing]);
 
   const handleChange = (e: any) => {
     const content = e.target.value;
@@ -32,7 +40,7 @@ const Point = (props: any) => {
 
   const handleClick = (e: any) => {
     e.stopPropagation();
-    onPointClick();
+    onClick();
   };
 
   const handleSubmit = (e: any) => {
@@ -43,6 +51,16 @@ const Point = (props: any) => {
     }
     e.preventDefault();
   };
+
+  const handleBlur = () => {
+    setIsEditing(props.isEditing);
+    if (point.content) {
+      onSubmit(point);
+    } else if (!point.content) {
+      onPointDelete(point.pointId);
+    }
+  };
+
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
@@ -56,12 +74,20 @@ const Point = (props: any) => {
       />
       <Media.Body>
         <form onSubmit={handleSubmit}>
-          <textarea
-            placeholder={`New ${point.shape.toLowerCase()} point`}
-            value={point.content}
-            onChange={handleChange}
-          ></textarea>
-          <input type="submit" value="✓" />
+          {!isEditing && (
+            <div onClick={() => setIsEditing(true)}>{point.content}</div>
+          )}
+          {isEditing && (
+            <textarea
+              placeholder={`New ${point.shape.toLowerCase()} point`}
+              value={point.content}
+              ref={pointRef}
+              onChange={handleChange}
+              onClick={() => setIsEditing(true)}
+              onBlur={handleBlur}
+            />
+          )}
+          {isEditing && point.content && <input type="submit" value="✓" />}
           <button
             type="button"
             onClick={() => {

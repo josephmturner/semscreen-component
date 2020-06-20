@@ -55,8 +55,9 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
+            isEditing={false}
             onSubmit={onPointUpdate}
-            onPointClick={() => onRegionClick(region, true)}
+            onClick={() => onRegionClick(region, true)}
             onPointDelete={onPointDelete}
           />
         ))}
@@ -67,8 +68,9 @@ const Region = (props: {
               content: "",
               shape: region,
             }}
+            isEditing={true}
             onSubmit={onPointCreate}
-            onPointClick={() => onRegionClick(region, true)}
+            onClick={() => onRegionClick(region, true)}
             onPointDelete={() => console.log("no point exists with this id")}
             // adding key={points} makes the state of this instance of Point
             // dependent upon the points array so that it re-renders when points
