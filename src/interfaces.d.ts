@@ -38,8 +38,8 @@ interface PointI {
 interface MessageI {
   author: AuthorI;
   points: PointI[];
-  focus: PointI[];
-  mainPoint: PointI;
+  focus: string;
+  mainPoint: string;
   messageId: string;
   messageDate: Date;
 }

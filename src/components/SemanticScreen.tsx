@@ -34,12 +34,16 @@ const SemanticScreen = (props: {
   onPointCreate: (e: any) => void;
   onPointUpdate: (e: any) => void;
   onPointDelete: (e: any) => void;
+  onSetFocus: (e: any) => void;
 }) => {
-  const showShapes = props.showShapes;
-  const onAuthorUpdate = props.onAuthorUpdate;
-  const onPointCreate = props.onPointCreate;
-  const onPointUpdate = props.onPointUpdate;
-  const onPointDelete = props.onPointDelete;
+  const {
+    showShapes,
+    onAuthorUpdate,
+    onPointCreate,
+    onPointUpdate,
+    onPointDelete,
+    onSetFocus,
+  } = props;
 
   const author = props.message.author || {
     name: "anonymous",
