@@ -16,18 +16,16 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { onSubmit, onClick, onPointDelete } = props;
+  const { pointRef, onSubmit, onClick, onPointDelete } = props;
 
   const [point, setPoint] = useState(props.point);
 
   const [isEditing, setIsEditing] = useState(props.isEditing);
-
-  const pointRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     isEditing && pointRef.current && pointRef.current.focus();

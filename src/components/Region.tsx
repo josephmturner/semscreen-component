@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import Point from "./Point";
 import { AuthorI } from "../interfaces";
@@ -43,8 +43,9 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
-  //TODO: add author to initialstate, interfaces, and below
   //TODO: how to create points in the focus region - it has no shape
+ const pointRef = useRef<HTMLTextAreaElement>(null);
+
   return (
     <StyledRegion
       backgroundColor={author.styles.backgroundColor}
@@ -56,6 +57,7 @@ const Region = (props: {
             key={p.pointId}
             point={p}
             isEditing={false}
+            pointRef={pointRef}
             onSubmit={onPointUpdate}
             onClick={() => onRegionClick(region, true)}
             onPointDelete={onPointDelete}
@@ -69,6 +71,7 @@ const Region = (props: {
               shape: region,
             }}
             isEditing={true}
+            pointRef={pointRef}
             onSubmit={onPointCreate}
             onClick={() => onRegionClick(region, true)}
             onPointDelete={() => console.log("no point exists with this id")}
