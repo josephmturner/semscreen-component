@@ -16,20 +16,24 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { pointRef, onSubmit, onClick, onPointDelete } = props;
+  const { isEditing, setIsEditing, onSubmit, onClick, onPointsDelete } = props;
 
   const [point, setPoint] = useState(props.point);
 
-  const [isEditing, setIsEditing] = useState(props.isEditing);
+  const pointRef = useRef<HTMLTextAreaElement>(null);
 
+  //TODO: to consider: rewrite useEffect; while it works, !point.content is true for
+  //any empty point, not just the newly created one
   useEffect(() => {
-    isEditing && pointRef.current && pointRef.current.focus();
-  }, [isEditing]);
+    (isEditing || !point.content) &&
+      pointRef.current &&
+      pointRef.current.focus();
+  }, []);
 
   const handleChange = (e: any) => {
     const content = e.target.value;
@@ -51,16 +55,13 @@ const Point = (props: any) => {
   };
 
   const handleBlur = () => {
-    setIsEditing(props.isEditing);
-    if (point.content) {
-      onSubmit(point);
-    } else if (!point.content) {
-      onPointDelete(point.pointId);
-    }
+    setIsEditing("");
+    onSubmit(point);
   };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
 
+  //TODO: make image not selectable, in placeholder too
   return (
     <Media as="li" onClick={handleClick}>
       <img
@@ -72,19 +73,14 @@ const Point = (props: any) => {
       />
       <Media.Body>
         <form onSubmit={handleSubmit}>
-          {!isEditing && (
-            <div onClick={() => setIsEditing(true)}>{point.content}</div>
-          )}
-          {isEditing && (
-            <textarea
-              placeholder={`New ${point.shape.toLowerCase()} point`}
-              value={point.content}
-              ref={pointRef}
-              onChange={handleChange}
-              onClick={() => setIsEditing(true)}
-              onBlur={handleBlur}
-            />
-          )}
+          <textarea
+            placeholder={`New ${point.shape.toLowerCase()} point`}
+            value={point.content}
+            ref={pointRef}
+            onChange={handleChange}
+            onFocus={() => setIsEditing(point.pointId)}
+            onBlur={handleBlur}
+          />
           {isEditing && point.content && <input type="submit" value="✓" />}
           <button
             type="button"
@@ -95,7 +91,7 @@ const Point = (props: any) => {
               // already have an id. It may also lead to unintended consequences
               // down the road.
               setPoint((point: any) => ({ ...point, content: "" }));
-              onPointDelete(point.pointId);
+              onPointsDelete([point.pointId]);
             }}
           >
             ✗

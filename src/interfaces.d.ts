@@ -26,6 +26,7 @@ interface AuthorI {
   authorDate: Date;
 }
 
+//TODO: to consider: make id and date mandatory and add NewPointI with neither id nor date
 interface PointI {
   author: AuthorI;
   content: string;

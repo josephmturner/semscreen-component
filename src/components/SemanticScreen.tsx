@@ -33,7 +33,7 @@ const SemanticScreen = (props: {
   onAuthorUpdate: (e: any) => void;
   onPointCreate: (e: any) => void;
   onPointUpdate: (e: any) => void;
-  onPointDelete: (e: any) => void;
+  onPointsDelete: (e: any) => void;
   onSetFocus: (e: any) => void;
 }) => {
   const {
@@ -41,7 +41,7 @@ const SemanticScreen = (props: {
     onAuthorUpdate,
     onPointCreate,
     onPointUpdate,
-    onPointDelete,
+    onPointsDelete,
     onSetFocus,
   } = props;
 
@@ -62,8 +62,10 @@ const SemanticScreen = (props: {
   const handleRegionClick = (region: string, pointClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
+      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
     } else if (region === expandedRegion && !pointClicked) {
       setExpandedRegion("");
+      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
     }
   };
 
@@ -96,7 +98,7 @@ const SemanticScreen = (props: {
           points={points.filter((p) => p.shape === region)}
           onPointCreate={onPointCreate}
           onPointUpdate={onPointUpdate}
-          onPointDelete={onPointDelete}
+          onPointsDelete={onPointsDelete}
           onRegionClick={handleRegionClick}
           key={region}
         />
