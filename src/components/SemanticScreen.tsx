@@ -33,13 +33,17 @@ const SemanticScreen = (props: {
   onAuthorUpdate: (e: any) => void;
   onPointCreate: (e: any) => void;
   onPointUpdate: (e: any) => void;
-  onPointDelete: (e: any) => void;
+  onPointsDelete: (e: any) => void;
+  onSetFocus: (e: any) => void;
 }) => {
-  const showShapes = props.showShapes;
-  const onAuthorUpdate = props.onAuthorUpdate;
-  const onPointCreate = props.onPointCreate;
-  const onPointUpdate = props.onPointUpdate;
-  const onPointDelete = props.onPointDelete;
+  const {
+    showShapes,
+    onAuthorUpdate,
+    onPointCreate,
+    onPointUpdate,
+    onPointsDelete,
+    onSetFocus,
+  } = props;
 
   const author = props.message.author || {
     name: "anonymous",
@@ -58,8 +62,10 @@ const SemanticScreen = (props: {
   const handleRegionClick = (region: string, pointClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
+      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
     } else if (region === expandedRegion && !pointClicked) {
       setExpandedRegion("");
+      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
     }
   };
 
@@ -92,7 +98,7 @@ const SemanticScreen = (props: {
           points={points.filter((p) => p.shape === region)}
           onPointCreate={onPointCreate}
           onPointUpdate={onPointUpdate}
-          onPointDelete={onPointDelete}
+          onPointsDelete={onPointsDelete}
           onRegionClick={handleRegionClick}
           key={region}
         />

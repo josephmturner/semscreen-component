@@ -28,6 +28,7 @@ const App = () => {
 
   const [message, setMessage] = useState<MessageI>(messages[0]);
 
+  //TODO: make handlePointCreate (and handlePointUpdate?) take arrays
   const handlePointCreate = (newPoint: PointI) => {
     const p = {
       ...newPoint,
@@ -35,7 +36,7 @@ const App = () => {
       pointDate: new Date(),
     };
     const updatedPoints = [...message.points, p];
-   setMessage((message) => ({...message, points: updatedPoints}));
+    setMessage((message) => ({ ...message, points: updatedPoints }));
   };
 
   const handlePointUpdate = (updatedPoint: PointI) => {
@@ -45,12 +46,18 @@ const App = () => {
       }
       return p;
     });
-    setMessage((message) => ({...message, points: updatedPoints}));
+    setMessage((message) => ({ ...message, points: updatedPoints }));
   };
 
-  const handlePointDelete = (pointId: string) => {
-    const updatedPoints = message.points.filter((p) => p.pointId !== pointId);
-    setMessage((message) => ({...message, points: updatedPoints}));
+  const handlePointsDelete = (pointIds: string[]) => {
+    const updatedPoints = message.points.filter(
+      (p) => p.pointId && !pointIds.includes(p.pointId)
+    );
+    setMessage((message) => ({ ...message, points: updatedPoints }));
+  };
+
+  const handleSetFocus = (pointId: string) => {
+    setMessage((message) => ({ ...message, focus: pointId }));
   };
 
   return (
@@ -60,7 +67,8 @@ const App = () => {
       onAuthorUpdate={console.log}
       onPointCreate={handlePointCreate}
       onPointUpdate={handlePointUpdate}
-      onPointDelete={handlePointDelete}
+      onPointsDelete={handlePointsDelete}
+      onSetFocus={handleSetFocus}
     />
   );
 };

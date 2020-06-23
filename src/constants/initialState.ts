@@ -95,8 +95,8 @@ const messages: MessageI[] = [
   {
     author: authors[0],
     points: points,
-    focus: points.slice(0, 1),
-    mainPoint: points[1],
+    focus: "1",
+    mainPoint: "2",
     messageId: uuidv4(),
     messageDate: new Date(),
   },

@@ -26,6 +26,7 @@ interface AuthorI {
   authorDate: Date;
 }
 
+//TODO: to consider: make id and date mandatory and add NewPointI with neither id nor date
 interface PointI {
   author: AuthorI;
   content: string;
@@ -38,8 +39,8 @@ interface PointI {
 interface MessageI {
   author: AuthorI;
   points: PointI[];
-  focus: PointI[];
-  mainPoint: PointI;
+  focus: string;
+  mainPoint: string;
   messageId: string;
   messageDate: Date;
 }
