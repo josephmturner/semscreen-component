@@ -38,6 +38,7 @@ const SemanticScreen = (props: {
 }) => {
   const {
     showShapes,
+    message,
     onAuthorUpdate,
     onPointCreate,
     onPointUpdate,
@@ -45,7 +46,7 @@ const SemanticScreen = (props: {
     onSetFocus,
   } = props;
 
-  const author = props.message.author || {
+  const author = message.author || {
     name: "anonymous",
     styles: {
       textColor: "#000",
@@ -55,7 +56,7 @@ const SemanticScreen = (props: {
     authorDate: new Date(),
   };
 
-  const points = props.message.points || [];
+  const points = message.points || [];
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
@@ -90,19 +91,37 @@ const SemanticScreen = (props: {
         "Feelings",
         "Needs",
         "Topics",
-      ].map((region) => (
-        <Region
-          region={region}
-          isExpanded={region === expandedRegion}
-          author={author}
-          points={points.filter((p) => p.shape === region)}
-          onPointCreate={onPointCreate}
-          onPointUpdate={onPointUpdate}
-          onPointsDelete={onPointsDelete}
-          onRegionClick={handleRegionClick}
-          key={region}
-        />
-      ))}
+      ].map((region) => {
+        if (region !== "Focus")
+          return (
+            <Region
+              region={region}
+              isExpanded={region === expandedRegion}
+              author={author}
+              points={points
+                .filter((p) => p.shape === region)
+                .filter((p) => p.pointId !== message.focus)}
+              onPointCreate={onPointCreate}
+              onPointUpdate={onPointUpdate}
+              onPointsDelete={onPointsDelete}
+              onRegionClick={handleRegionClick}
+              key={region}
+            />
+          );
+        return (
+          <Region
+            region={region}
+            isExpanded={region === expandedRegion}
+            author={author}
+            points={points.filter((p) => p.pointId === message.focus)}
+            onPointCreate={onPointCreate}
+            onPointUpdate={onPointUpdate}
+            onPointsDelete={onPointsDelete}
+            onRegionClick={handleRegionClick}
+            key={region}
+          />
+        );
+      })}
       <ShapesRim showShapes={showShapes} />
     </StyledSemanticScreen>
   );

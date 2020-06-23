@@ -75,7 +75,7 @@ const Region = (props: {
             onPointsDelete={onPointsDelete}
           />
         ))}
-        {isExpanded && (
+        {isExpanded && region !== "Focus" && (
           <Placeholder shape={region} onClick={handlePlaceholderClick} />
         )}
       </ul>
