@@ -16,20 +16,21 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import Point from "./Point";
-import { AuthorI } from "../interfaces";
+import Placeholder from "./Placeholder";
+import { AuthorI, PointI } from "../interfaces";
 
 // TODO: correct types below
 const Region = (props: {
   region: string;
   isExpanded: boolean;
   author: AuthorI;
-  points: any;
+  points: PointI[];
   onPointCreate: any;
   onPointUpdate: any;
-  onPointDelete: any;
+  onPointsDelete: any;
   onRegionClick: any;
 }) => {
   const {
@@ -39,12 +40,23 @@ const Region = (props: {
     author,
     onPointCreate,
     onPointUpdate,
-    onPointDelete,
+    onPointsDelete,
     onRegionClick,
   } = props;
 
   //TODO: how to create points in the focus region - it has no shape
- const pointRef = useRef<HTMLTextAreaElement>(null);
+  const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
+
+  // TODO: to consider: only create new point when content is truthy,
+  // instead create temporary point until content is added?
+  const handlePlaceholderClick = () => {
+    onRegionClick(region, true);
+    onPointCreate({
+      author: { author },
+      content: "",
+      shape: region,
+    });
+  };
 
   return (
     <StyledRegion
@@ -56,31 +68,15 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
-            isEditing={false}
-            pointRef={pointRef}
+            isEditing={isEditing === p.pointId ? true : false}
+            setIsEditing={setIsEditing}
             onSubmit={onPointUpdate}
             onClick={() => onRegionClick(region, true)}
-            onPointDelete={onPointDelete}
+            onPointsDelete={onPointsDelete}
           />
         ))}
         {isExpanded && (
-          <Point
-            point={{
-              author: { author },
-              content: "",
-              shape: region,
-            }}
-            isEditing={true}
-            pointRef={pointRef}
-            onSubmit={onPointCreate}
-            onClick={() => onRegionClick(region, true)}
-            onPointDelete={() => console.log("no point exists with this id")}
-            // adding key={points} makes the state of this instance of Point
-            // dependent upon the points array so that it re-renders when points
-            // changes. This makes it so that new points don't come filled in with
-            // content stored in state from the previously submitted point.
-            key={points}
-          />
+          <Placeholder shape={region} onClick={handlePlaceholderClick} />
         )}
       </ul>
     </StyledRegion>

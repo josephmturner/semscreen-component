@@ -28,6 +28,7 @@ const App = () => {
 
   const [message, setMessage] = useState<MessageI>(messages[0]);
 
+  //TODO: make handlePointCreate (and handlePointUpdate?) take arrays
   const handlePointCreate = (newPoint: PointI) => {
     const p = {
       ...newPoint,
@@ -48,8 +49,10 @@ const App = () => {
     setMessage((message) => ({ ...message, points: updatedPoints }));
   };
 
-  const handlePointDelete = (pointId: string) => {
-    const updatedPoints = message.points.filter((p) => p.pointId !== pointId);
+  const handlePointsDelete = (pointIds: string[]) => {
+    const updatedPoints = message.points.filter(
+      (p) => p.pointId && !pointIds.includes(p.pointId)
+    );
     setMessage((message) => ({ ...message, points: updatedPoints }));
   };
 
@@ -64,7 +67,7 @@ const App = () => {
       onAuthorUpdate={console.log}
       onPointCreate={handlePointCreate}
       onPointUpdate={handlePointUpdate}
-      onPointDelete={handlePointDelete}
+      onPointsDelete={handlePointsDelete}
       onSetFocus={handleSetFocus}
     />
   );
