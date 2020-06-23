@@ -81,7 +81,6 @@ const Point = (props: any) => {
             onFocus={() => setIsEditing(point.pointId)}
             onBlur={handleBlur}
           />
-          {isEditing && point.content && <input type="submit" value="✓" />}
           <button
             type="button"
             onClick={() => {
