@@ -17,9 +17,9 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
-import styled from "styled-components";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
+import StyledRegion from "./StyledRegion";
 import { AuthorI, PointI } from "../interfaces";
 
 // TODO: correct types below
@@ -83,14 +83,4 @@ const Region = (props: {
   );
 };
 
-interface StyledRegionProps {
-  backgroundColor: string;
-}
-
-const StyledRegion = styled.div<StyledRegionProps>`
-  width: 100%;
-  height: 100%;
-  background-color: ${(props) => props.backgroundColor};
-  overflow: auto;
-`;
 export default Region;
