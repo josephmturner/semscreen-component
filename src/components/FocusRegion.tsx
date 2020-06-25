@@ -16,21 +16,21 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
 import { AuthorI, PointI } from "../interfaces";
 
 // TODO: correct types below
-const Region = (props: {
+const FocusRegion = (props: {
   region: string;
   isExpanded: boolean;
   author: AuthorI;
   points: PointI[];
-  onPointCreate: any;
   onPointUpdate: any;
   onPointsDelete: any;
+  createEmptyFocus: any;
   onRegionClick: any;
 }) => {
   const {
@@ -38,26 +38,36 @@ const Region = (props: {
     isExpanded,
     points,
     author,
-    onPointCreate,
     onPointUpdate,
     onPointsDelete,
+    createEmptyFocus,
     onRegionClick,
   } = props;
 
   //TODO: how to create points in the focus region - it has no shape
   const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
 
-  const imageUrl = require(`../images/${region}.svg`);
-  const placeholderText = `New ${region.toLowerCase()} point`;
+  const [chooseShapes, setChooseShapes] = useState(false);
+
+  // replace imageUrl with 7-icon, "U-shaped" svg, make each icon clickable
+  const imageUrl = require(`../images/Facts.svg`);
+  const placeholderText = `New focus point`;
 
   const handlePlaceholderClick = () => {
     onRegionClick(region, true);
-    onPointCreate({
-      author: { author },
-      content: "",
-      shape: region,
-    });
+    setChooseShapes(true);
   };
+
+  const handleClick = (shape: string, e: any) => {
+    e.stopPropagation();
+    onRegionClick(region, true);
+    createEmptyFocus(shape);
+    setChooseShapes(false);
+  };
+
+  useEffect(() => {
+    !isExpanded && setChooseShapes(false);
+  }, [isExpanded]);
 
   return (
     <StyledRegion
@@ -76,7 +86,7 @@ const Region = (props: {
             onPointsDelete={onPointsDelete}
           />
         ))}
-        {isExpanded && (
+        {!chooseShapes && isExpanded && (
           <Placeholder
             imageUrl={imageUrl}
             text={placeholderText}
@@ -84,8 +94,27 @@ const Region = (props: {
           />
         )}
       </ul>
+      {chooseShapes && isExpanded && (
+        <ul>
+          {[
+            "Facts",
+            "People",
+            "Thoughts",
+            "Actions",
+            "Feelings",
+            "Needs",
+            "Topics",
+          ].map((shape) => (
+            <li key={shape}>
+              <button
+                onClick={(e) => handleClick(shape, e)}
+              >{`new ${shape} focus point`}</button>
+            </li>
+          ))}
+        </ul>
+      )}
     </StyledRegion>
   );
 };
 
-export default Region;
+export default FocusRegion;

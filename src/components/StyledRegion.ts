@@ -16,33 +16,17 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
-import Media from "react-bootstrap/Media";
 import styled from "styled-components";
 
-const Placeholder = (props: {
-  imageUrl: string;
-  text: string;
-  onClick: any;
-}) => {
-  const { imageUrl, text, onClick } = props;
+interface StyledRegionProps {
+  backgroundColor: string;
+}
 
-  const handleClick = (e: any) => {
-    e.stopPropagation();
-    onClick();
-  };
-
-  return (
-    <Media as="li" onClick={handleClick}>
-      <img width={20} height={20} className="mr-3" src={imageUrl} alt="shape" />
-      <Media.Body>
-        <StyledDiv>{text}</StyledDiv>
-      </Media.Body>
-    </Media>
-  );
-};
-
-const StyledDiv = styled.div`
-  opacity: 0.5;
+const StyledRegion = styled.div<StyledRegionProps>`
+  width: 100%;
+  height: 100%;
+  background-color: ${(props) => props.backgroundColor};
+  overflow: auto;
 `;
-export default Placeholder;
+
+export default StyledRegion;
