@@ -47,8 +47,9 @@ const Region = (props: {
   //TODO: how to create points in the focus region - it has no shape
   const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
 
-  // TODO: to consider: only create new point when content is truthy,
-  // instead create temporary point until content is added?
+  const imageUrl = require(`../images/${region}.svg`);
+  const placeholderText = `New ${region.toLowerCase()} point`
+ 
   const handlePlaceholderClick = () => {
     onRegionClick(region, true);
     onPointCreate({
@@ -75,8 +76,8 @@ const Region = (props: {
             onPointsDelete={onPointsDelete}
           />
         ))}
-        {isExpanded && region !== "Focus" && (
-          <Placeholder shape={region} onClick={handlePlaceholderClick} />
+        {isExpanded && (
+          <Placeholder imageUrl={imageUrl} text={placeholderText} onClick={handlePlaceholderClick} />
         )}
       </ul>
     </StyledRegion>

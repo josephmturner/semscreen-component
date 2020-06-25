@@ -20,21 +20,19 @@ import React from "react";
 import Media from "react-bootstrap/Media";
 import styled from "styled-components";
 
-const Placeholder = (props: { shape: string; onClick: any }) => {
-  const { shape, onClick } = props;
+const Placeholder = (props: { imageUrl: string; text: string, onClick: any }) => {
+  const { imageUrl, text, onClick } = props;
 
   const handleClick = (e: any) => {
     e.stopPropagation();
     onClick();
   };
 
-  const imageUrl = require(`../images/${shape}.svg`);
-
   return (
     <Media as="li" onClick={handleClick}>
       <img width={20} height={20} className="mr-3" src={imageUrl} alt="shape" />
       <Media.Body>
-        <StyledDiv>new point</StyledDiv>
+        <StyledDiv>{text}</StyledDiv>
       </Media.Body>
     </Media>
   );
