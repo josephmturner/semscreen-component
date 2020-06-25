@@ -48,8 +48,8 @@ const Region = (props: {
   const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
 
   const imageUrl = require(`../images/${region}.svg`);
-  const placeholderText = `New ${region.toLowerCase()} point`
- 
+  const placeholderText = `New ${region.toLowerCase()} point`;
+
   const handlePlaceholderClick = () => {
     onRegionClick(region, true);
     onPointCreate({
@@ -77,7 +77,11 @@ const Region = (props: {
           />
         ))}
         {isExpanded && (
-          <Placeholder imageUrl={imageUrl} text={placeholderText} onClick={handlePlaceholderClick} />
+          <Placeholder
+            imageUrl={imageUrl}
+            text={placeholderText}
+            onClick={handlePlaceholderClick}
+          />
         )}
       </ul>
     </StyledRegion>

@@ -20,7 +20,11 @@ import React from "react";
 import Media from "react-bootstrap/Media";
 import styled from "styled-components";
 
-const Placeholder = (props: { imageUrl: string; text: string, onClick: any }) => {
+const Placeholder = (props: {
+  imageUrl: string;
+  text: string;
+  onClick: any;
+}) => {
   const { imageUrl, text, onClick } = props;
 
   const handleClick = (e: any) => {

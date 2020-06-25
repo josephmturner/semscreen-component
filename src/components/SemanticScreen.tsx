@@ -27,6 +27,7 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { MessageI } from "../interfaces";
 
+// import and use onSetFocus
 const SemanticScreen = (props: {
   message: MessageI;
   showShapes: boolean;
@@ -43,7 +44,6 @@ const SemanticScreen = (props: {
     onPointCreate,
     onPointUpdate,
     onPointsDelete,
-    onSetFocus,
   } = props;
 
   const author = message.author || {
@@ -60,11 +60,11 @@ const SemanticScreen = (props: {
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
-  const handleRegionClick = (region: string, pointClicked: boolean): void => {
+  const handleRegionClick = (region: string, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
       onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
-    } else if (region === expandedRegion && !pointClicked) {
+    } else if (region === expandedRegion && !childClicked) {
       setExpandedRegion("");
       onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
     }
