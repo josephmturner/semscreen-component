@@ -16,11 +16,12 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
 import Region from "./Region";
+import FocusRegion from "./FocusRegion";
 import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
@@ -44,6 +45,7 @@ const SemanticScreen = (props: {
     onPointCreate,
     onPointUpdate,
     onPointsDelete,
+    onSetFocus,
   } = props;
 
   const author = message.author || {
@@ -60,13 +62,40 @@ const SemanticScreen = (props: {
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
+  const [makingNewFocus, setMakingNewFocus] = useState("");
+
+  const createEmptyFocus = (shape: string) => {
+    deleteEmptyPoints();
+    onPointCreate({
+      author: author,
+      content: "",
+      shape: shape,
+    });
+    setMakingNewFocus(shape);
+  };
+
+  useEffect(() => {
+    if (makingNewFocus) {
+      const point = points.find(
+        (p) => !p.content && p.shape === makingNewFocus
+      );
+      point && onSetFocus(point.pointId);
+      setMakingNewFocus("");
+    }
+  }, [makingNewFocus, onSetFocus, points]);
+
+  const deleteEmptyPoints = () => {
+    console.log("deleteempty called");
+    onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
+  };
+
   const handleRegionClick = (region: string, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
-      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
+      deleteEmptyPoints();
     } else if (region === expandedRegion && !childClicked) {
       setExpandedRegion("");
-      onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
+      deleteEmptyPoints();
     }
   };
 
@@ -109,14 +138,14 @@ const SemanticScreen = (props: {
             />
           );
         return (
-          <Region
+          <FocusRegion
             region={region}
             isExpanded={region === expandedRegion}
             author={author}
             points={points.filter((p) => p.pointId === message.focus)}
-            onPointCreate={onPointCreate}
             onPointUpdate={onPointUpdate}
             onPointsDelete={onPointsDelete}
+            createEmptyFocus={createEmptyFocus}
             onRegionClick={handleRegionClick}
             key={region}
           />
