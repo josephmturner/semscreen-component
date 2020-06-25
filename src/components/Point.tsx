@@ -33,7 +33,7 @@ const Point = (props: any) => {
     (isEditing || !point.content) &&
       pointRef.current &&
       pointRef.current.focus();
-  }, []);
+  }, [isEditing, point.content]);
 
   const handleChange = (e: any) => {
     const content = e.target.value;
