@@ -44,6 +44,8 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
+  const renderPoints = isExpanded ? points : points.filter((p) => p.content);
+
   //TODO: how to create points in the focus region - it has no shape
   const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
 
@@ -65,7 +67,7 @@ const Region = (props: {
       onClick={() => onRegionClick(region, false)}
     >
       <ul className="list-unstyled">
-        {points.map((p: any) => (
+        {renderPoints.map((p: any) => (
           <Point
             key={p.pointId}
             point={p}
