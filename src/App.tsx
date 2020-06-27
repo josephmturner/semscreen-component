@@ -16,59 +16,67 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
 import { MessageI, PointI } from "./interfaces";
 
+type Action =
+  | { type: "pointCreate"; point: PointI }
+  | { type: "pointUpdate"; point: PointI }
+  | { type: "pointsDelete"; pointIds: string[] }
+  | { type: "setFocus"; pointId: string };
+
+const messageReducer = (message: MessageI, action: Action) => {
+  switch (action.type) {
+    case "pointCreate":
+      return {
+        ...message,
+        points: [
+          ...message.points,
+          {
+            ...action.point,
+            pointId: uuidv4(),
+            pointDate: new Date(),
+          },
+        ],
+      };
+    case "pointUpdate":
+      return {
+        ...message,
+        points: message.points.map((p) => {
+          if (p.pointId === action.point.pointId) {
+            return action.point;
+          }
+          return p;
+        }),
+      };
+    case "pointsDelete":
+      return {
+        ...message,
+        points: message.points.filter(
+          (p) => p.pointId && !action.pointIds.includes(p.pointId)
+        ),
+      };
+    case "setFocus":
+      return { ...message, focus: action.pointId };
+    default:
+      throw new Error();
+  }
+};
+
 const App = () => {
   const showShapes = true;
-
-  const [message, setMessage] = useState<MessageI>(messages[0]);
-
-  //TODO: make handlePointCreate (and handlePointUpdate?) take arrays
-  const handlePointCreate = (newPoint: PointI) => {
-    const p = {
-      ...newPoint,
-      pointId: uuidv4(),
-      pointDate: new Date(),
-    };
-    const updatedPoints = [...message.points, p];
-    setMessage((message) => ({ ...message, points: updatedPoints }));
-  };
-
-  const handlePointUpdate = (updatedPoint: PointI) => {
-    const updatedPoints = message.points.map((p) => {
-      if (p.pointId === updatedPoint.pointId) {
-        return updatedPoint;
-      }
-      return p;
-    });
-    setMessage((message) => ({ ...message, points: updatedPoints }));
-  };
-
-  const handlePointsDelete = (pointIds: string[]) => {
-    const updatedPoints = message.points.filter(
-      (p) => p.pointId && !pointIds.includes(p.pointId)
-    );
-    setMessage((message) => ({ ...message, points: updatedPoints }));
-  };
-
-  const handleSetFocus = (pointId: string) => {
-    setMessage((message) => ({ ...message, focus: pointId }));
-  };
+  const [message, messageDispatch] = useReducer(messageReducer, messages[0]);
 
   return (
     <SemanticScreen
       message={message}
+      messageDispatch={messageDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
-      onPointCreate={handlePointCreate}
-      onPointUpdate={handlePointUpdate}
-      onPointsDelete={handlePointsDelete}
-      onSetFocus={handleSetFocus}
     />
   );
 };

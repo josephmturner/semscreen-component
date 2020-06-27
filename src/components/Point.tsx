@@ -16,14 +16,12 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Media from "react-bootstrap/Media";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { isEditing, setIsEditing, onSubmit, onClick, onPointsDelete } = props;
-
-  const [point, setPoint] = useState(props.point);
+  const { point, messageDispatch, isEditing, setEditingPoint, onClick } = props;
 
   const pointRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,26 +35,15 @@ const Point = (props: any) => {
 
   const handleChange = (e: any) => {
     const content = e.target.value;
-    setPoint((point: any) => ({ ...point, content: content }));
+    messageDispatch({
+      type: "pointUpdate",
+      point: { ...point, content: content },
+    });
   };
 
   const handleClick = (e: any) => {
     e.stopPropagation();
     onClick();
-  };
-
-  const handleSubmit = (e: any) => {
-    if (point.content) {
-      onSubmit(point);
-    } else {
-      console.log("empty point submitted");
-    }
-    e.preventDefault();
-  };
-
-  const handleBlur = () => {
-    setIsEditing("");
-    onSubmit(point);
   };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
@@ -72,25 +59,22 @@ const Point = (props: any) => {
         alt={point.shape}
       />
       <Media.Body>
-        <form onSubmit={handleSubmit}>
+        <form>
           <textarea
             placeholder={`New ${point.shape.toLowerCase()} point`}
             value={point.content}
             ref={pointRef}
             onChange={handleChange}
-            onFocus={() => setIsEditing(point.pointId)}
-            onBlur={handleBlur}
+            onFocus={() => setEditingPoint(point.pointId)}
+            onBlur={() => setEditingPoint("")}
           />
           <button
             type="button"
             onClick={() => {
-              // the following line serves to remove the content from the textarea
-              // of a point which has not yet been created. We ought to find a
-              // better way since this is redundant for deleting points which
-              // already have an id. It may also lead to unintended consequences
-              // down the road.
-              setPoint((point: any) => ({ ...point, content: "" }));
-              onPointsDelete([point.pointId]);
+              messageDispatch({
+                type: "pointsDelete",
+                pointIds: [point.pointId],
+              });
             }}
           >
             ✗

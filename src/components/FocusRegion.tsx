@@ -28,8 +28,9 @@ const FocusRegion = (props: {
   isExpanded: boolean;
   author: AuthorI;
   points: PointI[];
-  onPointUpdate: any;
-  onPointsDelete: any;
+  messageDispatch: any;
+  editingPoint: PointI["pointId"];
+  setEditingPoint: any;
   createEmptyFocus: any;
   onRegionClick: any;
 }) => {
@@ -38,18 +39,18 @@ const FocusRegion = (props: {
     isExpanded,
     points,
     author,
-    onPointUpdate,
-    onPointsDelete,
+    messageDispatch,
+    editingPoint,
+    setEditingPoint,
     createEmptyFocus,
     onRegionClick,
   } = props;
 
-  //TODO: how to create points in the focus region - it has no shape
-  const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
-
   const [chooseShapes, setChooseShapes] = useState(false);
 
-  // replace imageUrl with 7-icon, "U-shaped" svg, make each icon clickable
+  // replace imageUrl with 7-icon, "U-shaped" svg, which
+  // expands to fill the middle of the expanded focus region.
+  // When expanded, each of the 7 shapes calls setMakingNewFocus
   const imageUrl = require(`../images/Facts.svg`);
   const placeholderText = `New focus point`;
 
@@ -79,11 +80,10 @@ const FocusRegion = (props: {
           <Point
             key={p.pointId}
             point={p}
-            isEditing={isEditing === p.pointId ? true : false}
-            setIsEditing={setIsEditing}
-            onSubmit={onPointUpdate}
+            messageDispatch={messageDispatch}
+            isEditing={editingPoint === p.pointId ? true : false}
+            setEditingPoint={setEditingPoint}
             onClick={() => onRegionClick(region, true)}
-            onPointsDelete={onPointsDelete}
           />
         ))}
         {!chooseShapes && isExpanded && (
