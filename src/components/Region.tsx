@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
@@ -28,9 +28,9 @@ const Region = (props: {
   isExpanded: boolean;
   author: AuthorI;
   points: PointI[];
-  onPointCreate: any;
-  onPointUpdate: any;
-  onPointsDelete: any;
+  messageDispatch: any;
+  editingPoint: PointI["pointId"];
+  setEditingPoint: any;
   onRegionClick: any;
 }) => {
   const {
@@ -38,26 +38,29 @@ const Region = (props: {
     isExpanded,
     points,
     author,
-    onPointCreate,
-    onPointUpdate,
-    onPointsDelete,
+    messageDispatch,
+    editingPoint,
+    setEditingPoint,
     onRegionClick,
   } = props;
 
   const renderPoints = isExpanded ? points : points.filter((p) => p.content);
 
-  //TODO: how to create points in the focus region - it has no shape
-  const [isEditing, setIsEditing] = useState<PointI["pointId"]>("");
-
   const imageUrl = require(`../images/${region}.svg`);
   const placeholderText = `New ${region.toLowerCase()} point`;
 
+  //TODO: add createempty point function in SemanticScreen, pass it to
+  //region, call it in placeholder, don't need onRegionClick with
+  //placeholder, since it's never visible unless region is expanded
   const handlePlaceholderClick = () => {
     onRegionClick(region, true);
-    onPointCreate({
-      author: { author },
-      content: "",
-      shape: region,
+    messageDispatch({
+      type: "pointCreate",
+      point: {
+        author: author,
+        content: "",
+        shape: region,
+      },
     });
   };
 
@@ -71,11 +74,10 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
-            isEditing={isEditing === p.pointId ? true : false}
-            setIsEditing={setIsEditing}
-            onSubmit={onPointUpdate}
+            messageDispatch={messageDispatch}
+            isEditing={editingPoint === p.pointId ? true : false}
+            setEditingPoint={setEditingPoint}
             onClick={() => onRegionClick(region, true)}
-            onPointsDelete={onPointsDelete}
           />
         ))}
         {isExpanded && (

@@ -26,27 +26,16 @@ import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
-import { MessageI } from "../interfaces";
+import { MessageI, PointI } from "../interfaces";
 
 // import and use onSetFocus
 const SemanticScreen = (props: {
   message: MessageI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
-  onPointCreate: (e: any) => void;
-  onPointUpdate: (e: any) => void;
-  onPointsDelete: (e: any) => void;
-  onSetFocus: (e: any) => void;
+  messageDispatch: any;
 }) => {
-  const {
-    showShapes,
-    message,
-    onAuthorUpdate,
-    onPointCreate,
-    onPointUpdate,
-    onPointsDelete,
-    onSetFocus,
-  } = props;
+  const { showShapes, message, onAuthorUpdate, messageDispatch } = props;
 
   const author = message.author || {
     name: "anonymous",
@@ -57,19 +46,28 @@ const SemanticScreen = (props: {
     authorId: uuidv4(),
     authorDate: new Date(),
   };
-
   const points = message.points || [];
 
   const [expandedRegion, setExpandedRegion] = useState("");
-
   const [makingNewFocus, setMakingNewFocus] = useState("");
+  const [editingPoint, setEditingPoint] = useState<PointI["pointId"]>("");
+
+  const deleteEmptyPoints = () => {
+    messageDispatch({
+      type: "pointsDelete",
+      pointIds: points.filter((p) => !p.content).map((p) => p.pointId),
+    });
+  };
 
   const createEmptyFocus = (shape: string) => {
     deleteEmptyPoints();
-    onPointCreate({
-      author: author,
-      content: "",
-      shape: shape,
+    messageDispatch({
+      type: "pointCreate",
+      point: {
+        author: author,
+        content: "",
+        shape: shape,
+      },
     });
     setMakingNewFocus(shape);
   };
@@ -79,15 +77,10 @@ const SemanticScreen = (props: {
       const point = points.find(
         (p) => !p.content && p.shape === makingNewFocus
       );
-      point && onSetFocus(point.pointId);
+      point && messageDispatch({ type: "setFocus", pointId: point.pointId });
       setMakingNewFocus("");
     }
-  }, [makingNewFocus, onSetFocus, points]);
-
-  const deleteEmptyPoints = () => {
-    console.log("deleteempty called");
-    onPointsDelete(points.filter((p) => !p.content).map((p) => p.pointId));
-  };
+  }, [makingNewFocus, messageDispatch, points]);
 
   const handleRegionClick = (region: string, childClicked: boolean): void => {
     if (region !== expandedRegion) {
@@ -130,9 +123,9 @@ const SemanticScreen = (props: {
               points={points
                 .filter((p) => p.shape === region)
                 .filter((p) => p.pointId !== message.focus)}
-              onPointCreate={onPointCreate}
-              onPointUpdate={onPointUpdate}
-              onPointsDelete={onPointsDelete}
+              messageDispatch={messageDispatch}
+              editingPoint={editingPoint}
+              setEditingPoint={setEditingPoint}
               onRegionClick={handleRegionClick}
               key={region}
             />
@@ -143,9 +136,10 @@ const SemanticScreen = (props: {
             isExpanded={region === expandedRegion}
             author={author}
             points={points.filter((p) => p.pointId === message.focus)}
-            onPointUpdate={onPointUpdate}
-            onPointsDelete={onPointsDelete}
+            messageDispatch={messageDispatch}
             createEmptyFocus={createEmptyFocus}
+            editingPoint={editingPoint}
+            setEditingPoint={setEditingPoint}
             onRegionClick={handleRegionClick}
             key={region}
           />
