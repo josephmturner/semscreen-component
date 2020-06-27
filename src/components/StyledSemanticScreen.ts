@@ -31,7 +31,6 @@ const StyledSemanticScreen = styled.div<Props>`
   width: 100%;
   position: relative;
   display: grid;
-  grid-gap: 6px;
   grid-template-areas:
     'facts merits people'
     'thoughts . actions'
@@ -42,7 +41,7 @@ const StyledSemanticScreen = styled.div<Props>`
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   padding: ${(props) => (props.showShapes ? "2rem" : "0")};
-  transition: 0.5s;
+  transition: 0.25s;
 
   ${({ expandedRegion }) =>
     expandedRegion === "Facts" &&
