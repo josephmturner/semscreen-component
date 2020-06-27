@@ -31,6 +31,7 @@ const Region = (props: {
   messageDispatch: any;
   editingPoint: PointI["pointId"];
   setEditingPoint: any;
+  createEmptyPoint: any;
   onRegionClick: any;
 }) => {
   const {
@@ -41,6 +42,7 @@ const Region = (props: {
     messageDispatch,
     editingPoint,
     setEditingPoint,
+    createEmptyPoint,
     onRegionClick,
   } = props;
 
@@ -48,21 +50,6 @@ const Region = (props: {
 
   const imageUrl = require(`../images/${region}.svg`);
   const placeholderText = `New ${region.toLowerCase()} point`;
-
-  //TODO: add createempty point function in SemanticScreen, pass it to
-  //region, call it in placeholder, don't need onRegionClick with
-  //placeholder, since it's never visible unless region is expanded
-  const handlePlaceholderClick = () => {
-    onRegionClick(region, true);
-    messageDispatch({
-      type: "pointCreate",
-      point: {
-        author: author,
-        content: "",
-        shape: region,
-      },
-    });
-  };
 
   return (
     <StyledRegion
@@ -84,7 +71,7 @@ const Region = (props: {
           <Placeholder
             imageUrl={imageUrl}
             text={placeholderText}
-            onClick={handlePlaceholderClick}
+            onClick={() => createEmptyPoint(region)}
           />
         )}
       </ul>

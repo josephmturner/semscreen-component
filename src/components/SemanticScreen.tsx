@@ -28,7 +28,6 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { MessageI, PointI } from "../interfaces";
 
-// import and use onSetFocus
 const SemanticScreen = (props: {
   message: MessageI;
   showShapes: boolean;
@@ -52,6 +51,17 @@ const SemanticScreen = (props: {
   const [makingNewFocus, setMakingNewFocus] = useState("");
   const [editingPoint, setEditingPoint] = useState<PointI["pointId"]>("");
 
+  const createEmptyPoint = (shape: string) => {
+    messageDispatch({
+      type: "pointCreate",
+      point: {
+        author: author,
+        content: "",
+        shape: shape,
+      },
+    });
+  };
+
   const deleteEmptyPoints = () => {
     messageDispatch({
       type: "pointsDelete",
@@ -61,14 +71,7 @@ const SemanticScreen = (props: {
 
   const createEmptyFocus = (shape: string) => {
     deleteEmptyPoints();
-    messageDispatch({
-      type: "pointCreate",
-      point: {
-        author: author,
-        content: "",
-        shape: shape,
-      },
-    });
+    createEmptyPoint(shape);
     setMakingNewFocus(shape);
   };
 
@@ -126,6 +129,7 @@ const SemanticScreen = (props: {
               messageDispatch={messageDispatch}
               editingPoint={editingPoint}
               setEditingPoint={setEditingPoint}
+              createEmptyPoint={createEmptyPoint}
               onRegionClick={handleRegionClick}
               key={region}
             />
