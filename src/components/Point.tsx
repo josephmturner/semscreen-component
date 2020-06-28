@@ -18,12 +18,21 @@
 */
 import React, { useEffect, useRef } from "react";
 import Button from "./Button";
+import { PointI } from "../interfaces";
+
 import Media from "react-bootstrap/Media";
 import ContentEditable from "react-contenteditable";
 import styled from "styled-components";
 
 //TODO: correct props below
-const Point = (props: any) => {
+const Point = (props: {
+  point: PointI;
+  messageDispatch: any;
+  isEditing: boolean;
+  setEditingPoint: any;
+  createEmptyPoint?: any;
+  onClick: any;
+}) => {
   const {
     point,
     messageDispatch,
