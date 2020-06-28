@@ -64,6 +64,7 @@ const Region = (props: {
             messageDispatch={messageDispatch}
             isEditing={editingPoint === p.pointId ? true : false}
             setEditingPoint={setEditingPoint}
+            createEmptyPoint={() => createEmptyPoint(region)}
             onClick={() => onRegionClick(region, true)}
           />
         ))}

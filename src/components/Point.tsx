@@ -17,33 +17,54 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
+import Button from "./Button";
 import Media from "react-bootstrap/Media";
+import ContentEditable from "react-contenteditable";
+import styled from "styled-components";
 
 //TODO: correct props below
 const Point = (props: any) => {
-  const { point, messageDispatch, isEditing, setEditingPoint, onClick } = props;
+  const {
+    point,
+    messageDispatch,
+    isEditing,
+    setEditingPoint,
+    createEmptyPoint,
+    onClick,
+  } = props;
 
-  const pointRef = useRef<HTMLTextAreaElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const text = useRef(point.content);
+
+  const handleChange = (e: any) => {
+    text.current = e.target.value;
+  };
+
+  const handleBlur = () => {
+    messageDispatch({
+      type: "pointUpdate",
+      point: { ...point, content: text.current },
+    });
+    setEditingPoint("");
+  };
 
   //TODO: to consider: rewrite useEffect; while it works, !point.content is true for
   //any empty point, not just the newly created one
   useEffect(() => {
     (isEditing || !point.content) &&
-      pointRef.current &&
-      pointRef.current.focus();
+      innerRef.current &&
+      innerRef.current.focus();
   }, [isEditing, point.content]);
-
-  const handleChange = (e: any) => {
-    const content = e.target.value;
-    messageDispatch({
-      type: "pointUpdate",
-      point: { ...point, content: content },
-    });
-  };
 
   const handleClick = (e: any) => {
     e.stopPropagation();
     onClick();
+  };
+  const handleSubmit = () => {
+    messageDispatch({
+      type: "pointsDelete",
+      pointIds: [point.pointId],
+    });
   };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
@@ -58,31 +79,28 @@ const Point = (props: any) => {
         src={imageUrl}
         alt={point.shape}
       />
-      <Media.Body>
-        <form>
-          <textarea
-            placeholder={`New ${point.shape.toLowerCase()} point`}
-            value={point.content}
-            ref={pointRef}
-            onChange={handleChange}
-            onFocus={() => setEditingPoint(point.pointId)}
-            onBlur={() => setEditingPoint("")}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              messageDispatch({
-                type: "pointsDelete",
-                pointIds: [point.pointId],
-              });
-            }}
-          >
-            ✗
-          </button>
-        </form>
-      </Media.Body>
+      <StyledContentEditable
+        html={text.current}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        onFocus={() => setEditingPoint(point.pointId)}
+        innerRef={innerRef}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            e.preventDefault();
+            createEmptyPoint();
+          }
+        }}
+      />
+      <Button type="button" onClick={handleSubmit} />
     </Media>
   );
 };
+
+const StyledContentEditable = styled(ContentEditable)`
+  float: left;
+  width: 100%;
+  outline: 0px;
+`;
 
 export default Point;
