@@ -17,15 +17,15 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import Media from "react-bootstrap/Media";
 import styled from "styled-components";
 
 const Placeholder = (props: {
-  imageUrl: string;
   text: string;
+  img: string;
+  imgAlt: string;
   onClick: any;
 }) => {
-  const { imageUrl, text, onClick } = props;
+  const { text, img, imgAlt, onClick } = props;
 
   const handleClick = (e: any) => {
     e.stopPropagation();
@@ -33,16 +33,15 @@ const Placeholder = (props: {
   };
 
   return (
-    <Media as="li" onClick={handleClick}>
-      <img width={20} height={20} className="mr-3" src={imageUrl} alt="shape" />
-      <Media.Body>
-        <StyledDiv>{text}</StyledDiv>
-      </Media.Body>
-    </Media>
+    <div onClick={handleClick}>
+      <img width={20} height={20} className="mr-3" src={img} alt={imgAlt} />
+      <StyledSpan>{text}</StyledSpan>
+    </div>
   );
 };
 
-const StyledDiv = styled.div`
+const StyledSpan = styled.span`
   opacity: 0.5;
+  padding-bottom: 100px;
 `;
 export default Placeholder;

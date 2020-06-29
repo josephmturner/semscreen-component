@@ -23,8 +23,6 @@ interface StyledRegionProps {
 }
 
 const StyledRegion = styled.div<StyledRegionProps>`
-  width: 100%;
-  height: 100%;
   border: 2px solid lightgray;
   border-radius: 10px;
   background-color: ${(props) => props.backgroundColor};
