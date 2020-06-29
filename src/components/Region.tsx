@@ -48,34 +48,34 @@ const Region = (props: {
 
   const renderPoints = isExpanded ? points : points.filter((p) => p.content);
 
-  const imageUrl = require(`../images/${region}.svg`);
   const placeholderText = `New ${region.toLowerCase()} point`;
+  const placeholderImg = require(`../images/${region}.svg`);
+  const placeholderImgAlt = region;
 
   return (
     <StyledRegion
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      <ul className="list-unstyled">
-        {renderPoints.map((p: any) => (
-          <Point
-            key={p.pointId}
-            point={p}
-            messageDispatch={messageDispatch}
-            isEditing={editingPoint === p.pointId ? true : false}
-            setEditingPoint={setEditingPoint}
-            createEmptyPoint={() => createEmptyPoint(region)}
-            onClick={() => onRegionClick(region, true)}
-          />
-        ))}
-        {isExpanded && (
-          <Placeholder
-            imageUrl={imageUrl}
-            text={placeholderText}
-            onClick={() => createEmptyPoint(region)}
-          />
-        )}
-      </ul>
+      {renderPoints.map((p: any) => (
+        <Point
+          key={p.pointId}
+          point={p}
+          messageDispatch={messageDispatch}
+          isEditing={editingPoint === p.pointId ? true : false}
+          setEditingPoint={setEditingPoint}
+          createEmptyPoint={() => createEmptyPoint(region)}
+          onClick={() => onRegionClick(region, true)}
+        />
+      ))}
+      {isExpanded && (
+        <Placeholder
+          text={placeholderText}
+          img={placeholderImg}
+          imgAlt={placeholderImgAlt}
+          onClick={() => createEmptyPoint(region)}
+        />
+      )}
     </StyledRegion>
   );
 };

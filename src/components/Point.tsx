@@ -18,12 +18,20 @@
 */
 import React, { useEffect, useRef } from "react";
 import Button from "./Button";
-import Media from "react-bootstrap/Media";
+import { PointI } from "../interfaces";
+
 import ContentEditable from "react-contenteditable";
 import styled from "styled-components";
 
 //TODO: correct props below
-const Point = (props: any) => {
+const Point = (props: {
+  point: PointI;
+  messageDispatch: any;
+  isEditing: boolean;
+  setEditingPoint: any;
+  createEmptyPoint?: any;
+  onClick: any;
+}) => {
   const {
     point,
     messageDispatch,
@@ -69,9 +77,8 @@ const Point = (props: any) => {
 
   const imageUrl = require(`../images/${point.shape}.svg`);
 
-  //TODO: make image not selectable, in placeholder too
   return (
-    <Media as="li" onClick={handleClick}>
+    <StyledSpan onClick={handleClick}>
       <img
         width={20}
         height={20}
@@ -93,14 +100,18 @@ const Point = (props: any) => {
         }}
       />
       <Button type="button" onClick={handleSubmit} />
-    </Media>
+    </StyledSpan>
   );
 };
 
+const StyledSpan = styled.span`
+  display: flex;
+`;
+
 const StyledContentEditable = styled(ContentEditable)`
-  float: left;
   width: 100%;
-  outline: 0px;
+  outline: 0;
+  overflow: auto;
 `;
 
 export default Point;
