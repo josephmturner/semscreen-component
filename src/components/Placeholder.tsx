@@ -34,14 +34,19 @@ const Placeholder = (props: {
 
   return (
     <div onClick={handleClick}>
-      <img width={20} height={20} className="mr-3" src={img} alt={imgAlt} />
+      <StyledImg height="20px" src={img} alt={imgAlt} />
       <StyledSpan>{text}</StyledSpan>
     </div>
   );
 };
 
+const StyledImg = styled.img`
+  margin: 3px 4px 0 3px;
+`;
+
 const StyledSpan = styled.span`
   opacity: 0.5;
   padding-bottom: 100px;
 `;
+
 export default Placeholder;
