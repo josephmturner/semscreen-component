@@ -51,6 +51,8 @@ const SemanticScreen = (props: {
   const [makingNewFocus, setMakingNewFocus] = useState("");
   const [editingPoint, setEditingPoint] = useState<PointI["pointId"]>("");
 
+ //TODO: add index to createEmptyPoint, so that points can be inserted
+ //between other points
   const createEmptyPoint = (shape: string) => {
     messageDispatch({
       type: "pointCreate",
@@ -121,7 +123,13 @@ const SemanticScreen = (props: {
           return (
             <Region
               region={region}
-              isExpanded={region === expandedRegion}
+              isExpanded={
+                region === expandedRegion
+                  ? "expanded"
+                  : expandedRegion === ""
+                  ? "balanced"
+                  : "minimized"
+              }
               author={author}
               points={points
                 .filter((p) => p.shape === region)
@@ -137,7 +145,13 @@ const SemanticScreen = (props: {
         return (
           <FocusRegion
             region={region}
-            isExpanded={region === expandedRegion}
+            isExpanded={
+              region === expandedRegion
+                ? "expanded"
+                : expandedRegion === ""
+                ? "balanced"
+                : "minimized"
+            }
             author={author}
             points={points.filter((p) => p.pointId === message.focus)}
             messageDispatch={messageDispatch}

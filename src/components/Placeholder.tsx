@@ -33,15 +33,27 @@ const Placeholder = (props: {
   };
 
   return (
-    <div onClick={handleClick}>
-      <img width={20} height={20} className="mr-3" src={img} alt={imgAlt} />
-      <StyledSpan>{text}</StyledSpan>
-    </div>
+    <StyledSpan onClick={handleClick}>
+      <StyledImg src={img} alt={imgAlt} />
+      <StyledDiv>{text}</StyledDiv>
+    </StyledSpan>
   );
 };
 
 const StyledSpan = styled.span`
-  opacity: 0.5;
-  padding-bottom: 100px;
+  display: flex;
+  margin-bottom: 100px;
 `;
+
+const StyledImg = styled.img`
+  height: 20px;
+  margin: 3px 4px 0 3px;
+  opacity: 0.7;
+`;
+
+const StyledDiv = styled.div`
+  opacity: 0.5;
+  margin-top: 4px;
+`;
+
 export default Placeholder;

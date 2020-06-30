@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
@@ -25,7 +25,7 @@ import { AuthorI, PointI } from "../interfaces";
 // TODO: correct types below
 const Region = (props: {
   region: string;
-  isExpanded: boolean;
+  isExpanded: string;
   author: AuthorI;
   points: PointI[];
   messageDispatch: any;
@@ -46,7 +46,20 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
-  const renderPoints = isExpanded ? points : points.filter((p) => p.content);
+  const renderPoints =
+    isExpanded === "expanded" ? points : points.filter((p) => p.content);
+
+  const [changingPointFocus, setChangingPointFocus] = useState(false);
+
+ //TODO: call setEditingPoint with the pointId of the point whose
+ //index is 1 greater than editingPoint (if called by pressing enter).
+ //see comment in SemanticScreen
+ useEffect(() => {
+    if (changingPointFocus) {
+      setEditingPoint(points[points.length - 1].pointId);
+      setChangingPointFocus(false);
+    }
+  }, [changingPointFocus]);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -54,6 +67,7 @@ const Region = (props: {
 
   return (
     <StyledRegion
+      isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
@@ -64,16 +78,22 @@ const Region = (props: {
           messageDispatch={messageDispatch}
           isEditing={editingPoint === p.pointId ? true : false}
           setEditingPoint={setEditingPoint}
-          createEmptyPoint={() => createEmptyPoint(region)}
+          createEmptyPoint={() => {
+            createEmptyPoint(region);
+            setChangingPointFocus(true);
+          }}
           onClick={() => onRegionClick(region, true)}
         />
       ))}
-      {isExpanded && (
+      {isExpanded === "expanded" && (
         <Placeholder
           text={placeholderText}
           img={placeholderImg}
           imgAlt={placeholderImgAlt}
-          onClick={() => createEmptyPoint(region)}
+          onClick={() => {
+            setChangingPointFocus(true);
+            createEmptyPoint(region);
+          }}
         />
       )}
     </StyledRegion>

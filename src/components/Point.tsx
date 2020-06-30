@@ -56,13 +56,9 @@ const Point = (props: {
     setEditingPoint("");
   };
 
-  //TODO: to consider: rewrite useEffect; while it works, !point.content is true for
-  //any empty point, not just the newly created one
   useEffect(() => {
-    (isEditing || !point.content) &&
-      innerRef.current &&
-      innerRef.current.focus();
-  }, [isEditing, point.content]);
+    isEditing && innerRef.current && innerRef.current.focus();
+  }, [isEditing]);
 
   const handleClick = (e: any) => {
     e.stopPropagation();
@@ -79,13 +75,7 @@ const Point = (props: {
 
   return (
     <StyledSpan onClick={handleClick}>
-      <img
-        width={20}
-        height={20}
-        className="mr-3"
-        src={imageUrl}
-        alt={point.shape}
-      />
+      <StyledImg src={imageUrl} alt={point.shape} />
       <StyledContentEditable
         html={text.current}
         onBlur={handleBlur}
@@ -104,12 +94,19 @@ const Point = (props: {
   );
 };
 
+const StyledImg = styled.img`
+  height: 20px;
+  margin: 3px 4px 0 3px;
+  opacity: 0.7;
+`;
+
 const StyledSpan = styled.span`
   display: flex;
 `;
 
 const StyledContentEditable = styled(ContentEditable)`
   width: 100%;
+  padding-top: 4px;
   outline: 0;
   overflow: auto;
 `;
