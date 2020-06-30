@@ -16,7 +16,6 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-//copied directly from u4few-app, nothing modified
 import styled from "styled-components";
 
 interface Props {
