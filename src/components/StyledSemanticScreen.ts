@@ -31,6 +31,7 @@ const StyledSemanticScreen = styled.div<Props>`
   background-color: lightgray;
   color: ${(props) => (props.color ? props.color : "inherit")};
   padding: ${(props) => (props.showShapes ? "2rem" : "0")};
+  box-sizing: border-box;
   transition: 0.25s;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
