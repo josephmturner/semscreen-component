@@ -79,7 +79,7 @@ const Point = (props: {
 
   return (
     <StyledSpan onClick={handleClick}>
-      <StyledImg height="20px" src={imageUrl} alt={point.shape} />
+      <StyledImg src={imageUrl} alt={point.shape} />
       <StyledContentEditable
         html={text.current}
         onBlur={handleBlur}
@@ -99,7 +99,9 @@ const Point = (props: {
 };
 
 const StyledImg = styled.img`
+  height: 20px;
   margin: 3px 4px 0 3px;
+  opacity: 0.7;
 `;
 
 const StyledSpan = styled.span`
@@ -108,6 +110,7 @@ const StyledSpan = styled.span`
 
 const StyledContentEditable = styled(ContentEditable)`
   width: 100%;
+  padding-top: 4px;
   outline: 0;
   overflow: auto;
 `;

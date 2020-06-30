@@ -70,7 +70,7 @@ const Region = (props: {
           onClick={() => onRegionClick(region, true)}
         />
       ))}
-      {(isExpanded === "expanded") && (
+      {isExpanded === "expanded" && (
         <Placeholder
           text={placeholderText}
           img={placeholderImg}
