@@ -25,7 +25,7 @@ import { AuthorI, PointI } from "../interfaces";
 // TODO: correct types below
 const Region = (props: {
   region: string;
-  isExpanded: boolean;
+  isExpanded: string;
   author: AuthorI;
   points: PointI[];
   messageDispatch: any;
@@ -46,7 +46,8 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
-  const renderPoints = isExpanded ? points : points.filter((p) => p.content);
+  const renderPoints =
+    isExpanded === "expanded" ? points : points.filter((p) => p.content);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -54,6 +55,7 @@ const Region = (props: {
 
   return (
     <StyledRegion
+      isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >

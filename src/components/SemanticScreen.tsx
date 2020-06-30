@@ -121,7 +121,13 @@ const SemanticScreen = (props: {
           return (
             <Region
               region={region}
-              isExpanded={region === expandedRegion}
+              isExpanded={
+                region === expandedRegion
+                  ? "expanded"
+                  : expandedRegion === ""
+                  ? "balanced"
+                  : "minimized"
+              }
               author={author}
               points={points
                 .filter((p) => p.shape === region)
@@ -137,7 +143,13 @@ const SemanticScreen = (props: {
         return (
           <FocusRegion
             region={region}
-            isExpanded={region === expandedRegion}
+            isExpanded={
+              region === expandedRegion
+                ? "expanded"
+                : expandedRegion === ""
+                ? "balanced"
+                : "minimized"
+            }
             author={author}
             points={points.filter((p) => p.pointId === message.focus)}
             messageDispatch={messageDispatch}

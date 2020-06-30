@@ -26,84 +26,88 @@ interface Props {
 }
 
 const StyledSemanticScreen = styled.div<Props>`
-  --active-size: 18fr;
   height: 100%;
   width: 100%;
   position: relative;
-  display: grid;
-  grid-template-areas:
-    'facts merits people'
-    'thoughts . actions'
-    'feelings needs topics';
-
   background-color: lightgray;
   color: ${(props) => (props.color ? props.color : "inherit")};
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
   padding: ${(props) => (props.showShapes ? "2rem" : "0")};
   transition: 0.25s;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
 
+  @media (max-width: 799px) {
+   --expanded-size: 1fr;
+   --minimized-size: 0fr;
+ }
+ 
+  @media (min-width: 800px) {
+   --expanded-size: 4fr;
+   --minimized-size: 1fr;
+ }
+  
   ${({ expandedRegion }) =>
     expandedRegion === "Facts" &&
     `
-    grid-template-columns: var(--active-size) 1fr 1fr;
-    grid-template-rows: var(--active-size) 1fr 1fr;
+    grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
+    grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Merits" &&
     `
-    grid-template-columns: 1fr var(--active-size) 1fr;
-    grid-template-rows: var(--active-size) 1fr 1fr;
+    grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
+    grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "People" &&
     `
-    grid-template-columns: 1fr 1fr var(--active-size);
-    grid-template-rows: var(--active-size) 1fr 1fr;
+    grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
+    grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Thoughts" &&
     `
-    grid-template-columns: var(--active-size) 1fr 1fr;
-    grid-template-rows: 1fr var(--active-size) 1fr;
+    grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
+    grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Focus" &&
     `
-    grid-template-columns: 1fr var(--active-size) 1fr;
-    grid-template-rows: 1fr var(--active-size) 1fr;
+    grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
+    grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Actions" &&
     `
-    grid-template-columns: 1fr 1fr var(--active-size);
-    grid-template-rows: 1fr var(--active-size) 1fr;
+    grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
+    grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Feelings" &&
     `
-    grid-template-columns: var(--active-size) 1fr 1fr;
-    grid-template-rows: 1fr 1fr var(--active-size);
+    grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
+    grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Needs" &&
     `
-    grid-template-columns: 1fr var(--active-size) 1fr;
-    grid-template-rows: 1fr 1fr var(--active-size);
+    grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
+    grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
 
   ${({ expandedRegion }) =>
     expandedRegion === "Topics" &&
     `
-    grid-template-columns: 1fr 1fr var(--active-size);
-    grid-template-rows: 1fr 1fr var(--active-size);
+    grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
+    grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
 
   > .Shape {
