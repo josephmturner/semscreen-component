@@ -87,7 +87,7 @@ const FocusRegion = (props: {
           onClick={() => onRegionClick(region, true)}
         />
       ))}
-      {!chooseShapes && isExpanded && (
+      {!chooseShapes && (isExpanded === "expanded") && (
         <Placeholder
           text={placeholderText}
           img={placeholderImg}
@@ -95,7 +95,7 @@ const FocusRegion = (props: {
           onClick={handlePlaceholderClick}
         />
       )}
-      {chooseShapes && isExpanded && (
+      {chooseShapes && (isExpanded === "expanded") && (
         <ul>
           {[
             "Facts",
