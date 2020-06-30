@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
@@ -49,6 +49,18 @@ const Region = (props: {
   const renderPoints =
     isExpanded === "expanded" ? points : points.filter((p) => p.content);
 
+  const [changingPointFocus, setChangingPointFocus] = useState(false);
+
+ //TODO: call setEditingPoint with the pointId of the point whose
+ //index is 1 greater than editingPoint (if called by pressing enter).
+ //see comment in SemanticScreen
+ useEffect(() => {
+    if (changingPointFocus) {
+      setEditingPoint(points[points.length - 1].pointId);
+      setChangingPointFocus(false);
+    }
+  }, [changingPointFocus]);
+
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
   const placeholderImgAlt = region;
@@ -66,7 +78,10 @@ const Region = (props: {
           messageDispatch={messageDispatch}
           isEditing={editingPoint === p.pointId ? true : false}
           setEditingPoint={setEditingPoint}
-          createEmptyPoint={() => createEmptyPoint(region)}
+          createEmptyPoint={() => {
+            createEmptyPoint(region);
+            setChangingPointFocus(true);
+          }}
           onClick={() => onRegionClick(region, true)}
         />
       ))}
@@ -75,7 +90,10 @@ const Region = (props: {
           text={placeholderText}
           img={placeholderImg}
           imgAlt={placeholderImgAlt}
-          onClick={() => createEmptyPoint(region)}
+          onClick={() => {
+            setChangingPointFocus(true);
+            createEmptyPoint(region);
+          }}
         />
       )}
     </StyledRegion>

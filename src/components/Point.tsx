@@ -56,13 +56,9 @@ const Point = (props: {
     setEditingPoint("");
   };
 
-  //TODO: to consider: rewrite useEffect; while it works, !point.content is true for
-  //any empty point, not just the newly created one
   useEffect(() => {
-    (isEditing || !point.content) &&
-      innerRef.current &&
-      innerRef.current.focus();
-  }, [isEditing, point.content]);
+    isEditing && innerRef.current && innerRef.current.focus();
+  }, [isEditing]);
 
   const handleClick = (e: any) => {
     e.stopPropagation();

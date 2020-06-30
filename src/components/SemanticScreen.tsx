@@ -51,6 +51,8 @@ const SemanticScreen = (props: {
   const [makingNewFocus, setMakingNewFocus] = useState("");
   const [editingPoint, setEditingPoint] = useState<PointI["pointId"]>("");
 
+ //TODO: add index to createEmptyPoint, so that points can be inserted
+ //between other points
   const createEmptyPoint = (shape: string) => {
     messageDispatch({
       type: "pointCreate",
