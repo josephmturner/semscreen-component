@@ -52,7 +52,7 @@ const FocusRegion = (props: {
   // expands to fill the middle of the expanded focus region.
   // When expanded, each of the 7 shapes calls setMakingNewFocus
   const placeholderText = `New focus point`;
-  const placeholderImg = require(`../images/Merits.svg`);
+  const placeholderImg = require(`../images/merits.svg`);
   const placeholderImgAlt = "Choose a new focus shape.";
 
   const handlePlaceholderClick = () => {

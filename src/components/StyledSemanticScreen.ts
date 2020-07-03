@@ -48,63 +48,63 @@ const StyledSemanticScreen = styled.div<Props>`
  }
   
   ${({ expandedRegion }) =>
-    expandedRegion === "Facts" &&
+    expandedRegion === "facts" &&
     `
     grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
     grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Merits" &&
+    expandedRegion === "merits" &&
     `
     grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
     grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "People" &&
+    expandedRegion === "people" &&
     `
     grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
     grid-template-rows: var(--expanded-size) var(--minimized-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Thoughts" &&
+    expandedRegion === "thoughts" &&
     `
     grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
     grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Focus" &&
+    expandedRegion === "focus" &&
     `
     grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
     grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Actions" &&
+    expandedRegion === "actions" &&
     `
     grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
     grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Feelings" &&
+    expandedRegion === "feelings" &&
     `
     grid-template-columns: var(--expanded-size) var(--minimized-size) var(--minimized-size);
     grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Needs" &&
+    expandedRegion === "needs" &&
     `
     grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
     grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "Topics" &&
+    expandedRegion === "topics" &&
     `
     grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
     grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);

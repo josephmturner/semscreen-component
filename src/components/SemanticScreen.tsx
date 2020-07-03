@@ -109,17 +109,17 @@ const SemanticScreen = (props: {
         onAuthorUpdate={onAuthorUpdate}
       />
       {[
-        "Facts",
-        "Merits",
-        "People",
-        "Thoughts",
-        "Focus",
-        "Actions",
-        "Feelings",
-        "Needs",
-        "Topics",
+        "facts",
+        "merits",
+        "people",
+        "thoughts",
+        "focus",
+        "actions",
+        "feelings",
+        "needs",
+        "topics",
       ].map((region) => {
-        if (region !== "Focus")
+        if (region !== "focus")
           return (
             <Region
               region={region}
