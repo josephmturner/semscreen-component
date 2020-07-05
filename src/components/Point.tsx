@@ -64,7 +64,7 @@ const Point = (props: {
     e.stopPropagation();
     onClick();
   };
-  const handleSubmit = () => {
+  const handleDelete = () => {
     messageDispatch({
       type: "pointsDelete",
       pointIds: [point.pointId],
@@ -89,7 +89,7 @@ const Point = (props: {
           }
         }}
       />
-      <Button type="button" onClick={handleSubmit} />
+      <Button type="button" onClick={handleDelete} />
     </StyledSpan>
   );
 };
