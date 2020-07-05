@@ -37,7 +37,7 @@ const points: PointI[] = [
   {
     author: authors[0],
     content: "Online Deliberation (focus)",
-    shape: "Topics",
+    shape: "topics",
     pointId: "1",
     pointDate: new Date(),
   },
@@ -45,7 +45,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
-    shape: "Actions",
+    shape: "actions",
     pointId: "2",
     pointDate: new Date(),
   },
@@ -53,7 +53,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-    shape: "Actions",
+    shape: "actions",
     pointId: "3",
     pointDate: new Date(),
   },
@@ -61,7 +61,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "Actions",
+    shape: "actions",
     pointId: "4",
     pointDate: new Date(),
   },
@@ -69,7 +69,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "Actions",
+    shape: "actions",
     pointId: "5",
     pointDate: new Date(),
   },
@@ -77,7 +77,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-    shape: "Actions",
+    shape: "actions",
     pointId: "6",
     pointDate: new Date(),
   },
@@ -85,7 +85,7 @@ const points: PointI[] = [
     author: authors[0],
     content:
       "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "Actions",
+    shape: "actions",
     pointId: "7",
     pointDate: new Date(),
   },

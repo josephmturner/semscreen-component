@@ -29,49 +29,49 @@ const ShapesRim = (props: { showShapes: boolean }) => {
         className="Shape"
         id="FactsShape"
         alt=""
-        src={require("../images/Facts.svg")}
+        src={require("../images/facts.svg")}
       />
       <img
         className="Shape"
         id="MeritsShape"
         alt=""
-        src={require("../images/Merits.svg")}
+        src={require("../images/merits.svg")}
       />
       <img
         className="Shape"
         id="PeopleShape"
         alt=""
-        src={require("../images/People.svg")}
+        src={require("../images/people.svg")}
       />
       <img
         className="Shape"
         id="ThoughtsShape"
         alt=""
-        src={require("../images/Thoughts.svg")}
+        src={require("../images/thoughts.svg")}
       />
       <img
         className="Shape"
         id="ActionsShape"
         alt=""
-        src={require("../images/Actions.svg")}
+        src={require("../images/actions.svg")}
       />
       <img
         className="Shape"
         id="FeelingsShape"
         alt=""
-        src={require("../images/Feelings.svg")}
+        src={require("../images/feelings.svg")}
       />
       <img
         className="Shape"
         id="NeedsShape"
         alt=""
-        src={require("../images/Needs.svg")}
+        src={require("../images/needs.svg")}
       />
       <img
         className="Shape"
         id="TopicsShape"
         alt=""
-        src={require("../images/Topics.svg")}
+        src={require("../images/topics.svg")}
       />
     </>
   );
