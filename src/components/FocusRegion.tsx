@@ -98,13 +98,13 @@ const FocusRegion = (props: {
       {chooseShapes && isExpanded === "expanded" && (
         <ul>
           {[
-            "Facts",
-            "People",
-            "Thoughts",
-            "Actions",
-            "Feelings",
-            "Needs",
-            "Topics",
+            "facts",
+            "people",
+            "thoughts",
+            "actions",
+            "feelings",
+            "needs",
+            "topics",
           ].map((shape) => (
             <li key={shape}>
               <button
