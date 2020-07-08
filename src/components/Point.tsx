@@ -104,9 +104,13 @@ const StyledSpan = styled.span`
 
 const StyledTextArea = styled.textarea`
   width: 100%;
-  padding-top: 4px;
+  border: 0px;
+  background-color: #eee;
+  font-family: ubuntu;
+  margin-top: 3px;
   outline: 0;
   overflow: auto;
+  resize: none;
 `;
 
 export default Point;
