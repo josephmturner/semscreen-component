@@ -84,7 +84,7 @@ const FocusRegion = (props: {
           point={p}
           appDispatch={appDispatch}
           isEditing={editingPoint === p.pointId ? true : false}
-          onEnterPress={() => appDispatch({ type: "noEditingPoint" })}
+          onEnterPress={() => console.log("enter pressed in focus region")}
           onClick={() => onRegionClick(region, true)}
         />
       ))}
