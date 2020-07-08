@@ -18,10 +18,9 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-import { v4 as uuidv4 } from "uuid";
-import { AuthorI, PointI, MessageI } from "../interfaces";
+import { AuthorI, MessageI } from "../constants/AppState";
 
-const authors: AuthorI[] = [
+export const authors: AuthorI[] = [
   {
     name: "KindWoman",
     authorDate: new Date(),
@@ -33,73 +32,79 @@ const authors: AuthorI[] = [
   },
 ];
 
-const points: PointI[] = [
+export const messages: MessageI[] = [
   {
+    messageId: "messageId1",
+    revisionOf: null,
     author: authors[0],
-    content: "Online Deliberation (focus)",
-    shape: "topics",
-    pointId: "1",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
-    shape: "actions",
-    pointId: "2",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-    shape: "actions",
-    pointId: "3",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "actions",
-    pointId: "4",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "actions",
-    pointId: "5",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-    shape: "actions",
-    pointId: "6",
-    pointDate: new Date(),
-  },
-  {
-    author: authors[0],
-    content:
-      "Build an open, collaborative, compassionate system to share information and make decisions",
-    shape: "actions",
-    pointId: "7",
-    pointDate: new Date(),
+    points: {
+      facts: [],
+      thoughts: [],
+      feelings: [],
+      needs: [],
+      topics: [
+        {
+          author: authors[0],
+          content: "Online Deliberation (focus)",
+          shape: "topics",
+          pointId: "pointId1",
+          pointDate: new Date(),
+        },
+      ],
+      actions: [
+        {
+          author: authors[0],
+          content:
+            "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
+          shape: "actions",
+          pointId: "pointId2",
+          pointDate: new Date(),
+        },
+        {
+          author: authors[0],
+          content:
+            "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
+          shape: "actions",
+          pointId: "pointId3",
+          pointDate: new Date(),
+        },
+        {
+          author: authors[0],
+          content:
+            "Build an open, collaborative, compassionate system to share information and make decisions",
+          shape: "actions",
+          pointId: "pointId4",
+          pointDate: new Date(),
+        },
+        {
+          author: authors[0],
+          content:
+            "Build an open, collaborative, compassionate system to share information and make decisions",
+          shape: "actions",
+          pointId: "pointId5",
+          pointDate: new Date(),
+        },
+        {
+          author: authors[0],
+          content:
+            "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
+          shape: "actions",
+          pointId: "pointId6",
+          pointDate: new Date(),
+        },
+        {
+          author: authors[0],
+          content:
+            "Build an open, collaborative, compassionate system to share information and make decisions",
+          shape: "actions",
+          pointId: "pointId7",
+          pointDate: new Date(),
+        },
+      ],
+      people: [],
+    },
+    focus: "pointId1",
+    main: "pointId7",
+    createdAt: new Date(),
   },
 ];
-
-const messages: MessageI[] = [
-  {
-    author: authors[0],
-    points: points,
-    focus: "1",
-    mainPoint: "2",
-    messageId: uuidv4(),
-    messageDate: new Date(),
-  },
-];
-
-export { messages };

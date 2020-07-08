@@ -16,56 +16,49 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
-import { PointI } from "../interfaces";
+import { PointI } from "../constants/AppState";
 
-import ContentEditable from "react-contenteditable";
 import styled from "styled-components";
 
-//TODO: correct props below
 const Point = (props: {
   point: PointI;
-  messageDispatch: any;
+  appDispatch: any;
   isEditing: boolean;
-  setEditingPoint: any;
-  createEmptyPoint?: any;
+  onEnterPress: any;
   onClick: any;
 }) => {
-  const {
-    point,
-    messageDispatch,
-    isEditing,
-    setEditingPoint,
-    createEmptyPoint,
-    onClick,
-  } = props;
+  const { point, appDispatch, isEditing, onEnterPress, onClick } = props;
 
-  const innerRef = useRef<HTMLDivElement>(null);
-  const text = useRef(point.content);
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    isEditing && ref.current && ref.current.focus();
+  }, [isEditing]);
+
+  const [content, setContent] = useState(point.content);
 
   const handleChange = (e: any) => {
-    text.current = e.target.value;
+    setContent(e.target.value);
   };
 
   const handleBlur = () => {
-    messageDispatch({
+    appDispatch({
       type: "pointUpdate",
-      point: { ...point, content: text.current },
+      point: { ...point, content: content },
     });
-    setEditingPoint("");
+    appDispatch({
+      type: "noEditingPoint",
+    });
   };
-
-  useEffect(() => {
-    isEditing && innerRef.current && innerRef.current.focus();
-  }, [isEditing]);
 
   const handleClick = (e: any) => {
     e.stopPropagation();
     onClick();
   };
   const handleDelete = () => {
-    messageDispatch({
+    appDispatch({
       type: "pointsDelete",
       pointIds: [point.pointId],
     });
@@ -76,16 +69,21 @@ const Point = (props: {
   return (
     <StyledSpan onClick={handleClick}>
       <StyledImg src={imageUrl} alt={point.shape} />
-      <StyledContentEditable
-        html={text.current}
+      <StyledTextArea
+        value={content}
         onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() => setEditingPoint(point.pointId)}
-        innerRef={innerRef}
-        onKeyDown={(e) => {
+        onFocus={() =>
+          appDispatch({
+            type: "setEditingPoint",
+            pointId: point.pointId,
+          })
+        }
+        ref={ref}
+        onKeyDown={(e: any) => {
           if (e.keyCode === 13) {
             e.preventDefault();
-            createEmptyPoint();
+            onEnterPress();
           }
         }}
       />
@@ -104,7 +102,7 @@ const StyledSpan = styled.span`
   display: flex;
 `;
 
-const StyledContentEditable = styled(ContentEditable)`
+const StyledTextArea = styled.textarea`
   width: 100%;
   padding-top: 4px;
   outline: 0;

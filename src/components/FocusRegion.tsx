@@ -20,17 +20,15 @@ import React, { useEffect, useState } from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI } from "../interfaces";
+import { AuthorI, PointI } from "../constants/AppState";
 
-// TODO: correct types below
 const FocusRegion = (props: {
   region: string;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
-  messageDispatch: any;
+  appDispatch: any;
   editingPoint: PointI["pointId"];
-  setEditingPoint: any;
   createEmptyFocus: any;
   onRegionClick: any;
 }) => {
@@ -39,9 +37,8 @@ const FocusRegion = (props: {
     isExpanded,
     points,
     author,
-    messageDispatch,
+    appDispatch,
     editingPoint,
-    setEditingPoint,
     createEmptyFocus,
     onRegionClick,
   } = props;
@@ -55,6 +52,8 @@ const FocusRegion = (props: {
   const placeholderImg = require(`../images/merits.svg`);
   const placeholderImgAlt = "Choose a new focus shape.";
 
+  //TODO: delete onRegionClick below and in handleClick because placeholder and chooseShapes
+  //are only present when the region is expanded.
   const handlePlaceholderClick = () => {
     onRegionClick(region, true);
     setChooseShapes(true);
@@ -63,8 +62,8 @@ const FocusRegion = (props: {
   const handleClick = (shape: string, e: any) => {
     e.stopPropagation();
     onRegionClick(region, true);
-    createEmptyFocus(shape);
     setChooseShapes(false);
+    createEmptyFocus(shape);
   };
 
   useEffect(() => {
@@ -81,9 +80,9 @@ const FocusRegion = (props: {
         <Point
           key={p.pointId}
           point={p}
-          messageDispatch={messageDispatch}
+          appDispatch={appDispatch}
           isEditing={editingPoint === p.pointId ? true : false}
-          setEditingPoint={setEditingPoint}
+          onEnterPress={() => appDispatch({ type: "noEditingPoint" })}
           onClick={() => onRegionClick(region, true)}
         />
       ))}
