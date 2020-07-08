@@ -16,21 +16,19 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI } from "../interfaces";
+import { AuthorI, PointI } from "../constants/AppState";
 
-// TODO: correct types below
 const Region = (props: {
   region: string;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
-  messageDispatch: any;
+  appDispatch: any;
   editingPoint: PointI["pointId"];
-  setEditingPoint: any;
   createEmptyPoint: any;
   onRegionClick: any;
 }) => {
@@ -39,27 +37,14 @@ const Region = (props: {
     isExpanded,
     points,
     author,
-    messageDispatch,
+    appDispatch,
     editingPoint,
-    setEditingPoint,
     createEmptyPoint,
     onRegionClick,
   } = props;
 
   const renderPoints =
     isExpanded === "expanded" ? points : points.filter((p) => p.content);
-
-  const [changingPointFocus, setChangingPointFocus] = useState(false);
-
- //TODO: call setEditingPoint with the pointId of the point whose
- //index is 1 greater than editingPoint (if called by pressing enter).
- //see comment in SemanticScreen
- useEffect(() => {
-    if (changingPointFocus) {
-      setEditingPoint(points[points.length - 1].pointId);
-      setChangingPointFocus(false);
-    }
-  }, [changingPointFocus]);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -75,12 +60,13 @@ const Region = (props: {
         <Point
           key={p.pointId}
           point={p}
-          messageDispatch={messageDispatch}
-          isEditing={editingPoint === p.pointId ? true : false}
-          setEditingPoint={setEditingPoint}
-          createEmptyPoint={() => {
-            createEmptyPoint(region);
-            setChangingPointFocus(true);
+          appDispatch={appDispatch}
+          isEditing={editingPoint === p.pointId}
+          onEnterPress={() => {
+            createEmptyPoint(
+              region,
+              points.findIndex((p) => p.pointId === editingPoint) + 1
+            );
           }}
           onClick={() => onRegionClick(region, true)}
         />
@@ -91,8 +77,7 @@ const Region = (props: {
           img={placeholderImg}
           imgAlt={placeholderImgAlt}
           onClick={() => {
-            setChangingPointFocus(true);
-            createEmptyPoint(region);
+            createEmptyPoint(region, points.length);
           }}
         />
       )}

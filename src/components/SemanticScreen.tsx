@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -26,15 +26,22 @@ import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
-import { MessageI, PointI } from "../interfaces";
+import { MessageI, PointShape, RegionI } from "../constants/AppState";
 
 const SemanticScreen = (props: {
   message: MessageI;
+  editingPoint: string;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
-  messageDispatch: any;
+  appDispatch: any;
 }) => {
-  const { showShapes, message, onAuthorUpdate, messageDispatch } = props;
+  const {
+    showShapes,
+    editingPoint,
+    message,
+    onAuthorUpdate,
+    appDispatch,
+  } = props;
 
   const author = message.author || {
     name: "anonymous",
@@ -45,47 +52,48 @@ const SemanticScreen = (props: {
     authorId: uuidv4(),
     authorDate: new Date(),
   };
-  const points = message.points || [];
+  //TODO: what if App doesn't pass any points to SemanticScreen?
 
   const [expandedRegion, setExpandedRegion] = useState("");
-  const [makingNewFocus, setMakingNewFocus] = useState("");
-  const [editingPoint, setEditingPoint] = useState<PointI["pointId"]>("");
 
- //TODO: add index to createEmptyPoint, so that points can be inserted
- //between other points
-  const createEmptyPoint = (shape: string) => {
-    messageDispatch({
+  const createEmptyPoint = (shape: PointShape, index: number) => {
+    appDispatch({
       type: "pointCreate",
       point: {
         author: author,
         content: "",
         shape: shape,
       },
+      shape: shape,
+      index: index,
     });
   };
 
   const deleteEmptyPoints = () => {
-    messageDispatch({
+    appDispatch({
       type: "pointsDelete",
-      pointIds: points.filter((p) => !p.content).map((p) => p.pointId),
+      pointIds: Object.values(message.points)
+        .flat()
+        .filter((p) => !p.content)
+        .map((p) => p.pointId),
     });
   };
 
-  const createEmptyFocus = (shape: string) => {
+  //TODO: consider merging createEmptyFocus and createEmptyPoint
+  const createEmptyFocus = (shape: PointShape) => {
     deleteEmptyPoints();
-    createEmptyPoint(shape);
-    setMakingNewFocus(shape);
+    appDispatch({
+      type: "pointCreate",
+      point: {
+        author: author,
+        content: "",
+        shape: shape,
+      },
+      shape: shape,
+      index: message.points[shape].length,
+      focus: true,
+    });
   };
-
-  useEffect(() => {
-    if (makingNewFocus) {
-      const point = points.find(
-        (p) => !p.content && p.shape === makingNewFocus
-      );
-      point && messageDispatch({ type: "setFocus", pointId: point.pointId });
-      setMakingNewFocus("");
-    }
-  }, [makingNewFocus, messageDispatch, points]);
 
   const handleRegionClick = (region: string, childClicked: boolean): void => {
     if (region !== expandedRegion) {
@@ -96,6 +104,18 @@ const SemanticScreen = (props: {
       deleteEmptyPoints();
     }
   };
+
+  const regions: Array<RegionI> = [
+    "facts",
+    "merits",
+    "people",
+    "thoughts",
+    "focus",
+    "actions",
+    "feelings",
+    "needs",
+    "topics",
+  ];
 
   return (
     <StyledSemanticScreen
@@ -108,18 +128,32 @@ const SemanticScreen = (props: {
         showShapes={showShapes}
         onAuthorUpdate={onAuthorUpdate}
       />
-      {[
-        "facts",
-        "merits",
-        "people",
-        "thoughts",
-        "focus",
-        "actions",
-        "feelings",
-        "needs",
-        "topics",
-      ].map((region) => {
-        if (region !== "focus")
+      {regions.map((region: RegionI) => {
+        if (region === "focus") {
+          return (
+            <FocusRegion
+              region={region}
+              isExpanded={
+                region === expandedRegion
+                  ? "expanded"
+                  : expandedRegion === ""
+                  ? "balanced"
+                  : "minimized"
+              }
+              author={author}
+              points={Object.values(message.points)
+                .flat()
+                .filter((p) => p.pointId === message.focus)}
+              appDispatch={appDispatch}
+              editingPoint={editingPoint}
+              createEmptyFocus={createEmptyFocus}
+              onRegionClick={handleRegionClick}
+              key={region}
+            />
+          );
+        } else if (region === "merits") {
+          return <div></div>;
+        } else {
           return (
             <Region
               region={region}
@@ -131,37 +165,17 @@ const SemanticScreen = (props: {
                   : "minimized"
               }
               author={author}
-              points={points
-                .filter((p) => p.shape === region)
-                .filter((p) => p.pointId !== message.focus)}
-              messageDispatch={messageDispatch}
+              points={message.points[region as PointShape].filter(
+                (p) => p.pointId !== message.focus
+              )}
+              appDispatch={appDispatch}
               editingPoint={editingPoint}
-              setEditingPoint={setEditingPoint}
               createEmptyPoint={createEmptyPoint}
               onRegionClick={handleRegionClick}
               key={region}
             />
           );
-        return (
-          <FocusRegion
-            region={region}
-            isExpanded={
-              region === expandedRegion
-                ? "expanded"
-                : expandedRegion === ""
-                ? "balanced"
-                : "minimized"
-            }
-            author={author}
-            points={points.filter((p) => p.pointId === message.focus)}
-            messageDispatch={messageDispatch}
-            createEmptyFocus={createEmptyFocus}
-            editingPoint={editingPoint}
-            setEditingPoint={setEditingPoint}
-            onRegionClick={handleRegionClick}
-            key={region}
-          />
-        );
+        }
       })}
       <ShapesRim showShapes={showShapes} />
     </StyledSemanticScreen>

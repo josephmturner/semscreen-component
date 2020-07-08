@@ -21,60 +21,127 @@ import { v4 as uuidv4 } from "uuid";
 
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
-import { MessageI, PointI } from "./interfaces";
+import {
+  AppI,
+  AppReducerAction,
+  PointShape,
+  allPointShapes,
+  PointsI,
+} from "./constants/AppState";
 
-type Action =
-  | { type: "pointCreate"; point: PointI }
-  | { type: "pointUpdate"; point: PointI }
-  | { type: "pointsDelete"; pointIds: string[] }
-  | { type: "setFocus"; pointId: string };
-
-const messageReducer = (message: MessageI, action: Action) => {
+const appReducer = (appState: AppI, action: AppReducerAction) => {
   switch (action.type) {
     case "pointCreate":
-      return {
-        ...message,
-        points: [
-          ...message.points,
-          {
-            ...action.point,
-            pointId: uuidv4(),
-            pointDate: new Date(),
-          },
-        ],
-      };
-    case "pointUpdate":
-      return {
-        ...message,
-        points: message.points.map((p) => {
-          if (p.pointId === action.point.pointId) {
-            return action.point;
+      const newPointId = uuidv4();
+      const newPoints = appState.message.points[action.shape].slice();
+      newPoints.splice(action.index, 0, {
+        ...action.point,
+        pointId: newPointId,
+        pointDate: new Date(),
+      });
+      return action.focus
+        ? {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.shape]: newPoints,
+              },
+              focus: newPointId,
+            },
+            editingPoint: newPointId,
           }
-          return p;
-        }),
-      };
+        : {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.shape]: newPoints,
+              },
+            },
+            editingPoint: newPointId,
+          };
+    case "pointUpdate":
+      return action.move
+        ? {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.move.oldShape]: appState.message.points[
+                  action.move.oldShape
+                ].splice(action.move.oldIndex, 1),
+                [action.move.newShape]: appState.message.points[
+                  action.move.newShape
+                ].splice(action.move.newIndex, 0, action.point),
+              },
+            },
+          }
+        : {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.point.shape]: appState.message.points[
+                  action.point.shape
+                ].map((p) => {
+                  if (p.pointId === action.point.pointId) {
+                    return action.point;
+                  }
+                  return p;
+                }),
+              },
+            },
+          };
     case "pointsDelete":
       return {
-        ...message,
-        points: message.points.filter(
-          (p) => p.pointId && !action.pointIds.includes(p.pointId)
-        ),
+        ...appState,
+        message: {
+          ...appState.message,
+          points: allPointShapes.reduce(
+            (obj: PointsI, pointShape: PointShape) => {
+              obj[pointShape] = appState.message.points[pointShape].filter(
+                (p) => {
+                  return !action.pointIds.includes(p.pointId);
+                }
+              );
+              return obj;
+            },
+            appState.message.points
+          ),
+        },
       };
     case "setFocus":
-      return { ...message, focus: action.pointId };
+      return {
+        ...appState,
+        message: { ...appState.message, focus: action.pointId },
+      };
+    case "setEditingPoint":
+      return { ...appState, editingPoint: action.pointId };
+    case "noEditingPoint":
+      return { ...appState, editingPoint: "" };
     default:
-      throw new Error();
+      return appState;
   }
 };
 
 const App = () => {
   const showShapes = true;
-  const [message, messageDispatch] = useReducer(messageReducer, messages[0]);
+  const [appState, appDispatch] = useReducer(appReducer, {
+    message: messages[0],
+    editingPoint: "",
+  });
+  //TODO: how to type appState
 
   return (
     <SemanticScreen
-      message={message}
-      messageDispatch={messageDispatch}
+      message={appState.message}
+      editingPoint={appState.editingPoint}
+      appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
     />
