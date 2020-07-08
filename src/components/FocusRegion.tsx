@@ -67,8 +67,10 @@ const FocusRegion = (props: {
   };
 
   useEffect(() => {
-    isExpanded !== "expanded" && setChooseShapes(false);
-  }, [isExpanded]);
+    isExpanded === "expanded" && !points.length
+      ? setChooseShapes(true)
+      : setChooseShapes(false);
+  }, [isExpanded, points.length]);
 
   return (
     <StyledRegion

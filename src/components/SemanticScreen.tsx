@@ -64,7 +64,6 @@ const SemanticScreen = (props: {
         content: "",
         shape: shape,
       },
-      shape: shape,
       index: index,
     });
   };
@@ -89,16 +88,35 @@ const SemanticScreen = (props: {
         content: "",
         shape: shape,
       },
-      shape: shape,
       index: message.points[shape].length,
       focus: true,
     });
   };
 
-  const handleRegionClick = (region: string, childClicked: boolean): void => {
+  // why does typescript allow me to enter anything as a value of one
+  // of the keys of point in appDispatch?
+  const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
       deleteEmptyPoints();
+      if (region === "focus" && message.focus) {
+        appDispatch({
+          type: "setEditingPoint",
+          pointId: message.focus,
+        });
+      } else if (region === "merits") {
+        console.log("merits clicked");
+      } else if (!childClicked) {
+        appDispatch({
+          type: "pointCreate",
+          point: {
+            author: author,
+            content: "",
+            shape: region,
+          },
+          index: message.points[region as PointShape].length,
+        });
+      }
     } else if (region === expandedRegion && !childClicked) {
       setExpandedRegion("");
       deleteEmptyPoints();
@@ -152,7 +170,7 @@ const SemanticScreen = (props: {
             />
           );
         } else if (region === "merits") {
-          return <div></div>;
+          return <div key="merits"></div>;
         } else {
           return (
             <Region

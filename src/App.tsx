@@ -33,7 +33,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
   switch (action.type) {
     case "pointCreate":
       const newPointId = uuidv4();
-      const newPoints = appState.message.points[action.shape].slice();
+      const newPoints = appState.message.points[action.point.shape].slice();
       newPoints.splice(action.index, 0, {
         ...action.point,
         pointId: newPointId,
@@ -46,7 +46,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.shape]: newPoints,
+                [action.point.shape]: newPoints,
               },
               focus: newPointId,
             },
@@ -58,7 +58,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.shape]: newPoints,
+                [action.point.shape]: newPoints,
               },
             },
             editingPoint: newPointId,
