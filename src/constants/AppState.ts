@@ -93,7 +93,6 @@ export type AppReducerAction =
   | {
       type: "pointCreate";
       point: PointNoIdI;
-      shape: PointShape;
       index: number;
       focus?: boolean;
     }
