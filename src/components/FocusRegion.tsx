@@ -20,10 +20,10 @@ import React, { useEffect, useState } from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI } from "../constants/AppState";
+import { AuthorI, PointI, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
-  region: string;
+  region: RegionI;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
