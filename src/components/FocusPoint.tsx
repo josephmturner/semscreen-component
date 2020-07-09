@@ -96,8 +96,8 @@ const FocusPoint = (props: {
 };
 
 const StyledImg = styled.img`
-  height: 20px;
-  margin: 3px 4px 0 3px;
+  height: 40px;
+  margin: auto;
   opacity: 0.7;
 `;
 
@@ -110,7 +110,6 @@ const StyledTextArea = styled.textarea`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
-  margin-top: 3px;
   outline: 0;
   overflow: auto;
   resize: none;

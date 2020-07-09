@@ -18,33 +18,12 @@
 */
 import styled from "styled-components";
 
-interface StyledFocusRegionProps {
-  backgroundColor: string;
-  isExpanded: string;
-}
-
-const StyledFocusRegion = styled.div<StyledFocusRegionProps>`
-  background-color: ${(props) => props.backgroundColor};
+const StyledFocusRegion = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   overflow: auto;
-  border: 2px solid lightgray;
-  border-radius: 10px;
-
-  @media (max-width: 799px) {
-    --minimized-border: 0;
-    --minimized-border-radius: 0;
-  }
-
-  @media (min-width: 800px) {
-    --minimized-border: 2px solid lightgray;
-    --minimized-border-radius: 10px;
-  }
-
-  ${({ isExpanded }) =>
-    isExpanded === "minimized" &&
-    `
-border: var(--minimized-border);
-border-radius: var(--minimized-border-radius);
-`}
 `;
 
 export default StyledFocusRegion;

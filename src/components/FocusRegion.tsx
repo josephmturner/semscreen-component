@@ -75,8 +75,6 @@ const FocusRegion = (props: {
 
   return (
     <StyledFocusRegion
-      isExpanded={isExpanded}
-      backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
       {point && (
