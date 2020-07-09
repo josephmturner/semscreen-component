@@ -19,6 +19,7 @@
 import React, { useEffect, useState } from "react";
 import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
+import ChooseShapes from "./ChooseShapes";
 import StyledFocusRegion from "./StyledFocusRegion";
 import { AuthorI, PointI, RegionI } from "../constants/AppState";
 
@@ -59,7 +60,7 @@ const FocusRegion = (props: {
     setChooseShapes(true);
   };
 
-  const handleClick = (shape: string, e: any) => {
+  const handleChooseShapesClick = (shape: string, e: any) => {
     e.stopPropagation();
     onRegionClick(region, true);
     setChooseShapes(false);
@@ -97,23 +98,7 @@ const FocusRegion = (props: {
         />
       )}
       {chooseShapes && isExpanded === "expanded" && (
-        <ul>
-          {[
-            "facts",
-            "people",
-            "thoughts",
-            "actions",
-            "feelings",
-            "needs",
-            "topics",
-          ].map((shape) => (
-            <li key={shape}>
-              <button
-                onClick={(e) => handleClick(shape, e)}
-              >{`new ${shape} focus point`}</button>
-            </li>
-          ))}
-        </ul>
+        <ChooseShapes handleClick={handleChooseShapesClick} />
       )}
     </StyledFocusRegion>
   );
