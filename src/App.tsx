@@ -29,6 +29,7 @@ import {
   PointsI,
 } from "./constants/AppState";
 
+//TODO: check for \n in submitted point.content and remove it
 const appReducer = (appState: AppI, action: AppReducerAction) => {
   switch (action.type) {
     case "pointCreate":
