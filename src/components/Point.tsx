@@ -105,7 +105,7 @@ const StyledSpan = styled.span`
 const StyledTextArea = styled.textarea`
   width: 100%;
   border: 0px;
-  background-color: #eee;
+  background-color: transparent;
   font-family: ubuntu;
   margin-top: 3px;
   outline: 0;

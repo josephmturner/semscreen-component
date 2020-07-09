@@ -30,7 +30,7 @@ const Button = (props: any) => {
 
 const StyledButton = styled.button`
   border: 0px;
-  background-color: #eee;
+  background-color: transparent;
 `;
 
 export default Button;
