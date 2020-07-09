@@ -158,7 +158,6 @@ const SemanticScreen = (props: {
                   ? "balanced"
                   : "minimized"
               }
-              author={author}
               point={Object.values(message.points)
                 .flat()
                 .find((p) => p.pointId === message.focus)}
