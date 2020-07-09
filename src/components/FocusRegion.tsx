@@ -17,9 +17,9 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useState } from "react";
-import Point from "./Point";
+import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
-import StyledRegion from "./StyledRegion";
+import StyledFocusRegion from "./StyledFocusRegion";
 import { AuthorI, PointI, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
@@ -73,13 +73,13 @@ const FocusRegion = (props: {
   }, [isExpanded, points.length]);
 
   return (
-    <StyledRegion
+    <StyledFocusRegion
       isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
       {points.map((p: any) => (
-        <Point
+        <FocusPoint
           key={p.pointId}
           point={p}
           appDispatch={appDispatch}
@@ -115,7 +115,7 @@ const FocusRegion = (props: {
           ))}
         </ul>
       )}
-    </StyledRegion>
+    </StyledFocusRegion>
   );
 };
 
