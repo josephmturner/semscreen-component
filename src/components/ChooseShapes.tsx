@@ -17,20 +17,31 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import styled from "styled-components";
 
-const Button = (props: any) => {
-  const { onClick } = props;
+const ChooseShapes = (props: {
+  handleClick: (shape: string, e: any) => void;
+}) => {
+  const { handleClick } = props;
+
   return (
-    <StyledButton type="button" onClick={onClick}>
-      ⨯
-    </StyledButton>
+    <ul>
+      {[
+        "facts",
+        "people",
+        "thoughts",
+        "actions",
+        "feelings",
+        "needs",
+        "topics",
+      ].map((shape) => (
+        <li key={shape}>
+          <button
+            onClick={(e) => handleClick(shape, e)}
+          >{`new ${shape} focus point`}</button>
+        </li>
+      ))}
+    </ul>
   );
 };
 
-const StyledButton = styled.button`
-  border: 0px;
-  background-color: transparent;
-`;
-
-export default Button;
+export default ChooseShapes;

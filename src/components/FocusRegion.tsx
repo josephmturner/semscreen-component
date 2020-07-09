@@ -17,16 +17,17 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useState } from "react";
-import Point from "./Point";
+import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
-import StyledRegion from "./StyledRegion";
+import ChooseShapes from "./ChooseShapes";
+import StyledFocusRegion from "./StyledFocusRegion";
 import { AuthorI, PointI, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: string;
   author: AuthorI;
-  points: PointI[];
+  point: PointI | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"];
   createEmptyFocus: any;
@@ -35,7 +36,7 @@ const FocusRegion = (props: {
   const {
     region,
     isExpanded,
-    points,
+    point,
     author,
     appDispatch,
     editingPoint,
@@ -59,7 +60,7 @@ const FocusRegion = (props: {
     setChooseShapes(true);
   };
 
-  const handleClick = (shape: string, e: any) => {
+  const handleChooseShapesClick = (shape: string, e: any) => {
     e.stopPropagation();
     onRegionClick(region, true);
     setChooseShapes(false);
@@ -67,27 +68,26 @@ const FocusRegion = (props: {
   };
 
   useEffect(() => {
-    isExpanded === "expanded" && !points.length
+    isExpanded === "expanded" && !point
       ? setChooseShapes(true)
       : setChooseShapes(false);
-  }, [isExpanded, points.length]);
+  }, [isExpanded, point]);
 
   return (
-    <StyledRegion
+    <StyledFocusRegion
       isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      {points.map((p: any) => (
-        <Point
-          key={p.pointId}
-          point={p}
+      {point && (
+        <FocusPoint
+          point={point}
           appDispatch={appDispatch}
-          isEditing={editingPoint === p.pointId ? true : false}
+          isEditing={point && editingPoint === point.pointId ? true : false}
           onEnterPress={() => console.log("enter pressed in focus region")}
           onClick={() => onRegionClick(region, true)}
         />
-      ))}
+      )}
       {!chooseShapes && isExpanded === "expanded" && (
         <Placeholder
           text={placeholderText}
@@ -97,25 +97,9 @@ const FocusRegion = (props: {
         />
       )}
       {chooseShapes && isExpanded === "expanded" && (
-        <ul>
-          {[
-            "facts",
-            "people",
-            "thoughts",
-            "actions",
-            "feelings",
-            "needs",
-            "topics",
-          ].map((shape) => (
-            <li key={shape}>
-              <button
-                onClick={(e) => handleClick(shape, e)}
-              >{`new ${shape} focus point`}</button>
-            </li>
-          ))}
-        </ul>
+        <ChooseShapes handleClick={handleChooseShapesClick} />
       )}
-    </StyledRegion>
+    </StyledFocusRegion>
   );
 };
 

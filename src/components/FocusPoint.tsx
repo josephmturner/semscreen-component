@@ -22,7 +22,7 @@ import { PointI } from "../constants/AppState";
 
 import styled from "styled-components";
 
-const Point = (props: {
+const FocusPoint = (props: {
   point: PointI;
   appDispatch: any;
   isEditing: boolean;
@@ -38,6 +38,9 @@ const Point = (props: {
   }, [isEditing]);
 
   const [content, setContent] = useState(point.content);
+  useEffect(() => {
+    setContent(point.content);
+  }, [point.content]);
 
   const handleChange = (e: any) => {
     setContent(e.target.value);
@@ -113,4 +116,4 @@ const StyledTextArea = styled.textarea`
   resize: none;
 `;
 
-export default Point;
+export default FocusPoint;

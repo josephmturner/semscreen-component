@@ -16,21 +16,35 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
 import styled from "styled-components";
 
-const Button = (props: any) => {
-  const { onClick } = props;
-  return (
-    <StyledButton type="button" onClick={onClick}>
-      ⨯
-    </StyledButton>
-  );
-};
+interface StyledFocusRegionProps {
+  backgroundColor: string;
+  isExpanded: string;
+}
 
-const StyledButton = styled.button`
-  border: 0px;
-  background-color: transparent;
+const StyledFocusRegion = styled.div<StyledFocusRegionProps>`
+  background-color: ${(props) => props.backgroundColor};
+  overflow: auto;
+  border: 2px solid lightgray;
+  border-radius: 10px;
+
+  @media (max-width: 799px) {
+    --minimized-border: 0;
+    --minimized-border-radius: 0;
+  }
+
+  @media (min-width: 800px) {
+    --minimized-border: 2px solid lightgray;
+    --minimized-border-radius: 10px;
+  }
+
+  ${({ isExpanded }) =>
+    isExpanded === "minimized" &&
+    `
+border: var(--minimized-border);
+border-radius: var(--minimized-border-radius);
+`}
 `;
 
-export default Button;
+export default StyledFocusRegion;
