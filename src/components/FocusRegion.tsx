@@ -27,7 +27,7 @@ const FocusRegion = (props: {
   region: RegionI;
   isExpanded: string;
   author: AuthorI;
-  points: PointI[];
+  point: PointI | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"];
   createEmptyFocus: any;
@@ -36,7 +36,7 @@ const FocusRegion = (props: {
   const {
     region,
     isExpanded,
-    points,
+    point,
     author,
     appDispatch,
     editingPoint,
@@ -68,10 +68,10 @@ const FocusRegion = (props: {
   };
 
   useEffect(() => {
-    isExpanded === "expanded" && !points.length
+    isExpanded === "expanded" && !point
       ? setChooseShapes(true)
       : setChooseShapes(false);
-  }, [isExpanded, points.length]);
+  }, [isExpanded, point]);
 
   return (
     <StyledFocusRegion
@@ -79,16 +79,15 @@ const FocusRegion = (props: {
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      {points.map((p: any) => (
+      {point && (
         <FocusPoint
-          key={p.pointId}
-          point={p}
+          point={point}
           appDispatch={appDispatch}
-          isEditing={editingPoint === p.pointId ? true : false}
+          isEditing={point && editingPoint === point.pointId ? true : false}
           onEnterPress={() => console.log("enter pressed in focus region")}
           onClick={() => onRegionClick(region, true)}
         />
-      ))}
+      )}
       {!chooseShapes && isExpanded === "expanded" && (
         <Placeholder
           text={placeholderText}

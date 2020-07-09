@@ -38,6 +38,9 @@ const FocusPoint = (props: {
   }, [isEditing]);
 
   const [content, setContent] = useState(point.content);
+  useEffect(() => {
+    setContent(point.content);
+  }, [point.content]);
 
   const handleChange = (e: any) => {
     setContent(e.target.value);

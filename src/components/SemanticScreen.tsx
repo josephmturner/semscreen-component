@@ -159,9 +159,9 @@ const SemanticScreen = (props: {
                   : "minimized"
               }
               author={author}
-              points={Object.values(message.points)
+              point={Object.values(message.points)
                 .flat()
-                .filter((p) => p.pointId === message.focus)}
+                .find((p) => p.pointId === message.focus)}
               appDispatch={appDispatch}
               editingPoint={editingPoint}
               createEmptyFocus={createEmptyFocus}
