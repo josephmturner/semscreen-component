@@ -81,7 +81,7 @@ const Point = (props: {
         }
         ref={ref}
         onKeyDown={(e: any) => {
-          if (e.keyCode === 13) {
+          if (e.key === "Enter") {
             e.preventDefault();
             onEnterPress();
           }

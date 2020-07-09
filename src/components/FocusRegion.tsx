@@ -21,12 +21,11 @@ import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
 import ChooseShapes from "./ChooseShapes";
 import StyledFocusRegion from "./StyledFocusRegion";
-import { AuthorI, PointI, RegionI } from "../constants/AppState";
+import { PointI, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: string;
-  author: AuthorI;
   point: PointI | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"];
@@ -37,7 +36,6 @@ const FocusRegion = (props: {
     region,
     isExpanded,
     point,
-    author,
     appDispatch,
     editingPoint,
     createEmptyFocus,
@@ -74,9 +72,7 @@ const FocusRegion = (props: {
   }, [isExpanded, point]);
 
   return (
-    <StyledFocusRegion
-      onClick={() => onRegionClick(region, false)}
-    >
+    <StyledFocusRegion onClick={() => onRegionClick(region, false)}>
       {point && (
         <FocusPoint
           point={point}
