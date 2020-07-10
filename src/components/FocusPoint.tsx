@@ -20,7 +20,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import { PointI } from "../constants/AppState";
 
-import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const FocusPoint = (props: {
@@ -106,7 +105,7 @@ const StyledSpan = styled.span`
   display: flex;
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled.textarea`
   width: 100%;
   border: 0px;
   background-color: transparent;
