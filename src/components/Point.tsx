@@ -28,7 +28,7 @@ const Point = (props: {
   index: number;
   appDispatch: any;
   isEditing: boolean;
-  onEnterPress: any;
+  createPointBelow: (topContent: string, bottomContent: string) => void;
   combineWithPriorPoint: (point: PointI, index: number) => void;
   //TODO: why do I have to include false as a possible type?
   setCursorPositionIndex: number | undefined | false;
@@ -39,7 +39,7 @@ const Point = (props: {
     index,
     appDispatch,
     isEditing,
-    onEnterPress,
+    createPointBelow,
     combineWithPriorPoint,
     setCursorPositionIndex,
     onClick,
@@ -51,14 +51,19 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
+  //TODO: is there a better way to handle the falsiness of 0
+  //(currently, I am using a ternary operator in Region when I pass
+  //setCursorPositionIndex to Point and then belwo in the useEffect
   useEffect(() => {
-    if (setCursorPositionIndex && ref.current) {
+    console.log(setCursorPositionIndex);
+    if (!isNaN(setCursorPositionIndex as number) && ref.current) {
+      console.log(setCursorPositionIndex);
       ref.current.focus();
       ref.current.setSelectionRange(
-        setCursorPositionIndex,
-        setCursorPositionIndex
+        setCursorPositionIndex as number,
+        setCursorPositionIndex as number
       );
-    appDispatch({ type: "resetCursorPosition" });
+      appDispatch({ type: "resetCursorPosition" });
     }
   }, [setCursorPositionIndex, appDispatch]);
 
@@ -105,7 +110,11 @@ const Point = (props: {
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            onEnterPress();
+            ref.current &&
+              createPointBelow(
+                point.content.slice(0, ref.current.selectionStart),
+                point.content.slice(ref.current.selectionStart)
+              );
           } else if (
             e.key === "Backspace" &&
             ref.current &&
