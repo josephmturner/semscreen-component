@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Button from "./Button";
 import { PointI } from "../constants/AppState";
 
@@ -37,17 +37,14 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const [content, setContent] = useState(point.content);
-
   const handleChange = (e: any) => {
-    setContent(e.target.value);
+    appDispatch({
+      type: "pointUpdate",
+      point: { ...point, content: e.target.value },
+    });
   };
 
   const handleBlur = () => {
-    appDispatch({
-      type: "pointUpdate",
-      point: { ...point, content: content },
-    });
     appDispatch({
       type: "noEditingPoint",
     });
@@ -70,7 +67,7 @@ const Point = (props: {
     <StyledSpan onClick={handleClick}>
       <StyledImg src={imageUrl} alt={point.shape} />
       <StyledTextArea
-        value={content}
+        value={point.content}
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() =>
