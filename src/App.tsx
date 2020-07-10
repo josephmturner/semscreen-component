@@ -31,9 +31,9 @@ import {
 
 //TODO: check for \n in submitted point.content and remove it
 const appReducer = (appState: AppI, action: AppReducerAction) => {
+  const newPointId = uuidv4();
   switch (action.type) {
     case "pointCreate":
-      const newPointId = uuidv4();
       const newPoints = appState.message.points[action.point.shape].slice();
       newPoints.splice(action.index, 0, {
         ...action.point,
@@ -116,6 +116,59 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ),
         },
       };
+    case "combineWithPriorPoint":
+      const combinedPoints = appState.message.points[
+        action.point.shape
+      ].slice();
+      combinedPoints.splice(action.index - 1, 2, {
+        ...appState.message.points[action.point.shape][action.index - 1],
+        content:
+          appState.message.points[action.point.shape][action.index - 1]
+            .content +
+          appState.message.points[action.point.shape][action.index].content,
+      });
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.point.shape]: combinedPoints,
+          },
+        },
+        setCursorPosition: {
+          pointId:
+            appState.message.points[action.point.shape][action.index - 1]
+              .pointId,
+          index:
+            appState.message.points[action.point.shape][action.index - 1]
+              .content.length,
+        },
+      };
+    case "splitIntoTwoPoints":
+      const splitPoints = appState.message.points[
+        action.topPoint.shape
+      ].slice();
+      splitPoints.splice(
+        action.index,
+        1,
+        {
+          ...appState.message.points[action.topPoint.shape][action.index],
+          content: action.topPoint.content,
+        },
+        { ...action.bottomPoint, pointId: newPointId, pointDate: new Date() }
+      );
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.topPoint.shape]: splitPoints,
+          },
+        },
+        setCursorPosition: { pointId: newPointId, index: 0 },
+      };
     case "setFocus":
       return {
         ...appState,
@@ -125,6 +178,11 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
       return { ...appState, editingPoint: action.pointId };
     case "noEditingPoint":
       return { ...appState, editingPoint: "" };
+    case "resetCursorPosition":
+      return {
+        ...appState,
+        setCursorPosition: undefined,
+      };
     default:
       return appState;
   }
@@ -135,13 +193,17 @@ const App = () => {
   const [appState, appDispatch] = useReducer(appReducer, {
     message: messages[0],
     editingPoint: "",
+    setCursorPosition: undefined,
   });
   //TODO: how to type appState
 
+  //TODO: make editingPoint optional in AppI, then instead of passing empty
+  //strings to it, pass undefined.
   return (
     <SemanticScreen
       message={appState.message}
       editingPoint={appState.editingPoint}
+      setCursorPosition={appState.setCursorPosition}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

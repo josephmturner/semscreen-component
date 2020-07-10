@@ -26,19 +26,26 @@ import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
-import { MessageI, PointShape, RegionI } from "../constants/AppState";
+import {
+  MessageI,
+  PointShape,
+  RegionI,
+  SetCursorPositionI,
+} from "../constants/AppState";
 
 const SemanticScreen = (props: {
   message: MessageI;
   editingPoint: string;
+  setCursorPosition?: SetCursorPositionI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   appDispatch: any;
 }) => {
   const {
+    message,
     showShapes,
     editingPoint,
-    message,
+    setCursorPosition,
     onAuthorUpdate,
     appDispatch,
   } = props;
@@ -187,6 +194,7 @@ const SemanticScreen = (props: {
               )}
               appDispatch={appDispatch}
               editingPoint={editingPoint}
+              setCursorPosition={setCursorPosition}
               createEmptyPoint={createEmptyPoint}
               onRegionClick={handleRegionClick}
               key={region}

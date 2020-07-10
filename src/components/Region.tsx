@@ -20,7 +20,12 @@ import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI, RegionI } from "../constants/AppState";
+import {
+  AuthorI,
+  PointI,
+  RegionI,
+  SetCursorPositionI,
+} from "../constants/AppState";
 
 const Region = (props: {
   region: RegionI;
@@ -29,6 +34,7 @@ const Region = (props: {
   points: PointI[];
   appDispatch: any;
   editingPoint: PointI["pointId"];
+  setCursorPosition?: SetCursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
 }) => {
@@ -39,6 +45,7 @@ const Region = (props: {
     author,
     appDispatch,
     editingPoint,
+    setCursorPosition,
     createEmptyPoint,
     onRegionClick,
   } = props;
@@ -56,18 +63,43 @@ const Region = (props: {
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      {renderPoints.map((p: any) => (
+      {renderPoints.map((p: any, i: number) => (
         <Point
           key={p.pointId}
           point={p}
+          index={i}
           appDispatch={appDispatch}
           isEditing={editingPoint === p.pointId}
-          onEnterPress={() => {
-            createEmptyPoint(
-              region,
-              points.findIndex((p) => p.pointId === editingPoint) + 1
-            );
+          createPointBelow={(topContent, bottomContent) => {
+            appDispatch({
+              type: "splitIntoTwoPoints",
+              topPoint: {
+                author: author,
+                content: topContent,
+                shape: region,
+              },
+              bottomPoint: {
+                author: author,
+                content: bottomContent,
+                shape: region,
+              },
+              index: points.findIndex((p) => p.pointId === editingPoint),
+            });
           }}
+          combineWithPriorPoint={(point: PointI, index: number) => {
+            appDispatch({
+              type: "combineWithPriorPoint",
+              point: point,
+              index: index,
+            });
+          }}
+          setCursorPositionIndex={
+            setCursorPosition && setCursorPosition.pointId === p.pointId
+              ? !isNaN(setCursorPosition.index)
+                ? setCursorPosition.index
+                : 0
+              : undefined
+          }
           onClick={() => onRegionClick(region, true)}
         />
       ))}

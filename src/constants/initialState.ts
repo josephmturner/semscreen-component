@@ -45,7 +45,7 @@ export const messages: MessageI[] = [
       topics: [
         {
           author: authors[0],
-          content: "Online Deliberation (focus)",
+          content: "Online Deliberation",
           shape: "topics",
           pointId: "pointId1",
           pointDate: new Date(),

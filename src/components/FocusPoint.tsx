@@ -111,7 +111,6 @@ const StyledTextArea = styled.textarea`
   background-color: transparent;
   font-family: ubuntu;
   outline: 0;
-  overflow: auto;
   resize: none;
 `;
 
