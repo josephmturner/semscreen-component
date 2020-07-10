@@ -20,7 +20,12 @@ import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI, RegionI } from "../constants/AppState";
+import {
+  AuthorI,
+  PointI,
+  RegionI,
+  SetCursorPositionI,
+} from "../constants/AppState";
 
 const Region = (props: {
   region: RegionI;
@@ -29,6 +34,7 @@ const Region = (props: {
   points: PointI[];
   appDispatch: any;
   editingPoint: PointI["pointId"];
+  setCursorPosition?: SetCursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
 }) => {
@@ -39,6 +45,7 @@ const Region = (props: {
     author,
     appDispatch,
     editingPoint,
+    setCursorPosition,
     createEmptyPoint,
     onRegionClick,
   } = props;
@@ -76,6 +83,11 @@ const Region = (props: {
               index: index,
             });
           }}
+          setCursorPositionIndex={
+            setCursorPosition &&
+            setCursorPosition.pointId === p.pointId &&
+            setCursorPosition.index
+          }
           onClick={() => onRegionClick(region, true)}
         />
       ))}

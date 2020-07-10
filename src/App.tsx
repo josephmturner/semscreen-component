@@ -136,6 +136,14 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             [action.point.shape]: combinedPoints,
           },
         },
+        setCursorPosition: {
+          pointId:
+            appState.message.points[action.point.shape][action.index - 1]
+              .pointId,
+          index:
+            appState.message.points[action.point.shape][action.index - 1]
+              .content.length,
+        },
       };
     case "setFocus":
       return {
@@ -146,6 +154,11 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
       return { ...appState, editingPoint: action.pointId };
     case "noEditingPoint":
       return { ...appState, editingPoint: "" };
+    case "resetCursorPosition":
+      return {
+        ...appState,
+        setCursorPosition: undefined,
+      };
     default:
       return appState;
   }
@@ -156,13 +169,17 @@ const App = () => {
   const [appState, appDispatch] = useReducer(appReducer, {
     message: messages[0],
     editingPoint: "",
+    setCursorPosition: undefined,
   });
   //TODO: how to type appState
 
+  //TODO: make editingPoint optional in AppI, then instead of passing empty
+  //strings to it, pass undefined.
   return (
     <SemanticScreen
       message={appState.message}
       editingPoint={appState.editingPoint}
+      setCursorPosition={appState.setCursorPosition}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

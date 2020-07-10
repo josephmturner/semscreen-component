@@ -30,6 +30,8 @@ const Point = (props: {
   isEditing: boolean;
   onEnterPress: any;
   combineWithPriorPoint: (point: PointI, index: number) => void;
+  //TODO: why do I have to include false as a possible type?
+  setCursorPositionIndex: number | undefined | false;
   onClick: any;
 }) => {
   const {
@@ -39,6 +41,7 @@ const Point = (props: {
     isEditing,
     onEnterPress,
     combineWithPriorPoint,
+    setCursorPositionIndex,
     onClick,
   } = props;
 
@@ -47,6 +50,17 @@ const Point = (props: {
   useEffect(() => {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
+
+  useEffect(() => {
+    if (setCursorPositionIndex && ref.current) {
+      ref.current.focus();
+      ref.current.setSelectionRange(
+        setCursorPositionIndex,
+        setCursorPositionIndex
+      );
+    appDispatch({ type: "resetCursorPosition" });
+    }
+  }, [setCursorPositionIndex, appDispatch]);
 
   const handleChange = (e: any) => {
     appDispatch({
@@ -96,6 +110,7 @@ const Point = (props: {
             e.key === "Backspace" &&
             ref.current &&
             ref.current.selectionStart === 0 &&
+            ref.current.selectionStart === ref.current.selectionEnd &&
             index !== 0
           ) {
             e.preventDefault();

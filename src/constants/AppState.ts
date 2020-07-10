@@ -84,9 +84,15 @@ export interface MessageI {
   createdAt: Date;
 }
 
+export interface SetCursorPositionI {
+  pointId: string;
+  index: number;
+}
+
 export interface AppI {
   message: MessageI;
   editingPoint: PointI["pointId"];
+  setCursorPosition?: SetCursorPositionI | undefined;
 }
 
 export type AppReducerAction =
@@ -110,7 +116,8 @@ export type AppReducerAction =
   | { type: "combineWithPriorPoint"; point: PointI; index: number }
   | { type: "setFocus"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
-  | { type: "noEditingPoint" };
+  | { type: "noEditingPoint" }
+  | { type: "resetCursorPosition" };
 
 //TODO: rename setFocus case in appReducer
 //TODO: validate that focus points are contained in the points array
