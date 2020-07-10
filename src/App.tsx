@@ -116,6 +116,27 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ),
         },
       };
+    case "combineWithPriorPoint":
+      const combinedPoints = appState.message.points[
+        action.point.shape
+      ].slice();
+      combinedPoints.splice(action.index - 1, 2, {
+        ...appState.message.points[action.point.shape][action.index - 1],
+        content:
+          appState.message.points[action.point.shape][action.index - 1]
+            .content +
+          appState.message.points[action.point.shape][action.index].content,
+      });
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.point.shape]: combinedPoints,
+          },
+        },
+      };
     case "setFocus":
       return {
         ...appState,

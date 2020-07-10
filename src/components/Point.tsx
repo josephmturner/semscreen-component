@@ -25,12 +25,22 @@ import styled from "styled-components";
 
 const Point = (props: {
   point: PointI;
+  index: number;
   appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
+  combineWithPriorPoint: (point: PointI, index: number) => void;
   onClick: any;
 }) => {
-  const { point, appDispatch, isEditing, onEnterPress, onClick } = props;
+  const {
+    point,
+    index,
+    appDispatch,
+    isEditing,
+    onEnterPress,
+    combineWithPriorPoint,
+    onClick,
+  } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -39,10 +49,11 @@ const Point = (props: {
   }, [isEditing]);
 
   const handleChange = (e: any) => {
-   appDispatch({
+    appDispatch({
       type: "pointUpdate",
       point: { ...point, content: e.target.value },
-    }); };
+    });
+  };
 
   const handleBlur = () => {
     appDispatch({
@@ -81,6 +92,14 @@ const Point = (props: {
           if (e.key === "Enter") {
             e.preventDefault();
             onEnterPress();
+          } else if (
+            e.key === "Backspace" &&
+            ref.current &&
+            ref.current.selectionStart === 0 &&
+            index !== 0
+          ) {
+            e.preventDefault();
+            combineWithPriorPoint(point, index);
           }
         }}
       />

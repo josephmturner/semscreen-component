@@ -107,6 +107,7 @@ export type AppReducerAction =
       };
     }
   | { type: "pointsDelete"; pointIds: string[] }
+  | { type: "combineWithPriorPoint"; point: PointI; index: number }
   | { type: "setFocus"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
   | { type: "noEditingPoint" };

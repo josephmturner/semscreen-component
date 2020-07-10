@@ -56,10 +56,11 @@ const Region = (props: {
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      {renderPoints.map((p: any) => (
+      {renderPoints.map((p: any, i: number) => (
         <Point
           key={p.pointId}
           point={p}
+          index={i}
           appDispatch={appDispatch}
           isEditing={editingPoint === p.pointId}
           onEnterPress={() => {
@@ -67,6 +68,13 @@ const Region = (props: {
               region,
               points.findIndex((p) => p.pointId === editingPoint) + 1
             );
+          }}
+          combineWithPriorPoint={(point: PointI, index: number) => {
+            appDispatch({
+              type: "combineWithPriorPoint",
+              point: point,
+              index: index,
+            });
           }}
           onClick={() => onRegionClick(region, true)}
         />
