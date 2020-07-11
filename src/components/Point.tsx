@@ -76,7 +76,8 @@ const Point = (props: {
 
   const handleBlur = () => {
     appDispatch({
-      type: "setEditingPoint", editingPoint: undefined,
+      type: "setEditingPoint",
+      editingPoint: undefined,
     });
   };
 
@@ -147,6 +148,7 @@ const StyledTextArea = styled(TextareaAutosize)`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
+  font-size: small;
   outline: 0;
   resize: none;
 `;
