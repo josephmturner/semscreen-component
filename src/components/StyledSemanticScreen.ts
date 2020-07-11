@@ -22,6 +22,7 @@ interface Props {
   color?: string;
   expandedRegion: string;
   showShapes: boolean;
+  ref: any;
 }
 
 const StyledSemanticScreen = styled.div<Props>`
