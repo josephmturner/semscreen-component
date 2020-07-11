@@ -200,6 +200,7 @@ const SemanticScreen = (props: {
               points={message.points[region as PointShape].filter(
                 (p) => p.pointId !== message.focus
               )}
+              mainPointId={message.main}
               appDispatch={appDispatch}
               editingPoint={editingPoint}
               setCursorPosition={setCursorPosition}

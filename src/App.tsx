@@ -174,6 +174,11 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         ...appState,
         message: { ...appState.message, focus: action.pointId },
       };
+    case "setMainPoint":
+      return {
+        ...appState,
+        message: { ...appState.message, main: action.pointId},
+      };
     case "setEditingPoint":
       return { ...appState, editingPoint: action.pointId };
     case "resetCursorPosition":

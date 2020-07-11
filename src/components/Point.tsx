@@ -25,6 +25,7 @@ import styled from "styled-components";
 
 const Point = (props: {
   point: PointI;
+  isMainPoint: boolean;
   index: number;
   appDispatch: any;
   isEditing: boolean;
@@ -36,6 +37,7 @@ const Point = (props: {
 }) => {
   const {
     point,
+    isMainPoint,
     index,
     appDispatch,
     isEditing,
@@ -94,7 +96,7 @@ const Point = (props: {
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick}>
+    <StyledSpan isMainPoint={isMainPoint} onClick={handleClick}>
       <StyledImg src={imageUrl} alt={point.shape} />
       <StyledTextArea
         value={point.content}
@@ -132,14 +134,25 @@ const Point = (props: {
   );
 };
 
+
+interface StyledSpanProps {
+  isMainPoint: boolean;
+}
+
+const StyledSpan = styled.span<StyledSpanProps>`
+  display: flex;
+${ (props) => props.isMainPoint &&
+`
+  border-top: dashed #eee;
+  border-bottom: dashed #eee;
+`
+}
+`;
+
 const StyledImg = styled.img`
   height: 20px;
   margin: 0px 4px 0 3px;
   opacity: 0.7;
-`;
-
-const StyledSpan = styled.span`
-  display: flex;
 `;
 
 const StyledTextArea = styled(TextareaAutosize)`

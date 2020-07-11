@@ -19,8 +19,7 @@
 import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
-import StyledRegion from "./StyledRegion";
-import {
+import StyledRegion from "./StyledRegion"; import {
   AuthorI,
   PointI,
   RegionI,
@@ -29,6 +28,7 @@ import {
 
 const Region = (props: {
   region: RegionI;
+  mainPointId: string | undefined;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
@@ -40,6 +40,7 @@ const Region = (props: {
 }) => {
   const {
     region,
+    mainPointId,
     isExpanded,
     points,
     author,
@@ -67,6 +68,7 @@ const Region = (props: {
         <Point
           key={p.pointId}
           point={p}
+          isMainPoint={mainPointId === p.pointId}
           index={i}
           appDispatch={appDispatch}
           isEditing={editingPoint === p.pointId}
