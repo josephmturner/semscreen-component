@@ -19,7 +19,8 @@
 import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
-import StyledRegion from "./StyledRegion"; import {
+import StyledRegion from "./StyledRegion";
+import {
   AuthorI,
   PointI,
   RegionI,
@@ -64,57 +65,59 @@ const Region = (props: {
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
     >
-      {renderPoints.map((p: any, i: number) => (
-        <Point
-          key={p.pointId}
-          point={p}
-          isMainPoint={mainPointId === p.pointId}
-          index={i}
-          appDispatch={appDispatch}
-          isEditing={editingPoint === p.pointId}
-          createPointBelow={(topContent, bottomContent) => {
-            appDispatch({
-              type: "splitIntoTwoPoints",
-              topPoint: {
-                author: author,
-                content: topContent,
-                shape: region,
-              },
-              bottomPoint: {
-                author: author,
-                content: bottomContent,
-                shape: region,
-              },
-              index: points.findIndex((p) => p.pointId === editingPoint),
-            });
-          }}
-          combineWithPriorPoint={(point: PointI, index: number) => {
-            appDispatch({
-              type: "combineWithPriorPoint",
-              point: point,
-              index: index,
-            });
-          }}
-          setCursorPositionIndex={
-            setCursorPosition && setCursorPosition.pointId === p.pointId
-              ? !isNaN(setCursorPosition.index)
-                ? setCursorPosition.index
-                : 0
-              : undefined
-          }
-          onClick={() => onRegionClick(region, true)}
-        />
-      ))}
-      {isExpanded === "expanded" && (
-        <Placeholder
-          text={placeholderText}
-          img={placeholderImg}
-          imgAlt={placeholderImgAlt}
-          onClick={() => {
-            createEmptyPoint(region, points.length);
-          }}
-        />
-      )}
+      <div>
+        {renderPoints.map((p: any, i: number) => (
+          <Point
+            key={p.pointId}
+            point={p}
+            isMainPoint={mainPointId === p.pointId}
+            index={i}
+            appDispatch={appDispatch}
+            isEditing={editingPoint === p.pointId}
+            createPointBelow={(topContent, bottomContent) => {
+              appDispatch({
+                type: "splitIntoTwoPoints",
+                topPoint: {
+                  author: author,
+                  content: topContent,
+                  shape: region,
+                },
+                bottomPoint: {
+                  author: author,
+                  content: bottomContent,
+                  shape: region,
+                },
+                index: points.findIndex((p) => p.pointId === editingPoint),
+              });
+            }}
+            combineWithPriorPoint={(point: PointI, index: number) => {
+              appDispatch({
+                type: "combineWithPriorPoint",
+                point: point,
+                index: index,
+              });
+            }}
+            setCursorPositionIndex={
+              setCursorPosition && setCursorPosition.pointId === p.pointId
+                ? !isNaN(setCursorPosition.index)
+                  ? setCursorPosition.index
+                  : 0
+                : undefined
+            }
+            onClick={() => onRegionClick(region, true)}
+          />
+        ))}
+        {isExpanded === "expanded" && (
+          <Placeholder
+            text={placeholderText}
+            img={placeholderImg}
+            imgAlt={placeholderImgAlt}
+            onClick={() => {
+              createEmptyPoint(region, points.length);
+            }}
+          />
+        )}
+      </div>
     </StyledRegion>
   );
 };

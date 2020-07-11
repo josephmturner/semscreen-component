@@ -78,7 +78,8 @@ const Point = (props: {
 
   const handleBlur = () => {
     appDispatch({
-      type: "setEditingPoint", editingPoint: undefined,
+      type: "setEditingPoint",
+      editingPoint: undefined,
     });
   };
 
@@ -143,8 +144,9 @@ const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
 ${ (props) => props.isMainPoint &&
 `
-  border-top: dashed #eee;
-  border-bottom: dashed #eee;
+  border-top: dashed #4f4f4f;
+  border-bottom: dashed #4f4f4f;
+  margin: 1% 0;
 `
 }
 `;
@@ -160,6 +162,7 @@ const StyledTextArea = styled(TextareaAutosize)`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
+  font-size: small;
   outline: 0;
   resize: none;
 `;

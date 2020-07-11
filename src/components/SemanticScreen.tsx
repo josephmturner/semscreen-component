@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -32,6 +32,8 @@ import {
   RegionI,
   SetCursorPositionI,
 } from "../constants/AppState";
+
+import { wrapGrid } from "animate-css-grid";
 
 const SemanticScreen = (props: {
   message: MessageI;
@@ -63,13 +65,6 @@ const SemanticScreen = (props: {
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
- const ref = React.useRef<HTMLDivElement>();
-  const [forceRerender, setForceRerender] = useState();
-  console.log(forceRerender);
- useEffect(() => {
-  ref.current && ref.current.addEventListener('transitionend', () => setForceRerender(Math.random()))
-
- }, [setForceRerender]);
   const createEmptyPoint = (shape: PointShape, index: number) => {
     appDispatch({
       type: "pointCreate",
@@ -149,12 +144,19 @@ const SemanticScreen = (props: {
     "topics",
   ];
 
+  const semanticScreenRef = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    semanticScreenRef.current &&
+      wrapGrid(semanticScreenRef.current, { duration: 150, easing: "easeIn" });
+  }, []);
+
   return (
     <StyledSemanticScreen
       color={author.styles.textColor}
       expandedRegion={expandedRegion}
       showShapes={showShapes}
-      ref={ref}
+      ref={semanticScreenRef}
     >
       <Banner
         author={author}

@@ -73,26 +73,28 @@ const FocusRegion = (props: {
 
   return (
     <StyledFocusRegion onClick={() => onRegionClick(region, false)}>
-      {point && (
-        <FocusPoint
-          point={point}
-          appDispatch={appDispatch}
-          isEditing={point && editingPoint === point.pointId ? true : false}
-          onEnterPress={() => console.log("enter pressed in focus region")}
-          onClick={() => onRegionClick(region, true)}
-        />
-      )}
-      {!chooseShapes && isExpanded === "expanded" && (
-        <Placeholder
-          text={placeholderText}
-          img={placeholderImg}
-          imgAlt={placeholderImgAlt}
-          onClick={handlePlaceholderClick}
-        />
-      )}
-      {chooseShapes && isExpanded === "expanded" && (
-        <ChooseShapes handleClick={handleChooseShapesClick} />
-      )}
+      <div>
+        {point && (
+          <FocusPoint
+            point={point}
+            appDispatch={appDispatch}
+            isEditing={point && editingPoint === point.pointId ? true : false}
+            onEnterPress={() => console.log("enter pressed in focus region")}
+            onClick={() => onRegionClick(region, true)}
+          />
+        )}
+        {!chooseShapes && isExpanded === "expanded" && (
+          <Placeholder
+            text={placeholderText}
+            img={placeholderImg}
+            imgAlt={placeholderImgAlt}
+            onClick={handlePlaceholderClick}
+          />
+        )}
+        {chooseShapes && isExpanded === "expanded" && (
+          <ChooseShapes handleClick={handleChooseShapesClick} />
+        )}
+      </div>
     </StyledFocusRegion>
   );
 };
