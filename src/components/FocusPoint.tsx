@@ -53,7 +53,8 @@ const FocusPoint = (props: {
       point: { ...point, content: content },
     });
     appDispatch({
-      type: "setEditingPoint", pointId: undefined,
+      type: "setEditingPoint",
+      pointId: undefined,
     });
   };
 
@@ -111,6 +112,7 @@ const StyledTextArea = styled(TextareaAutosize)`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
+  font-size: small;
   outline: 0;
   resize: none;
 `;
