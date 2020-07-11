@@ -76,7 +76,7 @@ const Point = (props: {
 
   const handleBlur = () => {
     appDispatch({
-      type: "noEditingPoint",
+      type: "setEditingPoint", editingPoint: undefined,
     });
   };
 

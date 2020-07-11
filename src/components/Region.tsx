@@ -33,7 +33,7 @@ const Region = (props: {
   author: AuthorI;
   points: PointI[];
   appDispatch: any;
-  editingPoint: PointI["pointId"];
+  editingPoint: PointI["pointId"] | undefined;
   setCursorPosition?: SetCursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;

@@ -176,8 +176,6 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
       };
     case "setEditingPoint":
       return { ...appState, editingPoint: action.pointId };
-    case "noEditingPoint":
-      return { ...appState, editingPoint: "" };
     case "resetCursorPosition":
       return {
         ...appState,
@@ -192,7 +190,7 @@ const App = () => {
   const showShapes = true;
   const [appState, appDispatch] = useReducer(appReducer, {
     message: messages[0],
-    editingPoint: "",
+    editingPoint: undefined,
     setCursorPosition: undefined,
   });
   //TODO: how to type appState

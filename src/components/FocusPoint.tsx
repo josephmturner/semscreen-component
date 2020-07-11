@@ -53,7 +53,7 @@ const FocusPoint = (props: {
       point: { ...point, content: content },
     });
     appDispatch({
-      type: "noEditingPoint",
+      type: "setEditingPoint", pointId: undefined,
     });
   };
 

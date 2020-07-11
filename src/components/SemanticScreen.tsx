@@ -35,7 +35,7 @@ import {
 
 const SemanticScreen = (props: {
   message: MessageI;
-  editingPoint: string;
+  editingPoint: string | undefined;
   setCursorPosition?: SetCursorPositionI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;

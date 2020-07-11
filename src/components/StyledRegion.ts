@@ -20,7 +20,7 @@ import styled from "styled-components";
 
 interface StyledRegionProps {
   backgroundColor: string;
-  isExpanded: string;
+  isExpanded: string | undefined;
 }
 
 const StyledRegion = styled.div<StyledRegionProps>`
