@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -35,7 +35,7 @@ import {
 
 const SemanticScreen = (props: {
   message: MessageI;
-  editingPoint: string;
+  editingPoint: string | undefined;
   setCursorPosition?: SetCursorPositionI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
@@ -63,6 +63,13 @@ const SemanticScreen = (props: {
 
   const [expandedRegion, setExpandedRegion] = useState("");
 
+ const ref = React.useRef<HTMLDivElement>();
+  const [forceRerender, setForceRerender] = useState();
+  console.log(forceRerender);
+ useEffect(() => {
+  ref.current && ref.current.addEventListener('transitionend', () => setForceRerender(Math.random()))
+
+ }, [setForceRerender]);
   const createEmptyPoint = (shape: PointShape, index: number) => {
     appDispatch({
       type: "pointCreate",
@@ -147,6 +154,7 @@ const SemanticScreen = (props: {
       color={author.styles.textColor}
       expandedRegion={expandedRegion}
       showShapes={showShapes}
+      ref={ref}
     >
       <Banner
         author={author}

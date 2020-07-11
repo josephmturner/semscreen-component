@@ -28,7 +28,7 @@ const FocusRegion = (props: {
   isExpanded: string;
   point: PointI | undefined;
   appDispatch: any;
-  editingPoint: PointI["pointId"];
+  editingPoint: PointI["pointId"] | undefined;
   createEmptyFocus: any;
   onRegionClick: any;
 }) => {
