@@ -29,6 +29,7 @@ import {
 
 const Region = (props: {
   region: RegionI;
+  mainPointId: string | undefined;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
@@ -40,6 +41,7 @@ const Region = (props: {
 }) => {
   const {
     region,
+    mainPointId,
     isExpanded,
     points,
     author,
@@ -68,6 +70,7 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
+            isMainPoint={mainPointId === p.pointId}
             index={i}
             appDispatch={appDispatch}
             isEditing={editingPoint === p.pointId}

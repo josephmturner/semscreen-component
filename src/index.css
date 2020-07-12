@@ -1,6 +1,8 @@
 body {
   height: 100vh;
   margin: 0;
+  font-family: small;
+  font-family: ubuntu;
 }
 
 #root {

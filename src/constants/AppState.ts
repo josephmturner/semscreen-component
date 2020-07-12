@@ -121,6 +121,7 @@ export type AppReducerAction =
       index: number;
     }
   | { type: "setFocus"; pointId: string }
+  | { type: "setMainPoint"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
   | { type: "resetCursorPosition" };
 
