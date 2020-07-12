@@ -98,7 +98,7 @@ const FocusPoint = (props: {
 };
 
 const StyledImg = styled.img`
-  height: 40px;
+  height: 20px;
   margin: auto;
   opacity: 0.7;
 `;

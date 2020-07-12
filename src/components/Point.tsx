@@ -87,18 +87,12 @@ const Point = (props: {
     e.stopPropagation();
     onClick();
   };
-  const handleDelete = () => {
-    appDispatch({
-      type: "pointsDelete",
-      pointIds: [point.pointId],
-    });
-  };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
-    <StyledSpan isMainPoint={isMainPoint} onClick={handleClick}>
-      <StyledImg src={imageUrl} alt={point.shape} />
+    <StyledSpan isEditing={isEditing} isMainPoint={isMainPoint} onClick={handleClick}>
+     <StyledImg src={imageUrl} onClick={() => appDispatch({type: "setMainPoint", pointId: point.pointId})} height={isMainPoint ? 30 : 20 } alt={point.shape} />
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
@@ -130,29 +124,35 @@ const Point = (props: {
           }
         }}
       />
-      <Button type="button" onClick={handleDelete} />
     </StyledSpan>
   );
 };
 
 
 interface StyledSpanProps {
+  isEditing: boolean;
   isMainPoint: boolean;
 }
 
+//TODO: replace background-color below with props.color when author
+//styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
-${ (props) => props.isMainPoint &&
+${ (props) => props.isEditing &&
 `
-  border-top: dashed #4f4f4f;
-  border-bottom: dashed #4f4f4f;
-  margin: 1% 0;
+  outline: 2px solid #707070;
 `
 }
-`;
+
+${ (props) => props.isMainPoint &&
+`
+  border-top: solid #4f4f4f;
+  border-bottom: solid #4f4f4f;
+  margin: 1% 0;
+`
+}`;
 
 const StyledImg = styled.img`
-  height: 20px;
   margin: 0px 4px 0 3px;
   opacity: 0.7;
 `;
