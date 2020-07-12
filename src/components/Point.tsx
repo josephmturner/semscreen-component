@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
-import Button from "./Button";
 import { PointI } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -25,23 +24,31 @@ import styled from "styled-components";
 
 const Point = (props: {
   point: PointI;
+  isMainPoint: boolean;
   index: number;
   appDispatch: any;
   isEditing: boolean;
   createPointBelow: (topContent: string, bottomContent: string) => void;
-  combineWithPriorPoint: (point: PointI, index: number) => void;
+  combinePoints: (
+    aboveOrBelow: "above" | "below",
+    point: PointI,
+    index: number
+  ) => void;
   //TODO: why do I have to include false as a possible type?
-  setCursorPositionIndex: number | undefined | false;
+  cursorPositionIndex: number | undefined | false;
+  setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
 }) => {
   const {
     point,
+    isMainPoint,
     index,
     appDispatch,
     isEditing,
     createPointBelow,
-    combineWithPriorPoint,
-    setCursorPositionIndex,
+    combinePoints,
+    cursorPositionIndex,
+    setCursorPosition,
     onClick,
   } = props;
 
@@ -53,19 +60,17 @@ const Point = (props: {
 
   //TODO: is there a better way to handle the falsiness of 0
   //(currently, I am using a ternary operator in Region when I pass
-  //setCursorPositionIndex to Point and then belwo in the useEffect
+  //cursorPositionIndex to Point and then belwo in the useEffect
   useEffect(() => {
-    console.log(setCursorPositionIndex);
-    if (!isNaN(setCursorPositionIndex as number) && ref.current) {
-      console.log(setCursorPositionIndex);
+    if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(
-        setCursorPositionIndex as number,
-        setCursorPositionIndex as number
+        cursorPositionIndex as number,
+        cursorPositionIndex as number
       );
       appDispatch({ type: "resetCursorPosition" });
     }
-  }, [setCursorPositionIndex, appDispatch]);
+  }, [cursorPositionIndex, appDispatch]);
 
   const handleChange = (e: any) => {
     appDispatch({
@@ -85,18 +90,23 @@ const Point = (props: {
     e.stopPropagation();
     onClick();
   };
-  const handleDelete = () => {
-    appDispatch({
-      type: "pointsDelete",
-      pointIds: [point.pointId],
-    });
-  };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick}>
-      <StyledImg src={imageUrl} alt={point.shape} />
+    <StyledSpan
+      isEditing={isEditing}
+      isMainPoint={isMainPoint}
+      onClick={handleClick}
+    >
+      <StyledImg
+        src={imageUrl}
+        onClick={() =>
+          appDispatch({ type: "setMainPoint", pointId: point.pointId })
+        }
+        height={isMainPoint ? 30 : 20}
+        alt={point.shape}
+      />
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
@@ -124,23 +134,66 @@ const Point = (props: {
             index !== 0
           ) {
             e.preventDefault();
-            combineWithPriorPoint(point, index);
+            combinePoints("above", point, index);
+          } else if (
+            e.key === "Delete" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            combinePoints("below", point, index);
+          } else if (
+            e.key === "ArrowLeft" &&
+            ref.current &&
+            ref.current.selectionStart === 0 &&
+            ref.current.selectionStart === ref.current.selectionEnd &&
+            index !== 0
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "endOfPriorPoint");
+          } else if (
+            e.key === "ArrowRight" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "beginningOfNextPoint");
           }
         }}
       />
-      <Button type="button" onClick={handleDelete} />
     </StyledSpan>
   );
 };
 
-const StyledImg = styled.img`
-  height: 20px;
-  margin: 0px 4px 0 3px;
-  opacity: 0.7;
+interface StyledSpanProps {
+  isEditing: boolean;
+  isMainPoint: boolean;
+}
+
+//TODO: replace background-color below with props.color when author
+//styles are ready
+const StyledSpan = styled.span<StyledSpanProps>`
+  display: flex;
+  ${(props) =>
+    props.isEditing &&
+    `
+  outline: 2px solid #707070;
+`}
+
+  ${(props) =>
+    props.isMainPoint &&
+    `
+  border-top: solid #4f4f4f;
+  border-bottom: solid #4f4f4f;
+  margin: 1% 0;
+`}
 `;
 
-const StyledSpan = styled.span`
-  display: flex;
+const StyledImg = styled.img`
+  margin: 0px 4px 0 3px;
+  opacity: 0.7;
 `;
 
 const StyledTextArea = styled(TextareaAutosize)`

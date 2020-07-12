@@ -1,6 +1,5 @@
 /*
-  Copyright (C) 2020 by USHIN, Inc.
-
+  Copyright (C) 2020 by USHIN, Inc.  
   This file is part of U4U.
 
   U4U is free software: you can redistribute it and/or modify
@@ -24,7 +23,7 @@ import {
   AuthorI,
   PointI,
   RegionI,
-  SetCursorPositionI,
+  CursorPositionI,
 } from "../constants/AppState";
 
 const Region = (props: {
@@ -32,9 +31,11 @@ const Region = (props: {
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
+  focusPointId: string | undefined;
+  mainPointId: string | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
-  setCursorPosition?: SetCursorPositionI;
+  cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
 }) => {
@@ -42,16 +43,17 @@ const Region = (props: {
     region,
     isExpanded,
     points,
+    focusPointId,
+    mainPointId,
     author,
     appDispatch,
     editingPoint,
-    setCursorPosition,
+    cursorPosition,
     createEmptyPoint,
     onRegionClick,
   } = props;
 
-  const renderPoints =
-    isExpanded === "expanded" ? points : points.filter((p) => p.content);
+  const renderPoints = points.filter((p) => p.pointId !== focusPointId);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -64,11 +66,12 @@ const Region = (props: {
       onClick={() => onRegionClick(region, false)}
     >
       <div>
-        {renderPoints.map((p: any, i: number) => (
+        {renderPoints.map((p: PointI) => (
           <Point
             key={p.pointId}
             point={p}
-            index={i}
+            isMainPoint={mainPointId === p.pointId}
+            index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
             isEditing={editingPoint === p.pointId}
             createPointBelow={(topContent, bottomContent) => {
@@ -87,17 +90,42 @@ const Region = (props: {
                 index: points.findIndex((p) => p.pointId === editingPoint),
               });
             }}
-            combineWithPriorPoint={(point: PointI, index: number) => {
-              appDispatch({
-                type: "combineWithPriorPoint",
-                point: point,
-                index: index,
-              });
+            combinePoints={(
+              aboveOrBelow: "above" | "below",
+              point: PointI,
+              index: number
+            ) => {
+              if (aboveOrBelow === "below" && index === points.length - 1) {
+                return;
+              } else {
+                appDispatch({
+                  type: "combinePoints",
+                  aboveOrBelow: aboveOrBelow,
+                  point: point,
+                  index: index,
+                });
+              }
             }}
-            setCursorPositionIndex={
-              setCursorPosition && setCursorPosition.pointId === p.pointId
-                ? !isNaN(setCursorPosition.index)
-                  ? setCursorPosition.index
+            setCursorPosition={(index: number, moveTo: string) => {
+              if (moveTo === "endOfPriorPoint") {
+                appDispatch({
+                  type: "setCursorPosition",
+                  pointId: points[index - 1].pointId,
+                  index: points[index - 1].content.length,
+                });
+              } else if (moveTo === "beginningOfNextPoint") {
+                !(index === points.length - 1) &&
+                  appDispatch({
+                    type: "setCursorPosition",
+                    pointId: points[index + 1].pointId,
+                    index: 0,
+                  });
+              }
+            }}
+            cursorPositionIndex={
+              cursorPosition && cursorPosition.pointId === p.pointId
+                ? !isNaN(cursorPosition.index)
+                  ? cursorPosition.index
                   : 0
                 : undefined
             }
