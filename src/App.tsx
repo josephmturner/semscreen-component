@@ -136,7 +136,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             [action.point.shape]: combinedPoints,
           },
         },
-        setCursorPosition: {
+        cursorPosition: {
           pointId:
             appState.message.points[action.point.shape][action.index - 1]
               .pointId,
@@ -167,7 +167,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             [action.topPoint.shape]: splitPoints,
           },
         },
-        setCursorPosition: { pointId: newPointId, index: 0 },
+        cursorPosition: { pointId: newPointId, index: 0 },
       };
     case "setFocus":
       return {
@@ -177,14 +177,20 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
     case "setMainPoint":
       return {
         ...appState,
-        message: { ...appState.message, main: action.pointId},
+        message: { ...appState.message, main: action.pointId },
       };
     case "setEditingPoint":
       return { ...appState, editingPoint: action.pointId };
+    //TODO: globally, distinguish pointsArrayIndex from pointContentIndex, currently both are labeled 'index'
+    case "setCursorPosition":
+      return {
+        ...appState,
+        cursorPosition: { pointId: action.pointId, index: action.index },
+      };
     case "resetCursorPosition":
       return {
         ...appState,
-        setCursorPosition: undefined,
+        cursorPosition: undefined,
       };
     default:
       return appState;
@@ -196,7 +202,7 @@ const App = () => {
   const [appState, appDispatch] = useReducer(appReducer, {
     message: messages[0],
     editingPoint: undefined,
-    setCursorPosition: undefined,
+    cursorPosition: undefined,
   });
   //TODO: how to type appState
 
@@ -206,7 +212,7 @@ const App = () => {
     <SemanticScreen
       message={appState.message}
       editingPoint={appState.editingPoint}
-      setCursorPosition={appState.setCursorPosition}
+      cursorPosition={appState.cursorPosition}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

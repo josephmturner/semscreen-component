@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
-import Button from "./Button";
 import { PointI } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -32,7 +31,8 @@ const Point = (props: {
   createPointBelow: (topContent: string, bottomContent: string) => void;
   combineWithPriorPoint: (point: PointI, index: number) => void;
   //TODO: why do I have to include false as a possible type?
-  setCursorPositionIndex: number | undefined | false;
+  cursorPositionIndex: number | undefined | false;
+  setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
 }) => {
   const {
@@ -43,7 +43,8 @@ const Point = (props: {
     isEditing,
     createPointBelow,
     combineWithPriorPoint,
-    setCursorPositionIndex,
+    cursorPositionIndex,
+    setCursorPosition,
     onClick,
   } = props;
 
@@ -55,19 +56,17 @@ const Point = (props: {
 
   //TODO: is there a better way to handle the falsiness of 0
   //(currently, I am using a ternary operator in Region when I pass
-  //setCursorPositionIndex to Point and then belwo in the useEffect
+  //cursorPositionIndex to Point and then belwo in the useEffect
   useEffect(() => {
-    console.log(setCursorPositionIndex);
-    if (!isNaN(setCursorPositionIndex as number) && ref.current) {
-      console.log(setCursorPositionIndex);
+    if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(
-        setCursorPositionIndex as number,
-        setCursorPositionIndex as number
+        cursorPositionIndex as number,
+        cursorPositionIndex as number
       );
       appDispatch({ type: "resetCursorPosition" });
     }
-  }, [setCursorPositionIndex, appDispatch]);
+  }, [cursorPositionIndex, appDispatch]);
 
   const handleChange = (e: any) => {
     appDispatch({
@@ -91,8 +90,19 @@ const Point = (props: {
   const imageUrl = require(`../images/${point.shape}.svg`);
 
   return (
-    <StyledSpan isEditing={isEditing} isMainPoint={isMainPoint} onClick={handleClick}>
-     <StyledImg src={imageUrl} onClick={() => appDispatch({type: "setMainPoint", pointId: point.pointId})} height={isMainPoint ? 30 : 20 } alt={point.shape} />
+    <StyledSpan
+      isEditing={isEditing}
+      isMainPoint={isMainPoint}
+      onClick={handleClick}
+    >
+      <StyledImg
+        src={imageUrl}
+        onClick={() =>
+          appDispatch({ type: "setMainPoint", pointId: point.pointId })
+        }
+        height={isMainPoint ? 30 : 20}
+        alt={point.shape}
+      />
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
@@ -121,13 +131,29 @@ const Point = (props: {
           ) {
             e.preventDefault();
             combineWithPriorPoint(point, index);
+          } else if (
+            e.key === "ArrowLeft" &&
+            ref.current &&
+            ref.current.selectionStart === 0 &&
+            ref.current.selectionStart === ref.current.selectionEnd &&
+            index !== 0
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "endOfPriorPoint");
+          } else if (
+            e.key === "ArrowRight" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "beginningOfNextPoint");
           }
         }}
       />
     </StyledSpan>
   );
 };
-
 
 interface StyledSpanProps {
   isEditing: boolean;
@@ -138,19 +164,20 @@ interface StyledSpanProps {
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
-${ (props) => props.isEditing &&
-`
+  ${(props) =>
+    props.isEditing &&
+    `
   outline: 2px solid #707070;
-`
-}
+`}
 
-${ (props) => props.isMainPoint &&
-`
+  ${(props) =>
+    props.isMainPoint &&
+    `
   border-top: solid #4f4f4f;
   border-bottom: solid #4f4f4f;
   margin: 1% 0;
-`
-}`;
+`}
+`;
 
 const StyledImg = styled.img`
   margin: 0px 4px 0 3px;

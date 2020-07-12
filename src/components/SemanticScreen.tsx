@@ -30,7 +30,7 @@ import {
   MessageI,
   PointShape,
   RegionI,
-  SetCursorPositionI,
+  CursorPositionI,
 } from "../constants/AppState";
 
 import { wrapGrid } from "animate-css-grid";
@@ -38,7 +38,7 @@ import { wrapGrid } from "animate-css-grid";
 const SemanticScreen = (props: {
   message: MessageI;
   editingPoint: string | undefined;
-  setCursorPosition?: SetCursorPositionI;
+  cursorPosition?: CursorPositionI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   appDispatch: any;
@@ -47,7 +47,7 @@ const SemanticScreen = (props: {
     message,
     showShapes,
     editingPoint,
-    setCursorPosition,
+    cursorPosition,
     onAuthorUpdate,
     appDispatch,
   } = props;
@@ -205,7 +205,7 @@ const SemanticScreen = (props: {
               mainPointId={message.main}
               appDispatch={appDispatch}
               editingPoint={editingPoint}
-              setCursorPosition={setCursorPosition}
+              cursorPosition={cursorPosition}
               createEmptyPoint={createEmptyPoint}
               onRegionClick={handleRegionClick}
               key={region}

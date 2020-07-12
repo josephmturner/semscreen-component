@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import Button from "./Button";
 import { PointI } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -62,12 +61,6 @@ const FocusPoint = (props: {
     e.stopPropagation();
     onClick();
   };
-  const handleDelete = () => {
-    appDispatch({
-      type: "pointsDelete",
-      pointIds: [point.pointId],
-    });
-  };
 
   const imageUrl = require(`../images/${point.shape}.svg`);
 
@@ -92,7 +85,6 @@ const FocusPoint = (props: {
           }
         }}
       />
-      <Button type="button" onClick={handleDelete} />
     </StyledSpan>
   );
 };

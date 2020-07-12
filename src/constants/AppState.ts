@@ -84,7 +84,7 @@ export interface MessageI {
   createdAt: Date;
 }
 
-export interface SetCursorPositionI {
+export interface CursorPositionI {
   pointId: string;
   index: number;
 }
@@ -92,7 +92,7 @@ export interface SetCursorPositionI {
 export interface AppI {
   message: MessageI;
   editingPoint: PointI["pointId"] | undefined;
-  setCursorPosition?: SetCursorPositionI | undefined;
+  cursorPosition?: CursorPositionI | undefined;
 }
 
 export type AppReducerAction =
@@ -123,6 +123,7 @@ export type AppReducerAction =
   | { type: "setFocus"; pointId: string }
   | { type: "setMainPoint"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
+  | { type: "setCursorPosition"; pointId: string; index: number }
   | { type: "resetCursorPosition" };
 
 //TODO: rename setFocus case in appReducer

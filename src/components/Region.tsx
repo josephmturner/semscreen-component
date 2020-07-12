@@ -24,7 +24,7 @@ import {
   AuthorI,
   PointI,
   RegionI,
-  SetCursorPositionI,
+  CursorPositionI,
 } from "../constants/AppState";
 
 const Region = (props: {
@@ -35,7 +35,7 @@ const Region = (props: {
   points: PointI[];
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
-  setCursorPosition?: SetCursorPositionI;
+  cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
 }) => {
@@ -47,7 +47,7 @@ const Region = (props: {
     author,
     appDispatch,
     editingPoint,
-    setCursorPosition,
+    cursorPosition,
     createEmptyPoint,
     onRegionClick,
   } = props;
@@ -97,10 +97,26 @@ const Region = (props: {
                 index: index,
               });
             }}
-            setCursorPositionIndex={
-              setCursorPosition && setCursorPosition.pointId === p.pointId
-                ? !isNaN(setCursorPosition.index)
-                  ? setCursorPosition.index
+            setCursorPosition={(index: number, moveTo: string) => {
+              if (moveTo === "endOfPriorPoint") {
+                appDispatch({
+                  type: "setCursorPosition",
+                  pointId: points[index - 1].pointId,
+                  index: points[index - 1].content.length,
+                });
+              } else if (moveTo === "beginningOfNextPoint") {
+                !(index === points.length - 1) &&
+                  appDispatch({
+                    type: "setCursorPosition",
+                    pointId: points[index + 1].pointId,
+                    index: 0,
+                  });
+              }
+            }}
+            cursorPositionIndex={
+              cursorPosition && cursorPosition.pointId === p.pointId
+                ? !isNaN(cursorPosition.index)
+                  ? cursorPosition.index
                   : 0
                 : undefined
             }
