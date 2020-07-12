@@ -1,6 +1,5 @@
 /*
-  Copyright (C) 2020 by USHIN, Inc.
-
+  Copyright (C) 2020 by USHIN, Inc.  
   This file is part of U4U.
 
   U4U is free software: you can redistribute it and/or modify
@@ -29,10 +28,11 @@ import {
 
 const Region = (props: {
   region: RegionI;
-  mainPointId: string | undefined;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
+  focusPointId: string | undefined;
+  mainPointId: string | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI;
@@ -41,9 +41,10 @@ const Region = (props: {
 }) => {
   const {
     region,
-    mainPointId,
     isExpanded,
     points,
+    focusPointId,
+    mainPointId,
     author,
     appDispatch,
     editingPoint,
@@ -52,8 +53,7 @@ const Region = (props: {
     onRegionClick,
   } = props;
 
-  const renderPoints =
-    isExpanded === "expanded" ? points : points.filter((p) => p.content);
+  const renderPoints = points.filter((p) => p.pointId !== focusPointId);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -66,12 +66,12 @@ const Region = (props: {
       onClick={() => onRegionClick(region, false)}
     >
       <div>
-        {renderPoints.map((p: any, i: number) => (
+        {renderPoints.map((p: PointI) => (
           <Point
             key={p.pointId}
             point={p}
             isMainPoint={mainPointId === p.pointId}
-            index={i}
+            index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
             isEditing={editingPoint === p.pointId}
             createPointBelow={(topContent, bottomContent) => {

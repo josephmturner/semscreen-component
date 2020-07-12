@@ -199,9 +199,8 @@ const SemanticScreen = (props: {
                   : "minimized"
               }
               author={author}
-              points={message.points[region as PointShape].filter(
-                (p) => p.pointId !== message.focus
-              )}
+              points={message.points[region as PointShape]}
+              focusPointId={message.focus}
               mainPointId={message.main}
               appDispatch={appDispatch}
               editingPoint={editingPoint}
