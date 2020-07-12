@@ -29,7 +29,11 @@ const Point = (props: {
   appDispatch: any;
   isEditing: boolean;
   createPointBelow: (topContent: string, bottomContent: string) => void;
-  combineWithPriorPoint: (point: PointI, index: number) => void;
+  combinePoints: (
+    aboveOrBelow: "above" | "below",
+    point: PointI,
+    index: number
+  ) => void;
   //TODO: why do I have to include false as a possible type?
   cursorPositionIndex: number | undefined | false;
   setCursorPosition: (index: number, moveTo: string) => void;
@@ -42,7 +46,7 @@ const Point = (props: {
     appDispatch,
     isEditing,
     createPointBelow,
-    combineWithPriorPoint,
+    combinePoints,
     cursorPositionIndex,
     setCursorPosition,
     onClick,
@@ -130,7 +134,15 @@ const Point = (props: {
             index !== 0
           ) {
             e.preventDefault();
-            combineWithPriorPoint(point, index);
+            combinePoints("above", point, index);
+          } else if (
+            e.key === "Delete" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            combinePoints("below", point, index);
           } else if (
             e.key === "ArrowLeft" &&
             ref.current &&

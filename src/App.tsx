@@ -116,17 +116,44 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ),
         },
       };
-    case "combineWithPriorPoint":
+    case "combinePoints":
       const combinedPoints = appState.message.points[
         action.point.shape
       ].slice();
-      combinedPoints.splice(action.index - 1, 2, {
-        ...appState.message.points[action.point.shape][action.index - 1],
-        content:
-          appState.message.points[action.point.shape][action.index - 1]
-            .content +
-          appState.message.points[action.point.shape][action.index].content,
-      });
+      action.aboveOrBelow === "above" &&
+        combinedPoints.splice(action.index - 1, 2, {
+          ...appState.message.points[action.point.shape][action.index - 1],
+          content:
+            appState.message.points[action.point.shape][action.index - 1]
+              .content +
+            appState.message.points[action.point.shape][action.index].content,
+        });
+      action.aboveOrBelow === "below" &&
+        combinedPoints.splice(action.index, 2, {
+          ...appState.message.points[action.point.shape][action.index],
+          content:
+            appState.message.points[action.point.shape][action.index].content +
+            appState.message.points[action.point.shape][action.index + 1]
+              .content,
+        });
+      const newCursorPosition =
+        action.aboveOrBelow === "above"
+          ? {
+              pointId:
+                appState.message.points[action.point.shape][action.index - 1]
+                  .pointId,
+              index:
+                appState.message.points[action.point.shape][action.index - 1]
+                  .content.length,
+            }
+          : {
+              pointId:
+                appState.message.points[action.point.shape][action.index]
+                  .pointId,
+              index:
+                appState.message.points[action.point.shape][action.index]
+                  .content.length,
+            };
       return {
         ...appState,
         message: {
@@ -136,14 +163,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             [action.point.shape]: combinedPoints,
           },
         },
-        cursorPosition: {
-          pointId:
-            appState.message.points[action.point.shape][action.index - 1]
-              .pointId,
-          index:
-            appState.message.points[action.point.shape][action.index - 1]
-              .content.length,
-        },
+        cursorPosition: newCursorPosition,
       };
     case "splitIntoTwoPoints":
       const splitPoints = appState.message.points[

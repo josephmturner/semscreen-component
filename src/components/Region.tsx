@@ -90,12 +90,21 @@ const Region = (props: {
                 index: points.findIndex((p) => p.pointId === editingPoint),
               });
             }}
-            combineWithPriorPoint={(point: PointI, index: number) => {
-              appDispatch({
-                type: "combineWithPriorPoint",
-                point: point,
-                index: index,
-              });
+            combinePoints={(
+              aboveOrBelow: "above" | "below",
+              point: PointI,
+              index: number
+            ) => {
+              if (aboveOrBelow === "below" && index === points.length - 1) {
+                return;
+              } else {
+                appDispatch({
+                  type: "combinePoints",
+                  aboveOrBelow: aboveOrBelow,
+                  point: point,
+                  index: index,
+                });
+              }
             }}
             setCursorPosition={(index: number, moveTo: string) => {
               if (moveTo === "endOfPriorPoint") {

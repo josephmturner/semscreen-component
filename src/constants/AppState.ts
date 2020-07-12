@@ -113,7 +113,12 @@ export type AppReducerAction =
       };
     }
   | { type: "pointsDelete"; pointIds: string[] }
-  | { type: "combineWithPriorPoint"; point: PointI; index: number }
+  | {
+      type: "combinePoints";
+      aboveOrBelow: "above" | "below";
+      point: PointI;
+      index: number;
+    }
   | {
       type: "splitIntoTwoPoints";
       topPoint: PointI;
