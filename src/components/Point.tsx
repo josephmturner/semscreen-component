@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PointI } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -71,6 +71,22 @@ const Point = (props: {
       appDispatch({ type: "resetCursorPosition" });
     }
   }, [cursorPositionIndex, appDispatch]);
+
+  const [arrowPressed, setArrowPressed] = useState<
+    "ArrowUp" | "ArrowDown" | undefined
+  >(undefined);
+  useEffect(() => {
+    if (arrowPressed === "ArrowUp" && ref.current) {
+      ref.current &&
+        ref.current.selectionStart === 0 &&
+        setCursorPosition(index, "beginningOfPriorPoint");
+    } else if (arrowPressed === "ArrowDown" && ref.current) {
+      ref.current &&
+        ref.current.selectionStart === point.content.length &&
+        setCursorPosition(index, "beginningOfNextPoint");
+    }
+    setArrowPressed(undefined);
+  }, [arrowPressed]);
 
   const handleChange = (e: any) => {
     appDispatch({
@@ -160,6 +176,10 @@ const Point = (props: {
           ) {
             e.preventDefault();
             setCursorPosition(index, "beginningOfNextPoint");
+          } else if (e.key === "ArrowUp" && index !== 0) {
+            setArrowPressed("ArrowUp");
+          } else if (e.key === "ArrowDown") {
+            setArrowPressed("ArrowDown");
           }
         }}
       />
