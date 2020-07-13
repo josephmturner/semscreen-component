@@ -199,6 +199,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
   ${(props) =>
     props.isEditing &&
     `
+  margin: 2px 0;
   outline: 2px solid #707070;
 `}
 
