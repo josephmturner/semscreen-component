@@ -86,7 +86,7 @@ const Point = (props: {
         setCursorPosition(index, "beginningOfNextPoint");
     }
     setArrowPressed(undefined);
-  }, [arrowPressed]);
+  }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
   const handleChange = (e: any) => {
     appDispatch({
