@@ -15,7 +15,10 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+// TODO: type appDispatch
+
 import React from "react";
+import PointDropContainer from "./PointDropContainer";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
@@ -67,6 +70,10 @@ const Region = (props: {
     >
       <div>
         {renderPoints.map((p: PointI) => (
+          <PointDropContainer
+            index={points.findIndex((point) => point.pointId === p.pointId)}
+            appDispatch={appDispatch}
+          >
           <Point
             key={p.pointId}
             point={p}
@@ -133,6 +140,7 @@ const Region = (props: {
             }
             onClick={() => onRegionClick(region, true)}
           />
+         </PointDropContainer>
         ))}
         {isExpanded === "expanded" && (
           <Placeholder

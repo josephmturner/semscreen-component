@@ -18,7 +18,9 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 import { PointI } from "../constants/AppState";
+import { ItemTypes } from "../constants/React-Dnd";
 
+import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
@@ -56,6 +58,13 @@ const Point = (props: {
   useEffect(() => {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
+
+  const [{isDragging}, pointRef] = useDrag({
+    item: { type: ItemTypes.POINT, point: point, index: index },
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  })
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
@@ -107,6 +116,7 @@ const Point = (props: {
 
   return (
     <StyledSpan
+      ref={pointRef}
       isEditing={isEditing}
       isMainPoint={isMainPoint}
       onClick={handleClick}

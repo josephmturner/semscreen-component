@@ -18,6 +18,9 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { wrapGrid } from "animate-css-grid";
 import { v4 as uuidv4 } from "uuid";
 
 import Region from "./Region";
@@ -33,7 +36,6 @@ import {
   CursorPositionI,
 } from "../constants/AppState";
 
-import { wrapGrid } from "animate-css-grid";
 
 const SemanticScreen = (props: {
   message: MessageI;
@@ -152,6 +154,7 @@ const SemanticScreen = (props: {
   }, []);
 
   return (
+   <DndProvider backend={HTML5Backend}>
     <StyledSemanticScreen
       color={author.styles.textColor}
       expandedRegion={expandedRegion}
@@ -214,6 +217,7 @@ const SemanticScreen = (props: {
       })}
       <ShapesRim showShapes={showShapes} />
     </StyledSemanticScreen>
+   </DndProvider>
   );
 };
 
