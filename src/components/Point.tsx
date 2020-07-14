@@ -59,12 +59,12 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const [{isDragging}, pointRef] = useDrag({
+  const [{ isDragging }, pointRef] = useDrag({
     item: { type: ItemTypes.POINT, point: point, index: index },
-    collect: monitor => ({
+    collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  })
+  });
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {

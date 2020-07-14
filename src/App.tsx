@@ -65,12 +65,15 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             editingPoint: newPointId,
           };
     case "pointUpdate":
-
       if (action.move) {
-        const oldShapeNewPoints = appState.message.points[action.move.oldShape].slice();
+        const oldShapeNewPoints = appState.message.points[
+          action.move.oldShape
+        ].slice();
         oldShapeNewPoints.splice(action.move.oldIndex, 1);
 
-        const newShapeNewPoints = appState.message.points[action.move.newShape].slice();
+        const newShapeNewPoints = appState.message.points[
+          action.move.newShape
+        ].slice();
 
         if (action.move.oldShape === action.move.newShape) {
           newShapeNewPoints.splice(action.move.oldIndex, 1);
@@ -91,22 +94,22 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
       }
 
       return {
-            ...appState,
-            message: {
-              ...appState.message,
-              points: {
-                ...appState.message.points,
-                [action.point.shape]: appState.message.points[
-                  action.point.shape
-                ].map((p) => {
-                  if (p.pointId === action.point.pointId) {
-                    return action.point;
-                  }
-                  return p;
-                }),
-              },
-            },
-          };
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.point.shape]: appState.message.points[
+              action.point.shape
+            ].map((p) => {
+              if (p.pointId === action.point.pointId) {
+                return action.point;
+              }
+              return p;
+            }),
+          },
+        },
+      };
     case "pointsDelete":
       return {
         ...appState,

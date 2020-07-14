@@ -36,7 +36,6 @@ import {
   CursorPositionI,
 } from "../constants/AppState";
 
-
 const SemanticScreen = (props: {
   message: MessageI;
   editingPoint: string | undefined;
@@ -154,70 +153,70 @@ const SemanticScreen = (props: {
   }, []);
 
   return (
-   <DndProvider backend={HTML5Backend}>
-    <StyledSemanticScreen
-      color={author.styles.textColor}
-      expandedRegion={expandedRegion}
-      showShapes={showShapes}
-      ref={semanticScreenRef}
-    >
-      <Banner
-        author={author}
+    <DndProvider backend={HTML5Backend}>
+      <StyledSemanticScreen
+        color={author.styles.textColor}
+        expandedRegion={expandedRegion}
         showShapes={showShapes}
-        onAuthorUpdate={onAuthorUpdate}
-      />
-      {regions.map((region: RegionI) => {
-        if (region === "focus") {
-          return (
-            <FocusRegion
-              region={region}
-              isExpanded={
-                region === expandedRegion
-                  ? "expanded"
-                  : expandedRegion === ""
-                  ? "balanced"
-                  : "minimized"
-              }
-              point={Object.values(message.points)
-                .flat()
-                .find((p) => p.pointId === message.focus)}
-              appDispatch={appDispatch}
-              editingPoint={editingPoint}
-              createEmptyFocus={createEmptyFocus}
-              onRegionClick={handleRegionClick}
-              key={region}
-            />
-          );
-        } else if (region === "merits") {
-          return <div key="merits"></div>;
-        } else {
-          return (
-            <Region
-              region={region}
-              isExpanded={
-                region === expandedRegion
-                  ? "expanded"
-                  : expandedRegion === ""
-                  ? "balanced"
-                  : "minimized"
-              }
-              author={author}
-              points={message.points[region as PointShape]}
-              focusPointId={message.focus}
-              mainPointId={message.main}
-              appDispatch={appDispatch}
-              editingPoint={editingPoint}
-              cursorPosition={cursorPosition}
-              createEmptyPoint={createEmptyPoint}
-              onRegionClick={handleRegionClick}
-              key={region}
-            />
-          );
-        }
-      })}
-      <ShapesRim showShapes={showShapes} />
-    </StyledSemanticScreen>
-   </DndProvider>
+        ref={semanticScreenRef}
+      >
+        <Banner
+          author={author}
+          showShapes={showShapes}
+          onAuthorUpdate={onAuthorUpdate}
+        />
+        {regions.map((region: RegionI) => {
+          if (region === "focus") {
+            return (
+              <FocusRegion
+                region={region}
+                isExpanded={
+                  region === expandedRegion
+                    ? "expanded"
+                    : expandedRegion === ""
+                    ? "balanced"
+                    : "minimized"
+                }
+                point={Object.values(message.points)
+                  .flat()
+                  .find((p) => p.pointId === message.focus)}
+                appDispatch={appDispatch}
+                editingPoint={editingPoint}
+                createEmptyFocus={createEmptyFocus}
+                onRegionClick={handleRegionClick}
+                key={region}
+              />
+            );
+          } else if (region === "merits") {
+            return <div key="merits"></div>;
+          } else {
+            return (
+              <Region
+                region={region}
+                isExpanded={
+                  region === expandedRegion
+                    ? "expanded"
+                    : expandedRegion === ""
+                    ? "balanced"
+                    : "minimized"
+                }
+                author={author}
+                points={message.points[region as PointShape]}
+                focusPointId={message.focus}
+                mainPointId={message.main}
+                appDispatch={appDispatch}
+                editingPoint={editingPoint}
+                cursorPosition={cursorPosition}
+                createEmptyPoint={createEmptyPoint}
+                onRegionClick={handleRegionClick}
+                key={region}
+              />
+            );
+          }
+        })}
+        <ShapesRim showShapes={showShapes} />
+      </StyledSemanticScreen>
+    </DndProvider>
   );
 };
 
