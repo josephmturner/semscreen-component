@@ -107,7 +107,13 @@ const Region = (props: {
               }
             }}
             setCursorPosition={(index: number, moveTo: string) => {
-              if (moveTo === "endOfPriorPoint") {
+              if (moveTo === "beginningOfPriorPoint") {
+                appDispatch({
+                  type: "setCursorPosition",
+                  pointId: points[index - 1].pointId,
+                  index: 0,
+                });
+              } else if (moveTo === "endOfPriorPoint") {
                 appDispatch({
                   type: "setCursorPosition",
                   pointId: points[index - 1].pointId,
@@ -123,11 +129,7 @@ const Region = (props: {
               }
             }}
             cursorPositionIndex={
-              cursorPosition && cursorPosition.pointId === p.pointId
-                ? !isNaN(cursorPosition.index)
-                  ? cursorPosition.index
-                  : 0
-                : undefined
+            cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined
             }
             onClick={() => onRegionClick(region, true)}
           />

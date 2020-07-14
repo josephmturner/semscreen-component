@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { PointI } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -34,8 +34,7 @@ const Point = (props: {
     point: PointI,
     index: number
   ) => void;
-  //TODO: why do I have to include false as a possible type?
-  cursorPositionIndex: number | undefined | false;
+  cursorPositionIndex: number | undefined;
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
 }) => {
@@ -58,9 +57,6 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  //TODO: is there a better way to handle the falsiness of 0
-  //(currently, I am using a ternary operator in Region when I pass
-  //cursorPositionIndex to Point and then belwo in the useEffect
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
@@ -71,6 +67,22 @@ const Point = (props: {
       appDispatch({ type: "resetCursorPosition" });
     }
   }, [cursorPositionIndex, appDispatch]);
+
+  const [arrowPressed, setArrowPressed] = useState<
+    "ArrowUp" | "ArrowDown" | undefined
+  >(undefined);
+  useEffect(() => {
+    if (arrowPressed === "ArrowUp" && ref.current) {
+      ref.current &&
+        ref.current.selectionStart === 0 &&
+        setCursorPosition(index, "beginningOfPriorPoint");
+    } else if (arrowPressed === "ArrowDown" && ref.current) {
+      ref.current &&
+        ref.current.selectionStart === point.content.length &&
+        setCursorPosition(index, "beginningOfNextPoint");
+    }
+    setArrowPressed(undefined);
+  }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
   const handleChange = (e: any) => {
     appDispatch({
@@ -160,6 +172,10 @@ const Point = (props: {
           ) {
             e.preventDefault();
             setCursorPosition(index, "beginningOfNextPoint");
+          } else if (e.key === "ArrowUp" && index !== 0) {
+            setArrowPressed("ArrowUp");
+          } else if (e.key === "ArrowDown") {
+            setArrowPressed("ArrowDown");
           }
         }}
       />
@@ -179,6 +195,8 @@ const StyledSpan = styled.span<StyledSpanProps>`
   ${(props) =>
     props.isEditing &&
     `
+  background-color: lightgray;
+  margin: 2px 0;
   outline: 2px solid #707070;
 `}
 
