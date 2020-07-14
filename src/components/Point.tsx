@@ -34,8 +34,7 @@ const Point = (props: {
     point: PointI,
     index: number
   ) => void;
-  //TODO: why do I have to include false as a possible type?
-  cursorPositionIndex: number | undefined | false;
+  cursorPositionIndex: number | undefined;
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
 }) => {
@@ -58,9 +57,6 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  //TODO: is there a better way to handle the falsiness of 0
-  //(currently, I am using a ternary operator in Region when I pass
-  //cursorPositionIndex to Point and then belwo in the useEffect
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();

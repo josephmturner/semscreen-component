@@ -129,11 +129,7 @@ const Region = (props: {
               }
             }}
             cursorPositionIndex={
-              cursorPosition && cursorPosition.pointId === p.pointId
-                ? !isNaN(cursorPosition.index)
-                  ? cursorPosition.index
-                  : 0
-                : undefined
+            cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined
             }
             onClick={() => onRegionClick(region, true)}
           />
