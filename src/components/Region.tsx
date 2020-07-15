@@ -28,7 +28,7 @@ import {
   CursorPositionI,
 } from "../constants/AppState";
 
-import { useDrop, DropTargetMonitor } from "react-dnd";
+import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 const Region = (props: {

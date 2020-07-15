@@ -56,9 +56,6 @@ const Point = (props: {
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-    drop: (item: DraggablePointType) => {
-      console.log("dropped");
-    },
 
     //TODO: consider passing isExpanded from Region to Point and
     //returning without doing anything inside hover below if !isExpanded.
@@ -145,8 +142,6 @@ const Point = (props: {
 
   drag(drop(pointRef));
 
-  const opacity = isDragging ? 0 : 1;
-
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
@@ -200,9 +195,8 @@ const Point = (props: {
       ref={pointRef}
       isEditing={isEditing}
       isMainPoint={isMainPoint}
-      opacity={opacity}
+      isDragging={isDragging}
       onClick={handleClick}
-      style={{ opacity }}
     >
       <StyledImg
         src={imageUrl}
@@ -279,14 +273,14 @@ const Point = (props: {
 interface StyledSpanProps {
   isEditing: boolean;
   isMainPoint: boolean;
-  opacity: number;
+  isDragging: boolean;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
-// opacity: ${(props) => props.opacity};
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
+  opacity: ${(props) => (props.isDragging ? 0 : 1)};
   ${(props) =>
     props.isEditing &&
     `
