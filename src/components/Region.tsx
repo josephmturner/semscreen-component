@@ -62,6 +62,11 @@ const Region = (props: {
   const placeholderImg = require(`../images/${region}.svg`);
   const placeholderImgAlt = region;
 
+  //           <PointDropContainer
+  //             index={points.findIndex((point) => point.pointId === p.pointId)}
+  //             appDispatch={appDispatch}
+  //           >
+
   return (
     <StyledRegion
       isExpanded={isExpanded}
@@ -70,79 +75,74 @@ const Region = (props: {
     >
       <div>
         {renderPoints.map((p: PointI) => (
-          <PointDropContainer
+          <Point
+            key={p.pointId}
+            point={p}
+            isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
-          >
-            <Point
-              key={p.pointId}
-              point={p}
-              isMainPoint={mainPointId === p.pointId}
-              index={points.findIndex((point) => point.pointId === p.pointId)}
-              appDispatch={appDispatch}
-              isEditing={editingPoint === p.pointId}
-              createPointBelow={(topContent, bottomContent) => {
+            isEditing={editingPoint === p.pointId}
+            createPointBelow={(topContent, bottomContent) => {
+              appDispatch({
+                type: "splitIntoTwoPoints",
+                topPoint: {
+                  author: author,
+                  content: topContent,
+                  shape: region,
+                },
+                bottomPoint: {
+                  author: author,
+                  content: bottomContent,
+                  shape: region,
+                },
+                index: points.findIndex((p) => p.pointId === editingPoint),
+              });
+            }}
+            combinePoints={(
+              aboveOrBelow: "above" | "below",
+              point: PointI,
+              index: number
+            ) => {
+              if (aboveOrBelow === "below" && index === points.length - 1) {
+                return;
+              } else {
                 appDispatch({
-                  type: "splitIntoTwoPoints",
-                  topPoint: {
-                    author: author,
-                    content: topContent,
-                    shape: region,
-                  },
-                  bottomPoint: {
-                    author: author,
-                    content: bottomContent,
-                    shape: region,
-                  },
-                  index: points.findIndex((p) => p.pointId === editingPoint),
+                  type: "combinePoints",
+                  aboveOrBelow: aboveOrBelow,
+                  point: point,
+                  index: index,
                 });
-              }}
-              combinePoints={(
-                aboveOrBelow: "above" | "below",
-                point: PointI,
-                index: number
-              ) => {
-                if (aboveOrBelow === "below" && index === points.length - 1) {
-                  return;
-                } else {
-                  appDispatch({
-                    type: "combinePoints",
-                    aboveOrBelow: aboveOrBelow,
-                    point: point,
-                    index: index,
-                  });
-                }
-              }}
-              setCursorPosition={(index: number, moveTo: string) => {
-                if (moveTo === "beginningOfPriorPoint") {
+              }
+            }}
+            setCursorPosition={(index: number, moveTo: string) => {
+              if (moveTo === "beginningOfPriorPoint") {
+                appDispatch({
+                  type: "setCursorPosition",
+                  pointId: points[index - 1].pointId,
+                  index: 0,
+                });
+              } else if (moveTo === "endOfPriorPoint") {
+                appDispatch({
+                  type: "setCursorPosition",
+                  pointId: points[index - 1].pointId,
+                  index: points[index - 1].content.length,
+                });
+              } else if (moveTo === "beginningOfNextPoint") {
+                !(index === points.length - 1) &&
                   appDispatch({
                     type: "setCursorPosition",
-                    pointId: points[index - 1].pointId,
+                    pointId: points[index + 1].pointId,
                     index: 0,
                   });
-                } else if (moveTo === "endOfPriorPoint") {
-                  appDispatch({
-                    type: "setCursorPosition",
-                    pointId: points[index - 1].pointId,
-                    index: points[index - 1].content.length,
-                  });
-                } else if (moveTo === "beginningOfNextPoint") {
-                  !(index === points.length - 1) &&
-                    appDispatch({
-                      type: "setCursorPosition",
-                      pointId: points[index + 1].pointId,
-                      index: 0,
-                    });
-                }
-              }}
-              cursorPositionIndex={
-                cursorPosition && cursorPosition.pointId === p.pointId
-                  ? cursorPosition.index
-                  : undefined
               }
-              onClick={() => onRegionClick(region, true)}
-            />
-          </PointDropContainer>
+            }}
+            cursorPositionIndex={
+              cursorPosition && cursorPosition.pointId === p.pointId
+                ? cursorPosition.index
+                : undefined
+            }
+            onClick={() => onRegionClick(region, true)}
+          />
         ))}
         {isExpanded === "expanded" && (
           <Placeholder
@@ -157,6 +157,7 @@ const Region = (props: {
       </div>
     </StyledRegion>
   );
+  // </PointDropContainer>
 };
 
 export default Region;

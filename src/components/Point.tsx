@@ -18,9 +18,10 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 import { PointI } from "../constants/AppState";
-import { ItemTypes } from "../constants/React-Dnd";
+import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
-import { useDrag } from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { XYCoord } from "dnd-core";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
@@ -53,18 +54,91 @@ const Point = (props: {
     onClick,
   } = props;
 
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    drop: (item: DraggablePointType) => {
+      console.log("dropped");
+    },
+
+    hover(item: DraggablePointType, monitor: DropTargetMonitor) {
+      if (!ref.current) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = props.index;
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      // Get vertical middle
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+
+      // Get pixels to the top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+
+      // Dragging downwards
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      // Dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      // Time to actually perform the action
+
+      const point = item.point;
+
+      props.appDispatch({
+        type: "pointUpdate",
+        point: point,
+        move: {
+          oldShape: point.shape,
+          newShape: point.shape,
+          oldIndex: dragIndex,
+          newIndex: hoverIndex,
+        },
+      });
+
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for the sake of performance
+      // to avoid expensive index searches.
+      item.index = hoverIndex;
+    },
+  });
+
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const [{ isDragging }, pointRef] = useDrag({
+  const pointRef = useRef<HTMLSpanElement>(null);
+
+  const [{ isDragging }, drag] = useDrag({
     item: { type: ItemTypes.POINT, point: point, index: index },
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
   });
+
+  drag(drop(pointRef));
+
   const opacity = isDragging ? 0 : 1;
 
   useEffect(() => {
@@ -94,7 +168,8 @@ const Point = (props: {
     setArrowPressed(undefined);
   }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
-  const handleChange = (e: any) => { appDispatch({
+  const handleChange = (e: any) => {
+    appDispatch({
       type: "pointUpdate",
       point: { ...point, content: e.target.value },
     });
@@ -121,6 +196,7 @@ const Point = (props: {
       isMainPoint={isMainPoint}
       opacity={opacity}
       onClick={handleClick}
+      style={{ opacity }}
     >
       <StyledImg
         src={imageUrl}
@@ -202,9 +278,9 @@ interface StyledSpanProps {
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
+// opacity: ${(props) => props.opacity};
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
-  opacity: ${(props) => props.opacity};
   ${(props) =>
     props.isEditing &&
     `
