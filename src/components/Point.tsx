@@ -65,6 +65,7 @@ const Point = (props: {
       isDragging: !!monitor.isDragging(),
     }),
   });
+  const opacity = isDragging ? 0 : 1;
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
@@ -93,8 +94,7 @@ const Point = (props: {
     setArrowPressed(undefined);
   }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
-  const handleChange = (e: any) => {
-    appDispatch({
+  const handleChange = (e: any) => { appDispatch({
       type: "pointUpdate",
       point: { ...point, content: e.target.value },
     });
@@ -119,6 +119,7 @@ const Point = (props: {
       ref={pointRef}
       isEditing={isEditing}
       isMainPoint={isMainPoint}
+      opacity={opacity}
       onClick={handleClick}
     >
       <StyledImg
@@ -196,12 +197,14 @@ const Point = (props: {
 interface StyledSpanProps {
   isEditing: boolean;
   isMainPoint: boolean;
+  opacity: number;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
+  opacity: ${(props) => props.opacity};
   ${(props) =>
     props.isEditing &&
     `
