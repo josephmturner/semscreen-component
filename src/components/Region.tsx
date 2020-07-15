@@ -78,22 +78,15 @@ const Region = (props: {
         setExpandedRegion(region);
       }
 
-      const draggedPoint = item.point;
-      const dragIndex = item.index;
-
-      // TODO: uncomment this when the time is right
-      // if (draggedPoint.shape !== region) {
-      //   appDispatch({
-      //     type: "pointUpdate",
-      //     point: draggedPoint,
-      //     move: {
-      //       oldShape: draggedPoint.shape,
-      //       newShape: region,
-      //       oldIndex: dragIndex,
-      //       newIndex: points.length,
-      //     },
-      //   });
-      // }
+      // without item.oldShape, there's no way to call appDispatch
+      // only when item.oldShape !== region
+      appDispatch({
+        type: "pointMove",
+        pointId: item.pointId,
+        oldIndex: item.index,
+        newShape: region,
+        newIndex: points.length,
+      });
     },
   });
 

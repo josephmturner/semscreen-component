@@ -83,22 +83,30 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         },
       };
     case "pointMove":
-      const oldShapeNewPoints = appState.message.points[
-        action.oldShape
-      ].slice();
-      oldShapeNewPoints.splice(action.oldIndex, 1);
+      // how to properly type the following line?
+      //@ts-ignore
+      const oldShape = Object.values(appState.message.points)
+        .flat()
+        .find((p) => p.pointId === action.pointId).shape;
 
-      const newShapeNewPoints = appState.message.points[
-        action.newShape
-      ].slice();
+      const oldShapePoints = appState.message.points[oldShape].slice();
+      oldShapePoints.splice(action.oldIndex, 1);
 
-      if (action.oldShape === action.newShape) {
-        newShapeNewPoints.splice(action.oldIndex, 1);
+      const newShapePoints = appState.message.points[action.newShape].slice();
+
+      const pointWithNewShape = appState.message.points[oldShape].find(
+        (p) => p.pointId === action.pointId
+      );
+      if (pointWithNewShape) {
+        pointWithNewShape.shape = action.newShape;
       }
-      newShapeNewPoints.splice(action.newIndex, 0, action.point);
 
-      // TODO: use pointId for the 'item' property in useDrag
-      action.point.shape = action.newShape;
+      if (oldShape === action.newShape) {
+        newShapePoints.splice(action.oldIndex, 1);
+      }
+      if (pointWithNewShape) {
+        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
+      }
 
       return {
         ...appState,
@@ -106,8 +114,8 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ...appState.message,
           points: {
             ...appState.message.points,
-            [action.oldShape]: oldShapeNewPoints,
-            [action.newShape]: newShapeNewPoints,
+            [oldShape]: oldShapePoints,
+            [action.newShape]: newShapePoints,
           },
         },
       };

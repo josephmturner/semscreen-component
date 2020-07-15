@@ -104,12 +104,9 @@ const Point = (props: {
 
       // Time to actually perform the action
 
-      const draggedPoint = item.point;
-
       appDispatch({
         type: "pointMove",
-        point: draggedPoint,
-        oldShape: draggedPoint.shape,
+        pointId: item.pointId,
         newShape: point.shape,
         oldIndex: dragIndex,
         newIndex: hoverIndex,
@@ -133,7 +130,7 @@ const Point = (props: {
 
   const [{ isDragging }, drag] = useDrag({
     // TODO: replace point with pointId here
-    item: { type: ItemTypes.POINT, point: point, index: index },
+    item: { type: ItemTypes.POINT, pointId: point.pointId, index: index },
 
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
