@@ -105,12 +105,14 @@ export type AppReducerAction =
   | {
       type: "pointUpdate";
       point: PointI;
-      move?: {
-        oldShape: PointShape;
-        oldIndex: number;
-        newShape: PointShape;
-        newIndex: number;
-      };
+    }
+  | {
+      type: "pointMove";
+      point: PointI;
+      oldShape: PointShape;
+      oldIndex: number;
+      newShape: PointShape;
+      newIndex: number;
     }
   | { type: "pointsDelete"; pointIds: string[] }
   | {

@@ -65,37 +65,6 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             editingPoint: newPointId,
           };
     case "pointUpdate":
-      if (action.move) {
-        const oldShapeNewPoints = appState.message.points[
-          action.move.oldShape
-        ].slice();
-        oldShapeNewPoints.splice(action.move.oldIndex, 1);
-
-        const newShapeNewPoints = appState.message.points[
-          action.move.newShape
-        ].slice();
-
-        if (action.move.oldShape === action.move.newShape) {
-          newShapeNewPoints.splice(action.move.oldIndex, 1);
-        }
-        newShapeNewPoints.splice(action.move.newIndex, 0, action.point);
-
-        // TODO: use pointId for the 'item' property in useDrag
-        action.point.shape = action.move.newShape;
-
-        return {
-          ...appState,
-          message: {
-            ...appState.message,
-            points: {
-              ...appState.message.points,
-              [action.move.oldShape]: oldShapeNewPoints,
-              [action.move.newShape]: newShapeNewPoints,
-            },
-          },
-        };
-      }
-
       return {
         ...appState,
         message: {
@@ -113,6 +82,36 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           },
         },
       };
+    case "pointMove":
+      const oldShapeNewPoints = appState.message.points[
+        action.oldShape
+      ].slice();
+      oldShapeNewPoints.splice(action.oldIndex, 1);
+
+      const newShapeNewPoints = appState.message.points[
+        action.newShape
+      ].slice();
+
+      if (action.oldShape === action.newShape) {
+        newShapeNewPoints.splice(action.oldIndex, 1);
+      }
+      newShapeNewPoints.splice(action.newIndex, 0, action.point);
+
+      // TODO: use pointId for the 'item' property in useDrag
+      action.point.shape = action.newShape;
+
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.oldShape]: oldShapeNewPoints,
+            [action.newShape]: newShapeNewPoints,
+          },
+        },
+      };
+
     case "pointsDelete":
       return {
         ...appState,

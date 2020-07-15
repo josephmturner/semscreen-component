@@ -60,6 +60,12 @@ const Point = (props: {
       console.log("dropped");
     },
 
+    //TODO: consider passing isExpanded from Region to Point and
+    //returning without doing anything inside hover below if !isExpanded.
+    //This may help with the stagger that happens when dragging a point into a
+    //region which already contains points. In other words, only run
+    //the logic inside hover once the region has expanded to allow that
+    //animation to happen first.
     hover(item: DraggablePointType, monitor: DropTargetMonitor) {
       if (!ref.current) {
         return;
@@ -104,14 +110,12 @@ const Point = (props: {
       const draggedPoint = item.point;
 
       appDispatch({
-        type: "pointUpdate",
+        type: "pointMove",
         point: draggedPoint,
-        move: {
-          oldShape: draggedPoint.shape,
-          newShape: point.shape,
-          oldIndex: dragIndex,
-          newIndex: hoverIndex,
-        },
+        oldShape: draggedPoint.shape,
+        newShape: point.shape,
+        oldIndex: dragIndex,
+        newIndex: hoverIndex,
       });
 
       // Note: we're mutating the monitor item here!
