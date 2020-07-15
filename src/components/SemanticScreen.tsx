@@ -210,6 +210,7 @@ const SemanticScreen = (props: {
                 createEmptyPoint={createEmptyPoint}
                 onRegionClick={handleRegionClick}
                 key={region}
+                setExpandedRegion={setExpandedRegion}
               />
             );
           }

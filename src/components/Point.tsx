@@ -101,13 +101,13 @@ const Point = (props: {
 
       // Time to actually perform the action
 
-      const point = item.point;
+      const draggedPoint = item.point;
 
-      props.appDispatch({
+      appDispatch({
         type: "pointUpdate",
-        point: point,
+        point: draggedPoint,
         move: {
-          oldShape: point.shape,
+          oldShape: draggedPoint.shape,
           newShape: point.shape,
           oldIndex: dragIndex,
           newIndex: hoverIndex,
@@ -131,7 +131,9 @@ const Point = (props: {
   const pointRef = useRef<HTMLSpanElement>(null);
 
   const [{ isDragging }, drag] = useDrag({
+    // TODO: replace point with pointId here
     item: { type: ItemTypes.POINT, point: point, index: index },
+
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),

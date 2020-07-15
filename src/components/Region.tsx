@@ -18,7 +18,6 @@
 // TODO: type appDispatch
 
 import React from "react";
-import PointDropContainer from "./PointDropContainer";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
@@ -28,6 +27,9 @@ import {
   RegionI,
   CursorPositionI,
 } from "../constants/AppState";
+
+import { useDrop, DropTargetMonitor } from "react-dnd";
+import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 const Region = (props: {
   region: RegionI;
@@ -41,6 +43,7 @@ const Region = (props: {
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
+  setExpandedRegion: any;
 }) => {
   const {
     region,
@@ -54,6 +57,7 @@ const Region = (props: {
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
+    setExpandedRegion,
   } = props;
 
   const renderPoints = points.filter((p) => p.pointId !== focusPointId);
@@ -62,16 +66,45 @@ const Region = (props: {
   const placeholderImg = require(`../images/${region}.svg`);
   const placeholderImgAlt = region;
 
-  //           <PointDropContainer
-  //             index={points.findIndex((point) => point.pointId === p.pointId)}
-  //             appDispatch={appDispatch}
-  //           >
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: (item: DraggablePointType) => {
+      if (!ref.current) {
+        return;
+      }
+      if (isExpanded !== "expanded") {
+        setExpandedRegion(region);
+      }
+
+      const draggedPoint = item.point;
+      const dragIndex = item.index;
+
+      // TODO: uncomment this when the time is right
+      // if (draggedPoint.shape !== region) {
+      //   appDispatch({
+      //     type: "pointUpdate",
+      //     point: draggedPoint,
+      //     move: {
+      //       oldShape: draggedPoint.shape,
+      //       newShape: region,
+      //       oldIndex: dragIndex,
+      //       newIndex: points.length,
+      //     },
+      //   });
+      // }
+    },
+  });
+
+  drop(ref);
 
   return (
     <StyledRegion
       isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
+      ref={ref}
     >
       <div>
         {renderPoints.map((p: PointI) => (
@@ -157,7 +190,6 @@ const Region = (props: {
       </div>
     </StyledRegion>
   );
-  // </PointDropContainer>
 };
 
 export default Region;

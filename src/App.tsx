@@ -80,6 +80,9 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         }
         newShapeNewPoints.splice(action.move.newIndex, 0, action.point);
 
+        // TODO: use pointId for the 'item' property in useDrag
+        action.point.shape = action.move.newShape;
+
         return {
           ...appState,
           message: {
