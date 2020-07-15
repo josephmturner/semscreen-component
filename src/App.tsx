@@ -65,39 +65,51 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
             editingPoint: newPointId,
           };
     case "pointUpdate":
-      return action.move
-        ? {
-            ...appState,
-            message: {
-              ...appState.message,
-              points: {
-                ...appState.message.points,
-                [action.move.oldShape]: appState.message.points[
-                  action.move.oldShape
-                ].splice(action.move.oldIndex, 1),
-                [action.move.newShape]: appState.message.points[
-                  action.move.newShape
-                ].splice(action.move.newIndex, 0, action.point),
-              },
+      if (action.move) {
+        const oldShapeNewPoints = appState.message.points[
+          action.move.oldShape
+        ].slice();
+        oldShapeNewPoints.splice(action.move.oldIndex, 1);
+
+        const newShapeNewPoints = appState.message.points[
+          action.move.newShape
+        ].slice();
+
+        if (action.move.oldShape === action.move.newShape) {
+          newShapeNewPoints.splice(action.move.oldIndex, 1);
+        }
+        newShapeNewPoints.splice(action.move.newIndex, 0, action.point);
+
+        return {
+          ...appState,
+          message: {
+            ...appState.message,
+            points: {
+              ...appState.message.points,
+              [action.move.oldShape]: oldShapeNewPoints,
+              [action.move.newShape]: newShapeNewPoints,
             },
-          }
-        : {
-            ...appState,
-            message: {
-              ...appState.message,
-              points: {
-                ...appState.message.points,
-                [action.point.shape]: appState.message.points[
-                  action.point.shape
-                ].map((p) => {
-                  if (p.pointId === action.point.pointId) {
-                    return action.point;
-                  }
-                  return p;
-                }),
-              },
-            },
-          };
+          },
+        };
+      }
+
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.point.shape]: appState.message.points[
+              action.point.shape
+            ].map((p) => {
+              if (p.pointId === action.point.pointId) {
+                return action.point;
+              }
+              return p;
+            }),
+          },
+        },
+      };
     case "pointsDelete":
       return {
         ...appState,
