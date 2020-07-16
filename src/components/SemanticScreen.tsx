@@ -72,8 +72,8 @@ const SemanticScreen = (props: {
       point: {
         author: author,
         content: "",
-        shape: shape,
       },
+      shape: shape,
       index: index,
     });
   };
@@ -96,8 +96,8 @@ const SemanticScreen = (props: {
       point: {
         author: author,
         content: "",
-        shape: shape,
       },
+      shape: shape,
       index: message.points[shape].length,
       focus: true,
     });
@@ -122,8 +122,8 @@ const SemanticScreen = (props: {
           point: {
             author: author,
             content: "",
-            shape: region,
           },
+          shape: region,
           index: message.points[region as PointShape].length,
         });
       }
@@ -179,7 +179,8 @@ const SemanticScreen = (props: {
                 }
                 point={Object.values(message.points)
                   .flat()
-                  .find((p) => p.pointId === message.focus)}
+                  .find((p) => p.pointId === message.focus.pointId)}
+                shape={message.focus.shape}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}
                 createEmptyFocus={createEmptyFocus}
@@ -202,7 +203,7 @@ const SemanticScreen = (props: {
                 }
                 author={author}
                 points={message.points[region as PointShape]}
-                focusPointId={message.focus}
+                focusPointId={message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}

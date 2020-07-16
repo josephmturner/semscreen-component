@@ -21,12 +21,13 @@ import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
 import ChooseShapes from "./ChooseShapes";
 import StyledFocusRegion from "./StyledFocusRegion";
-import { PointI, RegionI } from "../constants/AppState";
+import { PointI, PointShape, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: string;
   point: PointI | undefined;
+  shape: PointShape;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
   createEmptyFocus: any;
@@ -36,6 +37,7 @@ const FocusRegion = (props: {
     region,
     isExpanded,
     point,
+    shape,
     appDispatch,
     editingPoint,
     createEmptyFocus,
@@ -77,6 +79,7 @@ const FocusRegion = (props: {
         {point && (
           <FocusPoint
             point={point}
+            shape={shape}
             appDispatch={appDispatch}
             isEditing={point && editingPoint === point.pointId ? true : false}
             onEnterPress={() => console.log("enter pressed in focus region")}

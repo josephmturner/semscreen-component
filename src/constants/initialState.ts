@@ -46,7 +46,6 @@ export const messages: MessageI[] = [
         {
           author: authors[0],
           content: "Online Deliberation",
-          shape: "topics",
           pointId: "pointId1",
           pointDate: new Date(),
         },
@@ -56,7 +55,6 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
-          shape: "actions",
           pointId: "pointId2",
           pointDate: new Date(),
         },
@@ -64,7 +62,6 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-          shape: "actions",
           pointId: "pointId3",
           pointDate: new Date(),
         },
@@ -72,7 +69,6 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Build an open, collaborative, compassionate system to share information and make decisions",
-          shape: "actions",
           pointId: "pointId4",
           pointDate: new Date(),
         },
@@ -80,7 +76,6 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Build an open, collaborative, compassionate system to share information and make decisions",
-          shape: "actions",
           pointId: "pointId5",
           pointDate: new Date(),
         },
@@ -88,7 +83,6 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-          shape: "actions",
           pointId: "pointId6",
           pointDate: new Date(),
         },
@@ -96,14 +90,13 @@ export const messages: MessageI[] = [
           author: authors[0],
           content:
             "Build an open, collaborative, compassionate system to share information and make decisions",
-          shape: "actions",
           pointId: "pointId7",
           pointDate: new Date(),
         },
       ],
       people: [],
     },
-    focus: "pointId1",
+    focus: { pointId: "pointId1", shape: "topics" },
     main: "pointId7",
     createdAt: new Date(),
   },

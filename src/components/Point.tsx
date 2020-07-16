@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../constants/AppState";
+import { PointI, PointShape } from "../constants/AppState";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
@@ -27,6 +27,7 @@ import styled from "styled-components";
 
 const Point = (props: {
   point: PointI;
+  shape: PointShape;
   isMainPoint: boolean;
   index: number;
   appDispatch: any;
@@ -35,6 +36,7 @@ const Point = (props: {
   combinePoints: (
     aboveOrBelow: "above" | "below",
     point: PointI,
+    shape: PointShape,
     index: number
   ) => void;
   cursorPositionIndex: number | undefined;
@@ -43,6 +45,7 @@ const Point = (props: {
 }) => {
   const {
     point,
+    shape,
     isMainPoint,
     index,
     appDispatch,
@@ -107,7 +110,7 @@ const Point = (props: {
       appDispatch({
         type: "pointMove",
         pointId: item.pointId,
-        newShape: point.shape,
+        newShape: shape,
         oldIndex: dragIndex,
         newIndex: hoverIndex,
       });
@@ -170,6 +173,7 @@ const Point = (props: {
     appDispatch({
       type: "pointUpdate",
       point: { ...point, content: e.target.value },
+      shape: shape,
     });
   };
 
@@ -185,7 +189,7 @@ const Point = (props: {
     onClick();
   };
 
-  const imageUrl = require(`../images/${point.shape}.svg`);
+  const imageUrl = require(`../images/${shape}.svg`);
 
   return (
     <StyledSpan
@@ -201,7 +205,7 @@ const Point = (props: {
           appDispatch({ type: "setMainPoint", pointId: point.pointId })
         }
         height={isMainPoint ? 30 : 20}
-        alt={point.shape}
+        alt={shape}
       />
       <StyledTextArea
         value={point.content}
@@ -230,7 +234,7 @@ const Point = (props: {
             index !== 0
           ) {
             e.preventDefault();
-            combinePoints("above", point, index);
+            combinePoints("above", point, shape, index);
           } else if (
             e.key === "Delete" &&
             ref.current &&
@@ -238,7 +242,7 @@ const Point = (props: {
             ref.current.selectionStart === ref.current.selectionEnd
           ) {
             e.preventDefault();
-            combinePoints("below", point, index);
+            combinePoints("below", point, shape, index);
           } else if (
             e.key === "ArrowLeft" &&
             ref.current &&

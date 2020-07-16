@@ -57,7 +57,6 @@ export interface AuthorI {
 export interface PointI {
   author: AuthorI;
   content: string;
-  shape: PointShape;
   pointId: string;
   pointDate: Date;
 }
@@ -66,7 +65,6 @@ export interface PointI {
 export interface PointNoIdI {
   author: AuthorI;
   content: string;
-  shape: PointShape;
 }
 
 export type PointsI = {
@@ -78,7 +76,7 @@ export interface MessageI {
   revisionOf: string | null;
   author: AuthorI;
   points: PointsI;
-  focus: string;
+  focus: { pointId: string; shape: PointShape };
   main: string;
   createdAt: Date;
 }
@@ -92,19 +90,26 @@ export interface AppI {
   message: MessageI;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI | undefined;
+  hoveredRegion: PointShape | undefined;
 }
 
 export type AppReducerAction =
   | {
       type: "pointCreate";
       point: PointNoIdI;
+      shape: PointShape;
       index: number;
       focus?: boolean;
     }
   | {
       type: "pointUpdate";
       point: PointI;
+      shape: PointShape;
     }
+  // we will have to change the type of region to RegionI once we are
+  // ready to write code to handle hovering over central and merits
+  // regions (same above in AppI)
+  | { type: "setHoveredRegion"; region: PointShape }
   | {
       type: "pointMove";
       pointId: PointI["pointId"];
@@ -117,15 +122,17 @@ export type AppReducerAction =
       type: "combinePoints";
       aboveOrBelow: "above" | "below";
       point: PointI;
+      shape: PointShape;
       index: number;
     }
   | {
       type: "splitIntoTwoPoints";
       topPoint: PointI;
       bottomPoint: PointI;
+      shape: PointShape;
       index: number;
     }
-  | { type: "setFocus"; pointId: string }
+  | { type: "setFocus"; pointId: string; shape: PointShape }
   | { type: "setMainPoint"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
   | { type: "setCursorPosition"; pointId: string; index: number }

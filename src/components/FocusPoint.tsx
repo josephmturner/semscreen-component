@@ -17,19 +17,20 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../constants/AppState";
+import { PointI, PointShape } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const FocusPoint = (props: {
   point: PointI;
+  shape: PointShape;
   appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
 }) => {
-  const { point, appDispatch, isEditing, onEnterPress, onClick } = props;
+  const { point, shape, appDispatch, isEditing, onEnterPress, onClick } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -50,6 +51,7 @@ const FocusPoint = (props: {
     appDispatch({
       type: "pointUpdate",
       point: { ...point, content: content },
+      shape: shape,
     });
     appDispatch({
       type: "setEditingPoint",
@@ -62,11 +64,11 @@ const FocusPoint = (props: {
     onClick();
   };
 
-  const imageUrl = require(`../images/${point.shape}.svg`);
+  const imageUrl = require(`../images/${shape}.svg`);
 
   return (
     <StyledSpan onClick={handleClick}>
-      <StyledImg src={imageUrl} alt={point.shape} />
+      <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
         value={content}
         onBlur={handleBlur}

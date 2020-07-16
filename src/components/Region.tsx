@@ -24,7 +24,7 @@ import StyledRegion from "./StyledRegion";
 import {
   AuthorI,
   PointI,
-  RegionI,
+  PointShape,
   CursorPositionI,
 } from "../constants/AppState";
 
@@ -32,7 +32,7 @@ import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 const Region = (props: {
-  region: RegionI;
+  region: PointShape;
   isExpanded: string;
   author: AuthorI;
   points: PointI[];
@@ -78,8 +78,7 @@ const Region = (props: {
         setExpandedRegion(region);
       }
 
-      // without item.oldShape, there's no way to call appDispatch
-      // only when item.oldShape !== region
+      // only call appDispatch if hoveredRegion !== region
       appDispatch({
         type: "pointMove",
         pointId: item.pointId,
@@ -104,6 +103,7 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
+            shape={region}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
@@ -121,12 +121,14 @@ const Region = (props: {
                   content: bottomContent,
                   shape: region,
                 },
+                shape: region,
                 index: points.findIndex((p) => p.pointId === editingPoint),
               });
             }}
             combinePoints={(
               aboveOrBelow: "above" | "below",
               point: PointI,
+              shape: PointShape,
               index: number
             ) => {
               if (aboveOrBelow === "below" && index === points.length - 1) {
@@ -136,6 +138,7 @@ const Region = (props: {
                   type: "combinePoints",
                   aboveOrBelow: aboveOrBelow,
                   point: point,
+                  shape: shape,
                   index: index,
                 });
               }
