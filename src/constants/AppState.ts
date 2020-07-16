@@ -109,10 +109,11 @@ export type AppReducerAction =
   // we will have to change the type of region to RegionI once we are
   // ready to write code to handle hovering over central and merits
   // regions (same above in AppI)
-  | { type: "setHoveredRegion"; region: PointShape }
+  | { type: "setHoveredRegion"; region: PointShape | undefined }
   | {
       type: "pointMove";
       pointId: PointI["pointId"];
+      oldShape: PointShape;
       oldIndex: number;
       newShape: PointShape;
       newIndex: number;

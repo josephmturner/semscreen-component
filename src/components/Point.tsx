@@ -106,10 +106,10 @@ const Point = (props: {
       }
 
       // Time to actually perform the action
-
       appDispatch({
         type: "pointMove",
         pointId: item.pointId,
+        oldShape: shape,
         newShape: shape,
         oldIndex: dragIndex,
         newIndex: hoverIndex,
@@ -138,6 +138,12 @@ const Point = (props: {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    end: () => {
+      appDispatch({
+        type: "setHoveredRegion",
+        region: undefined,
+      });
+    },
   });
 
   drag(drop(pointRef));

@@ -83,36 +83,35 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
     case "setHoveredRegion":
       return { ...appState, hoveredRegion: action.region };
     case "pointMove":
-      return appState;
-    //      const oldShapePoints = appState.message.points[appState.hoveredRegion].slice();
-    //      oldShapePoints.splice(action.oldIndex, 1);
-    //
-    //      const newShapePoints = appState.message.points[action.newShape].slice();
-    //
-    //
-    //      let pointWithNewShape;
-    //      if (appState.hoveredRegion) { pointWithNewShape = appState.message.points[appState.hoveredRegion].find(
-    //        (p) => p.pointId === action.pointId
-    //      );}
-    //
-    //      if (appState.hoveredRegion === action.newShape) {
-    //        newShapePoints.splice(action.oldIndex, 1);
-    //      }
-    //      if (pointWithNewShape) {
-    //        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
-    //      }
-    //
-    //      return {
-    //        ...appState,
-    //        message: {
-    //          ...appState.message,
-    //          points: {
-    //            ...appState.message.points,
-    //            [oldShape]: oldShapePoints,
-    //            [action.newShape]: newShapePoints,
-    //          },
-    //        },
-    //      };
+      const oldShapePoints = appState.message.points[action.oldShape].slice();
+      oldShapePoints.splice(action.oldIndex, 1);
+
+      const newShapePoints = appState.message.points[action.newShape].slice();
+
+      const pointWithNewShape = appState.message.points[action.oldShape].find(
+        (p) => p.pointId === action.pointId
+      );
+
+      if (action.oldShape === action.newShape) {
+        newShapePoints.splice(action.oldIndex, 1);
+      }
+      if (pointWithNewShape) {
+        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
+      }
+
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            //same issue with the non-null operator in the
+            //following line
+            [action.oldShape]: oldShapePoints,
+            [action.newShape]: newShapePoints,
+          },
+        },
+      };
 
     case "pointsDelete":
       return {
@@ -245,6 +244,7 @@ const App = () => {
       message={appState.message}
       editingPoint={appState.editingPoint}
       cursorPosition={appState.cursorPosition}
+      hoveredRegion={appState.hoveredRegion}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

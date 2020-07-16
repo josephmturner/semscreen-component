@@ -40,6 +40,7 @@ const SemanticScreen = (props: {
   message: MessageI;
   editingPoint: string | undefined;
   cursorPosition?: CursorPositionI;
+  hoveredRegion: PointShape | undefined;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   appDispatch: any;
@@ -49,6 +50,7 @@ const SemanticScreen = (props: {
     showShapes,
     editingPoint,
     cursorPosition,
+    hoveredRegion,
     onAuthorUpdate,
     appDispatch,
   } = props;
@@ -206,6 +208,7 @@ const SemanticScreen = (props: {
                 focusPointId={message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
+                hoveredRegion={hoveredRegion}
                 editingPoint={editingPoint}
                 cursorPosition={cursorPosition}
                 createEmptyPoint={createEmptyPoint}

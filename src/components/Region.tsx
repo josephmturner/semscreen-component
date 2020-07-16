@@ -39,6 +39,7 @@ const Region = (props: {
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   appDispatch: any;
+  hoveredRegion: PointShape | undefined;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
@@ -53,6 +54,7 @@ const Region = (props: {
     mainPointId,
     author,
     appDispatch,
+    hoveredRegion,
     editingPoint,
     cursorPosition,
     createEmptyPoint,
@@ -77,15 +79,26 @@ const Region = (props: {
       if (isExpanded !== "expanded") {
         setExpandedRegion(region);
       }
-
-      // only call appDispatch if hoveredRegion !== region
-      appDispatch({
-        type: "pointMove",
-        pointId: item.pointId,
-        oldIndex: item.index,
-        newShape: region,
-        newIndex: points.length,
-      });
+      //appDispatch calls get batched, so there's no way to make sure
+      //than appDispatch({type: "setHoveredRegion" ... }) gets called
+      //first. What's the answer? Should we set hoveredRegion in the
+      //when we call appDispatch with "pointMove"?
+      if (!hoveredRegion || hoveredRegion !== region) {
+        appDispatch({
+          type: "setHoveredRegion",
+          region: region,
+        });
+      }
+      if (hoveredRegion && hoveredRegion !== region) {
+        appDispatch({
+          type: "pointMove",
+          pointId: item.pointId,
+          oldShape: hoveredRegion,
+          oldIndex: item.index,
+          newShape: region,
+          newIndex: points.length,
+        });
+      }
     },
   });
 
