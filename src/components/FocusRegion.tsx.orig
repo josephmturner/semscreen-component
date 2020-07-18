@@ -20,7 +20,10 @@ import React, { useEffect, useState } from "react";
 import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
 import StyledFocusRegion from "./StyledFocusRegion";
+<<<<<<< HEAD
+=======
 import SevenShapes from "./SevenShapes";
+>>>>>>> SevenShapesSVG
 import { PointI, PointShape, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
