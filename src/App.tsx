@@ -18,7 +18,7 @@
 */
 import React, { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
-
+import update from "immutability-helper";
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
 import {
@@ -26,6 +26,7 @@ import {
   AppReducerAction,
   PointShape,
   allPointShapes,
+  PointI,
   PointsI,
 } from "./constants/AppState";
 
@@ -83,14 +84,14 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
     //   case "setHoveredRegion":
     //     return { ...appState, hoveredRegion: action.region };
     case "pointMove":
-      const oldShapePoints = appState.message.points[action.oldShape].slice();
-      oldShapePoints.splice(action.oldIndex, 1);
-
-      const newShapePoints = appState.message.points[action.newShape].slice();
-
+      //      const oldShapePoints = appState.message.points[action.oldShape].slice();
+      //      oldShapePoints.splice(action.oldIndex, 1);
+      //
+      //      const newShapePoints = appState.message.points[action.newShape].slice();
+      //
       const pointWithNewShape = appState.message.points[action.oldShape].find(
         (p) => p.pointId === action.pointId
-      );
+      ) as PointI;
 
       console.log(
         "old shape ",
@@ -98,29 +99,55 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         " new shape ",
         action.newShape
       );
-      if (action.oldShape === action.newShape) {
-        newShapePoints.splice(action.oldIndex, 1);
-      }
-      if (pointWithNewShape) {
-        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
-      }
-      console.log("oldShapePoints: ", oldShapePoints);
-      console.log("newShapePoints: ", newShapePoints);
+      //      if (action.oldShape === action.newShape) {
+      //        newShapePoints.splice(action.oldIndex, 1);
+      //      }
+      //      if (pointWithNewShape) {
+      //        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
+      //      }
+      //     console.log("oldShapePoints: ", oldShapePoints);
+      //     console.log("newShapePoints: ", newShapePoints);
 
-      return {
-        ...appState,
-        message: {
-          ...appState.message,
-          points: {
-            ...appState.message.points,
-            //same issue with the non-null operator in the
-            //following line
-            [action.oldShape]: oldShapePoints,
-            [action.newShape]: newShapePoints,
-          },
-        },
-      };
-
+      return action.oldShape === action.newShape
+        ? {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.oldShape]: update(
+                  appState.message.points[action.oldShape],
+                  {
+                    $splice: [
+                      [action.oldIndex, 1],
+                      [action.newIndex, 0, pointWithNewShape],
+                    ],
+                  }
+                ),
+              },
+            },
+          }
+        : {
+            ...appState,
+            message: {
+              ...appState.message,
+              points: {
+                ...appState.message.points,
+                [action.oldShape]: update(
+                  appState.message.points[action.oldShape],
+                  {
+                    $splice: [[action.oldIndex, 1]],
+                  }
+                ),
+                [action.newShape]: update(
+                  appState.message.points[action.newShape],
+                  {
+                    $splice: [[action.newIndex, 0, pointWithNewShape]],
+                  }
+                ),
+              },
+            },
+          };
     case "pointsDelete":
       return {
         ...appState,

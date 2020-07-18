@@ -160,7 +160,7 @@ const Point = (props: {
     //     });
     //   },
   });
-  console.log(point.content, isDragging);
+  // console.log(point.content, isDragging);
 
   drag(drop(pointRef));
 
