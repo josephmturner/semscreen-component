@@ -104,10 +104,11 @@ const Region = (props: {
       //      region: region,
       //    });
       //  }
-      // if (points.find((p) => p.pointId === item.pointId)) {
-      if (item.index !== points.length - 1 || item.shape !== region) {
-        console.log("item.shape: ", item.shape);
-        const newIndex = points.length;
+
+      if (item.shape !== region || item.index !== points.length - 1) {
+
+        const newIndex = (item.shape === region) ? points.length - 1 : points.length;
+
         appDispatch({
           type: "pointMove",
           pointId: item.pointId,
@@ -116,14 +117,11 @@ const Region = (props: {
           newShape: region,
           newIndex: newIndex,
         });
-        console.log("early ", item.index);
-        //mutate item object
+
         item.index = newIndex;
         item.shape = region;
-        console.log("later ", item.index);
       }
     },
-    //  },
   });
 
   drop(ref);
