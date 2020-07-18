@@ -104,6 +104,7 @@ const Region = (props: {
       //      region: region,
       //    });
       //  }
+      // if (points.find((p) => p.pointId === item.pointId)) {
       if (item.index !== points.length - 1 || item.shape !== region) {
         console.log("item.shape: ", item.shape);
         const newIndex = points.length;
@@ -122,6 +123,7 @@ const Region = (props: {
         console.log("later ", item.index);
       }
     },
+    //  },
   });
 
   drop(ref);
