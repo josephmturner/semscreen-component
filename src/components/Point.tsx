@@ -71,7 +71,7 @@ const Point = (props: {
         return;
       }
       const dragIndex = item.index;
-      const hoverIndex = props.index;
+      const hoverIndex = index;
 
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
@@ -109,9 +109,9 @@ const Point = (props: {
       appDispatch({
         type: "pointMove",
         pointId: item.pointId,
-        oldShape: shape,
+        oldShape: item.shape,
+        oldIndex: item.index,
         newShape: shape,
-        oldIndex: dragIndex,
         newIndex: hoverIndex,
       });
 
@@ -120,6 +120,7 @@ const Point = (props: {
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       item.index = hoverIndex;
+      item.shape = shape;
     },
   });
 
@@ -133,7 +134,12 @@ const Point = (props: {
 
   const [{ isDragging }, drag] = useDrag({
     // TODO: replace point with pointId here
-    item: { type: ItemTypes.POINT, pointId: point.pointId, index: index },
+    item: {
+      type: ItemTypes.POINT,
+      pointId: point.pointId,
+      shape: shape,
+      index: index,
+    },
 
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -292,7 +298,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
     props.isEditing &&
     `
   background-color: lightgray;
-  margin: 2px 0;
+  padding: 2px 0;
   outline: 2px solid #707070;
 `}
 
@@ -301,7 +307,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
     `
   border-top: solid #4f4f4f;
   border-bottom: solid #4f4f4f;
-  margin: 1% 0;
+  padding: 1% 0;
 `}
 `;
 

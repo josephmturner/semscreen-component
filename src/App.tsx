@@ -92,12 +92,20 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         (p) => p.pointId === action.pointId
       );
 
+      console.log(
+        "old shape ",
+        action.oldShape,
+        " new shape ",
+        action.newShape
+      );
       if (action.oldShape === action.newShape) {
         newShapePoints.splice(action.oldIndex, 1);
       }
       if (pointWithNewShape) {
         newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
       }
+      console.log("oldShapePoints: ", oldShapePoints);
+      console.log("newShapePoints: ", newShapePoints);
 
       return {
         ...appState,

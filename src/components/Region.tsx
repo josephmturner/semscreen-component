@@ -72,7 +72,7 @@ const Region = (props: {
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-    hover: (item: DraggablePointType) => {
+    hover: (item: DraggablePointType, monitor) => {
       if (!ref.current) {
         return;
       }
@@ -89,15 +89,24 @@ const Region = (props: {
           region: region,
         });
       }
-      if (hoveredRegion && hoveredRegion !== region) {
+      if (
+        monitor.isOver({ shallow: true }) &&
+        (item.index !== points.length || item.shape !== region)
+      ) {
+        console.log("item.shape: ", item.shape);
+        const newIndex = points.length;
         appDispatch({
           type: "pointMove",
           pointId: item.pointId,
-          oldShape: hoveredRegion,
+          oldShape: item.shape,
           oldIndex: item.index,
           newShape: region,
-          newIndex: points.length,
+          newIndex: newIndex,
         });
+        console.log("early ", item.index);
+        item.index = newIndex;
+        item.shape = region;
+        console.log("later ", item.index);
       }
     },
   });
