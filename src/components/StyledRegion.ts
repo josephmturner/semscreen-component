@@ -45,6 +45,12 @@ const StyledRegion = styled.div<StyledRegionProps>`
 border: var(--minimized-border);
 border-radius: var(--minimized-border-radius);
 `}
+
+  & > div {
+    display: flex;
+    flex-direction: column;
+    height: ${(props) => (props.isExpanded === "expanded" ? "100%" : "100%")};
+  }
 `;
 
 export default StyledRegion;

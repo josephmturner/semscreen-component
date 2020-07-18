@@ -80,8 +80,8 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           },
         },
       };
-    case "setHoveredRegion":
-      return { ...appState, hoveredRegion: action.region };
+    //   case "setHoveredRegion":
+    //     return { ...appState, hoveredRegion: action.region };
     case "pointMove":
       const oldShapePoints = appState.message.points[action.oldShape].slice();
       oldShapePoints.splice(action.oldIndex, 1);
@@ -241,7 +241,7 @@ const App = () => {
     message: messages[0],
     editingPoint: undefined,
     cursorPosition: undefined,
-    hoveredRegion: undefined,
+    //  hoveredRegion: undefined,
   });
   //TODO: how to type appState
 
@@ -252,7 +252,7 @@ const App = () => {
       message={appState.message}
       editingPoint={appState.editingPoint}
       cursorPosition={appState.cursorPosition}
-      hoveredRegion={appState.hoveredRegion}
+      //   hoveredRegion={appState.hoveredRegion}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

@@ -42,7 +42,6 @@ const Placeholder = (props: {
 
 const StyledSpan = styled.span`
   display: flex;
-  margin-bottom: 5%;
 `;
 
 const StyledImg = styled.img`

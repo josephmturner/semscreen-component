@@ -30,16 +30,17 @@ import {
 
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
+import styled from "styled-components";
 
 const Region = (props: {
   region: PointShape;
-  isExpanded: string;
+  isExpanded: "expanded" | "minimized" | "balanced";
   author: AuthorI;
   points: PointI[];
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   appDispatch: any;
-  hoveredRegion: PointShape | undefined;
+  // hoveredRegion: PointShape | undefined;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
@@ -54,7 +55,7 @@ const Region = (props: {
     mainPointId,
     author,
     appDispatch,
-    hoveredRegion,
+    //   hoveredRegion,
     editingPoint,
     cursorPosition,
     createEmptyPoint,
@@ -70,12 +71,26 @@ const Region = (props: {
 
   const ref = React.useRef<HTMLDivElement>(null);
 
+  //  const regionRef = React.useRef<HTMLDivElement>(null);
+  //
+  //  const [, drop] = useDrop({
+  //   accept: ItemTyles.POINT,
+  //   hover: () => {
+  //    if (!ref.current) {
+  //     return;
+  //    }
+  //    if (isExpanded !== "expanded") {
+  //      setExpandedRegion(region);
+  //    },
+  //   }
+  //  });
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-    hover: (item: DraggablePointType, monitor) => {
+    hover: (item: DraggablePointType) => {
       if (!ref.current) {
         return;
       }
+      //TODO: only call appDispatch after the animation transition ends.
       if (isExpanded !== "expanded") {
         setExpandedRegion(region);
       }
@@ -83,16 +98,13 @@ const Region = (props: {
       //than appDispatch({type: "setHoveredRegion" ... }) gets called
       //first. What's the answer? Should we set hoveredRegion in the
       //when we call appDispatch with "pointMove"?
-      if (!hoveredRegion || hoveredRegion !== region) {
-        appDispatch({
-          type: "setHoveredRegion",
-          region: region,
-        });
-      }
-      if (
-        monitor.isOver({ shallow: true }) &&
-        (item.index !== points.length || item.shape !== region)
-      ) {
+      //  if (!hoveredRegion || hoveredRegion !== region) {
+      //    appDispatch({
+      //      type: "setHoveredRegion",
+      //      region: region,
+      //    });
+      //  }
+      if (item.index !== points.length - 1 || item.shape !== region) {
         console.log("item.shape: ", item.shape);
         const newIndex = points.length;
         appDispatch({
@@ -104,6 +116,7 @@ const Region = (props: {
           newIndex: newIndex,
         });
         console.log("early ", item.index);
+        //mutate item object
         item.index = newIndex;
         item.shape = region;
         console.log("later ", item.index);
@@ -118,7 +131,6 @@ const Region = (props: {
       isExpanded={isExpanded}
       backgroundColor={author.styles.backgroundColor}
       onClick={() => onRegionClick(region, false)}
-      ref={ref}
     >
       <div>
         {renderPoints.map((p: PointI) => (
@@ -126,6 +138,8 @@ const Region = (props: {
             key={p.pointId}
             point={p}
             shape={region}
+            isExpanded={isExpanded}
+            setExpandedRegion={setExpandedRegion}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
@@ -196,18 +210,30 @@ const Region = (props: {
           />
         ))}
         {isExpanded === "expanded" && (
-          <Placeholder
-            text={placeholderText}
-            img={placeholderImg}
-            imgAlt={placeholderImgAlt}
-            onClick={() => {
-              createEmptyPoint(region, points.length);
-            }}
-          />
+          <>
+            <Placeholder
+              text={placeholderText}
+              img={placeholderImg}
+              imgAlt={placeholderImgAlt}
+              onClick={() => {
+                createEmptyPoint(region, points.length);
+              }}
+            />
+          </>
         )}
+        <DropTargetDiv ref={ref} isExpanded={isExpanded} />
       </div>
     </StyledRegion>
   );
 };
+
+interface DropTargetDivProps {
+  isExpanded: "expanded" | "minimized" | "balanced";
+}
+
+const DropTargetDiv = styled.div<DropTargetDivProps>`
+  min-height: ${(props) => (props.isExpanded ? "50px" : 0)};
+  height: 100%;
+`;
 
 export default Region;

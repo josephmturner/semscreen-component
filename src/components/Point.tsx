@@ -28,6 +28,8 @@ import styled from "styled-components";
 const Point = (props: {
   point: PointI;
   shape: PointShape;
+  isExpanded: "expanded" | "minimized" | "balanced";
+  setExpandedRegion: any;
   isMainPoint: boolean;
   index: number;
   appDispatch: any;
@@ -46,6 +48,8 @@ const Point = (props: {
   const {
     point,
     shape,
+    isExpanded,
+    setExpandedRegion,
     isMainPoint,
     index,
     appDispatch,
@@ -70,6 +74,10 @@ const Point = (props: {
       if (!ref.current) {
         return;
       }
+      if (isExpanded !== "expanded") {
+        setExpandedRegion(shape);
+      }
+      //TODO: only call the following logic after the animation transition ends.
       const dragIndex = item.index;
       const hoverIndex = index;
 
@@ -132,25 +140,26 @@ const Point = (props: {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
+  // why is isDragging not true after dragging a point from one region
+  // to another?
   const [{ isDragging }, drag] = useDrag({
-    // TODO: replace point with pointId here
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
       shape: shape,
       index: index,
     },
-
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: () => {
-      appDispatch({
-        type: "setHoveredRegion",
-        region: undefined,
-      });
-    },
+    //   end: () => {
+    //     appDispatch({
+    //       type: "setHoveredRegion",
+    //       region: undefined,
+    //     });
+    //   },
   });
+  console.log(point.content, isDragging);
 
   drag(drop(pointRef));
 
@@ -293,7 +302,7 @@ interface StyledSpanProps {
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
-  opacity: ${(props) => (props.isDragging ? 0 : 1)};
+  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   ${(props) =>
     props.isEditing &&
     `
