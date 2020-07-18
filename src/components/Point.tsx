@@ -140,8 +140,6 @@ const Point = (props: {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  // why is isDragging not true after dragging a point from one region
-  // to another?
   const [{ isDragging }, drag] = useDrag({
     item: {
       type: ItemTypes.POINT,
@@ -152,6 +150,9 @@ const Point = (props: {
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    isDragging: (monitor) => {
+      return point.pointId === monitor.getItem().pointId;
+    },
     //   end: () => {
     //     appDispatch({
     //       type: "setHoveredRegion",

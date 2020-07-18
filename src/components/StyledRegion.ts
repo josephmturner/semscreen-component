@@ -48,8 +48,8 @@ border-radius: var(--minimized-border-radius);
 
   & > div {
     display: flex;
+    height: 100%;
     flex-direction: column;
-    height: ${(props) => (props.isExpanded === "expanded" ? "100%" : "100%")};
   }
 `;
 
