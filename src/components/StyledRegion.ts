@@ -49,7 +49,6 @@ border-radius: var(--minimized-border-radius);
   & > div {
     display: flex;
     flex-direction: column;
-    height: ${(props) => (props.isExpanded === "expanded" ? "100%" : "100%")};
   }
 `;
 
