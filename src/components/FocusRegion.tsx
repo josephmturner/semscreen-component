@@ -21,11 +21,12 @@ import FocusPoint from "./FocusPoint";
 import Placeholder from "./Placeholder";
 import ChooseShapes from "./ChooseShapes";
 import StyledFocusRegion from "./StyledFocusRegion";
+import SevenShapes from "./SevenShapes";
 import { PointI, PointShape, RegionI } from "../constants/AppState";
 
 const FocusRegion = (props: {
   region: RegionI;
-  isExpanded: string;
+  isExpanded: "expanded" | "minimized" | "balanced";
   point: PointI | undefined;
   shape: PointShape;
   appDispatch: any;
@@ -45,6 +46,9 @@ const FocusRegion = (props: {
   } = props;
 
   const [chooseShapes, setChooseShapes] = useState(false);
+  const [hoveredShape, setHoveredShape] = useState<PointShape | undefined>(
+    undefined
+  );
 
   // replace imageUrl with 7-icon, "U-shaped" svg, which
   // expands to fill the middle of the expanded focus region.
@@ -60,8 +64,9 @@ const FocusRegion = (props: {
     setChooseShapes(true);
   };
 
-  const handleChooseShapesClick = (shape: string, e: any) => {
-    e.stopPropagation();
+  //add e.stopPropagation back in? there was a type issue in
+  //SevenShapes.tsx
+  const handleSevenShapesClick = (shape: PointShape) => {
     onRegionClick(region, true);
     setChooseShapes(false);
     createEmptyFocus(shape);
@@ -94,8 +99,13 @@ const FocusRegion = (props: {
             onClick={handlePlaceholderClick}
           />
         )}
-        {chooseShapes && isExpanded === "expanded" && (
-          <ChooseShapes handleClick={handleChooseShapesClick} />
+        {isExpanded === "expanded" && (
+          <SevenShapes
+            expandedSevenShapes={chooseShapes}
+            onShapeClick={handleSevenShapesClick}
+            hoveredShape={hoveredShape}
+            setHoveredShape={setHoveredShape}
+          />
         )}
       </div>
     </StyledFocusRegion>
