@@ -144,36 +144,29 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         },
       };
     case "combinePoints":
+      const prevPoint = appState.message.points[action.shape][action.index - 1];
+      const currentPoint = appState.message.points[action.shape][action.index];
+      const nextPoint = appState.message.points[action.shape][action.index + 1];
       const combinedPoints = appState.message.points[action.shape].slice();
       action.aboveOrBelow === "above" &&
         combinedPoints.splice(action.index - 1, 2, {
-          ...appState.message.points[action.shape][action.index - 1],
-          content:
-            appState.message.points[action.shape][action.index - 1].content +
-            appState.message.points[action.shape][action.index].content,
+          ...prevPoint,
+          content: prevPoint.content + currentPoint.content,
         });
       action.aboveOrBelow === "below" &&
         combinedPoints.splice(action.index, 2, {
-          ...appState.message.points[action.shape][action.index],
-          content:
-            appState.message.points[action.shape][action.index].content +
-            appState.message.points[action.shape][action.index + 1].content,
+          ...currentPoint,
+          content: currentPoint.content + nextPoint.content,
         });
       const newCursorPosition =
         action.aboveOrBelow === "above"
           ? {
-              pointId:
-                appState.message.points[action.shape][action.index - 1].pointId,
-              index:
-                appState.message.points[action.shape][action.index - 1].content
-                  .length,
+              pointId: prevPoint.pointId,
+              index: prevPoint.content.length,
             }
           : {
-              pointId:
-                appState.message.points[action.shape][action.index].pointId,
-              index:
-                appState.message.points[action.shape][action.index].content
-                  .length,
+              pointId: currentPoint.pointId,
+              index: currentPoint.content.length,
             };
       return {
         ...appState,
