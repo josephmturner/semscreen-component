@@ -11,9 +11,8 @@ function SevenShapes(props: {
 }) {
   return (
     <svg
-      {...props}
-      width={props.expandedSevenShapes ? "14em" : "4em"}
-      height={props.expandedSevenShapes ? "70%" : "10%"}
+      width={props.expandedSevenShapes ? "14em" : "0"}
+      height={props.expandedSevenShapes ? "70%" : "0"}
       viewBox="0 0 119.063 119.063"
     >
       <defs>
@@ -49,7 +48,7 @@ function SevenShapes(props: {
             e.stopPropagation();
             props.onShapeClick("needs");
           }}
-          fill="#989797"
+          fill="#5f5c5d"
           onMouseEnter={() => props.setHoveredShape("needs")}
           onMouseLeave={() => props.setHoveredShape(undefined)}
           stroke={props.hoveredShape === "needs" ? "#000000" : "none"}
@@ -63,7 +62,7 @@ function SevenShapes(props: {
       >
         <path
           d="M335.667 177.789c0-5.664-1.123-9.625-3.04-12.91-1.894-3.287-4.58-5.915-7.715-8.873L202.678 37.165c-11.899-1.078-15.99 4.612-15.99 15.917v6.467H42.27c-10.333 0-18.702 8.975-18.702 20.054V277.63c0 11.055 8.369 20.054 18.702 20.054h144.418v6.367c0 11.305 8.182 19.702 17.251 14.614L323.744 198.92c7.271-10.102 11.923-9.826 11.923-21.131"
-          fill="#989797"
+          fill="#5f5c5d"
           onClick={(e) => {
             e.stopPropagation();
             props.onShapeClick("actions");
@@ -81,7 +80,7 @@ function SevenShapes(props: {
       >
         <path
           d="M322.235 193.242c0-78.539-63.669-142.209-142.206-142.209-78.538 0-142.206 63.67-142.206 142.21 0 78.536 63.668 142.204 142.206 142.204 78.537 0 142.206-63.668 142.206-142.205"
-          fill="#989797"
+          fill="#5f5c5d"
           onClick={(e) => {
             e.stopPropagation();
             props.onShapeClick("thoughts");
@@ -99,7 +98,7 @@ function SevenShapes(props: {
       >
         <path
           d="M350.235 230.912c0-24.512-9.98-46.712-26.105-62.722L215.922 56.586c-7.23-7.207-18.919-7.207-26.15 0L82.534 167.243c-16.68 16.078-27.052 38.67-27.052 63.669 0 48.86 39.595 88.478 88.456 88.478 22.616 0 43.27-8.502 58.91-22.478 15.64 13.976 36.29 22.478 58.908 22.478 48.857 0 88.478-39.618 88.478-88.478"
-          fill="#989797"
+          fill="#5f5c5d"
           onClick={(e) => {
             e.stopPropagation();
             props.onShapeClick("feelings");
@@ -117,7 +116,7 @@ function SevenShapes(props: {
       >
         <path
           d="M336.17 61.98c0-10.329-8.374-18.702-18.702-18.702H88.556c-10.327 0-18.7 8.373-18.7 18.701L97.541 290.89c0 10.33 8.373 18.7 18.701 18.7H277.54c10.328 0 18.701-8.37 18.701-18.7z"
-          fill="#989797"
+          fill="#5f5c5d"
           onClick={(e) => {
             e.stopPropagation();
             props.onShapeClick("topics");
@@ -131,7 +130,7 @@ function SevenShapes(props: {
       </g>
       <path
         d="M36.138 34.182c0 .998-.775 1.807-1.73 1.807H13.23c-.955 0-1.73-.809-1.73-1.807V12.071c0-.998.775-1.807 1.73-1.807h21.178c.955 0 1.73.809 1.73 1.807z"
-        fill="#989797"
+        fill="#5f5c5d"
         onClick={(e) => {
           e.stopPropagation();
           props.onShapeClick("facts");
@@ -150,7 +149,7 @@ function SevenShapes(props: {
         >
           <path
             d="M313.526 86.652c-2.253-7.606-7.417-13.437-18.7-16.876 0 0-59.102-22.9-114.456 0-55.355 22.902-114.453 0-114.453 0-10.33 0-18.702 7.553-18.702 16.876v206.55c4.183 9.244 10.008 13.986 18.775 17.461 0 0 51.427 25.129 114.38-.585 62.803-25.654 114.455 0 114.455 0 10.33 0 18.701-7.556 18.701-16.876z"
-            fill="#989797"
+            fill="#5f5c5d"
             onClick={(e) => {
               e.stopPropagation();
               props.onShapeClick("people");

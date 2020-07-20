@@ -106,8 +106,8 @@ const Region = (props: {
       //  }
 
       if (item.shape !== region || item.index !== points.length - 1) {
-
-        const newIndex = (item.shape === region) ? points.length - 1 : points.length;
+        const newIndex =
+          item.shape === region ? points.length - 1 : points.length;
 
         appDispatch({
           type: "pointMove",

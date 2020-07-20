@@ -47,12 +47,13 @@ const StyledSpan = styled.span`
 const StyledImg = styled.img`
   height: 20px;
   margin: 0px 4px 0 3px;
-  opacity: 0.7;
+  opacity: 0.4;
 `;
 
 const StyledDiv = styled.div`
-  opacity: 0.5;
+  opacity: 0.4;
   margin-top: 1px;
+  font-size: small;
 `;
 
 export default Placeholder;

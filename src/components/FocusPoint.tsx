@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { PointI, PointShape } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
@@ -26,11 +26,22 @@ const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   appDispatch: any;
+  chooseShapes: boolean;
+  setChooseShapes: (chooseShapes: boolean) => void;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
 }) => {
-  const { point, shape, appDispatch, isEditing, onEnterPress, onClick } = props;
+  const {
+    point,
+    shape,
+    appDispatch,
+    chooseShapes,
+    setChooseShapes,
+    isEditing,
+    onEnterPress,
+    onClick,
+  } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -38,24 +49,18 @@ const FocusPoint = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const [content, setContent] = useState(point.content);
-  useEffect(() => {
-    setContent(point.content);
-  }, [point.content]);
-
   const handleChange = (e: any) => {
-    setContent(e.target.value);
+    appDispatch({
+      type: "pointUpdate",
+      point: { ...point, content: e.target.value },
+      shape: shape,
+    });
   };
 
   const handleBlur = () => {
     appDispatch({
-      type: "pointUpdate",
-      point: { ...point, content: content },
-      shape: shape,
-    });
-    appDispatch({
       type: "setEditingPoint",
-      pointId: undefined,
+      editingPoint: undefined,
     });
   };
 
@@ -67,18 +72,20 @@ const FocusPoint = (props: {
   const imageUrl = require(`../images/${shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick}>
+    <StyledSpan onClick={handleClick} chooseShapes={chooseShapes}>
       <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
-        value={content}
+        value={point.content}
+        chooseShapes={chooseShapes}
         onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() =>
+        onFocus={() => {
           appDispatch({
             type: "setEditingPoint",
             pointId: point.pointId,
-          })
-        }
+          });
+          setChooseShapes(false);
+        }}
         ref={ref}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
@@ -97,16 +104,22 @@ const StyledImg = styled.img`
   opacity: 0.7;
 `;
 
-const StyledSpan = styled.span`
+interface StyledProps {
+  chooseShapes: boolean;
+}
+
+const StyledSpan = styled.span<StyledProps>`
+  margin-top: 4%;
   display: flex;
+  opacity: ${(props) => (props.chooseShapes ? "0.5" : "1")};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
-  font-size: small;
+  font-size: ${(props) => (props.chooseShapes ? "small" : "medium")};
   outline: 0;
   resize: none;
 `;
