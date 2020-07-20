@@ -63,13 +63,6 @@ const Point = (props: {
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-
-    //TODO: consider passing isExpanded from Region to Point and
-    //returning without doing anything inside hover below if !isExpanded.
-    //This may help with the stagger that happens when dragging a point into a
-    //region which already contains points. In other words, only run
-    //the logic inside hover once the region has expanded to allow that
-    //animation to happen first.
     hover(item: DraggablePointType, monitor: DropTargetMonitor) {
       if (!ref.current) {
         return;
@@ -81,39 +74,27 @@ const Point = (props: {
       const dragIndex = item.index;
       const hoverIndex = index;
 
-      // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
       }
 
-      // Determine rectangle on screen
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
-      // Get vertical middle
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
-      // Determine mouse position
       const clientOffset = monitor.getClientOffset();
 
-      // Get pixels to the top
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
       }
 
-      // Dragging upwards
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
 
-      // Time to actually perform the action
       appDispatch({
         type: "pointMove",
         pointId: item.pointId,
@@ -123,10 +104,6 @@ const Point = (props: {
         newIndex: hoverIndex,
       });
 
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
       item.index = hoverIndex;
       item.shape = shape;
     },
@@ -153,14 +130,7 @@ const Point = (props: {
     isDragging: (monitor) => {
       return point.pointId === monitor.getItem().pointId;
     },
-    //   end: () => {
-    //     appDispatch({
-    //       type: "setHoveredRegion",
-    //       region: undefined,
-    //     });
-    //   },
   });
-  // console.log(point.content, isDragging);
 
   drag(drop(pointRef));
 

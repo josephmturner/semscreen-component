@@ -40,7 +40,6 @@ const SemanticScreen = (props: {
   message: MessageI;
   editingPoint: string | undefined;
   cursorPosition?: CursorPositionI;
-  // hoveredRegion: PointShape | undefined;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   appDispatch: any;
@@ -50,7 +49,6 @@ const SemanticScreen = (props: {
     showShapes,
     editingPoint,
     cursorPosition,
-    //  hoveredRegion,
     onAuthorUpdate,
     appDispatch,
   } = props;
@@ -105,8 +103,6 @@ const SemanticScreen = (props: {
     });
   };
 
-  // why does typescript allow me to enter anything as a value of one
-  // of the keys of point in appDispatch?
   const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
@@ -208,7 +204,6 @@ const SemanticScreen = (props: {
                 focusPointId={message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
-                //  hoveredRegion={hoveredRegion}
                 editingPoint={editingPoint}
                 cursorPosition={cursorPosition}
                 createEmptyPoint={createEmptyPoint}

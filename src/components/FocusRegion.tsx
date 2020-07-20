@@ -74,7 +74,6 @@ const FocusRegion = (props: {
   if (point) {
     pointContent = point.content;
   }
-  console.log(pointContent);
 
   useEffect(() => {
     point && point.content

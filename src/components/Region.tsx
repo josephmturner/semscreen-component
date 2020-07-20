@@ -40,7 +40,6 @@ const Region = (props: {
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   appDispatch: any;
-  // hoveredRegion: PointShape | undefined;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
@@ -55,7 +54,6 @@ const Region = (props: {
     mainPointId,
     author,
     appDispatch,
-    //   hoveredRegion,
     editingPoint,
     cursorPosition,
     createEmptyPoint,
@@ -71,39 +69,16 @@ const Region = (props: {
 
   const ref = React.useRef<HTMLDivElement>(null);
 
-  //  const regionRef = React.useRef<HTMLDivElement>(null);
-  //
-  //  const [, drop] = useDrop({
-  //   accept: ItemTyles.POINT,
-  //   hover: () => {
-  //    if (!ref.current) {
-  //     return;
-  //    }
-  //    if (isExpanded !== "expanded") {
-  //      setExpandedRegion(region);
-  //    },
-  //   }
-  //  });
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
       if (!ref.current) {
         return;
       }
-      //TODO: only call appDispatch after the animation transition ends.
+      //TODO: consider only calling appDispatch after the animation transition ends.
       if (isExpanded !== "expanded") {
         setExpandedRegion(region);
       }
-      //appDispatch calls get batched, so there's no way to make sure
-      //than appDispatch({type: "setHoveredRegion" ... }) gets called
-      //first. What's the answer? Should we set hoveredRegion in the
-      //when we call appDispatch with "pointMove"?
-      //  if (!hoveredRegion || hoveredRegion !== region) {
-      //    appDispatch({
-      //      type: "setHoveredRegion",
-      //      region: region,
-      //    });
-      //  }
 
       if (item.shape !== region || item.index !== points.length - 1) {
         const newIndex =

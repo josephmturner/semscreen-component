@@ -81,33 +81,10 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           },
         },
       };
-    //   case "setHoveredRegion":
-    //     return { ...appState, hoveredRegion: action.region };
     case "pointMove":
-      //      const oldShapePoints = appState.message.points[action.oldShape].slice();
-      //      oldShapePoints.splice(action.oldIndex, 1);
-      //
-      //      const newShapePoints = appState.message.points[action.newShape].slice();
-      //
       const pointWithNewShape = appState.message.points[action.oldShape].find(
         (p) => p.pointId === action.pointId
       ) as PointI;
-
-      console.log(
-        "old shape ",
-        action.oldShape,
-        " new shape ",
-        action.newShape
-      );
-      //      if (action.oldShape === action.newShape) {
-      //        newShapePoints.splice(action.oldIndex, 1);
-      //      }
-      //      if (pointWithNewShape) {
-      //        newShapePoints.splice(action.newIndex, 0, pointWithNewShape);
-      //      }
-      //     console.log("oldShapePoints: ", oldShapePoints);
-      //     console.log("newShapePoints: ", newShapePoints);
-
       return action.oldShape === action.newShape
         ? {
             ...appState,
@@ -268,7 +245,6 @@ const App = () => {
     message: messages[0],
     editingPoint: undefined,
     cursorPosition: undefined,
-    //  hoveredRegion: undefined,
   });
   //TODO: how to type appState
 
@@ -279,7 +255,6 @@ const App = () => {
       message={appState.message}
       editingPoint={appState.editingPoint}
       cursorPosition={appState.cursorPosition}
-      //   hoveredRegion={appState.hoveredRegion}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
