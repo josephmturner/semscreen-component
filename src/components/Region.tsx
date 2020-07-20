@@ -27,7 +27,6 @@ import {
   PointShape,
   CursorPositionI,
 } from "../constants/AppState";
-
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -67,14 +66,9 @@ const Region = (props: {
   const placeholderImg = require(`../images/${region}.svg`);
   const placeholderImgAlt = region;
 
-  const ref = React.useRef<HTMLDivElement>(null);
-
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (!ref.current) {
-        return;
-      }
       //TODO: consider only calling appDispatch after the animation transition ends.
       if (isExpanded !== "expanded") {
         setExpandedRegion(region);
@@ -98,8 +92,6 @@ const Region = (props: {
       }
     },
   });
-
-  drop(ref);
 
   return (
     <StyledRegion
@@ -196,7 +188,7 @@ const Region = (props: {
             />
           </>
         )}
-        <DropTargetDiv ref={ref} isExpanded={isExpanded} />
+        <DropTargetDiv ref={drop} isExpanded={isExpanded} />
       </div>
     </StyledRegion>
   );

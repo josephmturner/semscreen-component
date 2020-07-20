@@ -23,10 +23,13 @@ import StyledFocusRegion from "./StyledFocusRegion";
 import SevenShapes from "./SevenShapes";
 import { PointI, PointShape, RegionI } from "../constants/AppState";
 import styled from "styled-components";
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "../constants/React-Dnd";
 
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
+  setExpandedRegion: (region: RegionI) => void;
   point: PointI | undefined;
   shape: PointShape;
   appDispatch: any;
@@ -37,6 +40,7 @@ const FocusRegion = (props: {
   const {
     region,
     isExpanded,
+    setExpandedRegion,
     point,
     shape,
     appDispatch,
@@ -64,6 +68,15 @@ const FocusRegion = (props: {
     createEmptyFocus(shape);
   };
 
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: () => {
+      if (isExpanded !== "expanded") {
+        setExpandedRegion(region);
+      }
+    },
+  });
+
   useEffect(() => {
     isExpanded === "expanded" && !point
       ? setChooseShapes(true)
@@ -82,7 +95,7 @@ const FocusRegion = (props: {
   }, [setShowPlaceholder, pointContent]);
 
   return (
-    <StyledFocusRegion onClick={() => onRegionClick(region, false)}>
+    <StyledFocusRegion ref={drop} onClick={() => onRegionClick(region, false)}>
       <StyledDiv>
         {point && (
           <FocusPoint

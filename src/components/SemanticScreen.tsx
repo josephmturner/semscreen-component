@@ -175,6 +175,7 @@ const SemanticScreen = (props: {
                     ? "balanced"
                     : "minimized"
                 }
+                setExpandedRegion={setExpandedRegion}
                 point={Object.values(message.points)
                   .flat()
                   .find((p) => p.pointId === message.focus.pointId)}
