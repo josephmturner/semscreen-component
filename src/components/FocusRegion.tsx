@@ -51,24 +51,15 @@ const FocusRegion = (props: {
     undefined
   );
 
-  // replace imageUrl with 7-icon, "U-shaped" svg, which
-  // expands to fill the middle of the expanded focus region.
-  // When expanded, each of the 7 shapes calls setMakingNewFocus
   const placeholderText = `New focus point`;
   const placeholderImg = require(`../images/seven-shapes.svg`);
   const placeholderImgAlt = "Choose a new focus shape.";
 
-  //TODO: delete onRegionClick below and in handleClick because placeholder and chooseShapes
-  //are only present when the region is expanded.
   const handlePlaceholderClick = () => {
-    onRegionClick(region, true);
     setChooseShapes(true);
   };
 
-  //add e.stopPropagation back in? there was a type issue in
-  //SevenShapes.tsx
   const handleSevenShapesClick = (shape: PointShape) => {
-    onRegionClick(region, true);
     setChooseShapes(false);
     createEmptyFocus(shape);
   };
