@@ -18,7 +18,7 @@
 */
 import React, { useEffect, useState } from "react";
 import FocusPoint from "./FocusPoint";
-import Placeholder from "./Placeholder";
+import FocusPlaceholder from "./FocusPlaceholder";
 import StyledFocusRegion from "./StyledFocusRegion";
 import SevenShapes from "./SevenShapes";
 import { PointI, PointShape, RegionI } from "../constants/AppState";
@@ -49,7 +49,7 @@ const FocusRegion = (props: {
     onRegionClick,
   } = props;
 
-  const [chooseShapes, setChooseShapes] = useState(false);
+  const [newFocus, setNewFocus] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [hoveredShape, setHoveredShape] = useState<PointShape | undefined>(
     undefined
@@ -60,12 +60,14 @@ const FocusRegion = (props: {
   const placeholderImgAlt = "Choose a new focus shape.";
 
   const handlePlaceholderClick = () => {
-    setChooseShapes(true);
+    setNewFocus(true);
   };
 
   const handleSevenShapesClick = (shape: PointShape) => {
-    setChooseShapes(false);
-    createEmptyFocus(shape);
+    if (newFocus) {
+      setNewFocus(false);
+      createEmptyFocus(shape);
+    }
   };
 
   const [, drop] = useDrop({
@@ -79,8 +81,8 @@ const FocusRegion = (props: {
 
   useEffect(() => {
     isExpanded === "expanded" && !point
-      ? setChooseShapes(true)
-      : setChooseShapes(false);
+      ? setNewFocus(true)
+      : setNewFocus(false);
   }, [isExpanded, point]);
 
   let pointContent;
@@ -102,15 +104,15 @@ const FocusRegion = (props: {
             point={point}
             shape={shape}
             appDispatch={appDispatch}
-            chooseShapes={chooseShapes}
-            setChooseShapes={setChooseShapes}
+            newFocus={newFocus}
+            setNewFocus={setNewFocus}
             isEditing={point && editingPoint === point.pointId ? true : false}
             onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
           />
         )}
-        {!chooseShapes && showPlaceholder && isExpanded === "expanded" && (
-          <Placeholder
+        {showPlaceholder && isExpanded === "expanded" && (
+          <FocusPlaceholder
             text={placeholderText}
             img={placeholderImg}
             imgAlt={placeholderImgAlt}
@@ -119,7 +121,6 @@ const FocusRegion = (props: {
         )}
         {isExpanded === "expanded" && (
           <SevenShapes
-            expandedSevenShapes={chooseShapes}
             onShapeClick={handleSevenShapesClick}
             hoveredShape={hoveredShape}
             setHoveredShape={setHoveredShape}
@@ -134,7 +135,6 @@ const StyledDiv = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
 `;
 
 export default FocusRegion;

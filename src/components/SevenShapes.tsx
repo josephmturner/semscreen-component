@@ -1,20 +1,18 @@
 import * as React from "react";
 import { PointShape } from "../constants/AppState";
+import styled from "styled-components";
 
 // how to avoid unknown prop warning in console?
-function SevenShapes(props: {
-  expandedSevenShapes: boolean;
+const SevenShapes = (props: {
   //how to properly type the following line?
-  onShapeClick: (shape: any) => void;
+  onShapeClick: (shape: PointShape) => void;
+  //TODO: consider moving hoveredShape state into SevenShapes, as it's
+  //not used by any other component
   hoveredShape: PointShape | undefined;
   setHoveredShape: (shape: PointShape | undefined) => void;
-}) {
+}) => {
   return (
-    <svg
-      width={props.expandedSevenShapes ? "14em" : "0"}
-      height={props.expandedSevenShapes ? "70%" : "0"}
-      viewBox="0 0 119.063 119.063"
-    >
+    <StyledSVG width="100%" height="auto" viewBox="0 0 119.063 119.063">
       <defs>
         <clipPath clipPathUnits="userSpaceOnUse" id="prefix__b">
           <path d="M0 360h360V0H0z" />
@@ -162,8 +160,12 @@ function SevenShapes(props: {
           />
         </g>
       </g>
-    </svg>
+    </StyledSVG>
   );
-}
+};
+
+const StyledSVG = styled.svg`
+  min-height: 10em;
+`;
 
 export default SevenShapes;

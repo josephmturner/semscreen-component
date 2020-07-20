@@ -26,8 +26,8 @@ const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   appDispatch: any;
-  chooseShapes: boolean;
-  setChooseShapes: (chooseShapes: boolean) => void;
+  newFocus: boolean;
+  setNewFocus: (newFocus: boolean) => void;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
@@ -36,8 +36,8 @@ const FocusPoint = (props: {
     point,
     shape,
     appDispatch,
-    chooseShapes,
-    setChooseShapes,
+    newFocus,
+    setNewFocus,
     isEditing,
     onEnterPress,
     onClick,
@@ -72,11 +72,11 @@ const FocusPoint = (props: {
   const imageUrl = require(`../images/${shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick} chooseShapes={chooseShapes}>
+    <StyledSpan onClick={handleClick} newFocus={newFocus}>
       <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
         value={point.content}
-        chooseShapes={chooseShapes}
+        newFocus={newFocus}
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
@@ -84,7 +84,7 @@ const FocusPoint = (props: {
             type: "setEditingPoint",
             pointId: point.pointId,
           });
-          setChooseShapes(false);
+          setNewFocus(false);
         }}
         ref={ref}
         onKeyDown={(e: any) => {
@@ -105,13 +105,13 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
-  chooseShapes: boolean;
+  newFocus: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
-  margin-top: 4%;
+  margin: auto;
   display: flex;
-  opacity: ${(props) => (props.chooseShapes ? "0.5" : "1")};
+  opacity: ${(props) => (props.newFocus ? "0.5" : "1")};
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
@@ -119,9 +119,9 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
-  font-size: ${(props) => (props.chooseShapes ? "small" : "medium")};
   outline: 0;
   resize: none;
+  font-size: ${(props) => (props.newFocus ? "small" : "medium")};
 `;
 
 export default FocusPoint;

@@ -147,7 +147,10 @@ const SemanticScreen = (props: {
 
   useEffect(() => {
     semanticScreenRef.current &&
-      wrapGrid(semanticScreenRef.current, { duration: 150, easing: "easeInOut" });
+      wrapGrid(semanticScreenRef.current, {
+        duration: 150,
+        easing: "easeInOut",
+      });
   }, []);
 
   return (
