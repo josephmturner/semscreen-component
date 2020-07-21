@@ -1,5 +1,4 @@
-/*
-  Copyright (C) 2020 by USHIN, Inc.
+/* Copyright (C) 2020 by USHIN, Inc.
 
   This file is part of U4U.
 
@@ -18,16 +17,17 @@
 */
 import React, { useEffect, useRef } from "react";
 import { PointI, PointShape } from "../constants/AppState";
-
+import { ItemTypes } from "../constants/React-Dnd";
+import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
+  index: number;
+  isMainPoint: boolean;
   appDispatch: any;
-  newFocus: boolean;
-  setNewFocus: (newFocus: boolean) => void;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
@@ -35,9 +35,9 @@ const FocusPoint = (props: {
   const {
     point,
     shape,
+    index,
+    isMainPoint,
     appDispatch,
-    newFocus,
-    setNewFocus,
     isEditing,
     onEnterPress,
     onClick,
@@ -71,12 +71,43 @@ const FocusPoint = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
+  const [{ isDragging }, drag] = useDrag({
+    item: {
+      type: ItemTypes.POINT,
+      pointId: point.pointId,
+      originalShape: shape,
+      originalIndex: index,
+      shape: shape,
+      index: index,
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    isDragging: (monitor) => {
+      return point.pointId === monitor.getItem().pointId;
+    },
+  });
+
   return (
-    <StyledSpan onClick={handleClick} newFocus={newFocus}>
-      <StyledImg src={imageUrl} alt={shape} />
+    <StyledSpan
+      ref={drag}
+      onClick={handleClick}
+      isMainPoint={isMainPoint}
+      isEditing={isEditing}
+      isDragging={isDragging}
+    >
+      <StyledImg
+        src={imageUrl}
+        onClick={() => {
+          isMainPoint
+            ? appDispatch({ type: "setMainPoint", pointId: "" })
+            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+        }}
+        height={isMainPoint ? 30 : 20}
+        alt={shape}
+      />
       <StyledTextArea
         value={point.content}
-        newFocus={newFocus}
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
@@ -84,7 +115,6 @@ const FocusPoint = (props: {
             type: "setEditingPoint",
             pointId: point.pointId,
           });
-          setNewFocus(false);
         }}
         ref={ref}
         onKeyDown={(e: any) => {
@@ -105,23 +135,38 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
-  newFocus: boolean;
+  isMainPoint: boolean;
+  isEditing: boolean;
+  isDragging: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
   margin: auto;
   display: flex;
-  opacity: ${(props) => (props.newFocus ? "0.5" : "1")};
+  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
+  ${(props) =>
+    props.isEditing &&
+    `
+  background-color: #efefef;
+  border-radius: 5px;
+`}
+
+  ${(props) =>
+    props.isMainPoint &&
+    `
+  border-top: solid #4f4f4f;
+  border-bottom: solid #4f4f4f;
+  padding: 1% 0;
+`};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
+const StyledTextArea = styled(TextareaAutosize)`
   width: 100%;
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
   outline: 0;
   resize: none;
-  font-size: ${(props) => (props.newFocus ? "small" : "medium")};
 `;
 
 export default FocusPoint;

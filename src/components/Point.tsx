@@ -121,6 +121,8 @@ const Point = (props: {
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
+      originalShape: shape,
+      originalIndex: index,
       shape: shape,
       index: index,
     },
@@ -287,7 +289,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
   ${(props) =>
     props.isEditing &&
     `
-  background-color: lightgray;
+  background-color: #efefef;
   border-radius: 5px;
 `}
 

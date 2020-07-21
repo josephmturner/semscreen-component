@@ -88,21 +88,6 @@ const SemanticScreen = (props: {
     });
   };
 
-  //TODO: consider merging createEmptyFocus and createEmptyPoint
-  const createEmptyFocus = (shape: PointShape) => {
-    deleteEmptyPoints();
-    appDispatch({
-      type: "pointCreate",
-      point: {
-        author: author,
-        content: "",
-      },
-      shape: shape,
-      index: message.points[shape].length,
-      focus: true,
-    });
-  };
-
   const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
@@ -110,7 +95,7 @@ const SemanticScreen = (props: {
       if (region === "focus" && message.focus) {
         appDispatch({
           type: "setEditingPoint",
-          pointId: message.focus,
+          pointId: message.focus.pointId,
         });
       } else if (region === "merits") {
         console.log("merits clicked");
@@ -179,16 +164,32 @@ const SemanticScreen = (props: {
                     : "minimized"
                 }
                 setExpandedRegion={setExpandedRegion}
-                point={Object.values(message.points)
-                  .flat()
-                  .find((p) => p.pointId === message.focus.pointId)}
-                shape={message.focus.shape}
-                index={message.points[message.focus.shape].findIndex(
-                  (p) => p.pointId === message.focus.pointId
-                )}
+                point={
+                  message.focus
+                    ? Object.values(message.points)
+                        .flat()
+                        .find(
+                          (p) =>
+                            message.focus && p.pointId === message.focus.pointId
+                        )
+                    : undefined
+                }
+                shape={message.focus ? message.focus.shape : undefined}
+                index={
+                  message.focus
+                    ? message.points[message.focus.shape].findIndex(
+                        (p) =>
+                          message.focus && p.pointId === message.focus.pointId
+                      )
+                    : undefined
+                }
+                isMainPoint={
+                  message.focus && message.main === message.focus.pointId
+                    ? true
+                    : false
+                }
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}
-                createEmptyFocus={createEmptyFocus}
                 onRegionClick={handleRegionClick}
                 key={region}
               />
@@ -208,7 +209,7 @@ const SemanticScreen = (props: {
                 }
                 author={author}
                 points={message.points[region as PointShape]}
-                focusPointId={message.focus.pointId}
+                focusPointId={message.focus && message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}

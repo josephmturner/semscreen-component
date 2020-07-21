@@ -28,7 +28,63 @@ import {
   allPointShapes,
   PointI,
   PointsI,
+  PointMoveAction,
 } from "./constants/AppState";
+
+function handlePointMove(appState: AppI, action: PointMoveAction): AppI {
+  const pointWithNewShape = appState.message.points[action.oldShape].find(
+    (p) => p.pointId === action.pointId
+  ) as PointI;
+  let newFocus = appState.message.focus;
+  if (
+    appState.message.focus &&
+    action.pointId === appState.message.focus.pointId
+  ) {
+    newFocus = undefined;
+  }
+  return action.oldShape === action.newShape
+    ? {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.oldShape]: update(
+              appState.message.points[action.oldShape],
+              {
+                $splice: [
+                  [action.oldIndex, 1],
+                  [action.newIndex, 0, pointWithNewShape],
+                ],
+              }
+            ),
+          },
+          focus: newFocus,
+        },
+      }
+    : {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.oldShape]: update(
+              appState.message.points[action.oldShape],
+              {
+                $splice: [[action.oldIndex, 1]],
+              }
+            ),
+            [action.newShape]: update(
+              appState.message.points[action.newShape],
+              {
+                $splice: [[action.newIndex, 0, pointWithNewShape]],
+              }
+            ),
+          },
+          focus: newFocus,
+        },
+      };
+}
 
 //TODO: check for \n in submitted point.content and remove it
 const appReducer = (appState: AppI, action: AppReducerAction) => {
@@ -82,75 +138,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         },
       };
     case "pointMove":
-      const pointWithNewShape = appState.message.points[action.oldShape].find(
-        (p) => p.pointId === action.pointId
-      ) as PointI;
-      return action.oldShape === action.newShape
-        ? {
-            ...appState,
-            message: {
-              ...appState.message,
-              points: {
-                ...appState.message.points,
-                [action.oldShape]: update(
-                  appState.message.points[action.oldShape],
-                  {
-                    $splice: [
-                      [action.oldIndex, 1],
-                      [action.newIndex, 0, pointWithNewShape],
-                    ],
-                  }
-                ),
-              },
-            },
-          }
-        : {
-            ...appState,
-            message: {
-              ...appState.message,
-              points: {
-                ...appState.message.points,
-                [action.oldShape]: update(
-                  appState.message.points[action.oldShape],
-                  {
-                    $splice: [[action.oldIndex, 1]],
-                  }
-                ),
-                [action.newShape]: update(
-                  appState.message.points[action.newShape],
-                  {
-                    $splice: [[action.newIndex, 0, pointWithNewShape]],
-                  }
-                ),
-              },
-            },
-          };
-    case "changeFocusShape":
-      const focusWithNewShape = appState.message.points[action.oldShape].find(
-        (p) => p.pointId === action.pointId
-      ) as PointI;
-      return {
-        ...appState,
-        message: {
-          ...appState.message,
-          points: {
-            ...appState.message.points,
-            [action.oldShape]: update(
-              appState.message.points[action.oldShape],
-              {
-                $splice: [[action.oldIndex, 1]],
-              }
-            ),
-            [action.newShape]: update(
-              appState.message.points[action.newShape],
-              {
-                $push: [focusWithNewShape],
-              }
-            ),
-          },
-          focus: { pointId: action.pointId, shape: action.newShape },
-        },
-      };
+      return handlePointMove(appState, action as PointMoveAction);
     case "pointsDelete":
       return {
         ...appState,
@@ -228,11 +216,17 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         cursorPosition: { pointId: newPointId, index: 0 },
       };
     case "setFocus":
+      const pointMoveAction: PointMoveAction = {
+        ...action,
+        type: "pointMove",
+      };
+      const intermediateState = handlePointMove(appState, pointMoveAction);
+
       return {
-        ...appState,
+        ...intermediateState,
         message: {
-          ...appState.message,
-          focus: { pointId: action.pointId, shape: action.shape },
+          ...intermediateState.message,
+          focus: { pointId: action.pointId, shape: action.newShape },
         },
       };
     case "setMainPoint":
