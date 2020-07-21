@@ -222,11 +222,15 @@ const Point = (props: {
             e.key === "Backspace" &&
             ref.current &&
             ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd &&
-            index !== 0
+            ref.current.selectionStart === ref.current.selectionEnd
           ) {
-            e.preventDefault();
-            combinePoints("above", point, shape, index);
+            if (index !== 0) {
+              e.preventDefault();
+              combinePoints("above", point, shape, index);
+            } else if (index === 0 && !point.content) {
+              e.preventDefault();
+              combinePoints("below", point, shape, index);
+            }
           } else if (
             e.key === "Delete" &&
             ref.current &&
