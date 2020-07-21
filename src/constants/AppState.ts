@@ -5,8 +5,7 @@
 
   U4U is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+  the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
   U4U is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,7 +57,6 @@ export interface AuthorI {
 export interface PointI {
   author: AuthorI;
   content: string;
-  shape: PointShape;
   pointId: string;
   pointDate: Date;
 }
@@ -67,7 +65,6 @@ export interface PointI {
 export interface PointNoIdI {
   author: AuthorI;
   content: string;
-  shape: PointShape;
 }
 
 export type PointsI = {
@@ -79,7 +76,7 @@ export interface MessageI {
   revisionOf: string | null;
   author: AuthorI;
   points: PointsI;
-  focus: string;
+  focus: { pointId: string; shape: PointShape };
   main: string;
   createdAt: Date;
 }
@@ -93,39 +90,53 @@ export interface AppI {
   message: MessageI;
   editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI | undefined;
+  //  hoveredRegion: PointShape | undefined;
 }
 
 export type AppReducerAction =
   | {
       type: "pointCreate";
       point: PointNoIdI;
+      shape: PointShape;
       index: number;
       focus?: boolean;
     }
   | {
       type: "pointUpdate";
       point: PointI;
-      move?: {
-        oldShape: PointShape;
-        oldIndex: number;
-        newShape: PointShape;
-        newIndex: number;
-      };
+      shape: PointShape;
+    }
+  | {
+      type: "pointMove";
+      pointId: PointI["pointId"];
+      oldShape: PointShape;
+      oldIndex: number;
+      newShape: PointShape;
+      newIndex: number;
+    }
+  | {
+      type: "changeFocusShape";
+      pointId: string;
+      oldShape: PointShape;
+      oldIndex: number;
+      newShape: PointShape;
     }
   | { type: "pointsDelete"; pointIds: string[] }
   | {
       type: "combinePoints";
       aboveOrBelow: "above" | "below";
       point: PointI;
+      shape: PointShape;
       index: number;
     }
   | {
       type: "splitIntoTwoPoints";
       topPoint: PointI;
       bottomPoint: PointI;
+      shape: PointShape;
       index: number;
     }
-  | { type: "setFocus"; pointId: string }
+  | { type: "setFocus"; pointId: string; shape: PointShape }
   | { type: "setMainPoint"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
   | { type: "setCursorPosition"; pointId: string; index: number }

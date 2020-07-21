@@ -19,13 +19,17 @@
 import React from "react";
 import styled from "styled-components";
 
-const Placeholder = (props: {
+//TODO: would it be better to not split out FocusPlaceholder from
+//Placeholder, and instead store the styles which differ between the
+//two in their respective parent components?
+const FocusPlaceholder = (props: {
   text: string;
   img: string;
   imgAlt: string;
   onClick: any;
+  emphasis: boolean;
 }) => {
-  const { text, img, imgAlt, onClick } = props;
+  const { text, img, imgAlt, onClick, emphasis } = props;
 
   const handleClick = (e: any) => {
     e.stopPropagation();
@@ -33,27 +37,32 @@ const Placeholder = (props: {
   };
 
   return (
-    <StyledSpan onClick={handleClick}>
+    <StyledSpan onClick={handleClick} emphasis={emphasis}>
       <StyledImg src={img} alt={imgAlt} />
-      <StyledDiv>{text}</StyledDiv>
+      <StyledDiv emphasis={emphasis}>{text}</StyledDiv>
     </StyledSpan>
   );
 };
 
-const StyledSpan = styled.span`
+interface StyledProps {
+  emphasis: boolean;
+}
+
+const StyledSpan = styled.span<StyledProps>`
   display: flex;
+  margin: auto;
+  margin-top: 2%;
+  opacity: ${(props) => (props.emphasis ? 1 : 0.4)};
 `;
 
 const StyledImg = styled.img`
   height: 20px;
   margin: 0px 4px 0 3px;
-  opacity: 0.4;
 `;
 
-const StyledDiv = styled.div`
-  opacity: 0.4;
+const StyledDiv = styled.div<StyledProps>`
   margin-top: 1px;
-  font-size: small;
+  font-size: ${(props) => (props.emphasis ? "medium" : "small")};
 `;
 
-export default Placeholder;
+export default FocusPlaceholder;

@@ -16,20 +16,32 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../constants/AppState";
+import React, { useEffect, useRef } from "react";
+import { PointI, PointShape } from "../constants/AppState";
 
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const FocusPoint = (props: {
   point: PointI;
+  shape: PointShape;
   appDispatch: any;
+  newFocus: boolean;
+  setNewFocus: (newFocus: boolean) => void;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
 }) => {
-  const { point, appDispatch, isEditing, onEnterPress, onClick } = props;
+  const {
+    point,
+    shape,
+    appDispatch,
+    newFocus,
+    setNewFocus,
+    isEditing,
+    onEnterPress,
+    onClick,
+  } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -37,23 +49,18 @@ const FocusPoint = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const [content, setContent] = useState(point.content);
-  useEffect(() => {
-    setContent(point.content);
-  }, [point.content]);
-
   const handleChange = (e: any) => {
-    setContent(e.target.value);
+    appDispatch({
+      type: "pointUpdate",
+      point: { ...point, content: e.target.value },
+      shape: shape,
+    });
   };
 
   const handleBlur = () => {
     appDispatch({
-      type: "pointUpdate",
-      point: { ...point, content: content },
-    });
-    appDispatch({
       type: "setEditingPoint",
-      pointId: undefined,
+      editingPoint: undefined,
     });
   };
 
@@ -62,21 +69,23 @@ const FocusPoint = (props: {
     onClick();
   };
 
-  const imageUrl = require(`../images/${point.shape}.svg`);
+  const imageUrl = require(`../images/${shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick}>
-      <StyledImg src={imageUrl} alt={point.shape} />
+    <StyledSpan onClick={handleClick} newFocus={newFocus}>
+      <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
-        value={content}
+        value={point.content}
+        newFocus={newFocus}
         onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() =>
+        onFocus={() => {
           appDispatch({
             type: "setEditingPoint",
             pointId: point.pointId,
-          })
-        }
+          });
+          setNewFocus(false);
+        }}
         ref={ref}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
@@ -95,18 +104,24 @@ const StyledImg = styled.img`
   opacity: 0.7;
 `;
 
-const StyledSpan = styled.span`
+interface StyledProps {
+  newFocus: boolean;
+}
+
+const StyledSpan = styled.span<StyledProps>`
+  margin: auto;
   display: flex;
+  opacity: ${(props) => (props.newFocus ? "0.5" : "1")};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
-  font-size: small;
   outline: 0;
   resize: none;
+  font-size: ${(props) => (props.newFocus ? "small" : "medium")};
 `;
 
 export default FocusPoint;

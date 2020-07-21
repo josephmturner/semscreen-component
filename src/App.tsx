@@ -18,7 +18,7 @@
 */
 import React, { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
-
+import update from "immutability-helper";
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./constants/initialState";
 import {
@@ -26,6 +26,7 @@ import {
   AppReducerAction,
   PointShape,
   allPointShapes,
+  PointI,
   PointsI,
 } from "./constants/AppState";
 
@@ -34,7 +35,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
   const newPointId = uuidv4();
   switch (action.type) {
     case "pointCreate":
-      const newPoints = appState.message.points[action.point.shape].slice();
+      const newPoints = appState.message.points[action.shape].slice();
       newPoints.splice(action.index, 0, {
         ...action.point,
         pointId: newPointId,
@@ -47,9 +48,9 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.point.shape]: newPoints,
+                [action.shape]: newPoints,
               },
-              focus: newPointId,
+              focus: { pointId: newPointId, shape: action.shape },
             },
             editingPoint: newPointId,
           }
@@ -59,25 +60,47 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.point.shape]: newPoints,
+                [action.shape]: newPoints,
               },
             },
             editingPoint: newPointId,
           };
     case "pointUpdate":
-      return action.move
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.shape]: appState.message.points[action.shape].map((p) => {
+              if (p.pointId === action.point.pointId) {
+                return action.point;
+              }
+              return p;
+            }),
+          },
+        },
+      };
+    case "pointMove":
+      const pointWithNewShape = appState.message.points[action.oldShape].find(
+        (p) => p.pointId === action.pointId
+      ) as PointI;
+      return action.oldShape === action.newShape
         ? {
             ...appState,
             message: {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.move.oldShape]: appState.message.points[
-                  action.move.oldShape
-                ].splice(action.move.oldIndex, 1),
-                [action.move.newShape]: appState.message.points[
-                  action.move.newShape
-                ].splice(action.move.newIndex, 0, action.point),
+                [action.oldShape]: update(
+                  appState.message.points[action.oldShape],
+                  {
+                    $splice: [
+                      [action.oldIndex, 1],
+                      [action.newIndex, 0, pointWithNewShape],
+                    ],
+                  }
+                ),
               },
             },
           }
@@ -87,17 +110,47 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               ...appState.message,
               points: {
                 ...appState.message.points,
-                [action.point.shape]: appState.message.points[
-                  action.point.shape
-                ].map((p) => {
-                  if (p.pointId === action.point.pointId) {
-                    return action.point;
+                [action.oldShape]: update(
+                  appState.message.points[action.oldShape],
+                  {
+                    $splice: [[action.oldIndex, 1]],
                   }
-                  return p;
-                }),
+                ),
+                [action.newShape]: update(
+                  appState.message.points[action.newShape],
+                  {
+                    $splice: [[action.newIndex, 0, pointWithNewShape]],
+                  }
+                ),
               },
             },
           };
+    case "changeFocusShape":
+      const focusWithNewShape = appState.message.points[action.oldShape].find(
+        (p) => p.pointId === action.pointId
+      ) as PointI;
+      return {
+        ...appState,
+        message: {
+          ...appState.message,
+          points: {
+            ...appState.message.points,
+            [action.oldShape]: update(
+              appState.message.points[action.oldShape],
+              {
+                $splice: [[action.oldIndex, 1]],
+              }
+            ),
+            [action.newShape]: update(
+              appState.message.points[action.newShape],
+              {
+                $push: [focusWithNewShape],
+              }
+            ),
+          },
+          focus: { pointId: action.pointId, shape: action.newShape },
+        },
+      };
     case "pointsDelete":
       return {
         ...appState,
@@ -117,42 +170,29 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         },
       };
     case "combinePoints":
-      const combinedPoints = appState.message.points[
-        action.point.shape
-      ].slice();
+      const prevPoint = appState.message.points[action.shape][action.index - 1];
+      const currentPoint = appState.message.points[action.shape][action.index];
+      const nextPoint = appState.message.points[action.shape][action.index + 1];
+      const combinedPoints = appState.message.points[action.shape].slice();
       action.aboveOrBelow === "above" &&
         combinedPoints.splice(action.index - 1, 2, {
-          ...appState.message.points[action.point.shape][action.index - 1],
-          content:
-            appState.message.points[action.point.shape][action.index - 1]
-              .content +
-            appState.message.points[action.point.shape][action.index].content,
+          ...prevPoint,
+          content: prevPoint.content + currentPoint.content,
         });
       action.aboveOrBelow === "below" &&
         combinedPoints.splice(action.index, 2, {
-          ...appState.message.points[action.point.shape][action.index],
-          content:
-            appState.message.points[action.point.shape][action.index].content +
-            appState.message.points[action.point.shape][action.index + 1]
-              .content,
+          ...currentPoint,
+          content: currentPoint.content + nextPoint.content,
         });
       const newCursorPosition =
         action.aboveOrBelow === "above"
           ? {
-              pointId:
-                appState.message.points[action.point.shape][action.index - 1]
-                  .pointId,
-              index:
-                appState.message.points[action.point.shape][action.index - 1]
-                  .content.length,
+              pointId: prevPoint.pointId,
+              index: prevPoint.content.length,
             }
           : {
-              pointId:
-                appState.message.points[action.point.shape][action.index]
-                  .pointId,
-              index:
-                appState.message.points[action.point.shape][action.index]
-                  .content.length,
+              pointId: currentPoint.pointId,
+              index: currentPoint.content.length,
             };
       return {
         ...appState,
@@ -160,20 +200,18 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ...appState.message,
           points: {
             ...appState.message.points,
-            [action.point.shape]: combinedPoints,
+            [action.shape]: combinedPoints,
           },
         },
         cursorPosition: newCursorPosition,
       };
     case "splitIntoTwoPoints":
-      const splitPoints = appState.message.points[
-        action.topPoint.shape
-      ].slice();
+      const splitPoints = appState.message.points[action.shape].slice();
       splitPoints.splice(
         action.index,
         1,
         {
-          ...appState.message.points[action.topPoint.shape][action.index],
+          ...appState.message.points[action.shape][action.index],
           content: action.topPoint.content,
         },
         { ...action.bottomPoint, pointId: newPointId, pointDate: new Date() }
@@ -184,7 +222,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
           ...appState.message,
           points: {
             ...appState.message.points,
-            [action.topPoint.shape]: splitPoints,
+            [action.shape]: splitPoints,
           },
         },
         cursorPosition: { pointId: newPointId, index: 0 },
@@ -192,7 +230,10 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
     case "setFocus":
       return {
         ...appState,
-        message: { ...appState.message, focus: action.pointId },
+        message: {
+          ...appState.message,
+          focus: { pointId: action.pointId, shape: action.shape },
+        },
       };
     case "setMainPoint":
       return {

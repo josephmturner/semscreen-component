@@ -15,6 +15,8 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+// TODO: type appDispatch
+
 import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
@@ -22,13 +24,16 @@ import StyledRegion from "./StyledRegion";
 import {
   AuthorI,
   PointI,
-  RegionI,
+  PointShape,
   CursorPositionI,
 } from "../constants/AppState";
+import { useDrop } from "react-dnd";
+import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
+import styled from "styled-components";
 
 const Region = (props: {
-  region: RegionI;
-  isExpanded: string;
+  region: PointShape;
+  isExpanded: "expanded" | "minimized" | "balanced";
   author: AuthorI;
   points: PointI[];
   focusPointId: string | undefined;
@@ -38,6 +43,7 @@ const Region = (props: {
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
+  setExpandedRegion: any;
 }) => {
   const {
     region,
@@ -51,6 +57,7 @@ const Region = (props: {
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
+    setExpandedRegion,
   } = props;
 
   const renderPoints = points.filter((p) => p.pointId !== focusPointId);
@@ -58,6 +65,33 @@ const Region = (props: {
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
   const placeholderImgAlt = region;
+
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: (item: DraggablePointType) => {
+      //TODO: consider only calling appDispatch after the animation transition ends.
+      if (isExpanded !== "expanded") {
+        setExpandedRegion(region);
+      }
+
+      if (item.shape !== region || item.index !== points.length - 1) {
+        const newIndex =
+          item.shape === region ? points.length - 1 : points.length;
+
+        appDispatch({
+          type: "pointMove",
+          pointId: item.pointId,
+          oldShape: item.shape,
+          oldIndex: item.index,
+          newShape: region,
+          newIndex: newIndex,
+        });
+
+        item.index = newIndex;
+        item.shape = region;
+      }
+    },
+  });
 
   return (
     <StyledRegion
@@ -70,6 +104,9 @@ const Region = (props: {
           <Point
             key={p.pointId}
             point={p}
+            shape={region}
+            isExpanded={isExpanded}
+            setExpandedRegion={setExpandedRegion}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
@@ -87,12 +124,14 @@ const Region = (props: {
                   content: bottomContent,
                   shape: region,
                 },
+                shape: region,
                 index: points.findIndex((p) => p.pointId === editingPoint),
               });
             }}
             combinePoints={(
               aboveOrBelow: "above" | "below",
               point: PointI,
+              shape: PointShape,
               index: number
             ) => {
               if (aboveOrBelow === "below" && index === points.length - 1) {
@@ -102,6 +141,7 @@ const Region = (props: {
                   type: "combinePoints",
                   aboveOrBelow: aboveOrBelow,
                   point: point,
+                  shape: shape,
                   index: index,
                 });
               }
@@ -129,24 +169,38 @@ const Region = (props: {
               }
             }}
             cursorPositionIndex={
-            cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined
+              cursorPosition && cursorPosition.pointId === p.pointId
+                ? cursorPosition.index
+                : undefined
             }
             onClick={() => onRegionClick(region, true)}
           />
         ))}
         {isExpanded === "expanded" && (
-          <Placeholder
-            text={placeholderText}
-            img={placeholderImg}
-            imgAlt={placeholderImgAlt}
-            onClick={() => {
-              createEmptyPoint(region, points.length);
-            }}
-          />
+          <>
+            <Placeholder
+              text={placeholderText}
+              img={placeholderImg}
+              imgAlt={placeholderImgAlt}
+              onClick={() => {
+                createEmptyPoint(region, points.length);
+              }}
+            />
+          </>
         )}
+        <DropTargetDiv ref={drop} isExpanded={isExpanded} />
       </div>
     </StyledRegion>
   );
 };
+
+interface DropTargetDivProps {
+  isExpanded: "expanded" | "minimized" | "balanced";
+}
+
+const DropTargetDiv = styled.div<DropTargetDivProps>`
+  min-height: ${(props) => (props.isExpanded ? "50px" : 0)};
+  height: 100%;
+`;
 
 export default Region;

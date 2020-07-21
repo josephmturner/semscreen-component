@@ -17,13 +17,19 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../constants/AppState";
+import { PointI, PointShape } from "../constants/AppState";
+import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
+import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { XYCoord } from "dnd-core";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const Point = (props: {
   point: PointI;
+  shape: PointShape;
+  isExpanded: "expanded" | "minimized" | "balanced";
+  setExpandedRegion: any;
   isMainPoint: boolean;
   index: number;
   appDispatch: any;
@@ -32,6 +38,7 @@ const Point = (props: {
   combinePoints: (
     aboveOrBelow: "above" | "below",
     point: PointI,
+    shape: PointShape,
     index: number
   ) => void;
   cursorPositionIndex: number | undefined;
@@ -40,6 +47,9 @@ const Point = (props: {
 }) => {
   const {
     point,
+    shape,
+    isExpanded,
+    setExpandedRegion,
     isMainPoint,
     index,
     appDispatch,
@@ -51,11 +61,78 @@ const Point = (props: {
     onClick,
   } = props;
 
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    hover(item: DraggablePointType, monitor: DropTargetMonitor) {
+      if (!ref.current) {
+        return;
+      }
+      if (isExpanded !== "expanded") {
+        setExpandedRegion(shape);
+      }
+      //TODO: only call the following logic after the animation transition ends.
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      const clientOffset = monitor.getClientOffset();
+
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      appDispatch({
+        type: "pointMove",
+        pointId: item.pointId,
+        oldShape: item.shape,
+        oldIndex: item.index,
+        newShape: shape,
+        newIndex: hoverIndex,
+      });
+
+      item.index = hoverIndex;
+      item.shape = shape;
+    },
+  });
+
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
+
+  const pointRef = useRef<HTMLSpanElement>(null);
+
+  const [{ isDragging }, drag] = useDrag({
+    item: {
+      type: ItemTypes.POINT,
+      pointId: point.pointId,
+      shape: shape,
+      index: index,
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    isDragging: (monitor) => {
+      return point.pointId === monitor.getItem().pointId;
+    },
+  });
+
+  drag(drop(pointRef));
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
@@ -88,6 +165,7 @@ const Point = (props: {
     appDispatch({
       type: "pointUpdate",
       point: { ...point, content: e.target.value },
+      shape: shape,
     });
   };
 
@@ -103,12 +181,14 @@ const Point = (props: {
     onClick();
   };
 
-  const imageUrl = require(`../images/${point.shape}.svg`);
+  const imageUrl = require(`../images/${shape}.svg`);
 
   return (
     <StyledSpan
+      ref={pointRef}
       isEditing={isEditing}
       isMainPoint={isMainPoint}
+      isDragging={isDragging}
       onClick={handleClick}
     >
       <StyledImg
@@ -117,7 +197,7 @@ const Point = (props: {
           appDispatch({ type: "setMainPoint", pointId: point.pointId })
         }
         height={isMainPoint ? 30 : 20}
-        alt={point.shape}
+        alt={shape}
       />
       <StyledTextArea
         value={point.content}
@@ -146,7 +226,7 @@ const Point = (props: {
             index !== 0
           ) {
             e.preventDefault();
-            combinePoints("above", point, index);
+            combinePoints("above", point, shape, index);
           } else if (
             e.key === "Delete" &&
             ref.current &&
@@ -154,7 +234,7 @@ const Point = (props: {
             ref.current.selectionStart === ref.current.selectionEnd
           ) {
             e.preventDefault();
-            combinePoints("below", point, index);
+            combinePoints("below", point, shape, index);
           } else if (
             e.key === "ArrowLeft" &&
             ref.current &&
@@ -186,17 +266,19 @@ const Point = (props: {
 interface StyledSpanProps {
   isEditing: boolean;
   isMainPoint: boolean;
+  isDragging: boolean;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
+  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   ${(props) =>
     props.isEditing &&
     `
   background-color: lightgray;
-  margin: 2px 0;
+  padding: 2px 0;
   outline: 2px solid #707070;
 `}
 
@@ -205,7 +287,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
     `
   border-top: solid #4f4f4f;
   border-bottom: solid #4f4f4f;
-  margin: 1% 0;
+  padding: 1% 0;
 `}
 `;
 
