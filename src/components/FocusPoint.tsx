@@ -1,5 +1,4 @@
-/*
-  Copyright (C) 2020 by USHIN, Inc.
+/* Copyright (C) 2020 by USHIN, Inc.
 
   This file is part of U4U.
 
@@ -18,13 +17,15 @@
 */
 import React, { useEffect, useRef } from "react";
 import { PointI, PointShape } from "../constants/AppState";
-
+import { ItemTypes } from "../constants/React-Dnd";
+import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
+  index: number;
   appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
@@ -33,6 +34,7 @@ const FocusPoint = (props: {
   const {
     point,
     shape,
+    index,
     appDispatch,
     isEditing,
     onEnterPress,
@@ -67,8 +69,25 @@ const FocusPoint = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
+  const [{ isDragging }, drag] = useDrag({
+    item: {
+      type: ItemTypes.POINT,
+      pointId: point.pointId,
+      originalShape: shape,
+      originalIndex: index,
+      shape: shape,
+      index: index,
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    isDragging: (monitor) => {
+      return point.pointId === monitor.getItem().pointId;
+    },
+  });
+
   return (
-    <StyledSpan onClick={handleClick}>
+    <StyledSpan ref={drag} onClick={handleClick} isDragging={isDragging}>
       <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
         value={point.content}
@@ -99,14 +118,16 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
+  isDragging: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
   margin: auto;
   display: flex;
+  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
+const StyledTextArea = styled(TextareaAutosize)`
   width: 100%;
   border: 0px;
   background-color: transparent;

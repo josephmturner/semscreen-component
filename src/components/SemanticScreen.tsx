@@ -164,10 +164,25 @@ const SemanticScreen = (props: {
                     : "minimized"
                 }
                 setExpandedRegion={setExpandedRegion}
-                point={Object.values(message.points)
-                  .flat()
-                  .find((p) => p.pointId === message.focus.pointId)}
-                shape={message.focus.shape}
+                point={
+                  message.focus
+                    ? Object.values(message.points)
+                        .flat()
+                        .find(
+                          (p) =>
+                            message.focus && p.pointId === message.focus.pointId
+                        )
+                    : undefined
+                }
+                shape={message.focus ? message.focus.shape : undefined}
+                index={
+                  message.focus
+                    ? message.points[message.focus.shape].findIndex(
+                        (p) =>
+                          message.focus && p.pointId === message.focus.pointId
+                      )
+                    : undefined
+                }
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}
                 onRegionClick={handleRegionClick}
@@ -189,7 +204,7 @@ const SemanticScreen = (props: {
                 }
                 author={author}
                 points={message.points[region as PointShape]}
-                focusPointId={message.focus.pointId}
+                focusPointId={message.focus && message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}

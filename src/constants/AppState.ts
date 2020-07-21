@@ -76,7 +76,7 @@ export interface MessageI {
   revisionOf: string | null;
   author: AuthorI;
   points: PointsI;
-  focus: { pointId: string; shape: PointShape };
+  focus: { pointId: string; shape: PointShape } | undefined;
   main: string;
   createdAt: Date;
 }

@@ -29,7 +29,8 @@ const FocusRegion = (props: {
   isExpanded: "expanded" | "minimized" | "balanced";
   setExpandedRegion: (region: RegionI) => void;
   point: PointI | undefined;
-  shape: PointShape;
+  shape: PointShape | undefined;
+  index: number | undefined;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
   onRegionClick: any;
@@ -40,6 +41,7 @@ const FocusRegion = (props: {
     setExpandedRegion,
     point,
     shape,
+    index,
     appDispatch,
     editingPoint,
     onRegionClick,
@@ -52,7 +54,7 @@ const FocusRegion = (props: {
         setExpandedRegion(region);
       }
     },
-    drop: (item: DraggablePointType, monitor) => {
+    drop: (item: DraggablePointType) => {
       appDispatch({
         type: "setFocus",
         pointId: item.pointId,
@@ -67,10 +69,11 @@ const FocusRegion = (props: {
   return (
     <StyledFocusRegion ref={drop} onClick={() => onRegionClick(region, false)}>
       <StyledDiv>
-        {point && (
+        {point && shape && typeof index === "number" && (
           <FocusPoint
             point={point}
             shape={shape}
+            index={index}
             appDispatch={appDispatch}
             isEditing={point && editingPoint === point.pointId ? true : false}
             onEnterPress={() => console.log("enter pressed in focus region")}
