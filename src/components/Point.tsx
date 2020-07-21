@@ -189,13 +189,16 @@ const Point = (props: {
       isEditing={isEditing}
       isMainPoint={isMainPoint}
       isDragging={isDragging}
+      isFirst={index === 0 ? true : false}
       onClick={handleClick}
     >
       <StyledImg
         src={imageUrl}
-        onClick={() =>
-          appDispatch({ type: "setMainPoint", pointId: point.pointId })
-        }
+        onClick={() => {
+          isMainPoint
+            ? appDispatch({ type: "setMainPoint", pointId: "" })
+            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+        }}
         height={isMainPoint ? 30 : 20}
         alt={shape}
       />
@@ -222,11 +225,15 @@ const Point = (props: {
             e.key === "Backspace" &&
             ref.current &&
             ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd &&
-            index !== 0
+            ref.current.selectionStart === ref.current.selectionEnd
           ) {
-            e.preventDefault();
-            combinePoints("above", point, shape, index);
+            if (index !== 0) {
+              e.preventDefault();
+              combinePoints("above", point, shape, index);
+            } else if (index === 0 && !point.content) {
+              e.preventDefault();
+              combinePoints("below", point, shape, index);
+            }
           } else if (
             e.key === "Delete" &&
             ref.current &&
@@ -267,19 +274,21 @@ interface StyledSpanProps {
   isEditing: boolean;
   isMainPoint: boolean;
   isDragging: boolean;
+  isFirst: boolean;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
+  margin: 0 0.1em;
+  margin-top: ${(props) => (props.isFirst ? "0.2em" : 0)};
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   ${(props) =>
     props.isEditing &&
     `
   background-color: lightgray;
-  padding: 2px 0;
-  outline: 2px solid #707070;
+  border-radius: 5px;
 `}
 
   ${(props) =>
