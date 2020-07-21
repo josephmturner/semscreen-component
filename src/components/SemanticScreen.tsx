@@ -95,7 +95,7 @@ const SemanticScreen = (props: {
       if (region === "focus" && message.focus) {
         appDispatch({
           type: "setEditingPoint",
-          pointId: message.focus,
+          pointId: message.focus.pointId,
         });
       } else if (region === "merits") {
         console.log("merits clicked");
@@ -182,6 +182,11 @@ const SemanticScreen = (props: {
                           message.focus && p.pointId === message.focus.pointId
                       )
                     : undefined
+                }
+                isMainPoint={
+                  message.focus && message.main === message.focus.pointId
+                    ? true
+                    : false
                 }
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}

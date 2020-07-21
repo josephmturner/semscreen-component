@@ -28,6 +28,7 @@ const StyledRegion = styled.div<StyledRegionProps>`
   overflow: auto;
   border: 2px solid lightgray;
   border-radius: 10px;
+  margin: 0.5px;
 
   @media (max-width: 799px) {
     --minimized-border: 0;

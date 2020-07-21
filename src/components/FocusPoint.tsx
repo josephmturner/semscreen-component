@@ -26,6 +26,7 @@ const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   index: number;
+  isMainPoint: boolean;
   appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
@@ -35,6 +36,7 @@ const FocusPoint = (props: {
     point,
     shape,
     index,
+    isMainPoint,
     appDispatch,
     isEditing,
     onEnterPress,
@@ -87,8 +89,23 @@ const FocusPoint = (props: {
   });
 
   return (
-    <StyledSpan ref={drag} onClick={handleClick} isDragging={isDragging}>
-      <StyledImg src={imageUrl} alt={shape} />
+    <StyledSpan
+      ref={drag}
+      onClick={handleClick}
+      isMainPoint={isMainPoint}
+      isEditing={isEditing}
+      isDragging={isDragging}
+    >
+      <StyledImg
+        src={imageUrl}
+        onClick={() => {
+          isMainPoint
+            ? appDispatch({ type: "setMainPoint", pointId: "" })
+            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+        }}
+        height={isMainPoint ? 30 : 20}
+        alt={shape}
+      />
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
@@ -118,6 +135,8 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
+  isMainPoint: boolean;
+  isEditing: boolean;
   isDragging: boolean;
 }
 
@@ -125,6 +144,20 @@ const StyledSpan = styled.span<StyledProps>`
   margin: auto;
   display: flex;
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
+  ${(props) =>
+    props.isEditing &&
+    `
+  background-color: #efefef;
+  border-radius: 5px;
+`}
+
+  ${(props) =>
+    props.isMainPoint &&
+    `
+  border-top: solid #4f4f4f;
+  border-bottom: solid #4f4f4f;
+  padding: 1% 0;
+`};
 `;
 
 const StyledTextArea = styled(TextareaAutosize)`

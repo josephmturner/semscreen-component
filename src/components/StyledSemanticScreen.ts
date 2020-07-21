@@ -29,7 +29,7 @@ const StyledSemanticScreen = styled.div<Props>`
   height: 100%;
   width: 100%;
   position: relative;
-  background-color: lightgray;
+  background-color: white;
   color: ${(props) => (props.color ? props.color : "inherit")};
   padding: ${(props) => (props.showShapes ? "2rem" : "0")};
   box-sizing: border-box;

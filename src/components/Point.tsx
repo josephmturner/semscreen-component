@@ -289,7 +289,7 @@ const StyledSpan = styled.span<StyledSpanProps>`
   ${(props) =>
     props.isEditing &&
     `
-  background-color: lightgray;
+  background-color: #efefef;
   border-radius: 5px;
 `}
 

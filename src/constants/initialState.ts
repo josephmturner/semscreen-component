@@ -27,7 +27,9 @@ export const authors: AuthorI[] = [
     authorId: "1",
     styles: {
       textColor: "#111",
-      backgroundColor: "#eee",
+      //consider setting backgroundColor as dark/light theme instead of
+      //author-specific
+      backgroundColor: "white",
     },
   },
 ];

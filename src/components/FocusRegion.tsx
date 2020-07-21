@@ -31,6 +31,7 @@ const FocusRegion = (props: {
   point: PointI | undefined;
   shape: PointShape | undefined;
   index: number | undefined;
+  isMainPoint: boolean;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
   onRegionClick: any;
@@ -42,6 +43,7 @@ const FocusRegion = (props: {
     point,
     shape,
     index,
+    isMainPoint,
     appDispatch,
     editingPoint,
     onRegionClick,
@@ -74,8 +76,9 @@ const FocusRegion = (props: {
             point={point}
             shape={shape}
             index={index}
+            isMainPoint={isMainPoint}
             appDispatch={appDispatch}
-            isEditing={point && editingPoint === point.pointId ? true : false}
+            isEditing={editingPoint === point.pointId}
             onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
           />
