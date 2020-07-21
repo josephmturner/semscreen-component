@@ -194,9 +194,11 @@ const Point = (props: {
     >
       <StyledImg
         src={imageUrl}
-        onClick={() =>
-          appDispatch({ type: "setMainPoint", pointId: point.pointId })
-        }
+        onClick={() => {
+          isMainPoint
+            ? appDispatch({ type: "setMainPoint", pointId: "" })
+            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+        }}
         height={isMainPoint ? 30 : 20}
         alt={shape}
       />
