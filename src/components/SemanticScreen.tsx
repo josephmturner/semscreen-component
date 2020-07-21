@@ -183,6 +183,9 @@ const SemanticScreen = (props: {
                   .flat()
                   .find((p) => p.pointId === message.focus.pointId)}
                 shape={message.focus.shape}
+                index={message.points[message.focus.shape].findIndex(
+                  (p) => p.pointId === message.focus.pointId
+                )}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}
                 createEmptyFocus={createEmptyFocus}

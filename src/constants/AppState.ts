@@ -114,6 +114,13 @@ export type AppReducerAction =
       newShape: PointShape;
       newIndex: number;
     }
+  | {
+      type: "changeFocusShape";
+      pointId: string;
+      oldShape: PointShape;
+      oldIndex: number;
+      newShape: PointShape;
+    }
   | { type: "pointsDelete"; pointIds: string[] }
   | {
       type: "combinePoints";

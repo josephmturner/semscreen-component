@@ -19,13 +19,17 @@
 import React from "react";
 import styled from "styled-components";
 
+//TODO: would it be better to not split out FocusPlaceholder from
+//Placeholder, and instead store the styles which differ between the
+//two in their respective parent components?
 const FocusPlaceholder = (props: {
   text: string;
   img: string;
   imgAlt: string;
   onClick: any;
+  opacity: number;
 }) => {
-  const { text, img, imgAlt, onClick } = props;
+  const { text, img, imgAlt, onClick, opacity } = props;
 
   const handleClick = (e: any) => {
     e.stopPropagation();
@@ -33,26 +37,29 @@ const FocusPlaceholder = (props: {
   };
 
   return (
-    <StyledSpan onClick={handleClick}>
+    <StyledSpan onClick={handleClick} opacity={opacity}>
       <StyledImg src={img} alt={imgAlt} />
       <StyledDiv>{text}</StyledDiv>
     </StyledSpan>
   );
 };
 
-const StyledSpan = styled.span`
+interface StyledProps {
+  opacity: number;
+}
+
+const StyledSpan = styled.span<StyledProps>`
   display: flex;
   margin: auto;
+  opacity: ${(props) => props.opacity};
 `;
 
 const StyledImg = styled.img`
   height: 20px;
   margin: 0px 4px 0 3px;
-  opacity: 0.4;
 `;
 
 const StyledDiv = styled.div`
-  opacity: 0.4;
   margin-top: 1px;
   font-size: small;
 `;

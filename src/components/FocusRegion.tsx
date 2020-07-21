@@ -32,6 +32,7 @@ const FocusRegion = (props: {
   setExpandedRegion: (region: RegionI) => void;
   point: PointI | undefined;
   shape: PointShape;
+  index: number;
   appDispatch: any;
   editingPoint: PointI["pointId"] | undefined;
   createEmptyFocus: any;
@@ -43,6 +44,7 @@ const FocusRegion = (props: {
     setExpandedRegion,
     point,
     shape,
+    index,
     appDispatch,
     editingPoint,
     createEmptyFocus,
@@ -63,10 +65,18 @@ const FocusRegion = (props: {
     setNewFocus(true);
   };
 
-  const handleSevenShapesClick = (shape: PointShape) => {
+  const handleSevenShapesClick = (newShape: PointShape) => {
     if (newFocus) {
       setNewFocus(false);
-      createEmptyFocus(shape);
+      createEmptyFocus(newShape);
+    } else if (!newFocus && point && shape !== newShape) {
+      appDispatch({
+        type: "changeFocusShape",
+        pointId: point.pointId,
+        oldShape: shape,
+        oldIndex: index,
+        newShape: newShape,
+      });
     }
   };
 
@@ -117,6 +127,7 @@ const FocusRegion = (props: {
             img={placeholderImg}
             imgAlt={placeholderImgAlt}
             onClick={handlePlaceholderClick}
+            opacity={newFocus ? 1 : 0.4}
           />
         )}
         {isExpanded === "expanded" && (
