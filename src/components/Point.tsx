@@ -189,6 +189,7 @@ const Point = (props: {
       isEditing={isEditing}
       isMainPoint={isMainPoint}
       isDragging={isDragging}
+      isFirst={index === 0 ? true : false}
       onClick={handleClick}
     >
       <StyledImg
@@ -271,19 +272,21 @@ interface StyledSpanProps {
   isEditing: boolean;
   isMainPoint: boolean;
   isDragging: boolean;
+  isFirst: boolean;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
 const StyledSpan = styled.span<StyledSpanProps>`
   display: flex;
+  margin: 0 0.1em;
+  margin-top: ${(props) => (props.isFirst ? "0.2em" : 0)};
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   ${(props) =>
     props.isEditing &&
     `
   background-color: lightgray;
-  padding: 2px 0;
-  outline: 2px solid #707070;
+  border-radius: 5px;
 `}
 
   ${(props) =>
