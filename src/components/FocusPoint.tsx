@@ -26,8 +26,6 @@ const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   appDispatch: any;
-  newFocus: boolean;
-  setNewFocus: (newFocus: boolean) => void;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
@@ -36,8 +34,6 @@ const FocusPoint = (props: {
     point,
     shape,
     appDispatch,
-    newFocus,
-    setNewFocus,
     isEditing,
     onEnterPress,
     onClick,
@@ -72,11 +68,10 @@ const FocusPoint = (props: {
   const imageUrl = require(`../images/${shape}.svg`);
 
   return (
-    <StyledSpan onClick={handleClick} newFocus={newFocus}>
+    <StyledSpan onClick={handleClick}>
       <StyledImg src={imageUrl} alt={shape} />
       <StyledTextArea
         value={point.content}
-        newFocus={newFocus}
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
@@ -84,7 +79,6 @@ const FocusPoint = (props: {
             type: "setEditingPoint",
             pointId: point.pointId,
           });
-          setNewFocus(false);
         }}
         ref={ref}
         onKeyDown={(e: any) => {
@@ -105,13 +99,11 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
-  newFocus: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
   margin: auto;
   display: flex;
-  opacity: ${(props) => (props.newFocus ? "0.5" : "1")};
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
@@ -121,7 +113,6 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   font-family: ubuntu;
   outline: 0;
   resize: none;
-  font-size: ${(props) => (props.newFocus ? "small" : "medium")};
 `;
 
 export default FocusPoint;

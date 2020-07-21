@@ -93,6 +93,24 @@ export interface AppI {
   //  hoveredRegion: PointShape | undefined;
 }
 
+// TODO: give names to actions, like PointMoveAction
+interface PointMoveBase {
+  type: string;
+  pointId: PointI["pointId"];
+  oldShape: PointShape;
+  oldIndex: number;
+  newShape: PointShape;
+  newIndex: number;
+}
+
+export interface PointMoveAction extends PointMoveBase {
+  type: "pointMove";
+}
+
+export interface SetFocusAction extends PointMoveBase {
+  type: "setFocus";
+}
+
 export type AppReducerAction =
   | {
       type: "pointCreate";
@@ -106,14 +124,7 @@ export type AppReducerAction =
       point: PointI;
       shape: PointShape;
     }
-  | {
-      type: "pointMove";
-      pointId: PointI["pointId"];
-      oldShape: PointShape;
-      oldIndex: number;
-      newShape: PointShape;
-      newIndex: number;
-    }
+  | PointMoveAction
   | {
       type: "changeFocusShape";
       pointId: string;
@@ -136,7 +147,7 @@ export type AppReducerAction =
       shape: PointShape;
       index: number;
     }
-  | { type: "setFocus"; pointId: string; shape: PointShape }
+  | SetFocusAction
   | { type: "setMainPoint"; pointId: string }
   | { type: "setEditingPoint"; pointId: string }
   | { type: "setCursorPosition"; pointId: string; index: number }

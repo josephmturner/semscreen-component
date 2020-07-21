@@ -121,6 +121,8 @@ const Point = (props: {
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
+      originalShape: shape,
+      originalIndex: index,
       shape: shape,
       index: index,
     },

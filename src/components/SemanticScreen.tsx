@@ -88,21 +88,6 @@ const SemanticScreen = (props: {
     });
   };
 
-  //TODO: consider merging createEmptyFocus and createEmptyPoint
-  const createEmptyFocus = (shape: PointShape) => {
-    deleteEmptyPoints();
-    appDispatch({
-      type: "pointCreate",
-      point: {
-        author: author,
-        content: "",
-      },
-      shape: shape,
-      index: message.points[shape].length,
-      focus: true,
-    });
-  };
-
   const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
     if (region !== expandedRegion) {
       setExpandedRegion(region);
@@ -183,12 +168,8 @@ const SemanticScreen = (props: {
                   .flat()
                   .find((p) => p.pointId === message.focus.pointId)}
                 shape={message.focus.shape}
-                index={message.points[message.focus.shape].findIndex(
-                  (p) => p.pointId === message.focus.pointId
-                )}
                 appDispatch={appDispatch}
                 editingPoint={editingPoint}
-                createEmptyFocus={createEmptyFocus}
                 onRegionClick={handleRegionClick}
                 key={region}
               />
