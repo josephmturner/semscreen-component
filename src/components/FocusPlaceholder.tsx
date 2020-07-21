@@ -27,9 +27,9 @@ const FocusPlaceholder = (props: {
   img: string;
   imgAlt: string;
   onClick: any;
-  opacity: number;
+  emphasis: boolean;
 }) => {
-  const { text, img, imgAlt, onClick, opacity } = props;
+  const { text, img, imgAlt, onClick, emphasis } = props;
 
   const handleClick = (e: any) => {
     e.stopPropagation();
@@ -37,21 +37,22 @@ const FocusPlaceholder = (props: {
   };
 
   return (
-    <StyledSpan onClick={handleClick} opacity={opacity}>
+    <StyledSpan onClick={handleClick} emphasis={emphasis}>
       <StyledImg src={img} alt={imgAlt} />
-      <StyledDiv>{text}</StyledDiv>
+      <StyledDiv emphasis={emphasis}>{text}</StyledDiv>
     </StyledSpan>
   );
 };
 
 interface StyledProps {
-  opacity: number;
+  emphasis: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
   display: flex;
   margin: auto;
-  opacity: ${(props) => props.opacity};
+  margin-top: 2%;
+  opacity: ${(props) => (props.emphasis ? 1 : 0.4)};
 `;
 
 const StyledImg = styled.img`
@@ -59,9 +60,9 @@ const StyledImg = styled.img`
   margin: 0px 4px 0 3px;
 `;
 
-const StyledDiv = styled.div`
+const StyledDiv = styled.div<StyledProps>`
   margin-top: 1px;
-  font-size: small;
+  font-size: ${(props) => (props.emphasis ? "medium" : "small")};
 `;
 
 export default FocusPlaceholder;

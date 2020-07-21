@@ -127,7 +127,7 @@ const FocusRegion = (props: {
             img={placeholderImg}
             imgAlt={placeholderImgAlt}
             onClick={handlePlaceholderClick}
-            opacity={newFocus ? 1 : 0.4}
+            emphasis={newFocus ? true : false}
           />
         )}
         {isExpanded === "expanded" && (
