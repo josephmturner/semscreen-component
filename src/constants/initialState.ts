@@ -56,7 +56,7 @@ export const messages: MessageI[] = [
         {
           author: authors[0],
           content:
-            "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
+            "Build an open, collaborative, compassionate system to share information and make decisions",
           pointId: "pointId2",
           pointDate: new Date(),
         },
@@ -91,7 +91,7 @@ export const messages: MessageI[] = [
         {
           author: authors[0],
           content:
-            "Build an open, collaborative, compassionate system to share information and make decisions",
+            "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
           pointId: "pointId7",
           pointDate: new Date(),
         },
