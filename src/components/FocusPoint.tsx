@@ -165,6 +165,7 @@ const StyledTextArea = styled(TextareaAutosize)`
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
+  font-size: medium;
   outline: 0;
   resize: none;
 `;

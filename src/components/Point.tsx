@@ -201,6 +201,7 @@ const Point = (props: {
             ? appDispatch({ type: "setMainPoint", pointId: "" })
             : appDispatch({ type: "setMainPoint", pointId: point.pointId });
         }}
+        isMainPoint={isMainPoint}
         height={isMainPoint ? 30 : 20}
         alt={shape}
       />
@@ -214,6 +215,7 @@ const Point = (props: {
             pointId: point.pointId,
           })
         }
+        isMainPoint={isMainPoint}
         ref={ref}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
@@ -272,16 +274,16 @@ const Point = (props: {
   );
 };
 
-interface StyledSpanProps {
-  isEditing: boolean;
+interface StyledProps {
+  isEditing?: boolean;
   isMainPoint: boolean;
-  isDragging: boolean;
-  isFirst: boolean;
+  isDragging?: boolean;
+  isFirst?: boolean;
 }
 
 //TODO: replace background-color below with props.color when author
 //styles are ready
-const StyledSpan = styled.span<StyledSpanProps>`
+const StyledSpan = styled.span<StyledProps>`
   display: flex;
   margin: 0 0.1em;
   margin-top: ${(props) => (props.isFirst ? "0.2em" : 0)};
@@ -302,17 +304,19 @@ const StyledSpan = styled.span<StyledSpanProps>`
 `}
 `;
 
-const StyledImg = styled.img`
-  margin: 0px 4px 0 3px;
+const StyledImg = styled.img<StyledProps>`
+  margin: ${(props) =>
+    props.isMainPoint ? "auto 1px auto 1px" : "auto 3px auto 3px"};
   opacity: 0.7;
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
+  margin: auto 0;
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
-  font-size: small;
+  font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   outline: 0;
   resize: none;
 `;
