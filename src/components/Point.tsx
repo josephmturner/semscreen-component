@@ -115,9 +115,10 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
+  const handleRef = useRef<HTMLImageElement>(null);
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
@@ -134,7 +135,8 @@ const Point = (props: {
     },
   });
 
-  drag(drop(pointRef));
+  drag(drop(handleRef));
+  drop(preview(pointRef));
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
@@ -195,6 +197,7 @@ const Point = (props: {
       onClick={handleClick}
     >
       <StyledImg
+        ref={handleRef}
         src={imageUrl}
         onClick={() => {
           isMainPoint
