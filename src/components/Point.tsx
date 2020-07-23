@@ -117,7 +117,7 @@ const Point = (props: {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
@@ -134,7 +134,7 @@ const Point = (props: {
     },
   });
 
-  drag(drop(pointRef));
+  drop(preview(pointRef));
 
   useEffect(() => {
     if (!isNaN(cursorPositionIndex as number) && ref.current) {
@@ -195,6 +195,7 @@ const Point = (props: {
       onClick={handleClick}
     >
       <StyledImg
+        ref={drag}
         src={imageUrl}
         onClick={() => {
           isMainPoint
