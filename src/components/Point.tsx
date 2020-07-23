@@ -115,7 +115,6 @@ const Point = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const handleRef = useRef<HTMLImageElement>(null);
   const pointRef = useRef<HTMLSpanElement>(null);
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -135,7 +134,6 @@ const Point = (props: {
     },
   });
 
-  drag(drop(handleRef));
   drop(preview(pointRef));
 
   useEffect(() => {
@@ -197,7 +195,7 @@ const Point = (props: {
       onClick={handleClick}
     >
       <StyledImg
-        ref={handleRef}
+        ref={drag}
         src={imageUrl}
         onClick={() => {
           isMainPoint

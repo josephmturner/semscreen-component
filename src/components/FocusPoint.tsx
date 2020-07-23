@@ -71,7 +71,7 @@ const FocusPoint = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
       pointId: point.pointId,
@@ -90,13 +90,14 @@ const FocusPoint = (props: {
 
   return (
     <StyledSpan
-      ref={drag}
+      ref={preview}
       onClick={handleClick}
       isMainPoint={isMainPoint}
       isEditing={isEditing}
       isDragging={isDragging}
     >
       <StyledImg
+        ref={drag}
         src={imageUrl}
         onClick={() => {
           isMainPoint
