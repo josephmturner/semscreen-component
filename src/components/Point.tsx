@@ -194,7 +194,7 @@ const Point = (props: {
       isFirst={index === 0 ? true : false}
       onClick={handleClick}
     >
-      <StyledImg
+     {isExpanded === 'expanded' && <StyledImg
         ref={drag}
         src={imageUrl}
         onClick={() => {
@@ -205,7 +205,7 @@ const Point = (props: {
         isMainPoint={isMainPoint}
         height={isMainPoint ? 30 : 20}
         alt={shape}
-      />
+      />}
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
@@ -320,6 +320,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   outline: 0;
   resize: none;
+  overflow: hidden;
 `;
 
 export default Point;

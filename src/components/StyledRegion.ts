@@ -25,7 +25,8 @@ interface StyledRegionProps {
 
 const StyledRegion = styled.div<StyledRegionProps>`
   background-color: ${(props) => props.backgroundColor};
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: 2px solid lightgray;
   border-radius: 10px;
   margin: 0.5px;
