@@ -42,12 +42,12 @@ const Placeholder = (props: {
 
 const StyledSpan = styled.span`
   display: flex;
-  margin: 0 0.1em;
+  padding-top: 2px;
 `;
 
 const StyledImg = styled.img`
-  height: 20px;
-  margin: 0px 4px 0 3px;
+  height: 17px;
+  margin: 0px 4px 0 2px;
   opacity: 0.4;
 `;
 
