@@ -17,10 +17,6 @@
 */
 
 //TODO: make script in package.json for running typescript
-
-//TODO: move interfaces.d.ts to constants dir and rename to AppState,
-//create new interface called AppState which contains message and
-//whatever else
 export type PointShape =
   | "facts"
   | "thoughts"
@@ -46,12 +42,9 @@ export type RegionI = PointShape | "merits" | "focus";
 
 export interface AuthorI {
   name: string;
-  styles: {
-    textColor: string;
-    backgroundColor: string;
-  };
   authorId: string;
   authorDate: Date;
+  color: string;
 }
 
 export interface PointI {

@@ -24,6 +24,7 @@ import { wrapGrid } from "animate-css-grid";
 import { v4 as uuidv4 } from "uuid";
 
 import Region from "./Region";
+import MeritsRegion from "./MeritsRegion";
 import FocusRegion from "./FocusRegion";
 import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
@@ -55,12 +56,9 @@ const SemanticScreen = (props: {
 
   const author = message.author || {
     name: "anonymous",
-    styles: {
-      textColor: "#000",
-      backgroundColor: "#fff",
-    },
     authorId: uuidv4(),
     authorDate: new Date(),
+    color: "#fff",
   };
   //TODO: what if App doesn't pass any points to SemanticScreen?
 
@@ -138,10 +136,17 @@ const SemanticScreen = (props: {
       });
   }, []);
 
+  const isExpanded = (region: RegionI) => {
+    return region === expandedRegion
+      ? "expanded"
+      : expandedRegion === ""
+      ? "balanced"
+      : "minimized";
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <StyledSemanticScreen
-        color={author.styles.textColor}
         expandedRegion={expandedRegion}
         showShapes={showShapes}
         ref={semanticScreenRef}
@@ -152,17 +157,22 @@ const SemanticScreen = (props: {
           onAuthorUpdate={onAuthorUpdate}
         />
         {regions.map((region: RegionI) => {
+          if (region === "merits") {
+            return (
+              <MeritsRegion
+                region={region}
+                isExpanded={isExpanded(region)}
+                setExpandedRegion={setExpandedRegion}
+                onRegionClick={handleRegionClick}
+                appDispatch={appDispatch}
+              />
+            );
+          }
           if (region === "focus") {
             return (
               <FocusRegion
                 region={region}
-                isExpanded={
-                  region === expandedRegion
-                    ? "expanded"
-                    : expandedRegion === ""
-                    ? "balanced"
-                    : "minimized"
-                }
+                isExpanded={isExpanded(region)}
                 setExpandedRegion={setExpandedRegion}
                 point={
                   message.focus
@@ -194,19 +204,11 @@ const SemanticScreen = (props: {
                 key={region}
               />
             );
-          } else if (region === "merits") {
-            return <div key="merits"></div>;
           } else {
             return (
               <Region
                 region={region}
-                isExpanded={
-                  region === expandedRegion
-                    ? "expanded"
-                    : expandedRegion === ""
-                    ? "balanced"
-                    : "minimized"
-                }
+                isExpanded={isExpanded(region)}
                 author={author}
                 points={message.points[region as PointShape]}
                 focusPointId={message.focus && message.focus.pointId}

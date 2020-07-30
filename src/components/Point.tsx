@@ -194,133 +194,130 @@ const Point = (props: {
       isFirst={index === 0 ? true : false}
       onClick={handleClick}
     >
-     {isExpanded === 'expanded' && <StyledImg
-        ref={drag}
-        src={imageUrl}
-        onClick={() => {
-          isMainPoint
-            ? appDispatch({ type: "setMainPoint", pointId: "" })
-            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
-        }}
-        isMainPoint={isMainPoint}
-        height={isMainPoint ? 30 : 20}
-        alt={shape}
-      />}
-      <StyledTextArea
-        value={point.content}
-        onBlur={handleBlur}
-        onChange={handleChange}
-        onFocus={() =>
-          appDispatch({
-            type: "setEditingPoint",
-            pointId: point.pointId,
-          })
-        }
-        isMainPoint={isMainPoint}
-        ref={ref}
-        onKeyDown={(e: any) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            ref.current &&
-              createPointBelow(
-                point.content.slice(0, ref.current.selectionStart),
-                point.content.slice(ref.current.selectionStart)
-              );
-          } else if (
-            e.key === "Backspace" &&
-            ref.current &&
-            ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            if (index !== 0) {
+      <StyledDiv>
+        <StyledImg
+          ref={drag}
+          src={imageUrl}
+          onClick={() => {
+            isMainPoint
+              ? appDispatch({ type: "setMainPoint", pointId: "" })
+              : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+          }}
+          isMainPoint={isMainPoint}
+          height={isMainPoint ? 23 : 17}
+          alt={shape}
+        />
+        <StyledTextArea
+          value={point.content}
+          onBlur={handleBlur}
+          onChange={handleChange}
+          onFocus={() =>
+            appDispatch({
+              type: "setEditingPoint",
+              pointId: point.pointId,
+            })
+          }
+          isMainPoint={isMainPoint}
+          ref={ref}
+          onKeyDown={(e: any) => {
+            if (e.key === "Enter") {
               e.preventDefault();
-              combinePoints("above", point, shape, index);
-            } else if (index === 0 && !point.content) {
+              ref.current &&
+                createPointBelow(
+                  point.content.slice(0, ref.current.selectionStart),
+                  point.content.slice(ref.current.selectionStart)
+                );
+            } else if (
+              e.key === "Backspace" &&
+              ref.current &&
+              ref.current.selectionStart === 0 &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
+              if (index !== 0) {
+                e.preventDefault();
+                combinePoints("above", point, shape, index);
+              } else if (index === 0 && !point.content) {
+                e.preventDefault();
+                combinePoints("below", point, shape, index);
+              }
+            } else if (
+              e.key === "Delete" &&
+              ref.current &&
+              ref.current.selectionStart === point.content.length &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
               e.preventDefault();
               combinePoints("below", point, shape, index);
+            } else if (
+              e.key === "ArrowLeft" &&
+              ref.current &&
+              ref.current.selectionStart === 0 &&
+              ref.current.selectionStart === ref.current.selectionEnd &&
+              index !== 0
+            ) {
+              e.preventDefault();
+              setCursorPosition(index, "endOfPriorPoint");
+            } else if (
+              e.key === "ArrowRight" &&
+              ref.current &&
+              ref.current.selectionStart === point.content.length &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
+              e.preventDefault();
+              setCursorPosition(index, "beginningOfNextPoint");
+            } else if (e.key === "ArrowUp" && index !== 0) {
+              setArrowPressed("ArrowUp");
+            } else if (e.key === "ArrowDown") {
+              setArrowPressed("ArrowDown");
             }
-          } else if (
-            e.key === "Delete" &&
-            ref.current &&
-            ref.current.selectionStart === point.content.length &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            e.preventDefault();
-            combinePoints("below", point, shape, index);
-          } else if (
-            e.key === "ArrowLeft" &&
-            ref.current &&
-            ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd &&
-            index !== 0
-          ) {
-            e.preventDefault();
-            setCursorPosition(index, "endOfPriorPoint");
-          } else if (
-            e.key === "ArrowRight" &&
-            ref.current &&
-            ref.current.selectionStart === point.content.length &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            e.preventDefault();
-            setCursorPosition(index, "beginningOfNextPoint");
-          } else if (e.key === "ArrowUp" && index !== 0) {
-            setArrowPressed("ArrowUp");
-          } else if (e.key === "ArrowDown") {
-            setArrowPressed("ArrowDown");
-          }
-        }}
-      />
+          }}
+        />
+      </StyledDiv>
     </StyledSpan>
   );
 };
 
 interface StyledProps {
   isEditing?: boolean;
-  isMainPoint: boolean;
+  isMainPoint?: boolean;
   isDragging?: boolean;
   isFirst?: boolean;
 }
 
-//TODO: replace background-color below with props.color when author
-//styles are ready
+const StyledDiv = styled.div<StyledProps>`
+  position: relative;
+  left: 2px;
+`;
+
 const StyledSpan = styled.span<StyledProps>`
-  display: flex;
-  margin: 0 0.1em;
-  margin-top: ${(props) => (props.isFirst ? "0.2em" : 0)};
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
+  padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
+  padding-bottom: ${(props) => (props.isMainPoint ? "3px" : "0px")};
   ${(props) =>
     props.isEditing &&
     `
   background-color: #efefef;
   border-radius: 5px;
 `}
-
-  ${(props) =>
-    props.isMainPoint &&
-    `
-  border-top: solid #4f4f4f;
-  border-bottom: solid #4f4f4f;
-  padding: 1% 0;
-`}
 `;
 
 const StyledImg = styled.img<StyledProps>`
-  margin: ${(props) =>
-    props.isMainPoint ? "auto 1px auto 1px" : "auto 3px auto 3px"};
+  position: absolute;
+  top: ${(props) => (props.isMainPoint ? 0 : "2px")};
   opacity: 0.7;
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
-  margin: auto 0;
   border: 0px;
   background-color: transparent;
+  top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
   font-family: ubuntu;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   outline: 0;
   resize: none;
   overflow: hidden;
+  text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
 `;
 
 export default Point;

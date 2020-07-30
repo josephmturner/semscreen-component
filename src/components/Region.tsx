@@ -96,7 +96,7 @@ const Region = (props: {
   return (
     <StyledRegion
       isExpanded={isExpanded}
-      backgroundColor={author.styles.backgroundColor}
+      borderColor={author.color}
       onClick={() => onRegionClick(region, false)}
     >
       <div>

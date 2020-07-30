@@ -36,7 +36,7 @@ const Banner = (props: {
   return (
     <>
       <BannerView
-        color={author.styles.textColor}
+        color={author.color}
         onClick={handleClick}
         showShapes={showShapes}
       >
@@ -53,13 +53,13 @@ interface Props {
 const BannerView = styled.div<Props>`
   position: absolute;
   text-align: center;
-  font-size: 1.5rem;
-  top: ${(props) => (props.showShapes ? "0.75rem" : "0")};
-  right: ${(props) => (props.showShapes ? "2rem" : "0")};
+  font-size: medium;
+  top: ${(props) => (props.showShapes ? "1.2rem" : "0")};
+  right: ${(props) => (props.showShapes ? "2.3rem" : "0")};
   padding: 0;
   z-index: 1;
   cursor: pointer;
-  color: ${(props) => (props.color ? props.color : "inherit")};
+  background-color: #ffffff;
 
   &:before {
     content: "";
@@ -70,7 +70,7 @@ const BannerView = styled.div<Props>`
     width: 100%;
     height: 100%;
     z-index: -1;
-    filter: opacity(0.33);
+    filter: opacity(0.25);
   }
 `;
 
