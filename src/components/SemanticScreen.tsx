@@ -138,6 +138,14 @@ const SemanticScreen = (props: {
       });
   }, []);
 
+  const isExpanded = (region: RegionI) => {
+    return region === expandedRegion
+      ? "expanded"
+      : expandedRegion === ""
+      ? "balanced"
+      : "minimized";
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <StyledSemanticScreen
@@ -156,13 +164,7 @@ const SemanticScreen = (props: {
             return (
               <FocusRegion
                 region={region}
-                isExpanded={
-                  region === expandedRegion
-                    ? "expanded"
-                    : expandedRegion === ""
-                    ? "balanced"
-                    : "minimized"
-                }
+                isExpanded={isExpanded(region)}
                 setExpandedRegion={setExpandedRegion}
                 point={
                   message.focus
@@ -200,13 +202,7 @@ const SemanticScreen = (props: {
             return (
               <Region
                 region={region}
-                isExpanded={
-                  region === expandedRegion
-                    ? "expanded"
-                    : expandedRegion === ""
-                    ? "balanced"
-                    : "minimized"
-                }
+                isExpanded={isExpanded(region)}
                 author={author}
                 points={message.points[region as PointShape]}
                 focusPointId={message.focus && message.focus.pointId}

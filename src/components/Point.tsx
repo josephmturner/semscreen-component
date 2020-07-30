@@ -194,18 +194,20 @@ const Point = (props: {
       isFirst={index === 0 ? true : false}
       onClick={handleClick}
     >
-     {isExpanded === 'expanded' && <StyledImg
-        ref={drag}
-        src={imageUrl}
-        onClick={() => {
-          isMainPoint
-            ? appDispatch({ type: "setMainPoint", pointId: "" })
-            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
-        }}
-        isMainPoint={isMainPoint}
-        height={isMainPoint ? 30 : 20}
-        alt={shape}
-      />}
+      {isExpanded === "expanded" && (
+        <StyledImg
+          ref={drag}
+          src={imageUrl}
+          onClick={() => {
+            isMainPoint
+              ? appDispatch({ type: "setMainPoint", pointId: "" })
+              : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+          }}
+          isMainPoint={isMainPoint}
+          height={isMainPoint ? 30 : 20}
+          alt={shape}
+        />
+      )}
       <StyledTextArea
         value={point.content}
         onBlur={handleBlur}
