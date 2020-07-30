@@ -24,6 +24,7 @@ import { wrapGrid } from "animate-css-grid";
 import { v4 as uuidv4 } from "uuid";
 
 import Region from "./Region";
+import MeritsRegion from "./MeritsRegion";
 import FocusRegion from "./FocusRegion";
 import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
@@ -160,6 +161,17 @@ const SemanticScreen = (props: {
           onAuthorUpdate={onAuthorUpdate}
         />
         {regions.map((region: RegionI) => {
+          if (region === "merits") {
+            return (
+              <MeritsRegion
+                region={region}
+                isExpanded={isExpanded(region)}
+                setExpandedRegion={setExpandedRegion}
+                onRegionClick={handleRegionClick}
+                appDispatch={appDispatch}
+              />
+            );
+          }
           if (region === "focus") {
             return (
               <FocusRegion
@@ -196,8 +208,6 @@ const SemanticScreen = (props: {
                 key={region}
               />
             );
-          } else if (region === "merits") {
-            return <div key="merits"></div>;
           } else {
             return (
               <Region
