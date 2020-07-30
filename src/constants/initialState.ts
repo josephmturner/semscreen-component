@@ -25,12 +25,7 @@ export const authors: AuthorI[] = [
     name: "KindWoman",
     authorDate: new Date(),
     authorId: "1",
-    styles: {
-      textColor: "#111",
-      //consider setting backgroundColor as dark/light theme instead of
-      //author-specific
-      backgroundColor: "white",
-    },
+    color: "#7d3989",
   },
 ];
 

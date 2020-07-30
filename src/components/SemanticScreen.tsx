@@ -56,12 +56,9 @@ const SemanticScreen = (props: {
 
   const author = message.author || {
     name: "anonymous",
-    styles: {
-      textColor: "#000",
-      backgroundColor: "#fff",
-    },
     authorId: uuidv4(),
     authorDate: new Date(),
+    color: "#fff",
   };
   //TODO: what if App doesn't pass any points to SemanticScreen?
 
@@ -150,7 +147,6 @@ const SemanticScreen = (props: {
   return (
     <DndProvider backend={HTML5Backend}>
       <StyledSemanticScreen
-        color={author.styles.textColor}
         expandedRegion={expandedRegion}
         showShapes={showShapes}
         ref={semanticScreenRef}

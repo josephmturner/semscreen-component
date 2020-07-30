@@ -42,12 +42,9 @@ export type RegionI = PointShape | "merits" | "focus";
 
 export interface AuthorI {
   name: string;
-  styles: {
-    textColor: string;
-    backgroundColor: string;
-  };
   authorId: string;
   authorDate: Date;
+  color: string;
 }
 
 export interface PointI {
