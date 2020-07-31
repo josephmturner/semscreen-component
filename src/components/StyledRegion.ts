@@ -28,7 +28,7 @@ const StyledRegion = styled.div<StyledRegionProps>`
   overflow-x: hidden;
   border: 2px solid
     ${(props) => (props.borderColor ? props.borderColor : "lightgray")};
-  border-radius: 10px;
+  border-radius: 7px;
   margin: 0.5px;
 
   @media (max-width: 799px) {

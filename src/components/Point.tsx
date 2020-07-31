@@ -311,7 +311,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   border: 0px;
   background-color: transparent;
   top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
-  font-family: ubuntu;
+  font-family: arial;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
