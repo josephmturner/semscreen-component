@@ -165,6 +165,7 @@ const SemanticScreen = (props: {
                 setExpandedRegion={setExpandedRegion}
                 onRegionClick={handleRegionClick}
                 appDispatch={appDispatch}
+                key={region}
               />
             );
           }

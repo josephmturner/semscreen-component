@@ -309,6 +309,7 @@ const StyledImg = styled.img<StyledProps>`
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
+  padding: 0;
   background-color: transparent;
   top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
   font-family: arial;
