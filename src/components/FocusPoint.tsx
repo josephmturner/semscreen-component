@@ -118,6 +118,7 @@ const FocusPoint = (props: {
           });
         }}
         ref={ref}
+        isMainPoint={isMainPoint}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -136,9 +137,9 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
-  isMainPoint: boolean;
-  isEditing: boolean;
-  isDragging: boolean;
+  isMainPoint?: boolean;
+  isEditing?: boolean;
+  isDragging?: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
@@ -155,18 +156,17 @@ const StyledSpan = styled.span<StyledProps>`
   ${(props) =>
     props.isMainPoint &&
     `
-  border-top: solid #4f4f4f;
-  border-bottom: solid #4f4f4f;
   padding: 1% 0;
 `};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
   background-color: transparent;
   font-family: ubuntu;
   font-size: medium;
+  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
   resize: none;
 `;

@@ -292,7 +292,6 @@ const StyledDiv = styled.div<StyledProps>`
 const StyledSpan = styled.span<StyledProps>`
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
-  padding-bottom: ${(props) => (props.isMainPoint ? "3px" : "0px")};
   ${(props) =>
     props.isEditing &&
     `
@@ -314,6 +313,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
   font-family: ubuntu;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
+  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
   resize: none;
   overflow: hidden;

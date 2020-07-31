@@ -132,7 +132,7 @@ const SemanticScreen = (props: {
     semanticScreenRef.current &&
       wrapGrid(semanticScreenRef.current, {
         duration: 150,
-        easing: "easeInOut",
+        easing: "linear",
       });
   }, []);
 
