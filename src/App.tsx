@@ -108,7 +108,6 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
               },
               focus: { pointId: newPointId, shape: action.shape },
             },
-            editingPoint: newPointId,
           }
         : {
             ...appState,
@@ -119,7 +118,6 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
                 [action.shape]: newPoints,
               },
             },
-            editingPoint: newPointId,
           };
     case "pointUpdate":
       return {
@@ -234,8 +232,6 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
         ...appState,
         message: { ...appState.message, main: action.pointId },
       };
-    case "setEditingPoint":
-      return { ...appState, editingPoint: action.pointId };
     //TODO: globally, distinguish pointsArrayIndex from pointContentIndex, currently both are labeled 'index'
     case "setCursorPosition":
       return {
@@ -256,7 +252,6 @@ const App = () => {
   const showShapes = true;
   const [appState, appDispatch] = useReducer(appReducer, {
     message: messages[0],
-    editingPoint: undefined,
     cursorPosition: undefined,
   });
   //TODO: how to type appState
@@ -266,7 +261,6 @@ const App = () => {
   return (
     <SemanticScreen
       message={appState.message}
-      editingPoint={appState.editingPoint}
       cursorPosition={appState.cursorPosition}
       appDispatch={appDispatch}
       showShapes={showShapes}

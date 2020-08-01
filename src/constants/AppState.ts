@@ -81,7 +81,6 @@ export interface CursorPositionI {
 
 export interface AppI {
   message: MessageI;
-  editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI | undefined;
   //  hoveredRegion: PointShape | undefined;
 }
@@ -142,7 +141,6 @@ export type AppReducerAction =
     }
   | SetFocusAction
   | { type: "setMainPoint"; pointId: string }
-  | { type: "setEditingPoint"; pointId: string }
   | { type: "setCursorPosition"; pointId: string; index: number }
   | { type: "resetCursorPosition" };
 

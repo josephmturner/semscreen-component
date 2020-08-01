@@ -22,6 +22,9 @@ import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
+import { connect } from "react-redux";
+import { setEditingPoint } from "../actions";
+
 const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
@@ -31,6 +34,7 @@ const FocusPoint = (props: {
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
+  setEditingPoint: (pointId: string) => void;
 }) => {
   const {
     point,
@@ -41,6 +45,7 @@ const FocusPoint = (props: {
     isEditing,
     onEnterPress,
     onClick,
+    setEditingPoint,
   } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -58,10 +63,7 @@ const FocusPoint = (props: {
   };
 
   const handleBlur = () => {
-    appDispatch({
-      type: "setEditingPoint",
-      editingPoint: undefined,
-    });
+    setEditingPoint("");
   };
 
   const handleClick = (e: any) => {
@@ -112,10 +114,7 @@ const FocusPoint = (props: {
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
-          appDispatch({
-            type: "setEditingPoint",
-            pointId: point.pointId,
-          });
+          setEditingPoint(point.pointId);
         }}
         ref={ref}
         isMainPoint={isMainPoint}
@@ -171,4 +170,9 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   resize: none;
 `;
 
-export default FocusPoint;
+const mapStateToProps = () => {};
+const mapActionsToProps = {
+  setEditingPoint,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

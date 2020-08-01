@@ -25,6 +25,9 @@ import { XYCoord } from "dnd-core";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
+import { connect } from "react-redux";
+import { setEditingPoint } from "../actions";
+
 const Point = (props: {
   point: PointI;
   shape: PointShape;
@@ -44,6 +47,7 @@ const Point = (props: {
   cursorPositionIndex: number | undefined;
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
+  setEditingPoint: (pointId: string) => void;
 }) => {
   const {
     point,
@@ -59,6 +63,7 @@ const Point = (props: {
     cursorPositionIndex,
     setCursorPosition,
     onClick,
+    setEditingPoint,
   } = props;
 
   const [, drop] = useDrop({
@@ -172,10 +177,7 @@ const Point = (props: {
   };
 
   const handleBlur = () => {
-    appDispatch({
-      type: "setEditingPoint",
-      editingPoint: undefined,
-    });
+    setEditingPoint("");
   };
 
   const handleClick = (e: any) => {
@@ -211,12 +213,9 @@ const Point = (props: {
           value={point.content}
           onBlur={handleBlur}
           onChange={handleChange}
-          onFocus={() =>
-            appDispatch({
-              type: "setEditingPoint",
-              pointId: point.pointId,
-            })
-          }
+          onFocus={() => {
+            setEditingPoint(point.pointId);
+          }}
           isMainPoint={isMainPoint}
           ref={ref}
           onKeyDown={(e: any) => {
@@ -321,4 +320,11 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
 `;
 
-export default Point;
+// export default Point;
+
+const mapStateToProps = () => {};
+const mapActionsToProps = {
+  setEditingPoint,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(Point);

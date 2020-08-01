@@ -24,6 +24,9 @@ import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
+import { connect } from "react-redux";
+import { AppState } from "../reducers";
+
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
@@ -33,7 +36,7 @@ const FocusRegion = (props: {
   index: number | undefined;
   isMainPoint: boolean;
   appDispatch: any;
-  editingPoint: PointI["pointId"] | undefined;
+  editingPointId: string;
   onRegionClick: any;
 }) => {
   const {
@@ -45,7 +48,7 @@ const FocusRegion = (props: {
     index,
     isMainPoint,
     appDispatch,
-    editingPoint,
+    editingPointId,
     onRegionClick,
   } = props;
 
@@ -78,7 +81,7 @@ const FocusRegion = (props: {
             index={index}
             isMainPoint={isMainPoint}
             appDispatch={appDispatch}
-            isEditing={editingPoint === point.pointId}
+            isEditing={editingPointId === point.pointId}
             onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
           />
@@ -94,4 +97,8 @@ const StyledDiv = styled.div`
   flex-direction: column;
 `;
 
-export default FocusRegion;
+const mapStateToProps = (state: AppState) => ({
+  editingPointId: state.editingPoint.editingPointId,
+});
+
+export default connect(mapStateToProps)(FocusRegion);

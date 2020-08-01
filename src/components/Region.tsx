@@ -31,6 +31,9 @@ import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
 
+import { connect } from "react-redux";
+import { AppState } from "../reducers";
+
 const Region = (props: {
   region: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
@@ -39,11 +42,11 @@ const Region = (props: {
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   appDispatch: any;
-  editingPoint: PointI["pointId"] | undefined;
   cursorPosition?: CursorPositionI;
   createEmptyPoint: any;
   onRegionClick: any;
   setExpandedRegion: any;
+  editingPointId: string;
 }) => {
   const {
     region,
@@ -53,11 +56,11 @@ const Region = (props: {
     mainPointId,
     author,
     appDispatch,
-    editingPoint,
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
     setExpandedRegion,
+    editingPointId,
   } = props;
 
   const renderPoints = points.filter((p) => p.pointId !== focusPointId);
@@ -110,7 +113,7 @@ const Region = (props: {
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             appDispatch={appDispatch}
-            isEditing={editingPoint === p.pointId}
+            isEditing={editingPointId === p.pointId}
             createPointBelow={(topContent, bottomContent) => {
               appDispatch({
                 type: "splitIntoTwoPoints",
@@ -125,7 +128,7 @@ const Region = (props: {
                   shape: region,
                 },
                 shape: region,
-                index: points.findIndex((p) => p.pointId === editingPoint),
+                index: points.findIndex((p) => p.pointId === editingPointId),
               });
             }}
             combinePoints={(
@@ -203,4 +206,8 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
-export default Region;
+const mapStateToProps = (state: AppState) => ({
+  editingPointId: state.editingPoint.editingPointId,
+});
+
+export default connect(mapStateToProps)(Region);
