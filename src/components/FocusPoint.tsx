@@ -23,7 +23,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
-import { setEditingPoint } from "../actions";
+import { setEditingPoint } from "../actions/editingPointActions";
 
 const FocusPoint = (props: {
   point: PointI;

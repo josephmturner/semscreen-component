@@ -234,6 +234,7 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
       };
     //TODO: globally, distinguish pointsArrayIndex from pointContentIndex, currently both are labeled 'index'
     case "setCursorPosition":
+      // ERIC: Can combine into one action with below
       return {
         ...appState,
         cursorPosition: { pointId: action.pointId, index: action.index },
@@ -261,7 +262,6 @@ const App = () => {
   return (
     <SemanticScreen
       message={appState.message}
-      cursorPosition={appState.cursorPosition}
       appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}

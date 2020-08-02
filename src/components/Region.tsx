@@ -25,14 +25,15 @@ import {
   AuthorI,
   PointI,
   PointShape,
-  CursorPositionI,
 } from "../constants/AppState";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers";
+import { AppState } from "../reducers/store";
+import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
+import { setCursorPosition } from '../actions/cursorPositionActions';
 
 const Region = (props: {
   region: PointShape;
@@ -42,11 +43,12 @@ const Region = (props: {
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   appDispatch: any;
-  cursorPosition?: CursorPositionI;
+  cursorPosition: CursorPositionDetails | null;
   createEmptyPoint: any;
   onRegionClick: any;
   setExpandedRegion: any;
   editingPointId: string;
+  setCursorPosition: (details: CursorPositionDetails) => void;
 }) => {
   const {
     region,
@@ -151,21 +153,18 @@ const Region = (props: {
             }}
             setCursorPosition={(index: number, moveTo: string) => {
               if (moveTo === "beginningOfPriorPoint") {
-                appDispatch({
-                  type: "setCursorPosition",
+                props.setCursorPosition({
                   pointId: points[index - 1].pointId,
                   index: 0,
                 });
               } else if (moveTo === "endOfPriorPoint") {
-                appDispatch({
-                  type: "setCursorPosition",
+                props.setCursorPosition({
                   pointId: points[index - 1].pointId,
                   index: points[index - 1].content.length,
                 });
               } else if (moveTo === "beginningOfNextPoint") {
                 !(index === points.length - 1) &&
-                  appDispatch({
-                    type: "setCursorPosition",
+                  props.setCursorPosition({
                     pointId: points[index + 1].pointId,
                     index: 0,
                   });
@@ -208,6 +207,11 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
 
 const mapStateToProps = (state: AppState) => ({
   editingPointId: state.editingPoint.editingPointId,
+  cursorPosition: state.cursorPosition.details,
 });
 
-export default connect(mapStateToProps)(Region);
+const mapDispatchToProps = {
+  setCursorPosition,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Region);

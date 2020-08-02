@@ -34,12 +34,10 @@ import {
   MessageI,
   PointShape,
   RegionI,
-  CursorPositionI,
 } from "../constants/AppState";
 
 const SemanticScreen = (props: {
   message: MessageI;
-  cursorPosition?: CursorPositionI;
   showShapes: boolean;
   onAuthorUpdate: (e: any) => void;
   appDispatch: any;
@@ -47,7 +45,6 @@ const SemanticScreen = (props: {
   const {
     message,
     showShapes,
-    cursorPosition,
     onAuthorUpdate,
     appDispatch,
   } = props;
@@ -212,7 +209,6 @@ const SemanticScreen = (props: {
                 focusPointId={message.focus && message.focus.pointId}
                 mainPointId={message.main}
                 appDispatch={appDispatch}
-                cursorPosition={cursorPosition}
                 createEmptyPoint={createEmptyPoint}
                 onRegionClick={handleRegionClick}
                 key={region}

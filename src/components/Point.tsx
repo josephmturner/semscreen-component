@@ -26,7 +26,9 @@ import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
-import { setEditingPoint } from "../actions";
+import { setEditingPoint } from "../actions/editingPointActions";
+import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
+import { setCursorPosition } from '../actions/cursorPositionActions';
 
 const Point = (props: {
   point: PointI;
@@ -48,6 +50,7 @@ const Point = (props: {
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
   setEditingPoint: (pointId: string) => void;
+  setCursorPositionRedux: (details: CursorPositionDetails | null) => void;
 }) => {
   const {
     point,
@@ -64,6 +67,7 @@ const Point = (props: {
     setCursorPosition,
     onClick,
     setEditingPoint,
+    setCursorPositionRedux,
   } = props;
 
   const [, drop] = useDrop({
@@ -148,9 +152,9 @@ const Point = (props: {
         cursorPositionIndex as number,
         cursorPositionIndex as number
       );
-      appDispatch({ type: "resetCursorPosition" });
+      setCursorPositionRedux(null);
     }
-  }, [cursorPositionIndex, appDispatch]);
+  }, [cursorPositionIndex, setCursorPositionRedux]);
 
   const [arrowPressed, setArrowPressed] = useState<
     "ArrowUp" | "ArrowDown" | undefined
@@ -325,6 +329,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
 const mapStateToProps = () => {};
 const mapActionsToProps = {
   setEditingPoint,
+  setCursorPositionRedux: setCursorPosition,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);
