@@ -32,20 +32,17 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { MessageState } from '../reducers/message';
-import { setEditingPoint } from '../actions/editingPointActions';
+import { MessageState } from "../reducers/message";
+import { setEditingPoint } from "../actions/editingPointActions";
 import {
   pointCreate,
   pointsDelete,
   PointCreateParams,
   PointsDeleteParams,
-} from '../actions/messageActions';
-import { setExpandedRegion } from '../actions/expandedRegionActions';
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
-import {
-  PointShape,
-  RegionI,
-} from "../dataModels";
+import { PointShape, RegionI } from "../dataModels";
 
 const SemanticScreen = (props: {
   message: MessageState;
@@ -57,12 +54,7 @@ const SemanticScreen = (props: {
   pointsDelete: (params: PointsDeleteParams) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
-  const {
-    message,
-    showShapes,
-    expandedRegion,
-    onAuthorUpdate,
-  } = props;
+  const { message, showShapes, expandedRegion, onAuthorUpdate } = props;
 
   const author = message.author || {
     name: "anonymous",

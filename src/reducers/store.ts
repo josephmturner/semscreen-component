@@ -1,10 +1,22 @@
-import { Action } from '../actions/constants';
+import { Action } from "../actions/constants";
 import { createStore } from "redux";
 
-import { initialEditingPointState, editingPointReducer, EditingPointState } from "./editingPoint";
-import { initialCursorPositionState, cursorPositionReducer, CursorPositionState } from './cursorPosition';
-import { initialMessageState, messageReducer, MessageState } from './message';
-import { initialExpandedRegionState, expandedRegionReducer, ExpandedRegionState } from './expandedRegion';
+import {
+  initialEditingPointState,
+  editingPointReducer,
+  EditingPointState,
+} from "./editingPoint";
+import {
+  initialCursorPositionState,
+  cursorPositionReducer,
+  CursorPositionState,
+} from "./cursorPosition";
+import { initialMessageState, messageReducer, MessageState } from "./message";
+import {
+  initialExpandedRegionState,
+  expandedRegionReducer,
+  ExpandedRegionState,
+} from "./expandedRegion";
 
 export interface AppState {
   editingPoint: EditingPointState;
@@ -18,7 +30,7 @@ const initialAppState: AppState = {
   cursorPosition: initialCursorPositionState,
   message: initialMessageState,
   expandedRegion: initialExpandedRegionState,
-}
+};
 
 const appReducer = (state = initialAppState, action: Action): AppState => {
   let newState: AppState = {

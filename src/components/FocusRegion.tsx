@@ -26,8 +26,8 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { setFocus, SetFocusParams } from '../actions/messageActions';
-import { setExpandedRegion } from '../actions/expandedRegionActions';
+import { setFocus, SetFocusParams } from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 const FocusRegion = (props: {
   region: RegionI;

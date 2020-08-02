@@ -1,14 +1,14 @@
-import { Action, Actions } from '../actions/constants';
-import { ExpandedRegionParams } from '../actions/expandedRegionActions';
+import { Action, Actions } from "../actions/constants";
+import { ExpandedRegionParams } from "../actions/expandedRegionActions";
 
-import { AppState } from './store';
+import { AppState } from "./store";
 
 export interface ExpandedRegionState {
   region: string;
 }
 
 export const initialExpandedRegionState: ExpandedRegionState = {
-  region: '',
+  region: "",
 };
 
 export const expandedRegionReducer = (
@@ -19,13 +19,19 @@ export const expandedRegionReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.setExpandedRegion:
-      newState = handleSetExpandedRegion(state, action as Action<ExpandedRegionParams>);
+      newState = handleSetExpandedRegion(
+        state,
+        action as Action<ExpandedRegionParams>
+      );
       break;
   }
   return newState;
 };
 
-function handleSetExpandedRegion(state: ExpandedRegionState, action: Action<ExpandedRegionParams>): ExpandedRegionState {
+function handleSetExpandedRegion(
+  state: ExpandedRegionState,
+  action: Action<ExpandedRegionParams>
+): ExpandedRegionState {
   return {
     region: action.params.region,
   };

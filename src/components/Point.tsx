@@ -27,8 +27,8 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
-import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
-import { setCursorPosition } from '../actions/cursorPositionActions';
+import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
+import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
   pointMove,
   PointMoveParams,
@@ -36,8 +36,8 @@ import {
   PointUpdateParams,
   setMainPoint,
   SetMainPointParams,
-} from '../actions/messageActions';
-import { setExpandedRegion } from '../actions/expandedRegionActions';
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 const Point = (props: {
   point: PointI;

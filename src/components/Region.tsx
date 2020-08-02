@@ -21,19 +21,15 @@ import Point from "./Point";
 import { v4 as uuidv4 } from "uuid";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import {
-  AuthorI,
-  PointI,
-  PointShape,
-} from "../dataModels";
+import { AuthorI, PointI, PointShape } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
-import { setCursorPosition } from '../actions/cursorPositionActions';
+import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
+import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
   splitIntoTwoPoints,
   SplitIntoTwoPointsParams,
@@ -41,8 +37,8 @@ import {
   PointMoveParams,
   combinePoints,
   CombinePointsParams,
-} from '../actions/messageActions';
-import { setExpandedRegion } from '../actions/expandedRegionActions';
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 const Region = (props: {
   region: PointShape;

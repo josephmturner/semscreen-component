@@ -1,7 +1,7 @@
-import { Action, Actions } from '../actions/constants';
+import { Action, Actions } from "../actions/constants";
 import { EditingPointParams } from "../actions/editingPointActions";
 
-import { AppState } from './store';
+import { AppState } from "./store";
 
 export interface EditingPointState {
   editingPointId: string;
@@ -19,13 +19,19 @@ export const editingPointReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.setEditingPoint:
-      newState = handleSetEditingPoint(state, action as Action<EditingPointParams>);
+      newState = handleSetEditingPoint(
+        state,
+        action as Action<EditingPointParams>
+      );
       break;
   }
   return newState;
 };
 
-function handleSetEditingPoint(state: EditingPointState, action: Action<EditingPointParams>): EditingPointState {
+function handleSetEditingPoint(
+  state: EditingPointState,
+  action: Action<EditingPointParams>
+): EditingPointState {
   return {
     editingPointId: action.params.pointId,
   };

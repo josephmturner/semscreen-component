@@ -1,10 +1,12 @@
-import { Action, Actions } from './constants';
+import { Action, Actions } from "./constants";
 
 export interface EditingPointParams {
   pointId: string;
 }
 
-export const setEditingPoint = (pointId: string): Action<EditingPointParams> => {
+export const setEditingPoint = (
+  pointId: string
+): Action<EditingPointParams> => {
   return {
     type: Actions.setEditingPoint,
     params: {

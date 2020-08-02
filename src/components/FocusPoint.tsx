@@ -29,7 +29,7 @@ import {
   PointUpdateParams,
   setMainPoint,
   SetMainPointParams,
-} from '../actions/messageActions';
+} from "../actions/messageActions";
 
 const FocusPoint = (props: {
   point: PointI;

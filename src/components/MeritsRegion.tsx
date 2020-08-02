@@ -26,7 +26,7 @@ import { ItemTypes } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { setExpandedRegion } from '../actions/expandedRegionActions';
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 const MeritsRegion = (props: {
   region: RegionI;
@@ -34,11 +34,7 @@ const MeritsRegion = (props: {
   onRegionClick: any;
   setExpandedRegion: (region: string) => void;
 }) => {
-  const {
-    region,
-    isExpanded,
-    onRegionClick,
-  } = props;
+  const { region, isExpanded, onRegionClick } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -72,8 +68,7 @@ const StyledDiv = styled.div`
   flex-direction: column;
 `;
 
-const mapStateToProps = (state: AppState) => ({
-});
+const mapStateToProps = (state: AppState) => ({});
 
 const mapDispatchToProps = {
   setExpandedRegion,

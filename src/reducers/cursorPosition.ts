@@ -1,8 +1,11 @@
-import { Action, Actions } from '../actions/constants';
-import { CursorPositionParams } from '../actions/cursorPositionActions';
-import { CombinePointsParams, SplitIntoTwoPointsParams } from '../actions/messageActions';
+import { Action, Actions } from "../actions/constants";
+import { CursorPositionParams } from "../actions/cursorPositionActions";
+import {
+  CombinePointsParams,
+  SplitIntoTwoPointsParams,
+} from "../actions/messageActions";
 
-import { AppState } from './store';
+import { AppState } from "./store";
 
 export interface Details {
   pointId: string;
@@ -25,28 +28,47 @@ export const cursorPositionReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.setCursorPosition:
-      newState = handleSetCursorPosition(state, action as Action<CursorPositionParams>);
+      newState = handleSetCursorPosition(
+        state,
+        action as Action<CursorPositionParams>
+      );
       break;
     case Actions.combinePoints:
-      newState = handleCombinePoints(state, action as Action<CombinePointsParams>, appState);
+      newState = handleCombinePoints(
+        state,
+        action as Action<CombinePointsParams>,
+        appState
+      );
       break;
     case Actions.splitIntoTwoPoints:
-      newState = handleSplitIntoTwoPoints(state, action as Action<SplitIntoTwoPointsParams>, appState);
+      newState = handleSplitIntoTwoPoints(
+        state,
+        action as Action<SplitIntoTwoPointsParams>,
+        appState
+      );
       break;
   }
   return newState;
 };
 
-function handleSetCursorPosition(state: CursorPositionState, action: Action<CursorPositionParams>): CursorPositionState {
+function handleSetCursorPosition(
+  state: CursorPositionState,
+  action: Action<CursorPositionParams>
+): CursorPositionState {
   return {
     details: action.params.details,
-  }
+  };
 }
 
-function handleCombinePoints(state: CursorPositionState, action: Action<CombinePointsParams>, appState: AppState): CursorPositionState {
-
-  const prevPoint = appState.message.points[action.params.shape][action.params.index - 1];
-  const currentPoint = appState.message.points[action.params.shape][action.params.index];
+function handleCombinePoints(
+  state: CursorPositionState,
+  action: Action<CombinePointsParams>,
+  appState: AppState
+): CursorPositionState {
+  const prevPoint =
+    appState.message.points[action.params.shape][action.params.index - 1];
+  const currentPoint =
+    appState.message.points[action.params.shape][action.params.index];
 
   const newCursorPosition =
     action.params.aboveOrBelow === "above"
@@ -61,11 +83,15 @@ function handleCombinePoints(state: CursorPositionState, action: Action<CombineP
 
   return {
     details: newCursorPosition,
-  }
+  };
 }
 
-function handleSplitIntoTwoPoints(state: CursorPositionState, action: Action<SplitIntoTwoPointsParams>, appState: AppState): CursorPositionState {
+function handleSplitIntoTwoPoints(
+  state: CursorPositionState,
+  action: Action<SplitIntoTwoPointsParams>,
+  appState: AppState
+): CursorPositionState {
   return {
     details: { pointId: action.params.newPointId, index: 0 },
-  }
+  };
 }
