@@ -27,11 +27,11 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { setFocus, SetFocusParams } from '../actions/messageActions';
+import { setExpandedRegion } from '../actions/expandedRegionActions';
 
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: (region: RegionI) => void;
   point: PointI | undefined;
   shape: PointShape | undefined;
   index: number | undefined;
@@ -39,11 +39,11 @@ const FocusRegion = (props: {
   editingPointId: string;
   onRegionClick: any;
   setFocus: (params: SetFocusParams) => void;
+  setExpandedRegion: (params: string) => void;
 }) => {
   const {
     region,
     isExpanded,
-    setExpandedRegion,
     point,
     shape,
     index,
@@ -56,7 +56,7 @@ const FocusRegion = (props: {
     accept: ItemTypes.POINT,
     hover: () => {
       if (isExpanded !== "expanded") {
-        setExpandedRegion(region);
+        props.setExpandedRegion(region);
       }
     },
     drop: (item: DraggablePointType) => {
@@ -101,6 +101,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = {
   setFocus,
+  setExpandedRegion,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

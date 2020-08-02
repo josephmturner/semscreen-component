@@ -15,4 +15,6 @@ export const Actions = {
   setMainPoint: 'setMainPoint',
   combinePoints: 'combinePoints',
   splitIntoTwoPoints: 'splitIntoTwoPoints',
+
+  setExpandedRegion: 'setExpandedRegion',
 }

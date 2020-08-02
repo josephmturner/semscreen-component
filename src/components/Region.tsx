@@ -42,6 +42,7 @@ import {
   combinePoints,
   CombinePointsParams,
 } from '../actions/messageActions';
+import { setExpandedRegion } from '../actions/expandedRegionActions';
 
 const Region = (props: {
   region: PointShape;
@@ -53,12 +54,12 @@ const Region = (props: {
   cursorPosition: CursorPositionDetails | null;
   createEmptyPoint: any;
   onRegionClick: any;
-  setExpandedRegion: any;
   editingPointId: string;
   setCursorPosition: (details: CursorPositionDetails) => void;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   pointMove: (params: PointMoveParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
   const {
     region,
@@ -70,7 +71,6 @@ const Region = (props: {
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
-    setExpandedRegion,
     editingPointId,
   } = props;
 
@@ -85,7 +85,7 @@ const Region = (props: {
     hover: (item: DraggablePointType) => {
       //TODO: consider only calling appDispatch after the animation transition ends.
       if (isExpanded !== "expanded") {
-        setExpandedRegion(region);
+        props.setExpandedRegion(region);
       }
 
       if (item.shape !== region || item.index !== points.length - 1) {
@@ -119,7 +119,6 @@ const Region = (props: {
             point={p}
             shape={region}
             isExpanded={isExpanded}
-            setExpandedRegion={setExpandedRegion}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             isEditing={editingPointId === p.pointId}
@@ -230,6 +229,7 @@ const mapDispatchToProps = {
   splitIntoTwoPoints,
   pointMove,
   combinePoints,
+  setExpandedRegion,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Region);

@@ -37,12 +37,12 @@ import {
   setMainPoint,
   SetMainPointParams,
 } from '../actions/messageActions';
+import { setExpandedRegion } from '../actions/expandedRegionActions';
 
 const Point = (props: {
   point: PointI;
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: any;
   isMainPoint: boolean;
   index: number;
   isEditing: boolean;
@@ -61,12 +61,12 @@ const Point = (props: {
   pointMove: (params: PointMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
   const {
     point,
     shape,
     isExpanded,
-    setExpandedRegion,
     isMainPoint,
     index,
     isEditing,
@@ -86,7 +86,7 @@ const Point = (props: {
         return;
       }
       if (isExpanded !== "expanded") {
-        setExpandedRegion(shape);
+        props.setExpandedRegion(shape);
       }
       //TODO: only call the following logic after the animation transition ends.
       const dragIndex = item.index;
@@ -340,6 +340,7 @@ const mapActionsToProps = {
   pointMove,
   pointUpdate,
   setMainPoint,
+  setExpandedRegion,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);
