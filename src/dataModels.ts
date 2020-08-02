@@ -67,85 +67,10 @@ export type PointsI = {
   [shape in PointShape]: PointI[];
 };
 
-export interface MessageI {
-  messageId: string;
-  revisionOf: string | null;
-  author: AuthorI;
-  points: PointsI;
-  focus: { pointId: string; shape: PointShape } | undefined;
-  main: string;
-  createdAt: Date;
-}
-
 export interface CursorPositionI {
   pointId: string;
   index: number;
 }
-
-export interface AppI {
-  message: MessageI;
-  cursorPosition?: CursorPositionI | undefined;
-  //  hoveredRegion: PointShape | undefined;
-}
-
-// TODO: give names to actions, like PointMoveAction
-interface PointMoveBase {
-  type: string;
-  pointId: PointI["pointId"];
-  oldShape: PointShape;
-  oldIndex: number;
-  newShape: PointShape;
-  newIndex: number;
-}
-
-export interface PointMoveAction extends PointMoveBase {
-  type: "pointMove";
-}
-
-export interface SetFocusAction extends PointMoveBase {
-  type: "setFocus";
-}
-
-export type AppReducerAction =
-  | {
-      type: "pointCreate";
-      point: PointNoIdI;
-      shape: PointShape;
-      index: number;
-      focus?: boolean;
-    }
-  | {
-      type: "pointUpdate";
-      point: PointI;
-      shape: PointShape;
-    }
-  | PointMoveAction
-  | {
-      type: "changeFocusShape";
-      pointId: string;
-      oldShape: PointShape;
-      oldIndex: number;
-      newShape: PointShape;
-    }
-  | { type: "pointsDelete"; pointIds: string[] }
-  | {
-      type: "combinePoints";
-      aboveOrBelow: "above" | "below";
-      point: PointI;
-      shape: PointShape;
-      index: number;
-    }
-  | {
-      type: "splitIntoTwoPoints";
-      topPoint: PointI;
-      bottomPoint: PointI;
-      shape: PointShape;
-      index: number;
-    }
-  | SetFocusAction
-  | { type: "setMainPoint"; pointId: string }
-  | { type: "setCursorPosition"; pointId: string; index: number }
-  | { type: "resetCursorPosition" };
 
 //TODO: rename setFocus case in appReducer
 //TODO: validate that focus points are contained in the points array

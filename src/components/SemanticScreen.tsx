@@ -46,7 +46,7 @@ import {
 import {
   PointShape,
   RegionI,
-} from "../constants/AppState";
+} from "../dataModels";
 
 const SemanticScreen = (props: {
   message: MessageState;

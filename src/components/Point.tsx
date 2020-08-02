@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI, PointShape } from "../constants/AppState";
+import { PointI, PointShape } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";

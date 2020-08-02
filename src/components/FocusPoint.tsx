@@ -16,7 +16,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
-import { PointI, PointShape } from "../constants/AppState";
+import { PointI, PointShape } from "../dataModels";
 import { ItemTypes } from "../constants/React-Dnd";
 import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";

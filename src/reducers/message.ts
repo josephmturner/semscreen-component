@@ -3,8 +3,8 @@ import { AppState } from './store';
 import { v4 as uuidv4 } from "uuid";
 import update from "immutability-helper";
 
-import { allPointShapes, PointI, AuthorI, PointsI, PointShape } from '../constants/AppState';
-import { messages } from '../constants/initialState';
+import { allPointShapes, PointI, AuthorI, PointsI, PointShape } from '../dataModels';
+import { messages } from './initialState';
 import {
   PointCreateParams,
   PointUpdateParams,

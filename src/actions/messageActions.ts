@@ -1,5 +1,5 @@
 import { Action, Actions } from './constants';
-import { PointI, PointShape, PointNoIdI } from '../constants/AppState';
+import { PointI, PointShape, PointNoIdI } from '../dataModels';
 
 export interface PointCreateParams {
   point: PointNoIdI;

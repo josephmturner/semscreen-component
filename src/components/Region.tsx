@@ -25,7 +25,7 @@ import {
   AuthorI,
   PointI,
   PointShape,
-} from "../constants/AppState";
+} from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
