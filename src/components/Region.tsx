@@ -15,10 +15,10 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-// TODO: type appDispatch
 
 import React from "react";
 import Point from "./Point";
+import { v4 as uuidv4 } from "uuid";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
 import {
@@ -34,6 +34,14 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
 import { setCursorPosition } from '../actions/cursorPositionActions';
+import {
+  splitIntoTwoPoints,
+  SplitIntoTwoPointsParams,
+  pointMove,
+  PointMoveParams,
+  combinePoints,
+  CombinePointsParams,
+} from '../actions/messageActions';
 
 const Region = (props: {
   region: PointShape;
@@ -42,13 +50,15 @@ const Region = (props: {
   points: PointI[];
   focusPointId: string | undefined;
   mainPointId: string | undefined;
-  appDispatch: any;
   cursorPosition: CursorPositionDetails | null;
   createEmptyPoint: any;
   onRegionClick: any;
   setExpandedRegion: any;
   editingPointId: string;
   setCursorPosition: (details: CursorPositionDetails) => void;
+  splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
+  pointMove: (params: PointMoveParams) => void;
+  combinePoints: (params: CombinePointsParams) => void;
 }) => {
   const {
     region,
@@ -57,7 +67,6 @@ const Region = (props: {
     focusPointId,
     mainPointId,
     author,
-    appDispatch,
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
@@ -83,8 +92,7 @@ const Region = (props: {
         const newIndex =
           item.shape === region ? points.length - 1 : points.length;
 
-        appDispatch({
-          type: "pointMove",
+        props.pointMove({
           pointId: item.pointId,
           oldShape: item.shape,
           oldIndex: item.index,
@@ -114,23 +122,31 @@ const Region = (props: {
             setExpandedRegion={setExpandedRegion}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
-            appDispatch={appDispatch}
             isEditing={editingPointId === p.pointId}
             createPointBelow={(topContent, bottomContent) => {
-              appDispatch({
-                type: "splitIntoTwoPoints",
+              const newPointId = uuidv4();
+              props.splitIntoTwoPoints({
                 topPoint: {
                   author: author,
                   content: topContent,
                   shape: region,
+
+                  // TODO: These were missing before
+                  pointId: p.pointId,
+                  pointDate: new Date(),
                 },
                 bottomPoint: {
                   author: author,
                   content: bottomContent,
                   shape: region,
+
+                  // TODO: These were missing before
+                  pointId: newPointId,
+                  pointDate: new Date(),
                 },
                 shape: region,
                 index: points.findIndex((p) => p.pointId === editingPointId),
+                newPointId: newPointId,
               });
             }}
             combinePoints={(
@@ -142,8 +158,7 @@ const Region = (props: {
               if (aboveOrBelow === "below" && index === points.length - 1) {
                 return;
               } else {
-                appDispatch({
-                  type: "combinePoints",
+                props.combinePoints({
                   aboveOrBelow: aboveOrBelow,
                   point: point,
                   shape: shape,
@@ -212,6 +227,9 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = {
   setCursorPosition,
+  splitIntoTwoPoints,
+  pointMove,
+  combinePoints,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Region);

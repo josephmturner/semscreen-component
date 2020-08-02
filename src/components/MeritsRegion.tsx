@@ -28,14 +28,12 @@ const MeritsRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
   setExpandedRegion: (region: RegionI) => void;
-  appDispatch: any;
   onRegionClick: any;
 }) => {
   const {
     region,
     isExpanded,
     setExpandedRegion,
-    // appDispatch,
     onRegionClick,
   } = props;
 

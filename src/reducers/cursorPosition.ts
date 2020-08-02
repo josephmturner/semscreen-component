@@ -45,28 +45,27 @@ function handleSetCursorPosition(state: CursorPositionState, action: Action<Curs
 
 function handleCombinePoints(state: CursorPositionState, action: Action<CombinePointsParams>, appState: AppState): CursorPositionState {
 
-  // const prevPoint = appState.message.points[action.params.shape][action.params.index - 1];
-  // const currentPoint = appState.message.points[action.params.shape][action.params.index];
+  const prevPoint = appState.message.points[action.params.shape][action.params.index - 1];
+  const currentPoint = appState.message.points[action.params.shape][action.params.index];
 
-  // const newCursorPosition =
-  //   action.params.aboveOrBelow === "above"
-  //     ? {
-  //         pointId: prevPoint.pointId,
-  //         index: prevPoint.content.length,
-  //       }
-  //     : {
-  //         pointId: currentPoint.pointId,
-  //         index: currentPoint.content.length,
-  //       };
+  const newCursorPosition =
+    action.params.aboveOrBelow === "above"
+      ? {
+          pointId: prevPoint.pointId,
+          index: prevPoint.content.length,
+        }
+      : {
+          pointId: currentPoint.pointId,
+          index: currentPoint.content.length,
+        };
 
   return {
-    // details: newCursorPosition,
-    details: null,
+    details: newCursorPosition,
   }
 }
 
 function handleSplitIntoTwoPoints(state: CursorPositionState, action: Action<SplitIntoTwoPointsParams>, appState: AppState): CursorPositionState {
   return {
-    details: null,
+    details: { pointId: action.params.newPointId, index: 0 },
   }
 }

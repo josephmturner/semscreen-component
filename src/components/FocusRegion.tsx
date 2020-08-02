@@ -26,6 +26,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
+import { setFocus, SetFocusParams } from '../actions/messageActions';
 
 const FocusRegion = (props: {
   region: RegionI;
@@ -35,9 +36,9 @@ const FocusRegion = (props: {
   shape: PointShape | undefined;
   index: number | undefined;
   isMainPoint: boolean;
-  appDispatch: any;
   editingPointId: string;
   onRegionClick: any;
+  setFocus: (params: SetFocusParams) => void;
 }) => {
   const {
     region,
@@ -47,7 +48,6 @@ const FocusRegion = (props: {
     shape,
     index,
     isMainPoint,
-    appDispatch,
     editingPointId,
     onRegionClick,
   } = props;
@@ -60,8 +60,7 @@ const FocusRegion = (props: {
       }
     },
     drop: (item: DraggablePointType) => {
-      appDispatch({
-        type: "setFocus",
+      props.setFocus({
         pointId: item.pointId,
         oldShape: item.shape,
         oldIndex: item.index,
@@ -80,7 +79,6 @@ const FocusRegion = (props: {
             shape={shape}
             index={index}
             isMainPoint={isMainPoint}
-            appDispatch={appDispatch}
             isEditing={editingPointId === point.pointId}
             onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
@@ -101,4 +99,8 @@ const mapStateToProps = (state: AppState) => ({
   editingPointId: state.editingPoint.editingPointId,
 });
 
-export default connect(mapStateToProps)(FocusRegion);
+const mapDispatchToProps = {
+  setFocus,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

@@ -18,7 +18,8 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-import { AuthorI, MessageI } from "../constants/AppState";
+import { AuthorI } from "../constants/AppState";
+import { MessageState } from '../reducers/message';
 
 export const authors: AuthorI[] = [
   {
@@ -29,7 +30,7 @@ export const authors: AuthorI[] = [
   },
 ];
 
-export const messages: MessageI[] = [
+export const messages: MessageState[] = [
   {
     messageId: "messageId1",
     revisionOf: null,

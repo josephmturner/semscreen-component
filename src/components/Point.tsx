@@ -29,6 +29,14 @@ import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
 import { Details as CursorPositionDetails } from '../reducers/cursorPosition';
 import { setCursorPosition } from '../actions/cursorPositionActions';
+import {
+  pointMove,
+  PointMoveParams,
+  pointUpdate,
+  PointUpdateParams,
+  setMainPoint,
+  SetMainPointParams,
+} from '../actions/messageActions';
 
 const Point = (props: {
   point: PointI;
@@ -37,7 +45,6 @@ const Point = (props: {
   setExpandedRegion: any;
   isMainPoint: boolean;
   index: number;
-  appDispatch: any;
   isEditing: boolean;
   createPointBelow: (topContent: string, bottomContent: string) => void;
   combinePoints: (
@@ -51,6 +58,9 @@ const Point = (props: {
   onClick: any;
   setEditingPoint: (pointId: string) => void;
   setCursorPositionRedux: (details: CursorPositionDetails | null) => void;
+  pointMove: (params: PointMoveParams) => void;
+  pointUpdate: (params: PointUpdateParams) => void;
+  setMainPoint: (params: SetMainPointParams) => void;
 }) => {
   const {
     point,
@@ -59,7 +69,6 @@ const Point = (props: {
     setExpandedRegion,
     isMainPoint,
     index,
-    appDispatch,
     isEditing,
     createPointBelow,
     combinePoints,
@@ -104,8 +113,7 @@ const Point = (props: {
         return;
       }
 
-      appDispatch({
-        type: "pointMove",
+      props.pointMove({
         pointId: item.pointId,
         oldShape: item.shape,
         oldIndex: item.index,
@@ -173,8 +181,7 @@ const Point = (props: {
   }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
   const handleChange = (e: any) => {
-    appDispatch({
-      type: "pointUpdate",
+    props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
     });
@@ -206,8 +213,8 @@ const Point = (props: {
           src={imageUrl}
           onClick={() => {
             isMainPoint
-              ? appDispatch({ type: "setMainPoint", pointId: "" })
-              : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+              ? props.setMainPoint({ pointId: "" })
+              : props.setMainPoint({ pointId: point.pointId });
           }}
           isMainPoint={isMainPoint}
           height={isMainPoint ? 23 : 17}
@@ -330,6 +337,9 @@ const mapStateToProps = () => {};
 const mapActionsToProps = {
   setEditingPoint,
   setCursorPositionRedux: setCursorPosition,
+  pointMove,
+  pointUpdate,
+  setMainPoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

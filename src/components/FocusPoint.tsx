@@ -24,24 +24,30 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
+import {
+  pointUpdate,
+  PointUpdateParams,
+  setMainPoint,
+  SetMainPointParams,
+} from '../actions/messageActions';
 
 const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   index: number;
   isMainPoint: boolean;
-  appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
   setEditingPoint: (pointId: string) => void;
+  pointUpdate: (params: PointUpdateParams) => void;
+  setMainPoint: (params: SetMainPointParams) => void;
 }) => {
   const {
     point,
     shape,
     index,
     isMainPoint,
-    appDispatch,
     isEditing,
     onEnterPress,
     onClick,
@@ -55,8 +61,7 @@ const FocusPoint = (props: {
   }, [isEditing]);
 
   const handleChange = (e: any) => {
-    appDispatch({
-      type: "pointUpdate",
+    props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
     });
@@ -103,8 +108,8 @@ const FocusPoint = (props: {
         src={imageUrl}
         onClick={() => {
           isMainPoint
-            ? appDispatch({ type: "setMainPoint", pointId: "" })
-            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+            ? props.setMainPoint({ pointId: "" })
+            : props.setMainPoint({ pointId: point.pointId });
         }}
         height={isMainPoint ? 30 : 20}
         alt={shape}
@@ -171,8 +176,11 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
 `;
 
 const mapStateToProps = () => {};
+
 const mapActionsToProps = {
   setEditingPoint,
+  pointUpdate,
+  setMainPoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

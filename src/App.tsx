@@ -16,11 +16,10 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useReducer } from "react";
+import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import update from "immutability-helper";
 import SemanticScreen from "./components/SemanticScreen";
-import { messages } from "./constants/initialState";
 import {
   AppI,
   AppReducerAction,
@@ -251,18 +250,11 @@ const appReducer = (appState: AppI, action: AppReducerAction) => {
 
 const App = () => {
   const showShapes = true;
-  const [appState, appDispatch] = useReducer(appReducer, {
-    message: messages[0],
-    cursorPosition: undefined,
-  });
-  //TODO: how to type appState
 
   //TODO: make editingPoint optional in AppI, then instead of passing empty
   //strings to it, pass undefined.
   return (
     <SemanticScreen
-      message={appState.message}
-      appDispatch={appDispatch}
       showShapes={showShapes}
       onAuthorUpdate={console.log}
     />
