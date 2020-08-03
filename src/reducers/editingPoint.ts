@@ -1,5 +1,6 @@
 import { Action, Actions } from "../actions/constants";
 import { EditingPointParams } from "../actions/editingPointActions";
+import { _PointCreateParams } from '../actions/messageActions';
 
 import { AppState } from "./store";
 
@@ -24,6 +25,12 @@ export const editingPointReducer = (
         action as Action<EditingPointParams>
       );
       break;
+    case Actions.pointCreate:
+      newState = handlePointCreate(
+        state,
+        action as Action<_PointCreateParams>
+      );
+      break;
   }
   return newState;
 };
@@ -34,5 +41,14 @@ function handleSetEditingPoint(
 ): EditingPointState {
   return {
     editingPointId: action.params.pointId,
+  };
+}
+
+function handlePointCreate(
+  state: EditingPointState,
+  action: Action<_PointCreateParams>
+): EditingPointState {
+  return {
+    editingPointId: action.params.newPointId,
   };
 }
