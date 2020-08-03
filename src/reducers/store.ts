@@ -1,5 +1,6 @@
 import { Action } from "../actions/constants";
 import { createStore } from "redux";
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import {
   initialEditingPointState,
@@ -42,4 +43,4 @@ const appReducer = (state = initialAppState, action: Action): AppState => {
   return newState;
 };
 
-export const store = createStore(appReducer);
+export const store = createStore(appReducer, composeWithDevTools());
