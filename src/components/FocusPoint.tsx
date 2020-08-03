@@ -175,7 +175,9 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   resize: none;
 `;
 
-const mapStateToProps = () => {};
+const mapStateToProps = () => {
+  return {};
+};
 
 const mapActionsToProps = {
   setEditingPoint,

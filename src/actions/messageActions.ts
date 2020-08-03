@@ -1,5 +1,6 @@
 import { Action, Actions } from "./constants";
 import { PointI, PointShape, PointNoIdI } from "../dataModels";
+import { v4 as uuidv4 } from "uuid";
 
 export interface PointCreateParams {
   point: PointNoIdI;
@@ -8,12 +9,20 @@ export interface PointCreateParams {
   focus?: boolean;
 }
 
+export interface _PointCreateParams extends PointCreateParams {
+  newPointId: string;
+}
+
 export const pointCreate = (
   params: PointCreateParams
-): Action<PointCreateParams> => {
+): Action<_PointCreateParams> => {
+  const newPointId = uuidv4();
   return {
     type: Actions.pointCreate,
-    params,
+    params: {
+      ...params,
+      newPointId,
+    },
   };
 };
 

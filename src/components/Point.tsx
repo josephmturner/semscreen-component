@@ -331,9 +331,10 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
 `;
 
-// export default Point;
+const mapStateToProps = () => {
+  return {};
+};
 
-const mapStateToProps = () => {};
 const mapActionsToProps = {
   setEditingPoint,
   setCursorPositionRedux: setCursorPosition,

@@ -1,6 +1,5 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
-import { v4 as uuidv4 } from "uuid";
 import update from "immutability-helper";
 
 import {
@@ -12,7 +11,7 @@ import {
 } from "../dataModels";
 import { messages } from "./initialState";
 import {
-  PointCreateParams,
+  _PointCreateParams,
   PointUpdateParams,
   PointMoveParams,
   PointsDeleteParams,
@@ -42,7 +41,7 @@ export const messageReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.pointCreate:
-      newState = handlePointCreate(state, action as Action<PointCreateParams>);
+      newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
     case Actions.pointUpdate:
       newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
@@ -83,13 +82,12 @@ export const messageReducer = (
 
 function handlePointCreate(
   state: MessageState,
-  action: Action<PointCreateParams>
+  action: Action<_PointCreateParams>
 ): MessageState {
-  const newPointId = uuidv4();
   const newPoints = state.points[action.params.shape].slice();
   newPoints.splice(action.params.index, 0, {
     ...action.params.point,
-    pointId: newPointId,
+    pointId: action.params.newPointId,
     pointDate: new Date(),
   });
   return action.params.focus
@@ -99,7 +97,7 @@ function handlePointCreate(
           ...state.points,
           [action.params.shape]: newPoints,
         },
-        focus: { pointId: newPointId, shape: action.params.shape },
+        focus: { pointId: action.params.newPointId, shape: action.params.shape },
       }
     : {
         ...state,
