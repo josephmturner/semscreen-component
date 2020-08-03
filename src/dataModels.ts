@@ -52,9 +52,6 @@ export interface PointI {
   content: string;
   pointId: string;
   pointDate: Date;
-
-  // TODO: is this needed?
-  shape?: PointShape;
 }
 
 //make PointI extend PointNoIdI, if possible

@@ -124,7 +124,6 @@ const Region = (props: {
                 topPoint: {
                   author: author,
                   content: topContent,
-                  shape: region,
 
                   // TODO: These were missing before
                   pointId: p.pointId,
@@ -133,7 +132,6 @@ const Region = (props: {
                 bottomPoint: {
                   author: author,
                   content: bottomContent,
-                  shape: region,
 
                   // TODO: These were missing before
                   pointId: newPointId,

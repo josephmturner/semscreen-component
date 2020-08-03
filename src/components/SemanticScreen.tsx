@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -90,6 +90,8 @@ const SemanticScreen = (props: {
       deleteEmptyPoints();
       if (region === "focus" && message.focus) {
         props.setEditingPoint(message.focus.pointId);
+      } else if (region === "focus") {
+        return;
       } else if (region === "merits") {
         console.log("merits clicked");
       } else if (!childClicked) {
@@ -98,10 +100,8 @@ const SemanticScreen = (props: {
             author: author,
             content: "",
           },
-
-          // TODO: type error here, region can include "focus", but a point cannot have shape "focus"
-          shape: region as PointShape,
-          index: message.points[region as PointShape].length,
+          shape: region,
+          index: message.points[region].length,
         });
       }
     } else if (region === expandedRegion && !childClicked) {
