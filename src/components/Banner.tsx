@@ -18,7 +18,7 @@
 */
 import React from "react";
 import styled from "styled-components";
-import { AuthorI } from "../constants/AppState";
+import { AuthorI } from "../dataModels";
 
 //correct props type
 const Banner = (props: {

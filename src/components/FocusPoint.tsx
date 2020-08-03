@@ -16,31 +16,42 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
-import { PointI, PointShape } from "../constants/AppState";
+import { PointI, PointShape } from "../dataModels";
 import { ItemTypes } from "../constants/React-Dnd";
 import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
+
+import { connect } from "react-redux";
+import { setEditingPoint } from "../actions/editingPointActions";
+import {
+  pointUpdate,
+  PointUpdateParams,
+  setMainPoint,
+  SetMainPointParams,
+} from "../actions/messageActions";
 
 const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   index: number;
   isMainPoint: boolean;
-  appDispatch: any;
   isEditing: boolean;
   onEnterPress: any;
   onClick: any;
+  setEditingPoint: (pointId: string) => void;
+  pointUpdate: (params: PointUpdateParams) => void;
+  setMainPoint: (params: SetMainPointParams) => void;
 }) => {
   const {
     point,
     shape,
     index,
     isMainPoint,
-    appDispatch,
     isEditing,
     onEnterPress,
     onClick,
+    setEditingPoint,
   } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -50,18 +61,14 @@ const FocusPoint = (props: {
   }, [isEditing]);
 
   const handleChange = (e: any) => {
-    appDispatch({
-      type: "pointUpdate",
+    props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
     });
   };
 
   const handleBlur = () => {
-    appDispatch({
-      type: "setEditingPoint",
-      editingPoint: undefined,
-    });
+    setEditingPoint("");
   };
 
   const handleClick = (e: any) => {
@@ -101,8 +108,8 @@ const FocusPoint = (props: {
         src={imageUrl}
         onClick={() => {
           isMainPoint
-            ? appDispatch({ type: "setMainPoint", pointId: "" })
-            : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+            ? props.setMainPoint({ pointId: "" })
+            : props.setMainPoint({ pointId: point.pointId });
         }}
         height={isMainPoint ? 30 : 20}
         alt={shape}
@@ -112,12 +119,10 @@ const FocusPoint = (props: {
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
-          appDispatch({
-            type: "setEditingPoint",
-            pointId: point.pointId,
-          });
+          setEditingPoint(point.pointId);
         }}
         ref={ref}
+        isMainPoint={isMainPoint}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -136,9 +141,9 @@ const StyledImg = styled.img`
 `;
 
 interface StyledProps {
-  isMainPoint: boolean;
-  isEditing: boolean;
-  isDragging: boolean;
+  isMainPoint?: boolean;
+  isEditing?: boolean;
+  isDragging?: boolean;
 }
 
 const StyledSpan = styled.span<StyledProps>`
@@ -155,20 +160,27 @@ const StyledSpan = styled.span<StyledProps>`
   ${(props) =>
     props.isMainPoint &&
     `
-  border-top: solid #4f4f4f;
-  border-bottom: solid #4f4f4f;
   padding: 1% 0;
 `};
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
   background-color: transparent;
-  font-family: ubuntu;
+  font-family: arial;
   font-size: medium;
+  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
   resize: none;
 `;
 
-export default FocusPoint;
+const mapStateToProps = () => {};
+
+const mapActionsToProps = {
+  setEditingPoint,
+  pointUpdate,
+  setMainPoint,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

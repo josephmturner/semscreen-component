@@ -1,4 +1,4 @@
-import { PointI, PointShape } from "../constants/AppState";
+import { PointI, PointShape } from "../dataModels";
 
 export const ItemTypes = {
   POINT: "point",

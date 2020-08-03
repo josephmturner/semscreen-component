@@ -19,33 +19,36 @@
 import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledFocusRegion from "./StyledFocusRegion";
-import { PointI, PointShape, RegionI } from "../constants/AppState";
+import { PointI, PointShape, RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { setFocus, SetFocusParams } from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
+
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: (region: RegionI) => void;
   point: PointI | undefined;
   shape: PointShape | undefined;
   index: number | undefined;
   isMainPoint: boolean;
-  appDispatch: any;
-  editingPoint: PointI["pointId"] | undefined;
+  editingPointId: string;
   onRegionClick: any;
+  setFocus: (params: SetFocusParams) => void;
+  setExpandedRegion: (params: string) => void;
 }) => {
   const {
     region,
     isExpanded,
-    setExpandedRegion,
     point,
     shape,
     index,
     isMainPoint,
-    appDispatch,
-    editingPoint,
+    editingPointId,
     onRegionClick,
   } = props;
 
@@ -53,12 +56,11 @@ const FocusRegion = (props: {
     accept: ItemTypes.POINT,
     hover: () => {
       if (isExpanded !== "expanded") {
-        setExpandedRegion(region);
+        props.setExpandedRegion(region);
       }
     },
     drop: (item: DraggablePointType) => {
-      appDispatch({
-        type: "setFocus",
+      props.setFocus({
         pointId: item.pointId,
         oldShape: item.shape,
         oldIndex: item.index,
@@ -77,8 +79,7 @@ const FocusRegion = (props: {
             shape={shape}
             index={index}
             isMainPoint={isMainPoint}
-            appDispatch={appDispatch}
-            isEditing={editingPoint === point.pointId}
+            isEditing={editingPointId === point.pointId}
             onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
           />
@@ -94,4 +95,13 @@ const StyledDiv = styled.div`
   flex-direction: column;
 `;
 
-export default FocusRegion;
+const mapStateToProps = (state: AppState) => ({
+  editingPointId: state.editingPoint.editingPointId,
+});
+
+const mapDispatchToProps = {
+  setFocus,
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

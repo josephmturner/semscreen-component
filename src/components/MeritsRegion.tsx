@@ -19,31 +19,28 @@
 import React from "react";
 //import FocusPoint from "./FocusPoint";
 import StyledFocusRegion from "./StyledFocusRegion";
-import { RegionI } from "../constants/AppState";
+import { RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
+
 const MeritsRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: (region: RegionI) => void;
-  appDispatch: any;
   onRegionClick: any;
+  setExpandedRegion: (region: string) => void;
 }) => {
-  const {
-    region,
-    isExpanded,
-    setExpandedRegion,
-    // appDispatch,
-    onRegionClick,
-  } = props;
+  const { region, isExpanded, onRegionClick } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: () => {
       if (isExpanded !== "expanded") {
-        setExpandedRegion(region);
+        props.setExpandedRegion(region);
       }
     },
     //    drop: (item: DraggablePointType) => {
@@ -71,4 +68,10 @@ const StyledDiv = styled.div`
   flex-direction: column;
 `;
 
-export default MeritsRegion;
+const mapStateToProps = (state: AppState) => ({});
+
+const mapDispatchToProps = {
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeritsRegion);

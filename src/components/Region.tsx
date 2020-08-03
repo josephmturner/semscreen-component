@@ -15,21 +15,30 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-// TODO: type appDispatch
 
 import React from "react";
 import Point from "./Point";
+import { v4 as uuidv4 } from "uuid";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import {
-  AuthorI,
-  PointI,
-  PointShape,
-  CursorPositionI,
-} from "../constants/AppState";
+import { AuthorI, PointI, PointShape } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
+
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
+import { setCursorPosition } from "../actions/cursorPositionActions";
+import {
+  splitIntoTwoPoints,
+  SplitIntoTwoPointsParams,
+  pointMove,
+  PointMoveParams,
+  combinePoints,
+  CombinePointsParams,
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 const Region = (props: {
   region: PointShape;
@@ -38,12 +47,15 @@ const Region = (props: {
   points: PointI[];
   focusPointId: string | undefined;
   mainPointId: string | undefined;
-  appDispatch: any;
-  editingPoint: PointI["pointId"] | undefined;
-  cursorPosition?: CursorPositionI;
+  cursorPosition: CursorPositionDetails | null;
   createEmptyPoint: any;
   onRegionClick: any;
-  setExpandedRegion: any;
+  editingPointId: string;
+  setCursorPosition: (details: CursorPositionDetails) => void;
+  splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
+  pointMove: (params: PointMoveParams) => void;
+  combinePoints: (params: CombinePointsParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
   const {
     region,
@@ -52,12 +64,10 @@ const Region = (props: {
     focusPointId,
     mainPointId,
     author,
-    appDispatch,
-    editingPoint,
     cursorPosition,
     createEmptyPoint,
     onRegionClick,
-    setExpandedRegion,
+    editingPointId,
   } = props;
 
   const renderPoints = points.filter((p) => p.pointId !== focusPointId);
@@ -71,15 +81,14 @@ const Region = (props: {
     hover: (item: DraggablePointType) => {
       //TODO: consider only calling appDispatch after the animation transition ends.
       if (isExpanded !== "expanded") {
-        setExpandedRegion(region);
+        props.setExpandedRegion(region);
       }
 
       if (item.shape !== region || item.index !== points.length - 1) {
         const newIndex =
           item.shape === region ? points.length - 1 : points.length;
 
-        appDispatch({
-          type: "pointMove",
+        props.pointMove({
           pointId: item.pointId,
           oldShape: item.shape,
           oldIndex: item.index,
@@ -106,26 +115,33 @@ const Region = (props: {
             point={p}
             shape={region}
             isExpanded={isExpanded}
-            setExpandedRegion={setExpandedRegion}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
-            appDispatch={appDispatch}
-            isEditing={editingPoint === p.pointId}
+            isEditing={editingPointId === p.pointId}
             createPointBelow={(topContent, bottomContent) => {
-              appDispatch({
-                type: "splitIntoTwoPoints",
+              const newPointId = uuidv4();
+              props.splitIntoTwoPoints({
                 topPoint: {
                   author: author,
                   content: topContent,
                   shape: region,
+
+                  // TODO: These were missing before
+                  pointId: p.pointId,
+                  pointDate: new Date(),
                 },
                 bottomPoint: {
                   author: author,
                   content: bottomContent,
                   shape: region,
+
+                  // TODO: These were missing before
+                  pointId: newPointId,
+                  pointDate: new Date(),
                 },
                 shape: region,
-                index: points.findIndex((p) => p.pointId === editingPoint),
+                index: points.findIndex((p) => p.pointId === editingPointId),
+                newPointId: newPointId,
               });
             }}
             combinePoints={(
@@ -137,8 +153,7 @@ const Region = (props: {
               if (aboveOrBelow === "below" && index === points.length - 1) {
                 return;
               } else {
-                appDispatch({
-                  type: "combinePoints",
+                props.combinePoints({
                   aboveOrBelow: aboveOrBelow,
                   point: point,
                   shape: shape,
@@ -148,21 +163,18 @@ const Region = (props: {
             }}
             setCursorPosition={(index: number, moveTo: string) => {
               if (moveTo === "beginningOfPriorPoint") {
-                appDispatch({
-                  type: "setCursorPosition",
+                props.setCursorPosition({
                   pointId: points[index - 1].pointId,
                   index: 0,
                 });
               } else if (moveTo === "endOfPriorPoint") {
-                appDispatch({
-                  type: "setCursorPosition",
+                props.setCursorPosition({
                   pointId: points[index - 1].pointId,
                   index: points[index - 1].content.length,
                 });
               } else if (moveTo === "beginningOfNextPoint") {
                 !(index === points.length - 1) &&
-                  appDispatch({
-                    type: "setCursorPosition",
+                  props.setCursorPosition({
                     pointId: points[index + 1].pointId,
                     index: 0,
                   });
@@ -203,4 +215,17 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
-export default Region;
+const mapStateToProps = (state: AppState) => ({
+  editingPointId: state.editingPoint.editingPointId,
+  cursorPosition: state.cursorPosition.details,
+});
+
+const mapDispatchToProps = {
+  setCursorPosition,
+  splitIntoTwoPoints,
+  pointMove,
+  combinePoints,
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Region);

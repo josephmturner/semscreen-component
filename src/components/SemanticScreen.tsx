@@ -30,29 +30,31 @@ import Banner from "./Banner";
 import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { MessageState } from "../reducers/message";
+import { setEditingPoint } from "../actions/editingPointActions";
 import {
-  MessageI,
-  PointShape,
-  RegionI,
-  CursorPositionI,
-} from "../constants/AppState";
+  pointCreate,
+  pointsDelete,
+  PointCreateParams,
+  PointsDeleteParams,
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
+
+import { PointShape, RegionI } from "../dataModels";
 
 const SemanticScreen = (props: {
-  message: MessageI;
-  editingPoint: string | undefined;
-  cursorPosition?: CursorPositionI;
+  message: MessageState;
   showShapes: boolean;
+  expandedRegion: string;
   onAuthorUpdate: (e: any) => void;
-  appDispatch: any;
+  setEditingPoint: (pointId: string) => void;
+  pointCreate: (params: PointCreateParams) => void;
+  pointsDelete: (params: PointsDeleteParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
-  const {
-    message,
-    showShapes,
-    editingPoint,
-    cursorPosition,
-    onAuthorUpdate,
-    appDispatch,
-  } = props;
+  const { message, showShapes, expandedRegion, onAuthorUpdate } = props;
 
   const author = message.author || {
     name: "anonymous",
@@ -62,11 +64,8 @@ const SemanticScreen = (props: {
   };
   //TODO: what if App doesn't pass any points to SemanticScreen?
 
-  const [expandedRegion, setExpandedRegion] = useState("");
-
   const createEmptyPoint = (shape: PointShape, index: number) => {
-    appDispatch({
-      type: "pointCreate",
+    props.pointCreate({
       point: {
         author: author,
         content: "",
@@ -77,8 +76,7 @@ const SemanticScreen = (props: {
   };
 
   const deleteEmptyPoints = () => {
-    appDispatch({
-      type: "pointsDelete",
+    props.pointsDelete({
       pointIds: Object.values(message.points)
         .flat()
         .filter((p) => !p.content)
@@ -88,28 +86,26 @@ const SemanticScreen = (props: {
 
   const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
     if (region !== expandedRegion) {
-      setExpandedRegion(region);
+      props.setExpandedRegion(region);
       deleteEmptyPoints();
       if (region === "focus" && message.focus) {
-        appDispatch({
-          type: "setEditingPoint",
-          pointId: message.focus.pointId,
-        });
+        props.setEditingPoint(message.focus.pointId);
       } else if (region === "merits") {
         console.log("merits clicked");
       } else if (!childClicked) {
-        appDispatch({
-          type: "pointCreate",
+        props.pointCreate({
           point: {
             author: author,
             content: "",
           },
-          shape: region,
+
+          // TODO: type error here, region can include "focus", but a point cannot have shape "focus"
+          shape: region as PointShape,
           index: message.points[region as PointShape].length,
         });
       }
     } else if (region === expandedRegion && !childClicked) {
-      setExpandedRegion("");
+      props.setExpandedRegion("");
       deleteEmptyPoints();
     }
   };
@@ -132,7 +128,7 @@ const SemanticScreen = (props: {
     semanticScreenRef.current &&
       wrapGrid(semanticScreenRef.current, {
         duration: 150,
-        easing: "easeInOut",
+        easing: "linear",
       });
   }, []);
 
@@ -162,9 +158,8 @@ const SemanticScreen = (props: {
               <MeritsRegion
                 region={region}
                 isExpanded={isExpanded(region)}
-                setExpandedRegion={setExpandedRegion}
                 onRegionClick={handleRegionClick}
-                appDispatch={appDispatch}
+                key={region}
               />
             );
           }
@@ -173,7 +168,6 @@ const SemanticScreen = (props: {
               <FocusRegion
                 region={region}
                 isExpanded={isExpanded(region)}
-                setExpandedRegion={setExpandedRegion}
                 point={
                   message.focus
                     ? Object.values(message.points)
@@ -198,8 +192,6 @@ const SemanticScreen = (props: {
                     ? true
                     : false
                 }
-                appDispatch={appDispatch}
-                editingPoint={editingPoint}
                 onRegionClick={handleRegionClick}
                 key={region}
               />
@@ -213,13 +205,9 @@ const SemanticScreen = (props: {
                 points={message.points[region as PointShape]}
                 focusPointId={message.focus && message.focus.pointId}
                 mainPointId={message.main}
-                appDispatch={appDispatch}
-                editingPoint={editingPoint}
-                cursorPosition={cursorPosition}
                 createEmptyPoint={createEmptyPoint}
                 onRegionClick={handleRegionClick}
                 key={region}
-                setExpandedRegion={setExpandedRegion}
               />
             );
           }
@@ -230,4 +218,16 @@ const SemanticScreen = (props: {
   );
 };
 
-export default SemanticScreen;
+const mapStateToProps = (state: AppState) => ({
+  message: state.message,
+  expandedRegion: state.expandedRegion.region,
+});
+
+const mapDispatchToProps = {
+  pointCreate,
+  pointsDelete,
+  setEditingPoint,
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SemanticScreen);

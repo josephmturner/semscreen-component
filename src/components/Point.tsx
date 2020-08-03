@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI, PointShape } from "../constants/AppState";
+import { PointI, PointShape } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
@@ -25,14 +25,26 @@ import { XYCoord } from "dnd-core";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
+import { connect } from "react-redux";
+import { setEditingPoint } from "../actions/editingPointActions";
+import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
+import { setCursorPosition } from "../actions/cursorPositionActions";
+import {
+  pointMove,
+  PointMoveParams,
+  pointUpdate,
+  PointUpdateParams,
+  setMainPoint,
+  SetMainPointParams,
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
+
 const Point = (props: {
   point: PointI;
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: any;
   isMainPoint: boolean;
   index: number;
-  appDispatch: any;
   isEditing: boolean;
   createPointBelow: (topContent: string, bottomContent: string) => void;
   combinePoints: (
@@ -44,21 +56,27 @@ const Point = (props: {
   cursorPositionIndex: number | undefined;
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
+  setEditingPoint: (pointId: string) => void;
+  setCursorPositionRedux: (details: CursorPositionDetails | null) => void;
+  pointMove: (params: PointMoveParams) => void;
+  pointUpdate: (params: PointUpdateParams) => void;
+  setMainPoint: (params: SetMainPointParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
   const {
     point,
     shape,
     isExpanded,
-    setExpandedRegion,
     isMainPoint,
     index,
-    appDispatch,
     isEditing,
     createPointBelow,
     combinePoints,
     cursorPositionIndex,
     setCursorPosition,
     onClick,
+    setEditingPoint,
+    setCursorPositionRedux,
   } = props;
 
   const [, drop] = useDrop({
@@ -68,7 +86,7 @@ const Point = (props: {
         return;
       }
       if (isExpanded !== "expanded") {
-        setExpandedRegion(shape);
+        props.setExpandedRegion(shape);
       }
       //TODO: only call the following logic after the animation transition ends.
       const dragIndex = item.index;
@@ -95,8 +113,7 @@ const Point = (props: {
         return;
       }
 
-      appDispatch({
-        type: "pointMove",
+      props.pointMove({
         pointId: item.pointId,
         oldShape: item.shape,
         oldIndex: item.index,
@@ -143,9 +160,9 @@ const Point = (props: {
         cursorPositionIndex as number,
         cursorPositionIndex as number
       );
-      appDispatch({ type: "resetCursorPosition" });
+      setCursorPositionRedux(null);
     }
-  }, [cursorPositionIndex, appDispatch]);
+  }, [cursorPositionIndex, setCursorPositionRedux]);
 
   const [arrowPressed, setArrowPressed] = useState<
     "ArrowUp" | "ArrowDown" | undefined
@@ -164,18 +181,14 @@ const Point = (props: {
   }, [arrowPressed, index, point.content.length, setCursorPosition]);
 
   const handleChange = (e: any) => {
-    appDispatch({
-      type: "pointUpdate",
+    props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
     });
   };
 
   const handleBlur = () => {
-    appDispatch({
-      type: "setEditingPoint",
-      editingPoint: undefined,
-    });
+    setEditingPoint("");
   };
 
   const handleClick = (e: any) => {
@@ -200,8 +213,8 @@ const Point = (props: {
           src={imageUrl}
           onClick={() => {
             isMainPoint
-              ? appDispatch({ type: "setMainPoint", pointId: "" })
-              : appDispatch({ type: "setMainPoint", pointId: point.pointId });
+              ? props.setMainPoint({ pointId: "" })
+              : props.setMainPoint({ pointId: point.pointId });
           }}
           isMainPoint={isMainPoint}
           height={isMainPoint ? 23 : 17}
@@ -211,12 +224,9 @@ const Point = (props: {
           value={point.content}
           onBlur={handleBlur}
           onChange={handleChange}
-          onFocus={() =>
-            appDispatch({
-              type: "setEditingPoint",
-              pointId: point.pointId,
-            })
-          }
+          onFocus={() => {
+            setEditingPoint(point.pointId);
+          }}
           isMainPoint={isMainPoint}
           ref={ref}
           onKeyDown={(e: any) => {
@@ -292,7 +302,6 @@ const StyledDiv = styled.div<StyledProps>`
 const StyledSpan = styled.span<StyledProps>`
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
-  padding-bottom: ${(props) => (props.isMainPoint ? "3px" : "0px")};
   ${(props) =>
     props.isEditing &&
     `
@@ -310,14 +319,28 @@ const StyledImg = styled.img<StyledProps>`
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
+  padding: 0;
   background-color: transparent;
   top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
-  font-family: ubuntu;
+  font-family: arial;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
+  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
   resize: none;
   overflow: hidden;
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
 `;
 
-export default Point;
+// export default Point;
+
+const mapStateToProps = () => {};
+const mapActionsToProps = {
+  setEditingPoint,
+  setCursorPositionRedux: setCursorPosition,
+  pointMove,
+  pointUpdate,
+  setMainPoint,
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(Point);

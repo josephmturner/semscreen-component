@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PointShape } from "../constants/AppState";
+import { PointShape } from "../dataModels";
 import styled from "styled-components";
 
 // how to avoid unknown prop warning in console?
