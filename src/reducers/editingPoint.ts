@@ -1,6 +1,6 @@
 import { Action, Actions } from "../actions/constants";
 import { EditingPointParams } from "../actions/editingPointActions";
-import { _PointCreateParams } from '../actions/messageActions';
+import { _PointCreateParams } from "../actions/messageActions";
 
 import { AppState } from "./store";
 
@@ -26,10 +26,7 @@ export const editingPointReducer = (
       );
       break;
     case Actions.pointCreate:
-      newState = handlePointCreate(
-        state,
-        action as Action<_PointCreateParams>
-      );
+      newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
   }
   return newState;
