@@ -97,7 +97,10 @@ function handlePointCreate(
           ...state.points,
           [action.params.shape]: newPoints,
         },
-        focus: { pointId: action.params.newPointId, shape: action.params.shape },
+        focus: {
+          pointId: action.params.newPointId,
+          shape: action.params.shape,
+        },
       }
     : {
         ...state,

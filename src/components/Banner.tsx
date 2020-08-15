@@ -21,11 +21,7 @@ import styled from "styled-components";
 import { AuthorI } from "../dataModels";
 
 //correct props type
-const Banner = (props: {
-  author: AuthorI;
-  showShapes: boolean;
-  onAuthorUpdate: (e: any) => void;
-}) => {
+const Banner = (props: { author: AuthorI; showShapes: boolean }) => {
   const author = props.author;
   const showShapes = props.showShapes;
 

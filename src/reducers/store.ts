@@ -1,6 +1,6 @@
 import { Action } from "../actions/constants";
 import { createStore } from "redux";
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { composeWithDevTools } from "redux-devtools-extension";
 
 import {
   initialEditingPointState,
