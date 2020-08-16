@@ -24,9 +24,7 @@ const App = () => {
 
   //TODO: make editingPoint optional in AppI, then instead of passing empty
   //strings to it, pass undefined.
-  return (
-    <SemanticScreen showShapes={showShapes} onAuthorUpdate={console.log} />
-  );
+  return <SemanticScreen showShapes={showShapes} />;
 };
 
 export default App;
