@@ -24,8 +24,6 @@ import { MessageState } from "../reducers/message";
 export const authors: AuthorI[] = [
   {
     name: "KindWoman",
-    authorDate: new Date(),
-    authorId: "1",
     color: "#7d3989",
   },
 ];
@@ -34,7 +32,7 @@ export const messages: MessageState[] = [
   {
     messageId: "messageId1",
     revisionOf: null,
-    author: authors[0],
+    author: { name: "KindWoman", color: "#7d3989" },
     points: {
       facts: [],
       thoughts: [],
@@ -42,60 +40,52 @@ export const messages: MessageState[] = [
       needs: [],
       topics: [
         {
-          author: authors[0],
           content: "Online Deliberation",
           pointId: "pointId1",
+          pointDate: new Date(),
+        },
+        {
+          content: "Graph database!",
+          pointId: "pointId6",
           pointDate: new Date(),
         },
       ],
       actions: [
         {
-          author: authors[0],
           content:
             "Build an open, collaborative, compassionate system to share information and make decisions",
           pointId: "pointId2",
           pointDate: new Date(),
         },
         {
-          author: authors[0],
+          quotedAuthor: { name: "BreatheOutBreatheIn", color: "#209924" },
           content:
-            "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
+            "Create a frontend which can ride on federated and distributed backends.",
           pointId: "pointId3",
           pointDate: new Date(),
         },
         {
-          author: authors[0],
-          content:
-            "Build an open, collaborative, compassionate system to share information and make decisions",
+          content: "Get plenty of sleep :)",
           pointId: "pointId4",
           pointDate: new Date(),
         },
         {
-          author: authors[0],
           content:
-            "Build an open, collaborative, compassionate system to share information and make decisions",
-          pointId: "pointId5",
-          pointDate: new Date(),
-        },
-        {
-          author: authors[0],
-          content:
-            "Create a frontend which can ride on federated and distributed backends, such as IPFS.",
-          pointId: "pointId6",
-          pointDate: new Date(),
-        },
-        {
-          author: authors[0],
-          content:
-            "Build an open, collaborative, compassionate system to share information and make decisions (main point)",
+            "Brainstorm and implement other components, including a list view of messages",
           pointId: "pointId7",
+          pointDate: new Date(),
+        },
+        {
+          content:
+            "Make a p2p deliberation app that runs in node, web browser, and hopefully React Native",
+          pointId: "pointId5",
           pointDate: new Date(),
         },
       ],
       people: [],
     },
     focus: { pointId: "pointId1", shape: "topics" },
-    main: "pointId7",
+    main: "pointId5",
     createdAt: new Date(),
   },
 ];

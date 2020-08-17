@@ -122,7 +122,6 @@ const Region = (props: {
               const newPointId = uuidv4();
               props.splitIntoTwoPoints({
                 topPoint: {
-                  author: author,
                   content: topContent,
 
                   // TODO: These were missing before
@@ -130,7 +129,6 @@ const Region = (props: {
                   pointDate: new Date(),
                 },
                 bottomPoint: {
-                  author: author,
                   content: bottomContent,
 
                   // TODO: These were missing before
