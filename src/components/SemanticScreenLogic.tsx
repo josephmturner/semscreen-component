@@ -146,7 +146,15 @@ const SemanticScreen = (props: {
         showShapes={showShapes}
         ref={semanticScreenRef}
       >
-        <Banner author={author} showShapes={showShapes} />
+        <Banner
+          text={author.name}
+          color={author.color}
+          placement={
+            props.showShapes
+              ? { top: "1.2rem", right: "2.3rem" }
+              : { top: "0", right: "0" }
+          }
+        />
         {regions.map((region: RegionI) => {
           if (region === "merits") {
             return (

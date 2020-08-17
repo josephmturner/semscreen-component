@@ -18,40 +18,33 @@
 */
 import React from "react";
 import styled from "styled-components";
-import { AuthorI } from "../dataModels";
 
-//correct props type
-const Banner = (props: { author: AuthorI; showShapes: boolean }) => {
-  const author = props.author;
-  const showShapes = props.showShapes;
-
-  function handleClick() {
-    window.alert("you clicked the banner");
-  }
-
-  return (
-    <>
-      <BannerView
-        color={author.color}
-        onClick={handleClick}
-        showShapes={showShapes}
-      >
-        {author.name}
-      </BannerView>
-    </>
-  );
-};
-
-interface Props {
-  showShapes: boolean;
+interface Placement {
+  top: string;
+  right: string;
 }
 
-const BannerView = styled.div<Props>`
+const Banner = (props: {
+  text: string;
+  color: string;
+  placement: Placement;
+}) => (
+  <BannerView
+    color={props.color}
+    onClick={console.log}
+    top={props.placement.top}
+    right={props.placement.right}
+  >
+    {props.text}
+  </BannerView>
+);
+
+const BannerView = styled.div<Placement>`
   position: absolute;
   text-align: center;
   font-size: medium;
-  top: ${(props) => (props.showShapes ? "1.2rem" : "0")};
-  right: ${(props) => (props.showShapes ? "2.3rem" : "0")};
+  top: ${(props) => props.top};
+  right: ${(props) => props.right};
   padding: 0;
   z-index: 1;
   cursor: pointer;
