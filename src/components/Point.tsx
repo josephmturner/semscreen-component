@@ -17,8 +17,9 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI, PointShape } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
+import Banner from "./Banner";
 
 import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { XYCoord } from "dnd-core";
@@ -205,6 +206,7 @@ const Point = (props: {
       isMainPoint={isMainPoint}
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
+      quotedAuthor={point.quotedAuthor}
       onClick={handleClick}
     >
       <StyledDiv>
@@ -217,6 +219,7 @@ const Point = (props: {
               : props.setMainPoint({ pointId: point.pointId });
           }}
           isMainPoint={isMainPoint}
+          quotedAuthor={point.quotedAuthor}
           height={isMainPoint ? 23 : 17}
           alt={shape}
         />
@@ -227,7 +230,9 @@ const Point = (props: {
           onFocus={() => {
             setEditingPoint(point.pointId);
           }}
+          readOnly={!!point.quotedAuthor}
           isMainPoint={isMainPoint}
+          quotedAuthor={point.quotedAuthor}
           ref={ref}
           onKeyDown={(e: any) => {
             if (e.key === "Enter") {
@@ -282,6 +287,13 @@ const Point = (props: {
             }
           }}
         />
+        {point.quotedAuthor && (
+          <Banner
+            text={point.quotedAuthor.name}
+            color={point.quotedAuthor.color}
+            placement={{ top: "-0.8rem", right: "0" }}
+          />
+        )}
       </StyledDiv>
     </StyledSpan>
   );
@@ -292,6 +304,7 @@ interface StyledProps {
   isMainPoint?: boolean;
   isDragging?: boolean;
   isFirst?: boolean;
+  quotedAuthor?: AuthorI;
 }
 
 const StyledDiv = styled.div<StyledProps>`
@@ -303,6 +316,10 @@ const StyledSpan = styled.span<StyledProps>`
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
   ${(props) =>
+    props.quotedAuthor &&
+    `padding: 0.8rem 0.8rem 0.2rem 0.2rem;
+   `}
+  ${(props) =>
     props.isEditing &&
     `
   background-color: #efefef;
@@ -313,13 +330,13 @@ const StyledSpan = styled.span<StyledProps>`
 const StyledImg = styled.img<StyledProps>`
   position: absolute;
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
+  left: ${(props) => (props.quotedAuthor ? "3px" : 0)};
   opacity: 0.7;
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
-  border: 0px;
-  padding: 0;
+  border: 0;
   background-color: transparent;
   top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
   font-family: arial;
@@ -329,6 +346,9 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   resize: none;
   overflow: hidden;
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
+  ${(props) =>
+    props.quotedAuthor &&
+    ` border: 1.5px solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
 const mapStateToProps = () => {
