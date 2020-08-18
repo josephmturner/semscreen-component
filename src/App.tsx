@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2019 by USHIN, Inc.
+  Copyright (C) 2020 by USHIN, Inc.
 
   This file is part of U4U.
 
@@ -22,8 +22,6 @@ import SemanticScreen from "./components/SemanticScreen";
 const App = () => {
   const showShapes = true;
 
-  //TODO: make editingPoint optional in AppI, then instead of passing empty
-  //strings to it, pass undefined.
   return <SemanticScreen showShapes={showShapes} />;
 };
 

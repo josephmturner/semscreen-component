@@ -16,20 +16,26 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
+import { useDrag } from "react-dnd";
+import { ItemTypes } from "../constants/React-Dnd";
+import { PointI, PointShape } from "../dataModels";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+export const useDragPoint = (point: PointI, shape: PointShape, index: number) => {
+  const [{ isDragging }, drag, preview] = useDrag({
+    item: {
+      type: ItemTypes.POINT,
+      pointId: point.pointId,
+      originalShape: shape,
+      originalIndex: index,
+      shape: shape,
+      index: index,
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    isDragging: (monitor) => {
+      return point.pointId === monitor.getItem().pointId;
+    },
+  });
+  return { isDragging, drag, preview };
+}
