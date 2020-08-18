@@ -16,11 +16,12 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef } from "react";
-import { PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI, PointShape } from "../dataModels";
 import { ItemTypes } from "../constants/React-Dnd";
 import { useDrag } from "react-dnd";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
+import Banner from "./Banner";
 
 import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
@@ -102,6 +103,7 @@ const FocusPoint = (props: {
       isMainPoint={isMainPoint}
       isEditing={isEditing}
       isDragging={isDragging}
+      quotedAuthor={point.quotedAuthor}
     >
       <StyledImg
         ref={drag}
@@ -111,6 +113,7 @@ const FocusPoint = (props: {
             ? props.setMainPoint({ pointId: "" })
             : props.setMainPoint({ pointId: point.pointId });
         }}
+        quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
         alt={shape}
       />
@@ -121,8 +124,10 @@ const FocusPoint = (props: {
         onFocus={() => {
           setEditingPoint(point.pointId);
         }}
+        readOnly={!!point.quotedAuthor}
         ref={ref}
         isMainPoint={isMainPoint}
+        quotedAuthor={point.quotedAuthor}
         onKeyDown={(e: any) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -130,23 +135,26 @@ const FocusPoint = (props: {
           }
         }}
       />
+      {point.quotedAuthor && (
+        <Banner
+          text={point.quotedAuthor.name}
+          color={point.quotedAuthor.color}
+          placement={{ top: "-0.5rem", right: "0.4rem" }}
+        />
+      )}
     </StyledSpan>
   );
 };
-
-const StyledImg = styled.img`
-  height: 20px;
-  margin: auto;
-  opacity: 0.7;
-`;
 
 interface StyledProps {
   isMainPoint?: boolean;
   isEditing?: boolean;
   isDragging?: boolean;
+  quotedAuthor?: AuthorI;
 }
 
 const StyledSpan = styled.span<StyledProps>`
+  position: relative;
   margin: auto;
   display: flex;
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
@@ -164,6 +172,12 @@ const StyledSpan = styled.span<StyledProps>`
 `};
 `;
 
+const StyledImg = styled.img<StyledProps>`
+  height: 20px;
+  margin: auto;
+  opacity: 0.7;
+`;
+
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0px;
@@ -173,7 +187,9 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   outline: 0;
   resize: none;
-`;
+  ${(props) =>
+    props.quotedAuthor &&
+    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}`;
 
 const mapStateToProps = () => {
   return {};
