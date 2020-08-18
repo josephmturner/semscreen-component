@@ -291,7 +291,7 @@ const Point = (props: {
           <Banner
             text={point.quotedAuthor.name}
             color={point.quotedAuthor.color}
-            placement={{ top: "-0.8rem", right: "0" }}
+            placement={{ top: "-0.5rem", right: "0" }}
           />
         )}
       </StyledDiv>
@@ -317,7 +317,7 @@ const StyledSpan = styled.span<StyledProps>`
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
   ${(props) =>
     props.quotedAuthor &&
-    `padding: 0.8rem 0.8rem 0.2rem 0.2rem;
+    `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
    `}
   ${(props) =>
     props.isEditing &&
@@ -330,6 +330,7 @@ const StyledSpan = styled.span<StyledProps>`
 const StyledImg = styled.img<StyledProps>`
   position: absolute;
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
+  margin-top: ${(props) => (props.quotedAuthor ? "0.5rem" : 0)};
   left: ${(props) => (props.quotedAuthor ? "3px" : 0)};
   opacity: 0.7;
 `;
@@ -348,7 +349,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
   ${(props) =>
     props.quotedAuthor &&
-    ` border: 1.5px solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
+    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
 const mapStateToProps = () => {
