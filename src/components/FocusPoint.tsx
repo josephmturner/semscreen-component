@@ -17,8 +17,7 @@
 */
 import React, { useEffect, useRef } from "react";
 import { AuthorI, PointI, PointShape } from "../dataModels";
-import { ItemTypes } from "../constants/React-Dnd";
-import { useDrag } from "react-dnd";
+import { useDragPoint } from "../hooks/useDragPoint";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 import Banner from "./Banner";
@@ -79,22 +78,7 @@ const FocusPoint = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const [{ isDragging }, drag, preview] = useDrag({
-    item: {
-      type: ItemTypes.POINT,
-      pointId: point.pointId,
-      originalShape: shape,
-      originalIndex: index,
-      shape: shape,
-      index: index,
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    isDragging: (monitor) => {
-      return point.pointId === monitor.getItem().pointId;
-    },
-  });
+  const { isDragging, drag, preview } = useDragPoint(point, shape, index);
 
   return (
     <StyledSpan

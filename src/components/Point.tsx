@@ -21,7 +21,8 @@ import { AuthorI, PointI, PointShape } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Banner from "./Banner";
 
-import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { useDrop, DropTargetMonitor } from "react-dnd";
+import { useDragPoint } from "../hooks/useDragPoint";
 import { XYCoord } from "dnd-core";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
@@ -135,22 +136,7 @@ const Point = (props: {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const [{ isDragging }, drag, preview] = useDrag({
-    item: {
-      type: ItemTypes.POINT,
-      pointId: point.pointId,
-      originalShape: shape,
-      originalIndex: index,
-      shape: shape,
-      index: index,
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    isDragging: (monitor) => {
-      return point.pointId === monitor.getItem().pointId;
-    },
-  });
+  const { isDragging, drag, preview } = useDragPoint(point, shape, index);
 
   drop(preview(pointRef));
 
