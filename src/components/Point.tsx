@@ -209,92 +209,90 @@ const Point = (props: {
       quotedAuthor={point.quotedAuthor}
       onClick={handleClick}
     >
-      <StyledDiv>
-        <StyledImg
-          ref={drag}
-          src={imageUrl}
-          onClick={() => {
-            isMainPoint
-              ? props.setMainPoint({ pointId: "" })
-              : props.setMainPoint({ pointId: point.pointId });
-          }}
-          isMainPoint={isMainPoint}
-          quotedAuthor={point.quotedAuthor}
-          height={isMainPoint ? 23 : 17}
-          alt={shape}
-        />
-        <StyledTextArea
-          value={point.content}
-          onBlur={handleBlur}
-          onChange={handleChange}
-          onFocus={() => {
-            setEditingPoint(point.pointId);
-          }}
-          readOnly={!!point.quotedAuthor}
-          isMainPoint={isMainPoint}
-          quotedAuthor={point.quotedAuthor}
-          ref={ref}
-          onKeyDown={(e: any) => {
-            if (e.key === "Enter") {
+      <StyledImg
+        ref={drag}
+        src={imageUrl}
+        onClick={() => {
+          isMainPoint
+            ? props.setMainPoint({ pointId: "" })
+            : props.setMainPoint({ pointId: point.pointId });
+        }}
+        isMainPoint={isMainPoint}
+        quotedAuthor={point.quotedAuthor}
+        height={isMainPoint ? 23 : 17}
+        alt={shape}
+      />
+      <StyledTextArea
+        value={point.content}
+        onBlur={handleBlur}
+        onChange={handleChange}
+        onFocus={() => {
+          setEditingPoint(point.pointId);
+        }}
+        readOnly={!!point.quotedAuthor}
+        isMainPoint={isMainPoint}
+        quotedAuthor={point.quotedAuthor}
+        ref={ref}
+        onKeyDown={(e: any) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            ref.current &&
+              createPointBelow(
+                point.content.slice(0, ref.current.selectionStart),
+                point.content.slice(ref.current.selectionStart)
+              );
+          } else if (
+            e.key === "Backspace" &&
+            ref.current &&
+            ref.current.selectionStart === 0 &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            if (index !== 0) {
               e.preventDefault();
-              ref.current &&
-                createPointBelow(
-                  point.content.slice(0, ref.current.selectionStart),
-                  point.content.slice(ref.current.selectionStart)
-                );
-            } else if (
-              e.key === "Backspace" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd
-            ) {
-              if (index !== 0) {
-                e.preventDefault();
-                combinePoints("above", point, shape, index);
-              } else if (index === 0 && !point.content) {
-                e.preventDefault();
-                combinePoints("below", point, shape, index);
-              }
-            } else if (
-              e.key === "Delete" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
-            ) {
+              combinePoints("above", point, shape, index);
+            } else if (index === 0 && !point.content) {
               e.preventDefault();
               combinePoints("below", point, shape, index);
-            } else if (
-              e.key === "ArrowLeft" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd &&
-              index !== 0
-            ) {
-              e.preventDefault();
-              setCursorPosition(index, "endOfPriorPoint");
-            } else if (
-              e.key === "ArrowRight" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
-            ) {
-              e.preventDefault();
-              setCursorPosition(index, "beginningOfNextPoint");
-            } else if (e.key === "ArrowUp" && index !== 0) {
-              setArrowPressed("ArrowUp");
-            } else if (e.key === "ArrowDown") {
-              setArrowPressed("ArrowDown");
             }
-          }}
+          } else if (
+            e.key === "Delete" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            combinePoints("below", point, shape, index);
+          } else if (
+            e.key === "ArrowLeft" &&
+            ref.current &&
+            ref.current.selectionStart === 0 &&
+            ref.current.selectionStart === ref.current.selectionEnd &&
+            index !== 0
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "endOfPriorPoint");
+          } else if (
+            e.key === "ArrowRight" &&
+            ref.current &&
+            ref.current.selectionStart === point.content.length &&
+            ref.current.selectionStart === ref.current.selectionEnd
+          ) {
+            e.preventDefault();
+            setCursorPosition(index, "beginningOfNextPoint");
+          } else if (e.key === "ArrowUp" && index !== 0) {
+            setArrowPressed("ArrowUp");
+          } else if (e.key === "ArrowDown") {
+            setArrowPressed("ArrowDown");
+          }
+        }}
+      />
+      {point.quotedAuthor && (
+        <Banner
+          text={point.quotedAuthor.name}
+          color={point.quotedAuthor.color}
+          placement={{ top: "-0.2rem", right: "0.8rem" }}
         />
-        {point.quotedAuthor && (
-          <Banner
-            text={point.quotedAuthor.name}
-            color={point.quotedAuthor.color}
-            placement={{ top: "-0.8rem", right: "0" }}
-          />
-        )}
-      </StyledDiv>
+      )}
     </StyledSpan>
   );
 };
@@ -307,17 +305,14 @@ interface StyledProps {
   quotedAuthor?: AuthorI;
 }
 
-const StyledDiv = styled.div<StyledProps>`
+const StyledSpan = styled.span<StyledProps>`
   position: relative;
   left: 2px;
-`;
-
-const StyledSpan = styled.span<StyledProps>`
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
   ${(props) =>
     props.quotedAuthor &&
-    `padding: 0.8rem 0.8rem 0.2rem 0.2rem;
+    `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
    `}
   ${(props) =>
     props.isEditing &&
@@ -330,7 +325,8 @@ const StyledSpan = styled.span<StyledProps>`
 const StyledImg = styled.img<StyledProps>`
   position: absolute;
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
-  left: ${(props) => (props.quotedAuthor ? "3px" : 0)};
+  margin-top: ${(props) => (props.quotedAuthor ? "0.8rem" : 0)};
+  left: ${(props) => (props.quotedAuthor ? "7px" : 0)};
   opacity: 0.7;
 `;
 
@@ -338,7 +334,6 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   width: 100%;
   border: 0;
   background-color: transparent;
-  top: ${(props) => (props.isMainPoint ? "20px" : "0px")};
   font-family: arial;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
@@ -348,7 +343,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
   ${(props) =>
     props.quotedAuthor &&
-    ` border: 1.5px solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
+    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
 const mapStateToProps = () => {
