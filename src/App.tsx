@@ -22,8 +22,6 @@ import SemanticScreen from "./components/SemanticScreen";
 const App = () => {
   const showShapes = true;
 
-  //TODO: make editingPoint optional in AppI, then instead of passing empty
-  //strings to it, pass undefined.
   return <SemanticScreen showShapes={showShapes} />;
 };
 
