@@ -31,7 +31,6 @@ export const authors: AuthorI[] = [
 export const messages: MessageState[] = [
   {
     messageId: "messageId1",
-    revisionOf: null,
     author: { name: "KindWoman", color: "#7d3989" },
     points: {
       facts: [],

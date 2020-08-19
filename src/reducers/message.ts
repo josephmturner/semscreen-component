@@ -23,10 +23,10 @@ import {
 
 export interface MessageState {
   messageId: string;
-  revisionOf: string | null;
+  revisionOf?: string;
   author: AuthorI;
   points: PointsI;
-  focus: { pointId: string; shape: PointShape } | undefined;
+  focus?: { pointId: string; shape: PointShape };
   main: string;
   createdAt: Date;
 }

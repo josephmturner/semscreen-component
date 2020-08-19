@@ -86,7 +86,11 @@ const Region = (props: {
         props.setExpandedRegion(region);
       }
 
-      if (item.shape !== region || item.index !== points.length - 1) {
+      if (
+        item.shape !== region ||
+        item.index !== points.length - 1 ||
+        item.pointId === focusPointId
+      ) {
         const newIndex =
           item.shape === region ? points.length - 1 : points.length;
 
