@@ -22,10 +22,13 @@ import { store } from "../reducers/store";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
-const SemanticScreen = (props: { showShapes: boolean }) => {
+const SemanticScreen = (props: { showShapes: boolean; readOnly: boolean }) => {
   return (
     <Provider store={store}>
-      <SemanticScreenLogic showShapes={props.showShapes} />
+      <SemanticScreenLogic
+        showShapes={props.showShapes}
+        readOnly={props.readOnly}
+      />
     </Provider>
   );
 };

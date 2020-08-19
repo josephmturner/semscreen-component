@@ -32,6 +32,7 @@ import { setExpandedRegion } from "../actions/expandedRegionActions";
 const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
+  readOnly: boolean;
   point: PointI | undefined;
   shape: PointShape | undefined;
   index: number | undefined;
@@ -78,9 +79,9 @@ const FocusRegion = (props: {
             point={point}
             shape={shape}
             index={index}
+            readOnly={props.readOnly}
             isMainPoint={isMainPoint}
             isEditing={editingPointId === point.pointId}
-            onEnterPress={() => console.log("enter pressed in focus region")}
             onClick={() => onRegionClick(region, true)}
           />
         )}

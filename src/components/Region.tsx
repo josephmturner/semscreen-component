@@ -43,6 +43,7 @@ import { setExpandedRegion } from "../actions/expandedRegionActions";
 const Region = (props: {
   region: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
+  readOnly: boolean;
   author: AuthorI;
   points: PointI[];
   focusPointId: string | undefined;
@@ -114,6 +115,7 @@ const Region = (props: {
             key={p.pointId}
             point={p}
             shape={region}
+            readOnly={props.readOnly}
             isExpanded={isExpanded}
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
@@ -184,17 +186,15 @@ const Region = (props: {
             onClick={() => onRegionClick(region, true)}
           />
         ))}
-        {isExpanded === "expanded" && (
-          <>
-            <Placeholder
-              text={placeholderText}
-              img={placeholderImg}
-              imgAlt={placeholderImgAlt}
-              onClick={() => {
-                createEmptyPoint(region, points.length);
-              }}
-            />
-          </>
+        {isExpanded === "expanded" && !props.readOnly && (
+          <Placeholder
+            text={placeholderText}
+            img={placeholderImg}
+            imgAlt={placeholderImgAlt}
+            onClick={() => {
+              createEmptyPoint(region, points.length);
+            }}
+          />
         )}
         <DropTargetDiv ref={drop} isExpanded={isExpanded} />
       </div>
