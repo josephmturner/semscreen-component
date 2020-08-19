@@ -81,6 +81,7 @@ const Region = (props: {
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
       //TODO: consider only calling appDispatch after the animation transition ends.
+      if (item.quoted && item.shape !== region) return;
       if (isExpanded !== "expanded") {
         props.setExpandedRegion(region);
       }

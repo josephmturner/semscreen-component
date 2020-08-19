@@ -85,7 +85,7 @@ const Point = (props: {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover(item: DraggablePointType, monitor: DropTargetMonitor) {
-      if (!ref.current) {
+      if (!ref.current || (item.quoted && item.shape !== shape)) {
         return;
       }
       if (isExpanded !== "expanded") {
