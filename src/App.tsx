@@ -21,8 +21,9 @@ import SemanticScreen from "./components/SemanticScreen";
 
 const App = () => {
   const showShapes = true;
+  const readOnly = false;
 
-  return <SemanticScreen showShapes={showShapes} />;
+  return <SemanticScreen showShapes={showShapes} readOnly={readOnly} />;
 };
 
 export default App;

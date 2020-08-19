@@ -47,6 +47,7 @@ import { PointShape, RegionI } from "../dataModels";
 const SemanticScreen = (props: {
   message: MessageState;
   showShapes: boolean;
+  readOnly: boolean;
   expandedRegion: string;
   setEditingPoint: (pointId: string) => void;
   pointCreate: (params: PointCreateParams) => void;
@@ -87,13 +88,13 @@ const SemanticScreen = (props: {
     if (region !== expandedRegion) {
       props.setExpandedRegion(region);
       deleteEmptyPoints();
-      if (region === "focus" && message.focus) {
+      if (region === "focus" && message.focus && !props.readOnly) {
         props.setEditingPoint(message.focus.pointId);
       } else if (region === "focus") {
         return;
       } else if (region === "merits") {
         console.log("merits clicked");
-      } else if (!childClicked) {
+      } else if (!childClicked && !props.readOnly) {
         props.pointCreate({
           point: {
             author: author,
@@ -105,7 +106,9 @@ const SemanticScreen = (props: {
       }
     } else if (region === expandedRegion && !childClicked) {
       props.setExpandedRegion("");
-      deleteEmptyPoints();
+      if (!props.readOnly) {
+        deleteEmptyPoints();
+      }
     }
   };
 
@@ -171,6 +174,7 @@ const SemanticScreen = (props: {
               <FocusRegion
                 region={region}
                 isExpanded={isExpanded(region)}
+                readOnly={props.readOnly}
                 point={
                   message.focus
                     ? Object.values(message.points)
@@ -204,6 +208,7 @@ const SemanticScreen = (props: {
               <Region
                 region={region}
                 isExpanded={isExpanded(region)}
+                readOnly={props.readOnly}
                 author={author}
                 points={message.points[region as PointShape]}
                 focusPointId={message.focus && message.focus.pointId}

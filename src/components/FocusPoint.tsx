@@ -35,9 +35,9 @@ const FocusPoint = (props: {
   point: PointI;
   shape: PointShape;
   index: number;
+  readOnly: boolean;
   isMainPoint: boolean;
   isEditing: boolean;
-  onEnterPress: any;
   onClick: any;
   setEditingPoint: (pointId: string) => void;
   pointUpdate: (params: PointUpdateParams) => void;
@@ -49,7 +49,6 @@ const FocusPoint = (props: {
     index,
     isMainPoint,
     isEditing,
-    onEnterPress,
     onClick,
     setEditingPoint,
   } = props;
@@ -90,12 +89,16 @@ const FocusPoint = (props: {
       quotedAuthor={point.quotedAuthor}
     >
       <StyledImg
-        ref={drag}
+        ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={() => {
-          isMainPoint
-            ? props.setMainPoint({ pointId: "" })
-            : props.setMainPoint({ pointId: point.pointId });
+          if (props.readOnly) {
+            return;
+          } else {
+            isMainPoint
+              ? props.setMainPoint({ pointId: "" })
+              : props.setMainPoint({ pointId: point.pointId });
+          }
         }}
         quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
@@ -108,16 +111,10 @@ const FocusPoint = (props: {
         onFocus={() => {
           setEditingPoint(point.pointId);
         }}
-        readOnly={!!point.quotedAuthor}
+        readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
-        onKeyDown={(e: any) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            onEnterPress();
-          }
-        }}
       />
       {point.quotedAuthor && (
         <Banner
@@ -173,7 +170,8 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
   resize: none;
   ${(props) =>
     props.quotedAuthor &&
-    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}`;
+    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
+`;
 
 const mapStateToProps = () => {
   return {};

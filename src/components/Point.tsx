@@ -44,6 +44,7 @@ import { setExpandedRegion } from "../actions/expandedRegionActions";
 const Point = (props: {
   point: PointI;
   shape: PointShape;
+  readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
   index: number;
@@ -196,12 +197,16 @@ const Point = (props: {
       onClick={handleClick}
     >
       <StyledImg
-        ref={drag}
+        ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={() => {
-          isMainPoint
-            ? props.setMainPoint({ pointId: "" })
-            : props.setMainPoint({ pointId: point.pointId });
+          if (props.readOnly) {
+            return;
+          } else {
+            isMainPoint
+              ? props.setMainPoint({ pointId: "" })
+              : props.setMainPoint({ pointId: point.pointId });
+          }
         }}
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
@@ -215,60 +220,65 @@ const Point = (props: {
         onFocus={() => {
           setEditingPoint(point.pointId);
         }}
-        readOnly={!!point.quotedAuthor}
+        readOnly={!!point.quotedAuthor || props.readOnly}
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
         ref={ref}
         onKeyDown={(e: any) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            ref.current &&
-              createPointBelow(
-                point.content.slice(0, ref.current.selectionStart),
-                point.content.slice(ref.current.selectionStart)
-              );
-          } else if (
-            e.key === "Backspace" &&
-            ref.current &&
-            ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            if (index !== 0) {
+          if (props.readOnly) {
+            return;
+          } else {
+            if (e.key === "Enter") {
               e.preventDefault();
-              combinePoints("above", point, shape, index);
-            } else if (index === 0 && !point.content) {
+              ref.current &&
+                !!point.content &&
+                createPointBelow(
+                  point.content.slice(0, ref.current.selectionStart),
+                  point.content.slice(ref.current.selectionStart)
+                );
+            } else if (
+              e.key === "Backspace" &&
+              ref.current &&
+              ref.current.selectionStart === 0 &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
+              if (index !== 0) {
+                e.preventDefault();
+                combinePoints("above", point, shape, index);
+              } else if (index === 0 && !point.content) {
+                e.preventDefault();
+                combinePoints("below", point, shape, index);
+              }
+            } else if (
+              e.key === "Delete" &&
+              ref.current &&
+              ref.current.selectionStart === point.content.length &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
               e.preventDefault();
               combinePoints("below", point, shape, index);
+            } else if (
+              e.key === "ArrowLeft" &&
+              ref.current &&
+              ref.current.selectionStart === 0 &&
+              ref.current.selectionStart === ref.current.selectionEnd &&
+              index !== 0
+            ) {
+              e.preventDefault();
+              setCursorPosition(index, "endOfPriorPoint");
+            } else if (
+              e.key === "ArrowRight" &&
+              ref.current &&
+              ref.current.selectionStart === point.content.length &&
+              ref.current.selectionStart === ref.current.selectionEnd
+            ) {
+              e.preventDefault();
+              setCursorPosition(index, "beginningOfNextPoint");
+            } else if (e.key === "ArrowUp" && index !== 0) {
+              setArrowPressed("ArrowUp");
+            } else if (e.key === "ArrowDown") {
+              setArrowPressed("ArrowDown");
             }
-          } else if (
-            e.key === "Delete" &&
-            ref.current &&
-            ref.current.selectionStart === point.content.length &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            e.preventDefault();
-            combinePoints("below", point, shape, index);
-          } else if (
-            e.key === "ArrowLeft" &&
-            ref.current &&
-            ref.current.selectionStart === 0 &&
-            ref.current.selectionStart === ref.current.selectionEnd &&
-            index !== 0
-          ) {
-            e.preventDefault();
-            setCursorPosition(index, "endOfPriorPoint");
-          } else if (
-            e.key === "ArrowRight" &&
-            ref.current &&
-            ref.current.selectionStart === point.content.length &&
-            ref.current.selectionStart === ref.current.selectionEnd
-          ) {
-            e.preventDefault();
-            setCursorPosition(index, "beginningOfNextPoint");
-          } else if (e.key === "ArrowUp" && index !== 0) {
-            setArrowPressed("ArrowUp");
-          } else if (e.key === "ArrowDown") {
-            setArrowPressed("ArrowDown");
           }
         }}
       />
