@@ -11,4 +11,5 @@ export interface DraggablePointType {
   index: number;
   originalShape: PointShape;
   originalIndex: number;
+  quoted: boolean;
 }

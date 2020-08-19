@@ -33,6 +33,7 @@ export const useDragPoint = (
       originalIndex: index,
       shape: shape,
       index: index,
+      quoted: !!point.quotedAuthor,
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
