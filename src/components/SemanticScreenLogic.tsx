@@ -220,7 +220,7 @@ const SemanticScreen = (props: {
             );
           }
         })}
-        <ShapesRim showShapes={showShapes} />
+        {showShapes && <ShapesRim />}
       </StyledSemanticScreen>
     </DndProvider>
   );

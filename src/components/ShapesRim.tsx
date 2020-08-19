@@ -18,63 +18,57 @@
 */
 import React from "react";
 
-const ShapesRim = (props: { showShapes: boolean }) => {
-  if (!props.showShapes) {
-    return null;
-  }
-
-  return (
-    <>
-      <img
-        className="Shape"
-        id="FactsShape"
-        alt=""
-        src={require("../images/facts.svg")}
-      />
-      <img
-        className="Shape"
-        id="MeritsShape"
-        alt=""
-        src={require("../images/merits.svg")}
-      />
-      <img
-        className="Shape"
-        id="PeopleShape"
-        alt=""
-        src={require("../images/people.svg")}
-      />
-      <img
-        className="Shape"
-        id="ThoughtsShape"
-        alt=""
-        src={require("../images/thoughts.svg")}
-      />
-      <img
-        className="Shape"
-        id="ActionsShape"
-        alt=""
-        src={require("../images/actions.svg")}
-      />
-      <img
-        className="Shape"
-        id="FeelingsShape"
-        alt=""
-        src={require("../images/feelings.svg")}
-      />
-      <img
-        className="Shape"
-        id="NeedsShape"
-        alt=""
-        src={require("../images/needs.svg")}
-      />
-      <img
-        className="Shape"
-        id="TopicsShape"
-        alt=""
-        src={require("../images/topics.svg")}
-      />
-    </>
-  );
-};
+const ShapesRim = () => (
+  <>
+    <img
+      className="Shape"
+      id="FactsShape"
+      alt=""
+      src={require("../images/facts.svg")}
+    />
+    <img
+      className="Shape"
+      id="MeritsShape"
+      alt=""
+      src={require("../images/merits.svg")}
+    />
+    <img
+      className="Shape"
+      id="PeopleShape"
+      alt=""
+      src={require("../images/people.svg")}
+    />
+    <img
+      className="Shape"
+      id="ThoughtsShape"
+      alt=""
+      src={require("../images/thoughts.svg")}
+    />
+    <img
+      className="Shape"
+      id="ActionsShape"
+      alt=""
+      src={require("../images/actions.svg")}
+    />
+    <img
+      className="Shape"
+      id="FeelingsShape"
+      alt=""
+      src={require("../images/feelings.svg")}
+    />
+    <img
+      className="Shape"
+      id="NeedsShape"
+      alt=""
+      src={require("../images/needs.svg")}
+    />
+    <img
+      className="Shape"
+      id="TopicsShape"
+      alt=""
+      src={require("../images/topics.svg")}
+    />
+  </>
+);
 
 export default ShapesRim;
