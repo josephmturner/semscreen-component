@@ -1,6 +1,7 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import update from "immutability-helper";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   allPointShapes,
@@ -9,7 +10,6 @@ import {
   PointsI,
   PointShape,
 } from "../dataModels";
-import { messages } from "./initialState";
 import {
   _PointCreateParams,
   PointUpdateParams,
@@ -27,11 +27,25 @@ export interface MessageState {
   author: AuthorI;
   points: PointsI;
   focus?: { pointId: string; shape: PointShape };
-  main: string;
+  main?: string;
   createdAt: Date;
 }
 
-export const initialMessageState: MessageState = messages[0];
+export const initialMessageState: MessageState = 
+{
+    messageId: uuidv4(),
+    author: { name: "anonymous", color: "#7d3989" },
+    points: {
+      facts: [],
+      thoughts: [],
+      feelings: [],
+      needs: [],
+      topics: [],
+      actions: [],
+      people: [],
+    },
+    createdAt: new Date(),
+  }
 
 export const messageReducer = (
   state = initialMessageState,

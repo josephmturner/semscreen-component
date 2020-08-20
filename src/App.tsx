@@ -18,12 +18,13 @@
 */
 import React from "react";
 import SemanticScreen from "./components/SemanticScreen";
+import { messages } from "./reducers/initialState";
 
 const App = () => {
   const showShapes = true;
   const readOnly = false;
 
-  return <SemanticScreen showShapes={showShapes} readOnly={readOnly} />;
+  return <SemanticScreen message={messages[0]} showShapes={showShapes} readOnly={readOnly} />;
 };
 
 export default App;

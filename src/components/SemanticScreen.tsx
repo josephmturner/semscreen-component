@@ -18,13 +18,14 @@
 */
 import React from "react";
 import { Provider } from "react-redux";
-import { store } from "../reducers/store";
+import { createStoreWithMessage } from "../reducers/store";
+import { MessageState } from "../reducers/message";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
-const SemanticScreen = (props: { showShapes: boolean; readOnly: boolean }) => {
+const SemanticScreen = (props: { message?: MessageState; showShapes: boolean; readOnly: boolean }) => {
   return (
-    <Provider store={store}>
+    <Provider store={createStoreWithMessage(props.message)}>
       <SemanticScreenLogic
         showShapes={props.showShapes}
         readOnly={props.readOnly}
