@@ -26,10 +26,11 @@ export interface AppState {
   expandedRegion: ExpandedRegionState;
 }
 
+export function createStoreWithMessage(message?: MessageState) {
 const initialAppState: AppState = {
   editingPoint: initialEditingPointState,
   cursorPosition: initialCursorPositionState,
-  message: initialMessageState,
+  message: message ?? initialMessageState,
   expandedRegion: initialExpandedRegionState,
 };
 
@@ -42,5 +43,6 @@ const appReducer = (state = initialAppState, action: Action): AppState => {
   };
   return newState;
 };
+ return createStore(appReducer, composeWithDevTools());
+}
 
-export const store = createStore(appReducer, composeWithDevTools());
