@@ -31,21 +31,20 @@ export interface MessageState {
   createdAt: Date;
 }
 
-export const initialMessageState: MessageState = 
-{
-    messageId: uuidv4(),
-    author: { name: "anonymous", color: "#7d3989" },
-    points: {
-      facts: [],
-      thoughts: [],
-      feelings: [],
-      needs: [],
-      topics: [],
-      actions: [],
-      people: [],
-    },
-    createdAt: new Date(),
-  }
+export const initialMessageState: MessageState = {
+  messageId: uuidv4(),
+  author: { name: "anonymous", color: "#7d3989" },
+  points: {
+    facts: [],
+    thoughts: [],
+    feelings: [],
+    needs: [],
+    topics: [],
+    actions: [],
+    people: [],
+  },
+  createdAt: new Date(),
+};
 
 export const messageReducer = (
   state = initialMessageState,

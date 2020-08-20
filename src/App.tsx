@@ -16,15 +16,29 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useState } from "react";
 import SemanticScreen from "./components/SemanticScreen";
 import { messages } from "./reducers/initialState";
+
+import { MessageState } from "./reducers/message";
 
 const App = () => {
   const showShapes = true;
   const readOnly = false;
 
-  return <SemanticScreen message={messages[0]} showShapes={showShapes} readOnly={readOnly} />;
+  const [message, setMessage] = useState<MessageState>(messages[0]);
+  const onMessageChange = (message: MessageState) => {
+    setMessage(message);
+  };
+
+  return (
+    <SemanticScreen
+      message={message}
+      showShapes={showShapes}
+      readOnly={readOnly}
+      onMessageChange={onMessageChange}
+    />
+  );
 };
 
 export default App;
