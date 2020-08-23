@@ -19,6 +19,7 @@ import {
   SetMainPointParams,
   CombinePointsParams,
   SplitIntoTwoPointsParams,
+  SetMessageParams,
 } from "../actions/messageActions";
 
 export interface MessageState {
@@ -53,6 +54,9 @@ export const messageReducer = (
 ): MessageState => {
   let newState = state;
   switch (action.type) {
+    case Actions.setMessage:
+      newState = setMessage(state, action as Action<SetMessageParams>);
+      break;
     case Actions.pointCreate:
       newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
@@ -92,6 +96,13 @@ export const messageReducer = (
   }
   return newState;
 };
+
+function setMessage(
+  state: MessageState,
+  action: Action<SetMessageParams>
+): MessageState {
+  return action.params.message;
+}
 
 function handlePointCreate(
   state: MessageState,
