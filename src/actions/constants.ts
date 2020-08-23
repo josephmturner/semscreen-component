@@ -7,6 +7,7 @@ export const Actions = {
   setCursorPosition: "setCursorPosition",
   setEditingPoint: "setEditingPoint",
 
+  setMessage: "setMessage",
   pointCreate: "pointCreate",
   pointUpdate: "pointUpdate",
   pointMove: "pointMove",

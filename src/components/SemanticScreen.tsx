@@ -16,10 +16,11 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { createStoreWithMessage } from "../reducers/store";
 import { MessageState } from "../reducers/message";
+import { setMessage } from "../actions/messageActions";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
@@ -29,25 +30,26 @@ const SemanticScreen = (props: {
   showShapes?: boolean;
   readOnly?: boolean;
 }) => {
-  const { onMessageChange } = props;
-  const [prevMessage, setPrevMessage] = useState<MessageState>();
-
-  const store = createStoreWithMessage(props.message);
+  const { message, onMessageChange } = props;
+  const store = useRef(createStoreWithMessage(props.message));
 
   useEffect(() => {
-    const handleMessageChange = store.subscribe(() => {
-      const state = store.getState();
+    if (message !== store.current.getState().message && message) {
+      store.current.dispatch(setMessage({ message: message }));
+    }
+  }, [message]);
 
-      if (state.message !== prevMessage && onMessageChange) {
-        onMessageChange(state.message);
-        setPrevMessage(state.message);
+  useEffect(() => {
+    const unsubscribe = store.current.subscribe(() => {
+      if (store.current.getState().message !== message && onMessageChange) {
+        onMessageChange(store.current.getState().message);
       }
     });
-    handleMessageChange();
-  }, [onMessageChange, store, prevMessage]);
+    return () => unsubscribe();
+  }, [onMessageChange, message]);
 
   return (
-    <Provider store={store}>
+    <Provider store={store.current}>
       <SemanticScreenLogic
         showShapes={props.showShapes || true}
         readOnly={props.readOnly || false}
