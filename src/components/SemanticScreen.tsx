@@ -16,18 +16,43 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
-import { store } from "../reducers/store";
+import { createStoreWithMessage } from "../reducers/store";
+import { MessageState } from "../reducers/message";
+import { setMessage } from "../actions/messageActions";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
-const SemanticScreen = (props: { showShapes: boolean; readOnly: boolean }) => {
+const SemanticScreen = (props: {
+  message?: MessageState;
+  onMessageChange?: (message: MessageState) => void;
+  showShapes?: boolean;
+  readOnly?: boolean;
+}) => {
+  const { message, onMessageChange } = props;
+  const store = useRef(createStoreWithMessage(props.message));
+
+  useEffect(() => {
+    if (message !== store.current.getState().message && message) {
+      store.current.dispatch(setMessage({ message: message }));
+    }
+  }, [message]);
+
+  useEffect(() => {
+    const unsubscribe = store.current.subscribe(() => {
+      if (store.current.getState().message !== message && onMessageChange) {
+        onMessageChange(store.current.getState().message);
+      }
+    });
+    return () => unsubscribe();
+  }, [onMessageChange, message]);
+
   return (
-    <Provider store={store}>
+    <Provider store={store.current}>
       <SemanticScreenLogic
-        showShapes={props.showShapes}
-        readOnly={props.readOnly}
+        showShapes={props.showShapes || true}
+        readOnly={props.readOnly || false}
       />
     </Provider>
   );

@@ -1,6 +1,7 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import update from "immutability-helper";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   allPointShapes,
@@ -9,7 +10,6 @@ import {
   PointsI,
   PointShape,
 } from "../dataModels";
-import { messages } from "./initialState";
 import {
   _PointCreateParams,
   PointUpdateParams,
@@ -19,19 +19,33 @@ import {
   SetMainPointParams,
   CombinePointsParams,
   SplitIntoTwoPointsParams,
+  SetMessageParams,
 } from "../actions/messageActions";
 
 export interface MessageState {
   messageId: string;
-  revisionOf: string | null;
+  revisionOf?: string;
   author: AuthorI;
   points: PointsI;
-  focus: { pointId: string; shape: PointShape } | undefined;
-  main: string;
+  focus?: { pointId: string; shape: PointShape };
+  main?: string;
   createdAt: Date;
 }
 
-export const initialMessageState: MessageState = messages[0];
+export const initialMessageState: MessageState = {
+  messageId: uuidv4(),
+  author: { name: "anonymous", color: "#7d3989" },
+  points: {
+    facts: [],
+    thoughts: [],
+    feelings: [],
+    needs: [],
+    topics: [],
+    actions: [],
+    people: [],
+  },
+  createdAt: new Date(),
+};
 
 export const messageReducer = (
   state = initialMessageState,
@@ -40,6 +54,9 @@ export const messageReducer = (
 ): MessageState => {
   let newState = state;
   switch (action.type) {
+    case Actions.setMessage:
+      newState = setMessage(state, action as Action<SetMessageParams>);
+      break;
     case Actions.pointCreate:
       newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
@@ -79,6 +96,13 @@ export const messageReducer = (
   }
   return newState;
 };
+
+function setMessage(
+  state: MessageState,
+  action: Action<SetMessageParams>
+): MessageState {
+  return action.params.message;
+}
 
 function handlePointCreate(
   state: MessageState,

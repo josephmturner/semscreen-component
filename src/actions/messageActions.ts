@@ -1,6 +1,20 @@
 import { Action, Actions } from "./constants";
 import { PointI, PointShape, PointNoIdI } from "../dataModels";
+import { MessageState } from "../reducers/message";
 import { v4 as uuidv4 } from "uuid";
+
+export interface SetMessageParams {
+  message: MessageState;
+}
+
+export const setMessage = (
+  params: SetMessageParams
+): Action<SetMessageParams> => {
+  return {
+    type: Actions.setMessage,
+    params: params,
+  };
+};
 
 export interface PointCreateParams {
   point: PointNoIdI;

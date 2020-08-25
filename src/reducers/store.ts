@@ -26,21 +26,30 @@ export interface AppState {
   expandedRegion: ExpandedRegionState;
 }
 
-const initialAppState: AppState = {
-  editingPoint: initialEditingPointState,
-  cursorPosition: initialCursorPositionState,
-  message: initialMessageState,
-  expandedRegion: initialExpandedRegionState,
-};
-
-const appReducer = (state = initialAppState, action: Action): AppState => {
-  let newState: AppState = {
-    editingPoint: editingPointReducer(state.editingPoint, action, state),
-    cursorPosition: cursorPositionReducer(state.cursorPosition, action, state),
-    message: messageReducer(state.message, action, state),
-    expandedRegion: expandedRegionReducer(state.expandedRegion, action, state),
+export function createStoreWithMessage(message?: MessageState) {
+  const initialAppState: AppState = {
+    editingPoint: initialEditingPointState,
+    cursorPosition: initialCursorPositionState,
+    message: message ?? initialMessageState,
+    expandedRegion: initialExpandedRegionState,
   };
-  return newState;
-};
 
-export const store = createStore(appReducer, composeWithDevTools());
+  const appReducer = (state = initialAppState, action: Action): AppState => {
+    let newState: AppState = {
+      editingPoint: editingPointReducer(state.editingPoint, action, state),
+      cursorPosition: cursorPositionReducer(
+        state.cursorPosition,
+        action,
+        state
+      ),
+      message: messageReducer(state.message, action, state),
+      expandedRegion: expandedRegionReducer(
+        state.expandedRegion,
+        action,
+        state
+      ),
+    };
+    return newState;
+  };
+  return createStore(appReducer, composeWithDevTools());
+}

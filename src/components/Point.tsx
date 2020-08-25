@@ -91,7 +91,7 @@ const Point = (props: {
       if (isExpanded !== "expanded") {
         props.setExpandedRegion(shape);
       }
-      //TODO: only call the following logic after the animation transition ends.
+      //TODO: only call the following logic after the animation transition ends. 150ms timeout?
       const dragIndex = item.index;
       const hoverIndex = index;
 
