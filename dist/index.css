@@ -1,0 +1,10 @@
+body {
+  height: 100vh;
+  margin: 0;
+  font-family: small;
+  font-family: arial;
+}
+
+#root {
+  height: 100%;
+}
