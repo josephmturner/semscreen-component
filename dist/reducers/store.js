@@ -7,7 +7,7 @@ exports.createStoreWithMessage = createStoreWithMessage;
 
 var _redux = require("redux");
 
-var _reduxDevtoolsExtension = require("redux-devtools-extension");
+var _developmentOnly = require("redux-devtools-extension/developmentOnly");
 
 var _editingPoint = require("./editingPoint");
 
@@ -37,5 +37,5 @@ function createStoreWithMessage(message) {
     return newState;
   };
 
-  return (0, _redux.createStore)(appReducer, (0, _reduxDevtoolsExtension.composeWithDevTools)());
+  return (0, _redux.createStore)(appReducer, (0, _developmentOnly.composeWithDevTools)());
 }

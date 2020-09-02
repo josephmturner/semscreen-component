@@ -24,6 +24,7 @@
     "react-scripts": "3.4.3",
     "react-textarea-autosize": "^8.2.0",
     "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.8",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
     "uuid": "^8.3.0"
@@ -55,7 +56,6 @@
     "@babel/cli": "^7.10.5",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
-    "@babel/preset-typescript": "^7.10.4",
-    "redux-devtools-extension": "^2.13.8"
+    "@babel/preset-typescript": "^7.10.4"
   }
 }
