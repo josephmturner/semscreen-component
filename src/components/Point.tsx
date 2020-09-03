@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AuthorI, PointI, PointShape } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Banner from "./Banner";
+import { v4 as uuidv4 } from "uuid";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -32,6 +33,8 @@ import { setEditingPoint } from "../actions/editingPointActions";
 import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
 import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
+  splitIntoTwoPoints,
+  SplitIntoTwoPointsParams,
   pointMove,
   PointMoveParams,
   pointUpdate,
@@ -49,7 +52,7 @@ const Point = (props: {
   isMainPoint: boolean;
   index: number;
   isEditing: boolean;
-  createPointBelow: (topContent: string, bottomContent: string) => void;
+  splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (
     aboveOrBelow: "above" | "below",
     point: PointI,
@@ -73,7 +76,7 @@ const Point = (props: {
     isMainPoint,
     index,
     isEditing,
-    createPointBelow,
+    splitIntoTwoPoints,
     combinePoints,
     cursorPositionIndex,
     setCursorPosition,
@@ -81,6 +84,25 @@ const Point = (props: {
     setEditingPoint,
     setCursorPositionRedux,
   } = props;
+
+  const createPointBelow = (topContent: string, bottomContent: string) => {
+    const newPointId = uuidv4();
+    splitIntoTwoPoints({
+      topPoint: {
+        content: topContent,
+        pointId: point.pointId,
+        pointDate: new Date(),
+      },
+      bottomPoint: {
+        content: bottomContent,
+        pointId: newPointId,
+        pointDate: new Date(),
+      },
+      shape: shape,
+      index: index,
+      newPointId: newPointId,
+    });
+  };
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -347,6 +369,7 @@ const mapStateToProps = () => {
 };
 
 const mapActionsToProps = {
+  splitIntoTwoPoints,
   setEditingPoint,
   setCursorPositionRedux: setCursorPosition,
   pointMove,

@@ -18,7 +18,6 @@
 
 import React from "react";
 import Point from "./Point";
-import { v4 as uuidv4 } from "uuid";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
 import { AuthorI, PointI, PointShape } from "../dataModels";
@@ -31,8 +30,6 @@ import { AppState } from "../reducers/store";
 import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
 import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
-  splitIntoTwoPoints,
-  SplitIntoTwoPointsParams,
   pointMove,
   PointMoveParams,
   combinePoints,
@@ -53,7 +50,6 @@ const Region = (props: {
   onRegionClick: any;
   editingPointId: string;
   setCursorPosition: (details: CursorPositionDetails) => void;
-  splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   pointMove: (params: PointMoveParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   setExpandedRegion: (region: string) => void;
@@ -125,28 +121,6 @@ const Region = (props: {
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             isEditing={editingPointId === p.pointId}
-            createPointBelow={(topContent, bottomContent) => {
-              const newPointId = uuidv4();
-              props.splitIntoTwoPoints({
-                topPoint: {
-                  content: topContent,
-
-                  // TODO: These were missing before
-                  pointId: p.pointId,
-                  pointDate: new Date(),
-                },
-                bottomPoint: {
-                  content: bottomContent,
-
-                  // TODO: These were missing before
-                  pointId: newPointId,
-                  pointDate: new Date(),
-                },
-                shape: region,
-                index: points.findIndex((p) => p.pointId === editingPointId),
-                newPointId: newPointId,
-              });
-            }}
             combinePoints={(
               aboveOrBelow: "above" | "below",
               point: PointI,
@@ -223,7 +197,6 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = {
   setCursorPosition,
-  splitIntoTwoPoints,
   pointMove,
   combinePoints,
   setExpandedRegion,

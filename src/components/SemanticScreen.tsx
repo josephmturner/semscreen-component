@@ -50,6 +50,7 @@ const SemanticScreen = (props: {
 
   return (
     <Provider store={store.current}>
+
       <SemanticScreenLogic
         showShapes={props.showShapes || true}
         readOnly={props.readOnly || false}
