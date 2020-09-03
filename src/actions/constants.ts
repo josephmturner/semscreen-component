@@ -5,6 +5,8 @@ export interface Action<Params = {}> {
 
 export const Actions = {
   setCursorPosition: "setCursorPosition",
+  clearCursorPosition: "clearCursorPosition",
+
   setEditingPoint: "setEditingPoint",
 
   setMessage: "setMessage",

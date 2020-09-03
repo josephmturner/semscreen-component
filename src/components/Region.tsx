@@ -28,7 +28,6 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
-import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
   pointMove,
   PointMoveParams,
@@ -47,7 +46,6 @@ const Region = (props: {
   createEmptyPoint: any;
   onRegionClick: any;
   editingPointId: string;
-  setCursorPosition: (details: CursorPositionDetails) => void;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
@@ -118,25 +116,6 @@ const Region = (props: {
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             isEditing={editingPointId === p.pointId}
-            setCursorPosition={(index: number, moveTo: string) => {
-              if (moveTo === "beginningOfPriorPoint") {
-                props.setCursorPosition({
-                  pointId: points[index - 1].pointId,
-                  index: 0,
-                });
-              } else if (moveTo === "endOfPriorPoint") {
-                props.setCursorPosition({
-                  pointId: points[index - 1].pointId,
-                  index: points[index - 1].content.length,
-                });
-              } else if (moveTo === "beginningOfNextPoint") {
-                !(index === points.length - 1) &&
-                  props.setCursorPosition({
-                    pointId: points[index + 1].pointId,
-                    index: 0,
-                  });
-              }
-            }}
             cursorPositionIndex={
               cursorPosition && cursorPosition.pointId === p.pointId
                 ? cursorPosition.index
@@ -176,7 +155,6 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = {
-  setCursorPosition,
   pointMove,
   setExpandedRegion,
 };

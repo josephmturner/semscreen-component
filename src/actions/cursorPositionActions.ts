@@ -1,17 +1,26 @@
 import { Action, Actions } from "./constants";
-import { Details } from "../reducers/cursorPosition";
+import { PointShape } from "../dataModels";
+
+export type MoveToType = "beginningOfPriorPoint" | "endOfPriorPoint" | "beginningOfNextPoint";
 
 export interface CursorPositionParams {
-  details: Details | null;
+  moveTo: MoveToType;
+  index: number;
+  shape: PointShape;
 }
 
 export const setCursorPosition = (
-  details: Details | null
+  params: CursorPositionParams
 ): Action<CursorPositionParams> => {
   return {
     type: Actions.setCursorPosition,
-    params: {
-      details,
-    },
+    params,
+  };
+};
+
+export const clearCursorPosition = (): Action => {
+  return {
+    type: Actions.clearCursorPosition,
+    params: {},
   };
 };

@@ -30,8 +30,7 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
-import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
-import { setCursorPosition } from "../actions/cursorPositionActions";
+import { setCursorPosition, clearCursorPosition, CursorPositionParams } from "../actions/cursorPositionActions";
 import {
   splitIntoTwoPoints,
   SplitIntoTwoPointsParams,
@@ -57,10 +56,10 @@ const Point = (props: {
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
-  setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
   setEditingPoint: (pointId: string) => void;
-  setCursorPositionRedux: (details: CursorPositionDetails | null) => void;
+  setCursorPosition: (params: CursorPositionParams) => void;
+  clearCursorPosition: () => void;
   pointMove: (params: PointMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
@@ -76,10 +75,10 @@ const Point = (props: {
     splitIntoTwoPoints,
     combinePoints,
     cursorPositionIndex,
-    setCursorPosition,
     onClick,
     setEditingPoint,
-    setCursorPositionRedux,
+    setCursorPosition,
+    clearCursorPosition,
   } = props;
 
   const createPointBelow = (topContent: string, bottomContent: string) => {
@@ -167,9 +166,9 @@ const Point = (props: {
         cursorPositionIndex as number,
         cursorPositionIndex as number
       );
-      setCursorPositionRedux(null);
+      clearCursorPosition();
     }
-  }, [cursorPositionIndex, setCursorPositionRedux]);
+  }, [cursorPositionIndex, clearCursorPosition]);
 
   const [arrowPressed, setArrowPressed] = useState<
     "ArrowUp" | "ArrowDown" | undefined
@@ -178,14 +177,14 @@ const Point = (props: {
     if (arrowPressed === "ArrowUp" && ref.current) {
       ref.current &&
         ref.current.selectionStart === 0 &&
-        setCursorPosition(index, "beginningOfPriorPoint");
+        setCursorPosition({ moveTo: "beginningOfPriorPoint", index, shape });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
       ref.current &&
         ref.current.selectionStart === point.content.length &&
-        setCursorPosition(index, "beginningOfNextPoint");
+        setCursorPosition({ moveTo: "beginningOfNextPoint", index, shape });
     }
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition]);
+  }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
 
   const handleChange = (e: any) => {
     props.pointUpdate({
@@ -284,7 +283,7 @@ const Point = (props: {
               index !== 0
             ) {
               e.preventDefault();
-              setCursorPosition(index, "endOfPriorPoint");
+              setCursorPosition({ moveTo: "endOfPriorPoint", index, shape });
             } else if (
               e.key === "ArrowRight" &&
               ref.current &&
@@ -292,7 +291,7 @@ const Point = (props: {
               ref.current.selectionStart === ref.current.selectionEnd
             ) {
               e.preventDefault();
-              setCursorPosition(index, "beginningOfNextPoint");
+              setCursorPosition({ moveTo: "beginningOfNextPoint", index, shape });
             } else if (e.key === "ArrowUp" && index !== 0) {
               setArrowPressed("ArrowUp");
             } else if (e.key === "ArrowDown") {
@@ -369,7 +368,8 @@ const mapActionsToProps = {
   splitIntoTwoPoints,
   combinePoints,
   setEditingPoint,
-  setCursorPositionRedux: setCursorPosition,
+  setCursorPosition,
+  clearCursorPosition,
   pointMove,
   pointUpdate,
   setMainPoint,
