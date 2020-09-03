@@ -32,8 +32,6 @@ import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
   pointMove,
   PointMoveParams,
-  combinePoints,
-  CombinePointsParams,
 } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
 
@@ -51,7 +49,6 @@ const Region = (props: {
   editingPointId: string;
   setCursorPosition: (details: CursorPositionDetails) => void;
   pointMove: (params: PointMoveParams) => void;
-  combinePoints: (params: CombinePointsParams) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
   const {
@@ -121,23 +118,6 @@ const Region = (props: {
             isMainPoint={mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
             isEditing={editingPointId === p.pointId}
-            combinePoints={(
-              aboveOrBelow: "above" | "below",
-              point: PointI,
-              shape: PointShape,
-              index: number
-            ) => {
-              if (aboveOrBelow === "below" && index === points.length - 1) {
-                return;
-              } else {
-                props.combinePoints({
-                  aboveOrBelow: aboveOrBelow,
-                  point: point,
-                  shape: shape,
-                  index: index,
-                });
-              }
-            }}
             setCursorPosition={(index: number, moveTo: string) => {
               if (moveTo === "beginningOfPriorPoint") {
                 props.setCursorPosition({
@@ -198,7 +178,6 @@ const mapStateToProps = (state: AppState) => ({
 const mapDispatchToProps = {
   setCursorPosition,
   pointMove,
-  combinePoints,
   setExpandedRegion,
 };
 

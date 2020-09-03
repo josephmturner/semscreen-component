@@ -35,6 +35,8 @@ import { setCursorPosition } from "../actions/cursorPositionActions";
 import {
   splitIntoTwoPoints,
   SplitIntoTwoPointsParams,
+  combinePoints,
+  CombinePointsParams,
   pointMove,
   PointMoveParams,
   pointUpdate,
@@ -53,12 +55,7 @@ const Point = (props: {
   index: number;
   isEditing: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
-  combinePoints: (
-    aboveOrBelow: "above" | "below",
-    point: PointI,
-    shape: PointShape,
-    index: number
-  ) => void;
+  combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
   setCursorPosition: (index: number, moveTo: string) => void;
   onClick: any;
@@ -266,10 +263,10 @@ const Point = (props: {
             ) {
               if (index !== 0) {
                 e.preventDefault();
-                combinePoints("above", point, shape, index);
+                combinePoints({ aboveOrBelow: "above", point, shape, index });
               } else if (index === 0 && !point.content) {
                 e.preventDefault();
-                combinePoints("below", point, shape, index);
+                combinePoints({ aboveOrBelow: "below", point, shape, index });
               }
             } else if (
               e.key === "Delete" &&
@@ -278,7 +275,7 @@ const Point = (props: {
               ref.current.selectionStart === ref.current.selectionEnd
             ) {
               e.preventDefault();
-              combinePoints("below", point, shape, index);
+              combinePoints({ aboveOrBelow: "below", point, shape, index });
             } else if (
               e.key === "ArrowLeft" &&
               ref.current &&
@@ -370,6 +367,7 @@ const mapStateToProps = () => {
 
 const mapActionsToProps = {
   splitIntoTwoPoints,
+  combinePoints,
   setEditingPoint,
   setCursorPositionRedux: setCursorPosition,
   pointMove,

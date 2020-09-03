@@ -246,6 +246,10 @@ function handleCombinePoints(
   state: MessageState,
   action: Action<CombinePointsParams>
 ): MessageState {
+  if (action.params.aboveOrBelow === "below" && action.params.index === state.points[action.params.shape].length - 1) {
+    return state;
+  }
+
   const prevPoint = state.points[action.params.shape][action.params.index - 1];
   const currentPoint = state.points[action.params.shape][action.params.index];
   const nextPoint = state.points[action.params.shape][action.params.index + 1];
