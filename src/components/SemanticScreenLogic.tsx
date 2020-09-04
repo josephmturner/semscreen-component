@@ -87,16 +87,12 @@ const SemanticScreen = (props: {
   const handleRegionClick = (region: RegionI, expand: boolean): void => {
     if (!expand && region === expandedRegion) {
       props.setExpandedRegion("");
-      if (!props.readOnly) {
-        deleteEmptyPoints();
-      }
+      !props.readOnly && deleteEmptyPoints();
     } else if (expand && region !== expandedRegion) {
       props.setExpandedRegion(region);
-      if (!props.readOnly) {
-        deleteEmptyPoints();
-      }
+      !props.readOnly && deleteEmptyPoints();
     }
-  }
+  };
 
   const regions: Array<RegionI> = [
     "facts",

@@ -99,7 +99,10 @@ function handleSetCursorPosition(
   return newState;
 }
 
-function handleClearCursorPosition(state: CursorPositionState, action: Action): CursorPositionState {
+function handleClearCursorPosition(
+  state: CursorPositionState,
+  action: Action
+): CursorPositionState {
   return {
     details: null,
   };
@@ -139,6 +142,10 @@ function handleSplitIntoTwoPoints(
   appState: AppState
 ): CursorPositionState {
   return {
-    details: { pointId: action.params.newPointId, index: 0, shape: action.params.shape },
+    details: {
+      pointId: action.params.newPointId,
+      index: 0,
+      shape: action.params.shape,
+    },
   };
 }

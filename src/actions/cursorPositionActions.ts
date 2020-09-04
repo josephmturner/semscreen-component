@@ -1,7 +1,10 @@
 import { Action, Actions } from "./constants";
 import { PointShape } from "../dataModels";
 
-export type MoveToType = "beginningOfPriorPoint" | "endOfPriorPoint" | "beginningOfNextPoint";
+export type MoveToType =
+  | "beginningOfPriorPoint"
+  | "endOfPriorPoint"
+  | "beginningOfNextPoint";
 
 export interface CursorPositionParams {
   moveTo: MoveToType;
