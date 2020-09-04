@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createStoreWithMessage = createStoreWithMessage;
+exports.createStore = createAppStore;
 
 var _redux = require("redux");
 
@@ -17,11 +17,11 @@ var _message = require("./message");
 
 var _expandedRegion = require("./expandedRegion");
 
-function createStoreWithMessage(message) {
+function createAppStore() {
   var initialAppState = {
     editingPoint: _editingPoint.initialEditingPointState,
     cursorPosition: _cursorPosition.initialCursorPositionState,
-    message: message !== null && message !== void 0 ? message : _message.initialMessageState,
+    message: _message.initialMessageState,
     expandedRegion: _expandedRegion.initialExpandedRegionState
   };
 

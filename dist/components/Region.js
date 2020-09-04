@@ -9,8 +9,6 @@ var _react = _interopRequireDefault(require("react"));
 
 var _Point = _interopRequireDefault(require("./Point"));
 
-var _uuid = require("uuid");
-
 var _Placeholder = _interopRequireDefault(require("./Placeholder"));
 
 var _StyledRegion = _interopRequireDefault(require("./StyledRegion"));
@@ -22,8 +20,6 @@ var _ReactDnd = require("../constants/React-Dnd");
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactRedux = require("react-redux");
-
-var _cursorPositionActions = require("../actions/cursorPositionActions");
 
 var _messageActions = require("../actions/messageActions");
 
@@ -102,11 +98,28 @@ var Region = function Region(props) {
       _useDrop2 = _slicedToArray(_useDrop, 2),
       drop = _useDrop2[1];
 
+  var onClickRemainingSpace = function onClickRemainingSpace() {
+    if (isExpanded === "expanded") {
+      onRegionClick(region, false);
+    } else {
+      if (!props.readOnly) {
+        props.pointCreate({
+          point: {
+            author: author,
+            content: ""
+          },
+          shape: region,
+          index: points.length
+        });
+      }
+    }
+  };
+
   return /*#__PURE__*/_react.default.createElement(_StyledRegion.default, {
     isExpanded: isExpanded,
     borderColor: author.color,
     onClick: function onClick() {
-      return onRegionClick(region, false);
+      return onRegionClick(region, true);
     }
   }, /*#__PURE__*/_react.default.createElement("div", null, renderPoints.map(function (p) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
@@ -120,62 +133,7 @@ var Region = function Region(props) {
         return point.pointId === p.pointId;
       }),
       isEditing: editingPointId === p.pointId,
-      createPointBelow: function createPointBelow(topContent, bottomContent) {
-        var newPointId = (0, _uuid.v4)();
-        props.splitIntoTwoPoints({
-          topPoint: {
-            content: topContent,
-            // TODO: These were missing before
-            pointId: p.pointId,
-            pointDate: new Date()
-          },
-          bottomPoint: {
-            content: bottomContent,
-            // TODO: These were missing before
-            pointId: newPointId,
-            pointDate: new Date()
-          },
-          shape: region,
-          index: points.findIndex(function (p) {
-            return p.pointId === editingPointId;
-          }),
-          newPointId: newPointId
-        });
-      },
-      combinePoints: function combinePoints(aboveOrBelow, point, shape, index) {
-        if (aboveOrBelow === "below" && index === points.length - 1) {
-          return;
-        } else {
-          props.combinePoints({
-            aboveOrBelow: aboveOrBelow,
-            point: point,
-            shape: shape,
-            index: index
-          });
-        }
-      },
-      setCursorPosition: function setCursorPosition(index, moveTo) {
-        if (moveTo === "beginningOfPriorPoint") {
-          props.setCursorPosition({
-            pointId: points[index - 1].pointId,
-            index: 0
-          });
-        } else if (moveTo === "endOfPriorPoint") {
-          props.setCursorPosition({
-            pointId: points[index - 1].pointId,
-            index: points[index - 1].content.length
-          });
-        } else if (moveTo === "beginningOfNextPoint") {
-          !(index === points.length - 1) && props.setCursorPosition({
-            pointId: points[index + 1].pointId,
-            index: 0
-          });
-        }
-      },
-      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined,
-      onClick: function onClick() {
-        return onRegionClick(region, true);
-      }
+      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined
     });
   }), isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
     text: placeholderText,
@@ -186,7 +144,8 @@ var Region = function Region(props) {
     }
   }), /*#__PURE__*/_react.default.createElement(DropTargetDiv, {
     ref: drop,
-    isExpanded: isExpanded
+    isExpanded: isExpanded,
+    onClick: onClickRemainingSpace
   })));
 };
 
@@ -202,10 +161,8 @@ var mapStateToProps = function mapStateToProps(state) {
 };
 
 var mapDispatchToProps = {
-  setCursorPosition: _cursorPositionActions.setCursorPosition,
-  splitIntoTwoPoints: _messageActions.splitIntoTwoPoints,
+  pointCreate: _messageActions.pointCreate,
   pointMove: _messageActions.pointMove,
-  combinePoints: _messageActions.combinePoints,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion
 };
 

@@ -1,5 +1,6 @@
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
+import { PointShape } from "../dataModels";
 import {
   CombinePointsParams,
   SplitIntoTwoPointsParams,
@@ -10,6 +11,7 @@ import { AppState } from "./store";
 export interface Details {
   pointId: string;
   index: number;
+  shape: PointShape;
 }
 
 export interface CursorPositionState {
@@ -30,8 +32,12 @@ export const cursorPositionReducer = (
     case Actions.setCursorPosition:
       newState = handleSetCursorPosition(
         state,
-        action as Action<CursorPositionParams>
+        action as Action<CursorPositionParams>,
+        appState
       );
+      break;
+    case Actions.clearCursorPosition:
+      newState = handleClearCursorPosition(state, action);
       break;
     case Actions.combinePoints:
       newState = handleCombinePoints(
@@ -53,10 +59,49 @@ export const cursorPositionReducer = (
 
 function handleSetCursorPosition(
   state: CursorPositionState,
-  action: Action<CursorPositionParams>
+  action: Action<CursorPositionParams>,
+  appState: AppState
 ): CursorPositionState {
+  let newState = state;
+
+  const { shape, index } = action.params;
+  const points = appState.message.points[shape];
+
+  if (action.params.moveTo === "beginningOfPriorPoint") {
+    newState = {
+      details: {
+        pointId: points[index - 1].pointId,
+        index: 0,
+        shape,
+      },
+    };
+  } else if (action.params.moveTo === "endOfPriorPoint") {
+    newState = {
+      details: {
+        pointId: points[index - 1].pointId,
+        index: points[index - 1].content.length,
+        shape,
+      },
+    };
+  } else if (action.params.moveTo === "beginningOfNextPoint") {
+    if (index !== points.length - 1) {
+      newState = {
+        details: {
+          pointId: points[index + 1].pointId,
+          index: 0,
+          shape,
+        },
+      };
+    }
+  } else {
+    throw new Error(`Unknown moveTo param: ${action.params.moveTo}`);
+  }
+  return newState;
+}
+
+function handleClearCursorPosition(state: CursorPositionState, action: Action): CursorPositionState {
   return {
-    details: action.params.details,
+    details: null,
   };
 }
 
@@ -75,10 +120,12 @@ function handleCombinePoints(
       ? {
           pointId: prevPoint.pointId,
           index: prevPoint.content.length,
+          shape: action.params.shape,
         }
       : {
           pointId: currentPoint.pointId,
           index: currentPoint.content.length,
+          shape: action.params.shape,
         };
 
   return {
@@ -92,6 +139,6 @@ function handleSplitIntoTwoPoints(
   appState: AppState
 ): CursorPositionState {
   return {
-    details: { pointId: action.params.newPointId, index: 0 },
+    details: { pointId: action.params.newPointId, index: 0, shape: action.params.shape },
   };
 }

@@ -44,26 +44,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var SemanticScreen = function SemanticScreen(props) {
   var message = props.message,
       onMessageChange = props.onMessageChange;
-  var store = (0, _react.useRef)((0, _store.createStoreWithMessage)(props.message));
+  var store = (0, _react.useMemo)(_store.createStore, []);
   (0, _react.useEffect)(function () {
-    if (message !== store.current.getState().message && message) {
-      store.current.dispatch((0, _messageActions.setMessage)({
+    if (message && message !== store.getState().message) {
+      store.dispatch((0, _messageActions.setMessage)({
         message: message
       }));
     }
-  }, [message]);
+  }, [store, message]);
   (0, _react.useEffect)(function () {
-    var unsubscribe = store.current.subscribe(function () {
-      if (store.current.getState().message !== message && onMessageChange) {
-        onMessageChange(store.current.getState().message);
+    var unsubscribe = store.subscribe(function () {
+      if (onMessageChange && store.getState().message !== message) {
+        onMessageChange(store.getState().message);
       }
     });
     return function () {
       return unsubscribe();
     };
-  }, [onMessageChange, message]);
+  }, [store, onMessageChange, message]);
   return /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
-    store: store.current
+    store: store
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreenLogic.default, {
     showShapes: props.showShapes || true,
     readOnly: props.readOnly || false
