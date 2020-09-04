@@ -153,7 +153,11 @@ const Region = (props: {
             }}
           />
         )}
-        <DropTargetDiv ref={drop} isExpanded={isExpanded} onClick={onClickRemainingSpace}/>
+        <DropTargetDiv
+          ref={drop}
+          isExpanded={isExpanded}
+          onClick={onClickRemainingSpace}
+        />
       </div>
     </StyledRegion>
   );

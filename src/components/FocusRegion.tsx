@@ -72,7 +72,10 @@ const FocusRegion = (props: {
   });
 
   return (
-    <StyledFocusRegion ref={drop} onClick={() => onRegionClick(region, isExpanded !== "expanded")}>
+    <StyledFocusRegion
+      ref={drop}
+      onClick={() => onRegionClick(region, isExpanded !== "expanded")}
+    >
       <StyledDiv>
         {point && shape && typeof index === "number" && (
           <FocusPoint

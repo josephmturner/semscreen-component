@@ -30,7 +30,11 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { setEditingPoint } from "../actions/editingPointActions";
-import { setCursorPosition, clearCursorPosition, CursorPositionParams } from "../actions/cursorPositionActions";
+import {
+  setCursorPosition,
+  clearCursorPosition,
+  CursorPositionParams,
+} from "../actions/cursorPositionActions";
 import {
   splitIntoTwoPoints,
   SplitIntoTwoPointsParams,
@@ -283,7 +287,11 @@ const Point = (props: {
               ref.current.selectionStart === ref.current.selectionEnd
             ) {
               e.preventDefault();
-              setCursorPosition({ moveTo: "beginningOfNextPoint", index, shape });
+              setCursorPosition({
+                moveTo: "beginningOfNextPoint",
+                index,
+                shape,
+              });
             } else if (e.key === "ArrowUp" && index !== 0) {
               setArrowPressed("ArrowUp");
             } else if (e.key === "ArrowDown") {

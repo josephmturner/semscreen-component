@@ -24,7 +24,6 @@ import { setMessage } from "../actions/messageActions";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
-
 const SemanticScreen = (props: {
   message?: MessageState;
   onMessageChange?: (message: MessageState) => void;
@@ -52,7 +51,6 @@ const SemanticScreen = (props: {
 
   return (
     <Provider store={store}>
-
       <SemanticScreenLogic
         showShapes={props.showShapes || true}
         readOnly={props.readOnly || false}

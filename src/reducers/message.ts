@@ -246,7 +246,10 @@ function handleCombinePoints(
   state: MessageState,
   action: Action<CombinePointsParams>
 ): MessageState {
-  if (action.params.aboveOrBelow === "below" && action.params.index === state.points[action.params.shape].length - 1) {
+  if (
+    action.params.aboveOrBelow === "below" &&
+    action.params.index === state.points[action.params.shape].length - 1
+  ) {
     return state;
   }
 
