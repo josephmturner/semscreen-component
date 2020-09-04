@@ -29,6 +29,8 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
 import {
+  pointCreate,
+  PointCreateParams,
   pointMove,
   PointMoveParams,
 } from "../actions/messageActions";
@@ -43,6 +45,7 @@ const Region = (props: {
   focusPointId: string | undefined;
   mainPointId: string | undefined;
   cursorPosition: CursorPositionDetails | null;
+  pointCreate: (params: PointCreateParams) => void;
   createEmptyPoint: any;
   onRegionClick: any;
   editingPointId: string;
@@ -99,11 +102,28 @@ const Region = (props: {
     },
   });
 
+  const onClickRemainingSpace = () => {
+    if (isExpanded === "expanded") {
+      onRegionClick(region, false);
+    } else {
+      if (!props.readOnly) {
+        props.pointCreate({
+          point: {
+            author: author,
+            content: "",
+          },
+          shape: region,
+          index: points.length,
+        });
+      }
+    }
+  };
+
   return (
     <StyledRegion
       isExpanded={isExpanded}
       borderColor={author.color}
-      onClick={() => onRegionClick(region, false)}
+      onClick={() => onRegionClick(region, true)}
     >
       <div>
         {renderPoints.map((p: PointI) => (
@@ -121,7 +141,6 @@ const Region = (props: {
                 ? cursorPosition.index
                 : undefined
             }
-            onClick={() => onRegionClick(region, true)}
           />
         ))}
         {isExpanded === "expanded" && !props.readOnly && (
@@ -134,7 +153,7 @@ const Region = (props: {
             }}
           />
         )}
-        <DropTargetDiv ref={drop} isExpanded={isExpanded} />
+        <DropTargetDiv ref={drop} isExpanded={isExpanded} onClick={onClickRemainingSpace}/>
       </div>
     </StyledRegion>
   );
@@ -155,6 +174,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = {
+  pointCreate,
   pointMove,
   setExpandedRegion,
 };

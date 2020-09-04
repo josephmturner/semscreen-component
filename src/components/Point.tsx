@@ -56,7 +56,6 @@ const Point = (props: {
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
-  onClick: any;
   setEditingPoint: (pointId: string) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
@@ -75,7 +74,6 @@ const Point = (props: {
     splitIntoTwoPoints,
     combinePoints,
     cursorPositionIndex,
-    onClick,
     setEditingPoint,
     setCursorPosition,
     clearCursorPosition,
@@ -197,11 +195,6 @@ const Point = (props: {
     setEditingPoint("");
   };
 
-  const handleClick = (e: any) => {
-    e.stopPropagation();
-    onClick();
-  };
-
   const imageUrl = require(`../images/${shape}.svg`);
 
   return (
@@ -212,7 +205,6 @@ const Point = (props: {
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
       quotedAuthor={point.quotedAuthor}
-      onClick={handleClick}
     >
       <StyledImg
         ref={props.readOnly ? null : drag}

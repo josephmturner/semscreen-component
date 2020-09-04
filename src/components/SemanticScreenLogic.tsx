@@ -84,33 +84,19 @@ const SemanticScreen = (props: {
     });
   };
 
-  const handleRegionClick = (region: RegionI, childClicked: boolean): void => {
-    if (region !== expandedRegion) {
-      props.setExpandedRegion(region);
-      deleteEmptyPoints();
-      if (region === "focus" && message.focus && !props.readOnly) {
-        props.setEditingPoint(message.focus.pointId);
-      } else if (region === "focus") {
-        return;
-      } else if (region === "merits") {
-        console.log("merits clicked");
-      } else if (!childClicked && !props.readOnly) {
-        props.pointCreate({
-          point: {
-            author: author,
-            content: "",
-          },
-          shape: region,
-          index: message.points[region].length,
-        });
-      }
-    } else if (region === expandedRegion && !childClicked) {
+  const handleRegionClick = (region: RegionI, expand: boolean): void => {
+    if (!expand && region === expandedRegion) {
       props.setExpandedRegion("");
       if (!props.readOnly) {
         deleteEmptyPoints();
       }
+    } else if (expand && region !== expandedRegion) {
+      props.setExpandedRegion(region);
+      if (!props.readOnly) {
+        deleteEmptyPoints();
+      }
     }
-  };
+  }
 
   const regions: Array<RegionI> = [
     "facts",

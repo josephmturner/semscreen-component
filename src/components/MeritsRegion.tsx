@@ -56,7 +56,7 @@ const MeritsRegion = (props: {
   });
 
   return (
-    <StyledFocusRegion ref={drop} onClick={() => onRegionClick(region, false)}>
+    <StyledFocusRegion ref={drop} onClick={() => onRegionClick(region, isExpanded !== "expanded")}>
       <StyledDiv></StyledDiv>
     </StyledFocusRegion>
   );
