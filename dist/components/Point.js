@@ -13,6 +13,8 @@ var _ReactDnd = require("../constants/React-Dnd");
 
 var _Banner = _interopRequireDefault(require("./Banner"));
 
+var _uuid = require("uuid");
+
 var _reactDnd = require("react-dnd");
 
 var _useDragPoint2 = require("../hooks/useDragPoint");
@@ -94,13 +96,31 @@ var Point = function Point(props) {
       isMainPoint = props.isMainPoint,
       index = props.index,
       isEditing = props.isEditing,
-      createPointBelow = props.createPointBelow,
+      splitIntoTwoPoints = props.splitIntoTwoPoints,
       combinePoints = props.combinePoints,
       cursorPositionIndex = props.cursorPositionIndex,
-      setCursorPosition = props.setCursorPosition,
-      onClick = props.onClick,
       setEditingPoint = props.setEditingPoint,
-      setCursorPositionRedux = props.setCursorPositionRedux;
+      setCursorPosition = props.setCursorPosition,
+      clearCursorPosition = props.clearCursorPosition;
+
+  var createPointBelow = function createPointBelow(topContent, bottomContent) {
+    var newPointId = (0, _uuid.v4)();
+    splitIntoTwoPoints({
+      topPoint: {
+        content: topContent,
+        pointId: point.pointId,
+        pointDate: new Date()
+      },
+      bottomPoint: {
+        content: bottomContent,
+        pointId: newPointId,
+        pointDate: new Date()
+      },
+      shape: shape,
+      index: index,
+      newPointId: newPointId
+    });
+  };
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
@@ -166,9 +186,9 @@ var Point = function Point(props) {
     if (!isNaN(cursorPositionIndex) && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(cursorPositionIndex, cursorPositionIndex);
-      setCursorPositionRedux(null);
+      clearCursorPosition();
     }
-  }, [cursorPositionIndex, setCursorPositionRedux]);
+  }, [cursorPositionIndex, clearCursorPosition]);
 
   var _useState = (0, _react.useState)(undefined),
       _useState2 = _slicedToArray(_useState, 2),
@@ -177,13 +197,21 @@ var Point = function Point(props) {
 
   (0, _react.useEffect)(function () {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      ref.current && ref.current.selectionStart === 0 && setCursorPosition(index, "beginningOfPriorPoint");
+      ref.current && ref.current.selectionStart === 0 && setCursorPosition({
+        moveTo: "beginningOfPriorPoint",
+        index: index,
+        shape: shape
+      });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      ref.current && ref.current.selectionStart === point.content.length && setCursorPosition(index, "beginningOfNextPoint");
+      ref.current && ref.current.selectionStart === point.content.length && setCursorPosition({
+        moveTo: "beginningOfNextPoint",
+        index: index,
+        shape: shape
+      });
     }
 
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition]);
+  }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
@@ -198,11 +226,6 @@ var Point = function Point(props) {
     setEditingPoint("");
   };
 
-  var handleClick = function handleClick(e) {
-    e.stopPropagation();
-    onClick();
-  };
-
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
@@ -211,8 +234,7 @@ var Point = function Point(props) {
     isMainPoint: isMainPoint,
     isDragging: isDragging,
     isFirst: index === 0 ? true : false,
-    quotedAuthor: point.quotedAuthor,
-    onClick: handleClick
+    quotedAuthor: point.quotedAuthor
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
@@ -252,20 +274,43 @@ var Point = function Point(props) {
         } else if (e.key === "Backspace" && ref.current && ref.current.selectionStart === 0 && ref.current.selectionStart === ref.current.selectionEnd) {
           if (index !== 0) {
             e.preventDefault();
-            combinePoints("above", point, shape, index);
+            combinePoints({
+              aboveOrBelow: "above",
+              point: point,
+              shape: shape,
+              index: index
+            });
           } else if (index === 0 && !point.content) {
             e.preventDefault();
-            combinePoints("below", point, shape, index);
+            combinePoints({
+              aboveOrBelow: "below",
+              point: point,
+              shape: shape,
+              index: index
+            });
           }
         } else if (e.key === "Delete" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
-          combinePoints("below", point, shape, index);
+          combinePoints({
+            aboveOrBelow: "below",
+            point: point,
+            shape: shape,
+            index: index
+          });
         } else if (e.key === "ArrowLeft" && ref.current && ref.current.selectionStart === 0 && ref.current.selectionStart === ref.current.selectionEnd && index !== 0) {
           e.preventDefault();
-          setCursorPosition(index, "endOfPriorPoint");
+          setCursorPosition({
+            moveTo: "endOfPriorPoint",
+            index: index,
+            shape: shape
+          });
         } else if (e.key === "ArrowRight" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
-          setCursorPosition(index, "beginningOfNextPoint");
+          setCursorPosition({
+            moveTo: "beginningOfNextPoint",
+            index: index,
+            shape: shape
+          });
         } else if (e.key === "ArrowUp" && index !== 0) {
           setArrowPressed("ArrowUp");
         } else if (e.key === "ArrowDown") {
@@ -316,8 +361,11 @@ var mapStateToProps = function mapStateToProps() {
 };
 
 var mapActionsToProps = {
+  splitIntoTwoPoints: _messageActions.splitIntoTwoPoints,
+  combinePoints: _messageActions.combinePoints,
   setEditingPoint: _editingPointActions.setEditingPoint,
-  setCursorPositionRedux: _cursorPositionActions.setCursorPosition,
+  setCursorPosition: _cursorPositionActions.setCursorPosition,
+  clearCursorPosition: _cursorPositionActions.clearCursorPosition,
   pointMove: _messageActions.pointMove,
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,

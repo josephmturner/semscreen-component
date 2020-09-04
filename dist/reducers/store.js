@@ -3,11 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createStoreWithMessage = createStoreWithMessage;
+exports.createStore = createAppStore;
 
 var _redux = require("redux");
 
-var _reduxDevtoolsExtension = require("redux-devtools-extension");
+var _developmentOnly = require("redux-devtools-extension/developmentOnly");
 
 var _editingPoint = require("./editingPoint");
 
@@ -17,11 +17,11 @@ var _message = require("./message");
 
 var _expandedRegion = require("./expandedRegion");
 
-function createStoreWithMessage(message) {
+function createAppStore() {
   var initialAppState = {
     editingPoint: _editingPoint.initialEditingPointState,
     cursorPosition: _cursorPosition.initialCursorPositionState,
-    message: message !== null && message !== void 0 ? message : _message.initialMessageState,
+    message: _message.initialMessageState,
     expandedRegion: _expandedRegion.initialExpandedRegionState
   };
 
@@ -37,5 +37,5 @@ function createStoreWithMessage(message) {
     return newState;
   };
 
-  return (0, _redux.createStore)(appReducer, (0, _reduxDevtoolsExtension.composeWithDevTools)());
+  return (0, _redux.createStore)(appReducer, (0, _developmentOnly.composeWithDevTools)());
 }

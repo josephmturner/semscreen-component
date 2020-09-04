@@ -74,7 +74,7 @@ var MeritsRegion = function MeritsRegion(props) {
   return /*#__PURE__*/_react.default.createElement(_StyledFocusRegion.default, {
     ref: drop,
     onClick: function onClick() {
-      return onRegionClick(region, false);
+      return onRegionClick(region, isExpanded !== "expanded");
     }
   }, /*#__PURE__*/_react.default.createElement(StyledDiv, null));
 };

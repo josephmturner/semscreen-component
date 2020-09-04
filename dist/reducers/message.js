@@ -177,6 +177,10 @@ function handleSetMainPoint(state, action) {
 }
 
 function handleCombinePoints(state, action) {
+  if (action.params.aboveOrBelow === "below" && action.params.index === state.points[action.params.shape].length - 1) {
+    return state;
+  }
+
   var prevPoint = state.points[action.params.shape][action.params.index - 1];
   var currentPoint = state.points[action.params.shape][action.params.index];
   var nextPoint = state.points[action.params.shape][action.params.index + 1];

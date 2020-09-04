@@ -93,29 +93,15 @@ var SemanticScreen = function SemanticScreen(props) {
     });
   };
 
-  var handleRegionClick = function handleRegionClick(region, childClicked) {
-    if (region !== expandedRegion) {
-      props.setExpandedRegion(region);
-      deleteEmptyPoints();
-
-      if (region === "focus" && message.focus && !props.readOnly) {
-        props.setEditingPoint(message.focus.pointId);
-      } else if (region === "focus") {
-        return;
-      } else if (region === "merits") {
-        console.log("merits clicked");
-      } else if (!childClicked && !props.readOnly) {
-        props.pointCreate({
-          point: {
-            author: author,
-            content: ""
-          },
-          shape: region,
-          index: message.points[region].length
-        });
-      }
-    } else if (region === expandedRegion && !childClicked) {
+  var handleRegionClick = function handleRegionClick(region, expand) {
+    if (!expand && region === expandedRegion) {
       props.setExpandedRegion("");
+
+      if (!props.readOnly) {
+        deleteEmptyPoints();
+      }
+    } else if (expand && region !== expandedRegion) {
+      props.setExpandedRegion(region);
 
       if (!props.readOnly) {
         deleteEmptyPoints();

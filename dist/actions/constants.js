@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Actions = void 0;
 var Actions = {
   setCursorPosition: "setCursorPosition",
+  clearCursorPosition: "clearCursorPosition",
   setEditingPoint: "setEditingPoint",
   setMessage: "setMessage",
   pointCreate: "pointCreate",
