@@ -96,16 +96,10 @@ var SemanticScreen = function SemanticScreen(props) {
   var handleRegionClick = function handleRegionClick(region, expand) {
     if (!expand && region === expandedRegion) {
       props.setExpandedRegion("");
-
-      if (!props.readOnly) {
-        deleteEmptyPoints();
-      }
+      !props.readOnly && deleteEmptyPoints();
     } else if (expand && region !== expandedRegion) {
       props.setExpandedRegion(region);
-
-      if (!props.readOnly) {
-        deleteEmptyPoints();
-      }
+      !props.readOnly && deleteEmptyPoints();
     }
   };
 
@@ -133,7 +127,7 @@ var SemanticScreen = function SemanticScreen(props) {
     color: author.color,
     placement: props.showShapes ? {
       top: "1.2rem",
-      right: "2.3rem"
+      right: "2.5rem"
     } : {
       top: "0",
       right: "0"
