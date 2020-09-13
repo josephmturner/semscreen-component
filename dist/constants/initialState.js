@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.messages = exports.authors = void 0;
+exports.messages = void 0;
 
 /*
   Copyright (C) 2020 by USHIN, Inc.
@@ -25,11 +25,6 @@ exports.messages = exports.authors = void 0;
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-var authors = [{
-  name: "KindWoman",
-  color: "#7d3989"
-}];
-exports.authors = authors;
 var messages = [{
   messageId: "messageId1",
   author: {

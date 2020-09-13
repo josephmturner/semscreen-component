@@ -11,7 +11,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _SemanticScreen = _interopRequireDefault(require("./components/SemanticScreen"));
 
-var _initialState = require("./reducers/initialState");
+var _initialState = require("./constants/initialState");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

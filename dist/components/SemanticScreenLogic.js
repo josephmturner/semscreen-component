@@ -17,6 +17,8 @@ var _animateCssGrid = require("animate-css-grid");
 
 var _uuid = require("uuid");
 
+var _randomcolor = _interopRequireDefault(require("randomcolor"));
+
 var _Region = _interopRequireDefault(require("./Region"));
 
 var _MeritsRegion = _interopRequireDefault(require("./MeritsRegion"));
@@ -69,8 +71,9 @@ var SemanticScreen = function SemanticScreen(props) {
     name: "anonymous",
     authorId: (0, _uuid.v4)(),
     authorDate: new Date(),
-    color: "#fff"
+    color: (0, _randomcolor.default)()
   };
+  console.log(author.color);
 
   var createEmptyPoint = function createEmptyPoint(shape, index) {
     props.pointCreate({

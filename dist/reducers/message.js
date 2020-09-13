@@ -11,6 +11,8 @@ var _immutabilityHelper = _interopRequireDefault(require("immutability-helper"))
 
 var _uuid = require("uuid");
 
+var _randomcolor = _interopRequireDefault(require("randomcolor"));
+
 var _dataModels = require("../dataModels");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -25,7 +27,7 @@ var initialMessageState = {
   messageId: (0, _uuid.v4)(),
   author: {
     name: "anonymous",
-    color: "#7d3989"
+    color: (0, _randomcolor.default)()
   },
   points: {
     facts: [],

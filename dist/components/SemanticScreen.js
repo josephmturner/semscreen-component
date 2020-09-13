@@ -45,7 +45,7 @@ var SemanticScreen = function SemanticScreen(props) {
   var message = props.message,
       onMessageChange = props.onMessageChange;
   var store = (0, _react.useMemo)(_store.createStore, []);
-  (0, _react.useEffect)(function () {
+  (0, _react.useLayoutEffect)(function () {
     if (message && message !== store.getState().message) {
       store.dispatch((0, _messageActions.setMessage)({
         message: message
