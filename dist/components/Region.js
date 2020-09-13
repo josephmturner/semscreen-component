@@ -133,7 +133,8 @@ var Region = function Region(props) {
         return point.pointId === p.pointId;
       }),
       isEditing: editingPointId === p.pointId,
-      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined
+      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined,
+      darkMode: props.darkMode
     });
   }), isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
     text: placeholderText,

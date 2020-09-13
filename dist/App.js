@@ -34,6 +34,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var App = function App() {
   var showShapes = true;
   var readOnly = false;
+  var darkMode = true;
 
   var _useState = (0, _react.useState)(_initialState.messages[0]),
       _useState2 = _slicedToArray(_useState, 2),
@@ -48,7 +49,8 @@ var App = function App() {
     message: message,
     showShapes: showShapes,
     readOnly: readOnly,
-    onMessageChange: onMessageChange
+    onMessageChange: onMessageChange,
+    darkMode: darkMode
   });
 };
 

@@ -30,7 +30,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0px;\n  background-color: transparent;\n  font-family: arial;\n  font-size: medium;\n  font-weight: ", ";\n  outline: 0;\n  resize: none;\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0px;\n  color: ", ";\n  background-color: transparent;\n  font-family: arial;\n  font-size: medium;\n  font-weight: ", ";\n  outline: 0;\n  resize: none;\n  ", "\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -139,21 +139,23 @@ var FocusPoint = function FocusPoint(props) {
     readOnly: !!point.quotedAuthor || props.readOnly,
     ref: ref,
     isMainPoint: isMainPoint,
-    quotedAuthor: point.quotedAuthor
+    quotedAuthor: point.quotedAuthor,
+    darkMode: props.darkMode
   }), point.quotedAuthor && /*#__PURE__*/_react.default.createElement(_Banner.default, {
     text: point.quotedAuthor.name,
     color: point.quotedAuthor.color,
     placement: {
       top: "-0.5rem",
       right: "0.4rem"
-    }
+    },
+    darkMode: props.darkMode
   }));
 };
 
 var StyledSpan = _styledComponents.default.span(_templateObject(), function (props) {
   return props.isDragging ? 0.4 : 1;
 }, function (props) {
-  return props.isEditing && "\n  background-color: #efefef;\n  border-radius: 5px;\n";
+  return props.isEditing && "\n  background-color: #777;\n  border-radius: 5px;\n";
 }, function (props) {
   return props.isMainPoint && "\n  padding: 1% 0;\n";
 });
@@ -161,6 +163,8 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
 var StyledImg = _styledComponents.default.img(_templateObject2());
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
+  return props.darkMode ? "#fff" : "#000";
+}, function (props) {
   return props.isMainPoint ? "bold" : "normal";
 }, function (props) {
   return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");

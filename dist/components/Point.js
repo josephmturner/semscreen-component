@@ -40,7 +40,7 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0;\n  background-color: transparent;\n  font-family: arial;\n  font-size: ", ";\n  font-weight: ", ";\n  outline: 0;\n  resize: none;\n  overflow: hidden;\n  text-indent: ", ";\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0;\n  color: ", ";\n  background-color: transparent;\n  font-family: arial;\n  font-size: ", ";\n  font-weight: ", ";\n  outline: 0;\n  resize: none;\n  overflow: hidden;\n  text-indent: ", ";\n  ", "\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -263,6 +263,7 @@ var Point = function Point(props) {
     readOnly: !!point.quotedAuthor || props.readOnly,
     isMainPoint: isMainPoint,
     quotedAuthor: point.quotedAuthor,
+    darkMode: props.darkMode,
     ref: ref,
     onKeyDown: function onKeyDown(e) {
       if (props.readOnly) {
@@ -324,7 +325,8 @@ var Point = function Point(props) {
     placement: {
       top: "-0.15rem",
       right: "0.8rem"
-    }
+    },
+    darkMode: props.darkMode
   }));
 };
 
@@ -335,7 +337,7 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
 }, function (props) {
   return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
 }, function (props) {
-  return props.isEditing && "\n  background-color: #efefef;\n  border-radius: 5px;\n";
+  return props.isEditing && "\n  background-color: #777;\n  border-radius: 5px;\n";
 });
 
 var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
@@ -347,6 +349,8 @@ var StyledImg = _styledComponents.default.img(_templateObject2(), function (prop
 });
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
+  return props.darkMode ? "#fff" : "#000";
+}, function (props) {
   return props.isMainPoint ? "medium" : "small";
 }, function (props) {
   return props.isMainPoint ? "bold" : "normal";

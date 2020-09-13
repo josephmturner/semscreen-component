@@ -70,7 +70,7 @@ var SemanticScreen = function SemanticScreen(props) {
     authorId: (0, _uuid.v4)(),
     authorDate: new Date(),
     color: "#fff"
-  }; //TODO: what if App doesn't pass any points to SemanticScreen?
+  };
 
   var createEmptyPoint = function createEmptyPoint(shape, index) {
     props.pointCreate({
@@ -121,7 +121,8 @@ var SemanticScreen = function SemanticScreen(props) {
   }, /*#__PURE__*/_react.default.createElement(_StyledSemanticScreen.default, {
     expandedRegion: expandedRegion,
     showShapes: showShapes,
-    ref: semanticScreenRef
+    ref: semanticScreenRef,
+    darkMode: props.darkMode
   }, /*#__PURE__*/_react.default.createElement(_Banner.default, {
     text: author.name,
     color: author.color,
@@ -131,7 +132,8 @@ var SemanticScreen = function SemanticScreen(props) {
     } : {
       top: "0",
       right: "0"
-    }
+    },
+    darkMode: props.darkMode
   }), regions.map(function (region) {
     if (region === "merits") {
       return /*#__PURE__*/_react.default.createElement(_MeritsRegion.default, {
@@ -156,7 +158,8 @@ var SemanticScreen = function SemanticScreen(props) {
         }) : undefined,
         isMainPoint: message.focus && message.main === message.focus.pointId ? true : false,
         onRegionClick: handleRegionClick,
-        key: region
+        key: region,
+        darkMode: props.darkMode
       });
     } else {
       return /*#__PURE__*/_react.default.createElement(_Region.default, {
@@ -169,7 +172,8 @@ var SemanticScreen = function SemanticScreen(props) {
         mainPointId: message.main,
         createEmptyPoint: createEmptyPoint,
         onRegionClick: handleRegionClick,
-        key: region
+        key: region,
+        darkMode: props.darkMode
       });
     }
   }), showShapes && /*#__PURE__*/_react.default.createElement(_ShapesRim.default, null)));

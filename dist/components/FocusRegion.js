@@ -93,7 +93,8 @@ var FocusRegion = function FocusRegion(props) {
     isEditing: editingPointId === point.pointId,
     onClick: function onClick() {
       return onRegionClick(region, true);
-    }
+    },
+    darkMode: props.darkMode
   })));
 };
 
