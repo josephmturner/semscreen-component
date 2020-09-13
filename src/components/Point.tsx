@@ -304,7 +304,7 @@ const Point = (props: {
         <Banner
           text={point.quotedAuthor.name}
           color={point.quotedAuthor.color}
-          placement={{ top: "-0.2rem", right: "0.8rem" }}
+          placement={{ top: "-0.15rem", right: "0.8rem" }}
         />
       )}
     </StyledSpan>

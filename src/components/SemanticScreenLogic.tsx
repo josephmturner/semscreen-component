@@ -136,7 +136,7 @@ const SemanticScreen = (props: {
           color={author.color}
           placement={
             props.showShapes
-              ? { top: "1.2rem", right: "2.3rem" }
+              ? { top: "1.2rem", right: "2.5rem" }
               : { top: "0", right: "0" }
           }
         />
