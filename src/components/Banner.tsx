@@ -28,7 +28,7 @@ const Banner = (props: {
   text: string;
   color: string;
   placement: Placement;
-  darkMode: boolean;
+  darkMode?: boolean;
 }) => (
   // \u00A0 adds extra spaces on either side of the text
   <BannerView
@@ -43,7 +43,7 @@ const Banner = (props: {
 );
 
 interface BannerViewProps extends Placement {
-  darkMode: boolean;
+  darkMode?: boolean;
 }
 
 const BannerView = styled.div<BannerViewProps>`

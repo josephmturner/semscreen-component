@@ -92,20 +92,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var Point = function Point(props) {
   var point = props.point,
       shape = props.shape,
-      isExpanded = props.isExpanded,
-      isMainPoint = props.isMainPoint,
       index = props.index,
-      isEditing = props.isEditing,
-      splitIntoTwoPoints = props.splitIntoTwoPoints,
       combinePoints = props.combinePoints,
-      cursorPositionIndex = props.cursorPositionIndex,
-      setEditingPoint = props.setEditingPoint,
-      setCursorPosition = props.setCursorPosition,
-      clearCursorPosition = props.clearCursorPosition;
+      setCursorPosition = props.setCursorPosition;
 
   var createPointBelow = function createPointBelow(topContent, bottomContent) {
     var newPointId = (0, _uuid.v4)();
-    splitIntoTwoPoints({
+    props.splitIntoTwoPoints({
       topPoint: {
         content: topContent,
         pointId: point.pointId,
@@ -131,7 +124,7 @@ var Point = function Point(props) {
         return;
       }
 
-      if (isExpanded !== "expanded") {
+      if (props.isExpanded !== "expanded") {
         props.setExpandedRegion(shape);
       } //TODO: only call the following logic after the animation transition ends. 150ms timeout?
 
@@ -172,8 +165,8 @@ var Point = function Point(props) {
 
   var ref = (0, _react.useRef)(null);
   (0, _react.useEffect)(function () {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
+    props.isEditing && ref.current && ref.current.focus();
+  }, [props.isEditing]);
   var pointRef = (0, _react.useRef)(null);
 
   var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
@@ -183,12 +176,12 @@ var Point = function Point(props) {
 
   drop(preview(pointRef));
   (0, _react.useEffect)(function () {
-    if (!isNaN(cursorPositionIndex) && ref.current) {
+    if (!isNaN(props.cursorPositionIndex) && ref.current) {
       ref.current.focus();
-      ref.current.setSelectionRange(cursorPositionIndex, cursorPositionIndex);
-      clearCursorPosition();
+      ref.current.setSelectionRange(props.cursorPositionIndex, props.cursorPositionIndex);
+      props.clearCursorPosition();
     }
-  }, [cursorPositionIndex, clearCursorPosition]);
+  }, [props.cursorPositionIndex, props.clearCursorPosition]);
 
   var _useState = (0, _react.useState)(undefined),
       _useState2 = _slicedToArray(_useState, 2),
@@ -223,15 +216,15 @@ var Point = function Point(props) {
   };
 
   var handleBlur = function handleBlur() {
-    setEditingPoint("");
+    props.setEditingPoint("");
   };
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
     ref: pointRef,
-    isEditing: isEditing,
-    isMainPoint: isMainPoint,
+    isEditing: props.isEditing,
+    isMainPoint: props.isMainPoint,
     isDragging: isDragging,
     isFirst: index === 0 ? true : false,
     quotedAuthor: point.quotedAuthor
@@ -242,26 +235,26 @@ var Point = function Point(props) {
       if (props.readOnly) {
         return;
       } else {
-        isMainPoint ? props.setMainPoint({
+        props.isMainPoint ? props.setMainPoint({
           pointId: ""
         }) : props.setMainPoint({
           pointId: point.pointId
         });
       }
     },
-    isMainPoint: isMainPoint,
+    isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
-    height: isMainPoint ? 23 : 17,
+    height: props.isMainPoint ? 23 : 17,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: function onFocus() {
-      setEditingPoint(point.pointId);
+      props.setEditingPoint(point.pointId);
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
-    isMainPoint: isMainPoint,
+    isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
     darkMode: props.darkMode,
     ref: ref,

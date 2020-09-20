@@ -12,7 +12,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  opacity: 0.4;\n  margin-top: 1px;\n  font-size: small;\n"]);
+  var data = _taggedTemplateLiteral(["\n  opacity: 0.4;\n  margin-top: 1px;\n  color: ", ";\n  font-size: small;\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -59,14 +59,18 @@ var Placeholder = function Placeholder(props) {
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     src: img,
     alt: imgAlt
-  }), /*#__PURE__*/_react.default.createElement(StyledDiv, null, text));
+  }), /*#__PURE__*/_react.default.createElement(StyledDiv, {
+    darkMode: props.darkMode
+  }, text));
 };
 
 var StyledSpan = _styledComponents.default.span(_templateObject());
 
 var StyledImg = _styledComponents.default.img(_templateObject2());
 
-var StyledDiv = _styledComponents.default.div(_templateObject3());
+var StyledDiv = _styledComponents.default.div(_templateObject3(), function (props) {
+  return props.darkMode ? "#fff" : "#000";
+});
 
 var _default = Placeholder;
 exports.default = _default;

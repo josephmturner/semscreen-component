@@ -11,6 +11,8 @@ var _FocusPoint = _interopRequireDefault(require("./FocusPoint"));
 
 var _StyledFocusRegion = _interopRequireDefault(require("./StyledFocusRegion"));
 
+var _SevenShapes = _interopRequireDefault(require("./SevenShapes"));
+
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactDnd = require("react-dnd");
@@ -26,7 +28,7 @@ var _expandedRegionActions = require("../actions/expandedRegionActions");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -53,10 +55,7 @@ var FocusRegion = function FocusRegion(props) {
   var region = props.region,
       isExpanded = props.isExpanded,
       point = props.point,
-      shape = props.shape,
       index = props.index,
-      isMainPoint = props.isMainPoint,
-      editingPointId = props.editingPointId,
       onRegionClick = props.onRegionClick;
 
   var _useDrop = (0, _reactDnd.useDrop)({
@@ -84,16 +83,19 @@ var FocusRegion = function FocusRegion(props) {
     onClick: function onClick() {
       return onRegionClick(region, isExpanded !== "expanded");
     }
-  }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, point && shape && typeof index === "number" && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
+  }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, point && props.shape && typeof index === "number" && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
     point: point,
-    shape: shape,
+    shape: props.shape,
     index: index,
     readOnly: props.readOnly,
-    isMainPoint: isMainPoint,
-    isEditing: editingPointId === point.pointId,
+    isMainPoint: props.isMainPoint,
+    isEditing: props.editingPointId === point.pointId,
     onClick: function onClick() {
       return onRegionClick(region, true);
     },
+    darkMode: props.darkMode
+  }), !point && isExpanded === "expanded" && /*#__PURE__*/_react.default.createElement(_SevenShapes.default, {
+    onShapeClick: props.createEmptyFocus,
     darkMode: props.darkMode
   })));
 };

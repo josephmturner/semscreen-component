@@ -31,7 +31,7 @@ import { setExpandedRegion } from "../actions/expandedRegionActions";
 const MeritsRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  onRegionClick: any;
+  onRegionClick: (region: RegionI, expand: boolean) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
   const { region, isExpanded, onRegionClick } = props;

@@ -67,26 +67,13 @@ const Point = (props: {
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
-  darkMode: boolean;
+  darkMode?: boolean;
 }) => {
-  const {
-    point,
-    shape,
-    isExpanded,
-    isMainPoint,
-    index,
-    isEditing,
-    splitIntoTwoPoints,
-    combinePoints,
-    cursorPositionIndex,
-    setEditingPoint,
-    setCursorPosition,
-    clearCursorPosition,
-  } = props;
+  const { point, shape, index, combinePoints, setCursorPosition } = props;
 
   const createPointBelow = (topContent: string, bottomContent: string) => {
     const newPointId = uuidv4();
-    splitIntoTwoPoints({
+    props.splitIntoTwoPoints({
       topPoint: {
         content: topContent,
         pointId: point.pointId,
@@ -109,7 +96,7 @@ const Point = (props: {
       if (!ref.current || (item.quoted && item.shape !== shape)) {
         return;
       }
-      if (isExpanded !== "expanded") {
+      if (props.isExpanded !== "expanded") {
         props.setExpandedRegion(shape);
       }
       //TODO: only call the following logic after the animation transition ends. 150ms timeout?
@@ -153,8 +140,8 @@ const Point = (props: {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
+    props.isEditing && ref.current && ref.current.focus();
+  }, [props.isEditing]);
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
@@ -163,15 +150,15 @@ const Point = (props: {
   drop(preview(pointRef));
 
   useEffect(() => {
-    if (!isNaN(cursorPositionIndex as number) && ref.current) {
+    if (!isNaN(props.cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(
-        cursorPositionIndex as number,
-        cursorPositionIndex as number
+        props.cursorPositionIndex as number,
+        props.cursorPositionIndex as number
       );
-      clearCursorPosition();
+      props.clearCursorPosition();
     }
-  }, [cursorPositionIndex, clearCursorPosition]);
+  }, [props.cursorPositionIndex, props.clearCursorPosition]);
 
   const [arrowPressed, setArrowPressed] = useState<
     "ArrowUp" | "ArrowDown" | undefined
@@ -189,7 +176,7 @@ const Point = (props: {
     setArrowPressed(undefined);
   }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
@@ -197,7 +184,7 @@ const Point = (props: {
   };
 
   const handleBlur = () => {
-    setEditingPoint("");
+    props.setEditingPoint("");
   };
 
   const imageUrl = require(`../images/${shape}.svg`);
@@ -205,8 +192,8 @@ const Point = (props: {
   return (
     <StyledSpan
       ref={pointRef}
-      isEditing={isEditing}
-      isMainPoint={isMainPoint}
+      isEditing={props.isEditing}
+      isMainPoint={props.isMainPoint}
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
       quotedAuthor={point.quotedAuthor}
@@ -218,14 +205,14 @@ const Point = (props: {
           if (props.readOnly) {
             return;
           } else {
-            isMainPoint
+            props.isMainPoint
               ? props.setMainPoint({ pointId: "" })
               : props.setMainPoint({ pointId: point.pointId });
           }
         }}
-        isMainPoint={isMainPoint}
+        isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
-        height={isMainPoint ? 23 : 17}
+        height={props.isMainPoint ? 23 : 17}
         alt={shape}
       />
       <StyledTextArea
@@ -233,14 +220,14 @@ const Point = (props: {
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
-          setEditingPoint(point.pointId);
+          props.setEditingPoint(point.pointId);
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
-        isMainPoint={isMainPoint}
+        isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
         ref={ref}
-        onKeyDown={(e: any) => {
+        onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
             return;
           } else {

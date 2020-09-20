@@ -39,20 +39,12 @@ const FocusPoint = (props: {
   darkMode: boolean;
   isMainPoint: boolean;
   isEditing: boolean;
-  onClick: any;
+  onClick: () => void;
   setEditingPoint: (pointId: string) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
 }) => {
-  const {
-    point,
-    shape,
-    index,
-    isMainPoint,
-    isEditing,
-    onClick,
-    setEditingPoint,
-  } = props;
+  const { point, shape, index, isMainPoint, isEditing } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -60,7 +52,7 @@ const FocusPoint = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
@@ -68,12 +60,12 @@ const FocusPoint = (props: {
   };
 
   const handleBlur = () => {
-    setEditingPoint("");
+    props.setEditingPoint("");
   };
 
-  const handleClick = (e: any) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onClick();
+    props.onClick();
   };
 
   const imageUrl = require(`../images/${shape}.svg`);
@@ -110,7 +102,7 @@ const FocusPoint = (props: {
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
-          setEditingPoint(point.pointId);
+          props.setEditingPoint(point.pointId);
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}

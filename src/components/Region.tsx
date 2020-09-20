@@ -20,7 +20,7 @@ import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -46,27 +46,16 @@ const Region = (props: {
   mainPointId: string | undefined;
   cursorPosition: CursorPositionDetails | null;
   pointCreate: (params: PointCreateParams) => void;
-  createEmptyPoint: any;
-  onRegionClick: any;
+  createEmptyPoint: (shape: PointShape, index: number) => void;
+  onRegionClick: (region: RegionI, expand: boolean) => void;
   editingPointId: string;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (region: string) => void;
-  darkMode: boolean;
+  darkMode?: boolean;
 }) => {
-  const {
-    region,
-    isExpanded,
-    points,
-    focusPointId,
-    mainPointId,
-    author,
-    cursorPosition,
-    createEmptyPoint,
-    onRegionClick,
-    editingPointId,
-  } = props;
+  const { region, points, cursorPosition } = props;
 
-  const renderPoints = points.filter((p) => p.pointId !== focusPointId);
+  const renderPoints = points.filter((p) => p.pointId !== props.focusPointId);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -77,14 +66,14 @@ const Region = (props: {
     hover: (item: DraggablePointType) => {
       //TODO: consider only calling appDispatch after the animation transition ends.
       if (item.quoted && item.shape !== region) return;
-      if (isExpanded !== "expanded") {
+      if (props.isExpanded !== "expanded") {
         props.setExpandedRegion(region);
       }
 
       if (
         item.shape !== region ||
         item.index !== points.length - 1 ||
-        item.pointId === focusPointId
+        item.pointId === props.focusPointId
       ) {
         const newIndex =
           item.shape === region ? points.length - 1 : points.length;
@@ -104,13 +93,13 @@ const Region = (props: {
   });
 
   const onClickRemainingSpace = () => {
-    if (isExpanded === "expanded") {
-      onRegionClick(region, false);
+    if (props.isExpanded === "expanded") {
+      props.onRegionClick(region, false);
     } else {
       if (!props.readOnly) {
         props.pointCreate({
           point: {
-            author: author,
+            author: props.author,
             content: "",
           },
           shape: region,
@@ -122,9 +111,9 @@ const Region = (props: {
 
   return (
     <StyledRegion
-      isExpanded={isExpanded}
-      borderColor={author.color}
-      onClick={() => onRegionClick(region, true)}
+      isExpanded={props.isExpanded}
+      borderColor={props.author.color}
+      onClick={() => props.onRegionClick(region, true)}
     >
       <div>
         {renderPoints.map((p: PointI) => (
@@ -133,10 +122,10 @@ const Region = (props: {
             point={p}
             shape={region}
             readOnly={props.readOnly}
-            isExpanded={isExpanded}
-            isMainPoint={mainPointId === p.pointId}
+            isExpanded={props.isExpanded}
+            isMainPoint={props.mainPointId === p.pointId}
             index={points.findIndex((point) => point.pointId === p.pointId)}
-            isEditing={editingPointId === p.pointId}
+            isEditing={props.editingPointId === p.pointId}
             cursorPositionIndex={
               cursorPosition && cursorPosition.pointId === p.pointId
                 ? cursorPosition.index
@@ -145,19 +134,20 @@ const Region = (props: {
             darkMode={props.darkMode}
           />
         ))}
-        {isExpanded === "expanded" && !props.readOnly && (
+        {props.isExpanded === "expanded" && !props.readOnly && (
           <Placeholder
             text={placeholderText}
             img={placeholderImg}
             imgAlt={placeholderImgAlt}
             onClick={() => {
-              createEmptyPoint(region, points.length);
+              props.createEmptyPoint(region, points.length);
             }}
+            darkMode={props.darkMode}
           />
         )}
         <DropTargetDiv
           ref={drop}
-          isExpanded={isExpanded}
+          isExpanded={props.isExpanded}
           onClick={onClickRemainingSpace}
         />
       </div>

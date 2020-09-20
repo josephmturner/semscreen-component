@@ -23,11 +23,12 @@ const Placeholder = (props: {
   text: string;
   img: string;
   imgAlt: string;
-  onClick: any;
+  onClick: () => void;
+  darkMode?: boolean;
 }) => {
   const { text, img, imgAlt, onClick } = props;
 
-  const handleClick = (e: any) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClick();
   };
@@ -35,10 +36,14 @@ const Placeholder = (props: {
   return (
     <StyledSpan onClick={handleClick}>
       <StyledImg src={img} alt={imgAlt} />
-      <StyledDiv>{text}</StyledDiv>
+      <StyledDiv darkMode={props.darkMode}>{text}</StyledDiv>
     </StyledSpan>
   );
 };
+
+interface StyledProps {
+  darkMode?: boolean;
+}
 
 const StyledSpan = styled.span`
   display: flex;
@@ -51,9 +56,10 @@ const StyledImg = styled.img`
   opacity: 0.4;
 `;
 
-const StyledDiv = styled.div`
+const StyledDiv = styled.div<StyledProps>`
   opacity: 0.4;
   margin-top: 1px;
+  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
   font-size: small;
 `;
 
