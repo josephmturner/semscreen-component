@@ -153,6 +153,7 @@ const Region = (props: {
             onClick={() => {
               createEmptyPoint(region, points.length);
             }}
+            darkMode={props.darkMode}
           />
         )}
         <DropTargetDiv
