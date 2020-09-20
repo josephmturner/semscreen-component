@@ -45,15 +45,7 @@ const FocusRegion = (props: {
   setExpandedRegion: (params: string) => void;
   darkMode: boolean;
 }) => {
-  const {
-    region,
-    isExpanded,
-    point,
-    index,
-    isMainPoint,
-    editingPointId,
-    onRegionClick,
-  } = props;
+  const { region, isExpanded, point, index, onRegionClick } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -85,8 +77,8 @@ const FocusRegion = (props: {
             shape={props.shape}
             index={index}
             readOnly={props.readOnly}
-            isMainPoint={isMainPoint}
-            isEditing={editingPointId === point.pointId}
+            isMainPoint={props.isMainPoint}
+            isEditing={props.editingPointId === point.pointId}
             onClick={() => onRegionClick(region, true)}
             darkMode={props.darkMode}
           />

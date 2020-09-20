@@ -53,17 +53,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Region = function Region(props) {
   var region = props.region,
-      isExpanded = props.isExpanded,
       points = props.points,
-      focusPointId = props.focusPointId,
-      mainPointId = props.mainPointId,
-      author = props.author,
-      cursorPosition = props.cursorPosition,
-      createEmptyPoint = props.createEmptyPoint,
-      onRegionClick = props.onRegionClick,
-      editingPointId = props.editingPointId;
+      cursorPosition = props.cursorPosition;
   var renderPoints = points.filter(function (p) {
-    return p.pointId !== focusPointId;
+    return p.pointId !== props.focusPointId;
   });
   var placeholderText = "New ".concat(region.toLowerCase(), " point");
 
@@ -77,11 +70,11 @@ var Region = function Region(props) {
       //TODO: consider only calling appDispatch after the animation transition ends.
       if (item.quoted && item.shape !== region) return;
 
-      if (isExpanded !== "expanded") {
+      if (props.isExpanded !== "expanded") {
         props.setExpandedRegion(region);
       }
 
-      if (item.shape !== region || item.index !== points.length - 1 || item.pointId === focusPointId) {
+      if (item.shape !== region || item.index !== points.length - 1 || item.pointId === props.focusPointId) {
         var newIndex = item.shape === region ? points.length - 1 : points.length;
         props.pointMove({
           pointId: item.pointId,
@@ -99,13 +92,13 @@ var Region = function Region(props) {
       drop = _useDrop2[1];
 
   var onClickRemainingSpace = function onClickRemainingSpace() {
-    if (isExpanded === "expanded") {
-      onRegionClick(region, false);
+    if (props.isExpanded === "expanded") {
+      props.onRegionClick(region, false);
     } else {
       if (!props.readOnly) {
         props.pointCreate({
           point: {
-            author: author,
+            author: props.author,
             content: ""
           },
           shape: region,
@@ -116,10 +109,10 @@ var Region = function Region(props) {
   };
 
   return /*#__PURE__*/_react.default.createElement(_StyledRegion.default, {
-    isExpanded: isExpanded,
-    borderColor: author.color,
+    isExpanded: props.isExpanded,
+    borderColor: props.author.color,
     onClick: function onClick() {
-      return onRegionClick(region, true);
+      return props.onRegionClick(region, true);
     }
   }, /*#__PURE__*/_react.default.createElement("div", null, renderPoints.map(function (p) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
@@ -127,25 +120,26 @@ var Region = function Region(props) {
       point: p,
       shape: region,
       readOnly: props.readOnly,
-      isExpanded: isExpanded,
-      isMainPoint: mainPointId === p.pointId,
+      isExpanded: props.isExpanded,
+      isMainPoint: props.mainPointId === p.pointId,
       index: points.findIndex(function (point) {
         return point.pointId === p.pointId;
       }),
-      isEditing: editingPointId === p.pointId,
+      isEditing: props.editingPointId === p.pointId,
       cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined,
       darkMode: props.darkMode
     });
-  }), isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
+  }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
     text: placeholderText,
     img: placeholderImg,
     imgAlt: placeholderImgAlt,
     onClick: function onClick() {
-      createEmptyPoint(region, points.length);
-    }
+      props.createEmptyPoint(region, points.length);
+    },
+    darkMode: props.darkMode
   }), /*#__PURE__*/_react.default.createElement(DropTargetDiv, {
     ref: drop,
-    isExpanded: isExpanded,
+    isExpanded: props.isExpanded,
     onClick: onClickRemainingSpace
   })));
 };

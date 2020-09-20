@@ -72,9 +72,7 @@ var FocusPoint = function FocusPoint(props) {
       shape = props.shape,
       index = props.index,
       isMainPoint = props.isMainPoint,
-      isEditing = props.isEditing,
-      onClick = props.onClick,
-      setEditingPoint = props.setEditingPoint;
+      isEditing = props.isEditing;
   var ref = (0, _react.useRef)(null);
   (0, _react.useEffect)(function () {
     isEditing && ref.current && ref.current.focus();
@@ -90,12 +88,12 @@ var FocusPoint = function FocusPoint(props) {
   };
 
   var handleBlur = function handleBlur() {
-    setEditingPoint("");
+    props.setEditingPoint("");
   };
 
   var handleClick = function handleClick(e) {
     e.stopPropagation();
-    onClick();
+    props.onClick();
   };
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
@@ -134,7 +132,7 @@ var FocusPoint = function FocusPoint(props) {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: function onFocus() {
-      setEditingPoint(point.pointId);
+      props.setEditingPoint(point.pointId);
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
     ref: ref,

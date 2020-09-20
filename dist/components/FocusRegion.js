@@ -56,8 +56,6 @@ var FocusRegion = function FocusRegion(props) {
       isExpanded = props.isExpanded,
       point = props.point,
       index = props.index,
-      isMainPoint = props.isMainPoint,
-      editingPointId = props.editingPointId,
       onRegionClick = props.onRegionClick;
 
   var _useDrop = (0, _reactDnd.useDrop)({
@@ -90,8 +88,8 @@ var FocusRegion = function FocusRegion(props) {
     shape: props.shape,
     index: index,
     readOnly: props.readOnly,
-    isMainPoint: isMainPoint,
-    isEditing: editingPointId === point.pointId,
+    isMainPoint: props.isMainPoint,
+    isEditing: props.editingPointId === point.pointId,
     onClick: function onClick() {
       return onRegionClick(region, true);
     },
