@@ -67,7 +67,7 @@ const Point = (props: {
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
-  darkMode: boolean;
+  darkMode?: boolean;
 }) => {
   const {
     point,
@@ -189,7 +189,7 @@ const Point = (props: {
     setArrowPressed(undefined);
   }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
@@ -240,7 +240,7 @@ const Point = (props: {
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
         ref={ref}
-        onKeyDown={(e: any) => {
+        onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
             return;
           } else {

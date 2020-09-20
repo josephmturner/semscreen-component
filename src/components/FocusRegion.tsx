@@ -39,7 +39,7 @@ const FocusRegion = (props: {
   index: number | undefined;
   isMainPoint: boolean;
   editingPointId: string;
-  onRegionClick: any;
+  onRegionClick: (region: RegionI, expand: boolean) => void;
   setFocus: (params: SetFocusParams) => void;
   createEmptyFocus: (shape: PointShape) => void;
   setExpandedRegion: (params: string) => void;

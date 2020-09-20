@@ -20,7 +20,7 @@ import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
-import { AuthorI, PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -46,12 +46,12 @@ const Region = (props: {
   mainPointId: string | undefined;
   cursorPosition: CursorPositionDetails | null;
   pointCreate: (params: PointCreateParams) => void;
-  createEmptyPoint: any;
-  onRegionClick: any;
+  createEmptyPoint: (shape: PointShape, index: number) => void;
+  onRegionClick: (region: RegionI, expand: boolean) => void;
   editingPointId: string;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (region: string) => void;
-  darkMode: boolean;
+  darkMode?: boolean;
 }) => {
   const {
     region,

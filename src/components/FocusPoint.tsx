@@ -39,7 +39,7 @@ const FocusPoint = (props: {
   darkMode: boolean;
   isMainPoint: boolean;
   isEditing: boolean;
-  onClick: any;
+  onClick: () => void;
   setEditingPoint: (pointId: string) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
@@ -60,7 +60,7 @@ const FocusPoint = (props: {
     isEditing && ref.current && ref.current.focus();
   }, [isEditing]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
@@ -71,7 +71,7 @@ const FocusPoint = (props: {
     setEditingPoint("");
   };
 
-  const handleClick = (e: any) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClick();
   };

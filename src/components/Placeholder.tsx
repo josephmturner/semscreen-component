@@ -23,11 +23,11 @@ const Placeholder = (props: {
   text: string;
   img: string;
   imgAlt: string;
-  onClick: any;
+  onClick: () => void;
 }) => {
   const { text, img, imgAlt, onClick } = props;
 
-  const handleClick = (e: any) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClick();
   };
