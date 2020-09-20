@@ -19,6 +19,7 @@
 import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledFocusRegion from "./StyledFocusRegion";
+import SevenShapes from "./SevenShapes";
 import { PointI, PointShape, RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
@@ -40,6 +41,7 @@ const FocusRegion = (props: {
   editingPointId: string;
   onRegionClick: any;
   setFocus: (params: SetFocusParams) => void;
+  createEmptyFocus: (shape: PointShape) => void;
   setExpandedRegion: (params: string) => void;
   darkMode: boolean;
 }) => {
@@ -47,7 +49,6 @@ const FocusRegion = (props: {
     region,
     isExpanded,
     point,
-    shape,
     index,
     isMainPoint,
     editingPointId,
@@ -78,15 +79,21 @@ const FocusRegion = (props: {
       onClick={() => onRegionClick(region, isExpanded !== "expanded")}
     >
       <StyledDiv>
-        {point && shape && typeof index === "number" && (
+        {point && props.shape && typeof index === "number" && (
           <FocusPoint
             point={point}
-            shape={shape}
+            shape={props.shape}
             index={index}
             readOnly={props.readOnly}
             isMainPoint={isMainPoint}
             isEditing={editingPointId === point.pointId}
             onClick={() => onRegionClick(region, true)}
+            darkMode={props.darkMode}
+          />
+        )}
+        {!point && isExpanded === "expanded" && (
+          <SevenShapes
+            onShapeClick={props.createEmptyFocus}
             darkMode={props.darkMode}
           />
         )}
@@ -99,6 +106,8 @@ const StyledDiv = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const mapStateToProps = (state: AppState) => ({

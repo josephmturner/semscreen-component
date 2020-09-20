@@ -66,7 +66,11 @@ const SemanticScreen = (props: {
   };
 
   console.log(author.color);
-  const createEmptyPoint = (shape: PointShape, index: number) => {
+  const createEmptyPoint = (
+    shape: PointShape,
+    index: number,
+    focus?: boolean
+  ) => {
     props.pointCreate({
       point: {
         author: author,
@@ -74,7 +78,12 @@ const SemanticScreen = (props: {
       },
       shape: shape,
       index: index,
+      focus: focus,
     });
+  };
+
+  const createEmptyFocus = (shape: PointShape) => {
+    createEmptyPoint(shape, message.points[shape].length, true);
   };
 
   const deleteEmptyPoints = () => {
@@ -185,6 +194,7 @@ const SemanticScreen = (props: {
                     ? true
                     : false
                 }
+                createEmptyFocus={createEmptyFocus}
                 onRegionClick={handleRegionClick}
                 key={region}
                 darkMode={props.darkMode}
