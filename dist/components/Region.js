@@ -13,6 +13,8 @@ var _Placeholder = _interopRequireDefault(require("./Placeholder"));
 
 var _StyledRegion = _interopRequireDefault(require("./StyledRegion"));
 
+var _RegionHeader = _interopRequireDefault(require("./RegionHeader"));
+
 var _reactDnd = require("react-dnd");
 
 var _ReactDnd = require("../constants/React-Dnd");
@@ -114,7 +116,9 @@ var Region = function Region(props) {
     onClick: function onClick() {
       return props.onRegionClick(region, true);
     }
-  }, /*#__PURE__*/_react.default.createElement("div", null, renderPoints.map(function (p) {
+  }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_RegionHeader.default, {
+    shape: region
+  }), renderPoints.map(function (p) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
       key: p.pointId,
       point: p,
