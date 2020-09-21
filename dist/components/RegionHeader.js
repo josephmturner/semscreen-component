@@ -12,7 +12,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  display: flex;\n  align-items: justify;\n"]);
+  var data = _taggedTemplateLiteral(["\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: \"#000\";\n  font-size: small;\n  color: ", ";\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -26,19 +26,19 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 var RegionHeader = function RegionHeader(props) {
   var imageUrl = require("../images/".concat(props.shape, ".svg"));
 
+  console.log(props.darkMode);
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
-    style: {
-      color: "white",
-      margin: "auto",
-      fontSize: "small"
-    }
+    darkMode: props.darkMode
   }, /*#__PURE__*/_react.default.createElement("img", {
     src: imageUrl,
-    height: 17
+    height: 17,
+    alt: props.shape
   }), props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1));
 };
 
-var StyledSpan = _styledComponents.default.span(_templateObject());
+var StyledSpan = _styledComponents.default.span(_templateObject(), function (props) {
+  return props.darkMode ? "#fff" : "#000";
+});
 
 var _default = RegionHeader;
 exports.default = _default;

@@ -28,7 +28,6 @@ import Region from "./Region";
 import MeritsRegion from "./MeritsRegion";
 import FocusRegion from "./FocusRegion";
 import Banner from "./Banner";
-import ShapesRim from "./ShapesRim";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { connect } from "react-redux";
@@ -47,7 +46,6 @@ import { PointShape, RegionI } from "../dataModels";
 
 const SemanticScreen = (props: {
   message: MessageState;
-  showShapes: boolean;
   readOnly: boolean;
   darkMode: boolean;
   expandedRegion: string;
@@ -56,7 +54,7 @@ const SemanticScreen = (props: {
   pointsDelete: (params: PointsDeleteParams) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
-  const { message, showShapes, expandedRegion } = props;
+  const { message, expandedRegion } = props;
 
   const author = message.author || {
     name: "anonymous",
@@ -139,18 +137,13 @@ const SemanticScreen = (props: {
     <DndProvider backend={HTML5Backend}>
       <StyledSemanticScreen
         expandedRegion={expandedRegion}
-        showShapes={showShapes}
         ref={semanticScreenRef}
         darkMode={props.darkMode}
       >
         <Banner
           text={author.name}
           color={author.color}
-          placement={
-            props.showShapes
-              ? { top: "1.2rem", right: "2.5rem" }
-              : { top: "0", right: "0" }
-          }
+          placement={{ top: "0", right: "0" }}
           darkMode={props.darkMode}
         />
         {regions.map((region: RegionI) => {
@@ -218,7 +211,6 @@ const SemanticScreen = (props: {
             );
           }
         })}
-        {showShapes && <ShapesRim />}
       </StyledSemanticScreen>
     </DndProvider>
   );

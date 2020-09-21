@@ -117,7 +117,8 @@ var Region = function Region(props) {
       return props.onRegionClick(region, true);
     }
   }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_RegionHeader.default, {
-    shape: region
+    shape: region,
+    darkMode: props.darkMode
   }), renderPoints.map(function (p) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
       key: p.pointId,

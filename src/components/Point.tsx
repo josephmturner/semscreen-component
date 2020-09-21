@@ -69,7 +69,16 @@ const Point = (props: {
   setExpandedRegion: (region: string) => void;
   darkMode?: boolean;
 }) => {
-  const { point, shape, index, combinePoints, setCursorPosition } = props;
+  const {
+    point,
+    shape,
+    index,
+    isEditing,
+    combinePoints,
+    cursorPositionIndex,
+    clearCursorPosition,
+    setCursorPosition,
+  } = props;
 
   const createPointBelow = (topContent: string, bottomContent: string) => {
     const newPointId = uuidv4();
@@ -140,8 +149,8 @@ const Point = (props: {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    props.isEditing && ref.current && ref.current.focus();
-  }, [props.isEditing]);
+    isEditing && ref.current && ref.current.focus();
+  }, [isEditing]);
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
@@ -150,15 +159,15 @@ const Point = (props: {
   drop(preview(pointRef));
 
   useEffect(() => {
-    if (!isNaN(props.cursorPositionIndex as number) && ref.current) {
+    if (!isNaN(cursorPositionIndex as number) && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(
-        props.cursorPositionIndex as number,
-        props.cursorPositionIndex as number
+        cursorPositionIndex as number,
+        cursorPositionIndex as number
       );
-      props.clearCursorPosition();
+      clearCursorPosition();
     }
-  }, [props.cursorPositionIndex, props.clearCursorPosition]);
+  }, [cursorPositionIndex, clearCursorPosition]);
 
   const [arrowPressed, setArrowPressed] = useState<
     "ArrowUp" | "ArrowDown" | undefined

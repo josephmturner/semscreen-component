@@ -117,7 +117,7 @@ const Region = (props: {
       onClick={() => props.onRegionClick(region, true)}
     >
       <div>
-        <RegionHeader shape={region} />
+        <RegionHeader shape={region} darkMode={props.darkMode} />
         {renderPoints.map((p: PointI) => (
           <Point
             key={p.pointId}
