@@ -93,7 +93,10 @@ var Point = function Point(props) {
   var point = props.point,
       shape = props.shape,
       index = props.index,
+      isEditing = props.isEditing,
       combinePoints = props.combinePoints,
+      cursorPositionIndex = props.cursorPositionIndex,
+      clearCursorPosition = props.clearCursorPosition,
       setCursorPosition = props.setCursorPosition;
 
   var createPointBelow = function createPointBelow(topContent, bottomContent) {
@@ -165,8 +168,8 @@ var Point = function Point(props) {
 
   var ref = (0, _react.useRef)(null);
   (0, _react.useEffect)(function () {
-    props.isEditing && ref.current && ref.current.focus();
-  }, [props.isEditing]);
+    isEditing && ref.current && ref.current.focus();
+  }, [isEditing]);
   var pointRef = (0, _react.useRef)(null);
 
   var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
@@ -176,12 +179,12 @@ var Point = function Point(props) {
 
   drop(preview(pointRef));
   (0, _react.useEffect)(function () {
-    if (!isNaN(props.cursorPositionIndex) && ref.current) {
+    if (!isNaN(cursorPositionIndex) && ref.current) {
       ref.current.focus();
-      ref.current.setSelectionRange(props.cursorPositionIndex, props.cursorPositionIndex);
-      props.clearCursorPosition();
+      ref.current.setSelectionRange(cursorPositionIndex, cursorPositionIndex);
+      clearCursorPosition();
     }
-  }, [props.cursorPositionIndex, props.clearCursorPosition]);
+  }, [cursorPositionIndex, clearCursorPosition]);
 
   var _useState = (0, _react.useState)(undefined),
       _useState2 = _slicedToArray(_useState, 2),

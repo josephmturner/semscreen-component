@@ -65,7 +65,6 @@ var SemanticScreen = function SemanticScreen(props) {
   return /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
     store: store
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreenLogic.default, {
-    showShapes: props.showShapes || true,
     readOnly: props.readOnly || false,
     darkMode: props.darkMode || false
   }));

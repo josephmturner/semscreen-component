@@ -20,6 +20,7 @@ import React from "react";
 import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
+import RegionHeader from "./RegionHeader";
 import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -116,6 +117,7 @@ const Region = (props: {
       onClick={() => props.onRegionClick(region, true)}
     >
       <div>
+        <RegionHeader shape={region} darkMode={props.darkMode} />
         {renderPoints.map((p: PointI) => (
           <Point
             key={p.pointId}

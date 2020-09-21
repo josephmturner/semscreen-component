@@ -32,7 +32,6 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var App = function App() {
-  var showShapes = true;
   var readOnly = false;
   var darkMode = true;
 
@@ -47,7 +46,6 @@ var App = function App() {
 
   return /*#__PURE__*/_react.default.createElement(_SemanticScreen.default, {
     message: message,
-    showShapes: showShapes,
     readOnly: readOnly,
     onMessageChange: onMessageChange,
     darkMode: darkMode

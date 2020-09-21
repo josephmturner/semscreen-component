@@ -27,8 +27,6 @@ var _FocusRegion = _interopRequireDefault(require("./FocusRegion"));
 
 var _Banner = _interopRequireDefault(require("./Banner"));
 
-var _ShapesRim = _interopRequireDefault(require("./ShapesRim"));
-
 var _StyledSemanticScreen = _interopRequireDefault(require("./StyledSemanticScreen"));
 
 var _reactRedux = require("react-redux");
@@ -65,7 +63,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 */
 var SemanticScreen = function SemanticScreen(props) {
   var message = props.message,
-      showShapes = props.showShapes,
       expandedRegion = props.expandedRegion;
   var author = message.author || {
     name: "anonymous",
@@ -128,16 +125,12 @@ var SemanticScreen = function SemanticScreen(props) {
     backend: _reactDndHtml5Backend.HTML5Backend
   }, /*#__PURE__*/_react.default.createElement(_StyledSemanticScreen.default, {
     expandedRegion: expandedRegion,
-    showShapes: showShapes,
     ref: semanticScreenRef,
     darkMode: props.darkMode
   }, /*#__PURE__*/_react.default.createElement(_Banner.default, {
     text: author.name,
     color: author.color,
-    placement: props.showShapes ? {
-      top: "1.2rem",
-      right: "2.5rem"
-    } : {
+    placement: {
       top: "0",
       right: "0"
     },
@@ -185,7 +178,7 @@ var SemanticScreen = function SemanticScreen(props) {
         darkMode: props.darkMode
       });
     }
-  }), showShapes && /*#__PURE__*/_react.default.createElement(_ShapesRim.default, null)));
+  })));
 };
 
 var mapStateToProps = function mapStateToProps(state) {

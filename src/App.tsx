@@ -22,7 +22,6 @@ import { messages } from "./constants/initialState";
 import { MessageState } from "./reducers/message";
 
 const App = () => {
-  const showShapes = true;
   const readOnly = false;
   const darkMode = true;
 
@@ -34,7 +33,6 @@ const App = () => {
   return (
     <SemanticScreen
       message={message}
-      showShapes={showShapes}
       readOnly={readOnly}
       onMessageChange={onMessageChange}
       darkMode={darkMode}
