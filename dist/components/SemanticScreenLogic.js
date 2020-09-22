@@ -70,7 +70,6 @@ var SemanticScreen = function SemanticScreen(props) {
     authorDate: new Date(),
     color: (0, _randomcolor.default)()
   };
-  console.log(author.color);
 
   var createEmptyPoint = function createEmptyPoint(shape, index, focus) {
     props.pointCreate({
@@ -150,6 +149,7 @@ var SemanticScreen = function SemanticScreen(props) {
         region: region,
         isExpanded: isExpanded(region),
         readOnly: props.readOnly,
+        author: author,
         point: message.focus ? Object.values(message.points).flat().find(function (p) {
           return message.focus && p.pointId === message.focus.pointId;
         }) : undefined,

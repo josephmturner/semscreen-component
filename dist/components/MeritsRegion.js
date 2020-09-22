@@ -7,7 +7,7 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
-var _StyledFocusRegion = _interopRequireDefault(require("./StyledFocusRegion"));
+var _StyledMeritsRegion = _interopRequireDefault(require("./StyledMeritsRegion"));
 
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 
@@ -71,7 +71,7 @@ var MeritsRegion = function MeritsRegion(props) {
       _useDrop2 = _slicedToArray(_useDrop, 2),
       drop = _useDrop2[1];
 
-  return /*#__PURE__*/_react.default.createElement(_StyledFocusRegion.default, {
+  return /*#__PURE__*/_react.default.createElement(_StyledMeritsRegion.default, {
     ref: drop,
     onClick: function onClick() {
       return onRegionClick(region, isExpanded !== "expanded");

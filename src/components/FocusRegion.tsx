@@ -20,7 +20,7 @@ import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledFocusRegion from "./StyledFocusRegion";
 import SevenShapes from "./SevenShapes";
-import { PointI, PointShape, RegionI } from "../dataModels";
+import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -34,6 +34,7 @@ const FocusRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
   readOnly: boolean;
+  author: AuthorI;
   point: PointI | undefined;
   shape: PointShape | undefined;
   index: number | undefined;
@@ -68,6 +69,7 @@ const FocusRegion = (props: {
   return (
     <StyledFocusRegion
       ref={drop}
+      borderColor={props.author.color}
       onClick={() => onRegionClick(region, isExpanded !== "expanded")}
     >
       <StyledDiv>

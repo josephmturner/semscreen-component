@@ -18,7 +18,7 @@
 */
 import React from "react";
 //import FocusPoint from "./FocusPoint";
-import StyledFocusRegion from "./StyledFocusRegion";
+import StyledMeritsRegion from "./StyledMeritsRegion";
 import { RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
@@ -56,12 +56,12 @@ const MeritsRegion = (props: {
   });
 
   return (
-    <StyledFocusRegion
+    <StyledMeritsRegion
       ref={drop}
       onClick={() => onRegionClick(region, isExpanded !== "expanded")}
     >
       <StyledDiv></StyledDiv>
-    </StyledFocusRegion>
+    </StyledMeritsRegion>
   );
 };
 

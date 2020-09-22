@@ -18,18 +18,12 @@
 */
 import styled from "styled-components";
 
-interface StyledFocusRegionProps {
-  borderColor: string;
-}
-
-const StyledFocusRegion = styled.div<StyledFocusRegionProps>`
+const StyledFocusRegion = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: auto;
-  border: 2px solid ${(props) => props.borderColor};
-  border-radius: 7px;
 `;
 
 export default StyledFocusRegion;

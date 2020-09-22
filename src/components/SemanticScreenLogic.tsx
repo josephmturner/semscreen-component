@@ -63,7 +63,6 @@ const SemanticScreen = (props: {
     color: randomColor(),
   };
 
-  console.log(author.color);
   const createEmptyPoint = (
     shape: PointShape,
     index: number,
@@ -163,6 +162,7 @@ const SemanticScreen = (props: {
                 region={region}
                 isExpanded={isExpanded(region)}
                 readOnly={props.readOnly}
+                author={author}
                 point={
                   message.focus
                     ? Object.values(message.points)
