@@ -18,12 +18,18 @@ import {
   expandedRegionReducer,
   ExpandedRegionState,
 } from "./expandedRegion";
+import {
+  initialSelectedPointsState,
+  selectedPointsReducer,
+  SelectedPointsState,
+} from "./selectedPoints";
 
 export interface AppState {
   editingPoint: EditingPointState;
   cursorPosition: CursorPositionState;
   message: MessageState;
   expandedRegion: ExpandedRegionState;
+  selectedPoints: SelectedPointsState;
 }
 
 function createAppStore() {
@@ -32,6 +38,7 @@ function createAppStore() {
     cursorPosition: initialCursorPositionState,
     message: initialMessageState,
     expandedRegion: initialExpandedRegionState,
+    selectedPoints: initialSelectedPointsState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
@@ -48,6 +55,7 @@ function createAppStore() {
         action,
         state
       ),
+      selectedPoints: selectedPointsReducer(state.selectedPoints, action, state),
     };
     return newState;
   };
