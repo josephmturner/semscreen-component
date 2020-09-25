@@ -26,15 +26,22 @@ const App = () => {
   const darkMode = true;
 
   const [message, setMessage] = useState<MessageState>(messages[0]);
-  const onMessageChange = (message: MessageState) => {
+  const onChangeMessage = (message: MessageState) => {
     setMessage(message);
+  };
+
+  const [selectedPointIds, setSelectedPointIds] = useState<string[]>([]);
+  const onChangeSelectedPointIds = (selectedPointIds: string[]) => {
+    setSelectedPointIds(selectedPointIds);
   };
 
   return (
     <SemanticScreen
       message={message}
+      onChangeMessage={onChangeMessage}
+      selectedPointIds={selectedPointIds}
+      onChangeSelectedPointIds={onChangeSelectedPointIds}
       readOnly={readOnly}
-      onMessageChange={onMessageChange}
       darkMode={darkMode}
     />
   );

@@ -21,16 +21,19 @@ import { Provider } from "react-redux";
 import { createStore } from "../reducers/store";
 import { MessageState } from "../reducers/message";
 import { setMessage } from "../actions/messageActions";
+import { setSelectedPoints } from "../actions/selectPointActions";
 
 import SemanticScreenLogic from "./SemanticScreenLogic";
 
 const SemanticScreen = (props: {
   message?: MessageState;
-  onMessageChange?: (message: MessageState) => void;
+  onChangeMessage?: (message: MessageState) => void;
+  selectedPointIds?: string[];
+  onChangeSelectedPointIds?: (pointIds: string[]) => void;
   readOnly?: boolean;
   darkMode?: boolean;
 }) => {
-  const { message, onMessageChange } = props;
+  const { message, onChangeMessage, selectedPointIds, onChangeSelectedPointIds } = props;
 
   const store = useMemo(createStore, []);
 
@@ -38,16 +41,22 @@ const SemanticScreen = (props: {
     if (message && message !== store.getState().message) {
       store.dispatch(setMessage({ message: message }));
     }
-  }, [store, message]);
+    if (selectedPointIds && selectedPointIds !== store.getState().selectedPoints.pointIds) {
+      store.dispatch(setSelectedPoints({ pointIds: selectedPointIds }));
+    }
+  }, [store, message, selectedPointIds]);
 
   useEffect(() => {
     const unsubscribe = store.subscribe(() => {
-      if (onMessageChange && store.getState().message !== message) {
-        onMessageChange(store.getState().message);
+      if (onChangeMessage && store.getState().message !== message) {
+        onChangeMessage(store.getState().message);
+      }
+      if (onChangeSelectedPointIds && store.getState().selectedPoints.pointIds !== selectedPointIds) {
+        onChangeSelectedPointIds(store.getState().selectedPoints.pointIds);
       }
     });
     return () => unsubscribe();
-  }, [store, onMessageChange, message]);
+  }, [store, onChangeMessage, message, onChangeSelectedPointIds, selectedPointIds]);
 
   return (
     <Provider store={store}>

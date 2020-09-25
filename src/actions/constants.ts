@@ -20,4 +20,9 @@ export const Actions = {
   splitIntoTwoPoints: "splitIntoTwoPoints",
 
   setExpandedRegion: "setExpandedRegion",
+
+  setSelectedPoints: "setSelectedPoints",
+  togglePoint: "togglePoint",
+  selectAllPoints: "selectAllPoints",
+  deselectAllPoints: "deselectAllPoints",
 };

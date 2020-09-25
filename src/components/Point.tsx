@@ -48,6 +48,7 @@ import {
   SetMainPointParams,
 } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
+import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 
 const Point = (props: {
   point: PointI;
@@ -67,6 +68,7 @@ const Point = (props: {
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
+  togglePoint: (params: TogglePointParams) => void;
   darkMode?: boolean;
 }) => {
   const {
@@ -198,6 +200,19 @@ const Point = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
+  const onClickShapeIcon = () => {
+    props.togglePoint({ pointId: point.pointId });
+
+    // TODO: Uncomment this to bring back toggling main point feature.
+    // if (props.readOnly) {
+    //   return;
+    // } else {
+    //   props.isMainPoint
+    //     ? props.setMainPoint({ pointId: "" })
+    //     : props.setMainPoint({ pointId: point.pointId });
+    // }
+  };
+
   return (
     <StyledSpan
       ref={pointRef}
@@ -210,15 +225,7 @@ const Point = (props: {
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
-        onClick={() => {
-          if (props.readOnly) {
-            return;
-          } else {
-            props.isMainPoint
-              ? props.setMainPoint({ pointId: "" })
-              : props.setMainPoint({ pointId: point.pointId });
-          }
-        }}
+        onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         height={props.isMainPoint ? 23 : 17}
@@ -375,6 +382,7 @@ const mapActionsToProps = {
   pointUpdate,
   setMainPoint,
   setExpandedRegion,
+  togglePoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);
