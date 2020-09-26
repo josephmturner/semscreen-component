@@ -139,12 +139,14 @@ const SemanticScreen = (props: {
         ref={semanticScreenRef}
         darkMode={props.darkMode}
       >
-        <Banner
-          text={author.name}
-          color={author.color}
-          placement={{ top: "0", right: "0" }}
-          darkMode={props.darkMode}
-        />
+        {props.readOnly && (
+          <Banner
+            text={author.name}
+            color={author.color}
+            placement={{ top: "0", right: "0" }}
+            darkMode={props.darkMode}
+          />
+        )}
         {regions.map((region: RegionI) => {
           if (region === "merits") {
             return (

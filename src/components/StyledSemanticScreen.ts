@@ -35,15 +35,15 @@ const StyledSemanticScreen = styled.div<Props>`
   grid-template-rows: 1fr 1fr 1fr;
 
   @media (max-width: 799px) {
-   --expanded-size: 1fr;
-   --minimized-size: 0fr;
- }
- 
+    --expanded-size: 1fr;
+    --minimized-size: 0fr;
+  }
+
   @media (min-width: 800px) {
-   --expanded-size: 4fr;
-   --minimized-size: 1fr;
- }
-  
+    --expanded-size: 4fr;
+    --minimized-size: 1fr;
+  }
+
   ${({ expandedRegion }) =>
     expandedRegion === "facts" &&
     `
@@ -108,67 +108,67 @@ const StyledSemanticScreen = styled.div<Props>`
   `}
 
   > .Shape {
-  opacity: 0.33;
+    opacity: 0.33;
   }
 
   > #FactsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
   }
   > #MeritsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  top: 0%;
-  left: 50%;
-  transform: translate(-50%, 0%);
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, 0%);
   }
   > #PeopleShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  top: 0%;
-  right: 0%;
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    top: 0%;
+    right: 0%;
   }
   > #ThoughtsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  top: 50%;
-  left: 0%;
-  transform: translate(0%, -50%);
- }
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    top: 50%;
+    left: 0%;
+    transform: translate(0%, -50%);
+  }
   > #ActionsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  top: 50%;
-  right: 0%;
-  transform: translate(0%, -50%);
- }
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    top: 50%;
+    right: 0%;
+    transform: translate(0%, -50%);
+  }
   > #FeelingsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  bottom: 0%;
-  left: 0%;
- }
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    bottom: 0%;
+    left: 0%;
+  }
   > #NeedsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  bottom: 0%;
-  left: 50%;
-  transform: translate(-50%, 0%);
- }
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    bottom: 0%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+  }
   > #TopicsShape {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  bottom: 0%;
-  right: 0%;
- }
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    bottom: 0%;
+    right: 0%;
+  }
 `;
 
 export default StyledSemanticScreen;

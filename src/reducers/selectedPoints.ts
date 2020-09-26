@@ -1,7 +1,9 @@
 import { Action, Actions } from "../actions/constants";
-import { SetSelectedPointsParams, TogglePointParams } from "../actions/selectPointActions";
+import {
+  SetSelectedPointsParams,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 import { AppState } from "./store";
-
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -19,7 +21,10 @@ export const selectedPointsReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.setSelectedPoints:
-      newState = handleSetSelectedPoints(state, action as Action<SetSelectedPointsParams>);
+      newState = handleSetSelectedPoints(
+        state,
+        action as Action<SetSelectedPointsParams>
+      );
       break;
     case Actions.togglePoint:
       newState = handleTogglePoint(state, action as Action<TogglePointParams>);
@@ -28,15 +33,23 @@ export const selectedPointsReducer = (
   return newState;
 };
 
-function handleSetSelectedPoints(state: SelectedPointsState, action: Action<SetSelectedPointsParams>): SelectedPointsState {
+function handleSetSelectedPoints(
+  state: SelectedPointsState,
+  action: Action<SetSelectedPointsParams>
+): SelectedPointsState {
   return {
     pointIds: action.params.pointIds,
   };
 }
 
-function handleTogglePoint(state: SelectedPointsState, action: Action<TogglePointParams>): SelectedPointsState {
-  console.log('handling toggle point');
-  const newPointIds = state.pointIds.filter(pointId => pointId !== action.params.pointId);
+function handleTogglePoint(
+  state: SelectedPointsState,
+  action: Action<TogglePointParams>
+): SelectedPointsState {
+  console.log("handling toggle point");
+  const newPointIds = state.pointIds.filter(
+    (pointId) => pointId !== action.params.pointId
+  );
   if (newPointIds.length === state.pointIds.length) {
     newPointIds.push(action.params.pointId);
   }

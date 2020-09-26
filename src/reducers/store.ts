@@ -55,7 +55,11 @@ function createAppStore() {
         action,
         state
       ),
-      selectedPoints: selectedPointsReducer(state.selectedPoints, action, state),
+      selectedPoints: selectedPointsReducer(
+        state.selectedPoints,
+        action,
+        state
+      ),
     };
     return newState;
   };

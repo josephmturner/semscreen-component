@@ -126,7 +126,7 @@ var SemanticScreen = function SemanticScreen(props) {
     expandedRegion: expandedRegion,
     ref: semanticScreenRef,
     darkMode: props.darkMode
-  }, /*#__PURE__*/_react.default.createElement(_Banner.default, {
+  }, props.readOnly && /*#__PURE__*/_react.default.createElement(_Banner.default, {
     text: author.name,
     color: author.color,
     placement: {
