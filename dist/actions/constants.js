@@ -17,6 +17,10 @@ var Actions = {
   setMainPoint: "setMainPoint",
   combinePoints: "combinePoints",
   splitIntoTwoPoints: "splitIntoTwoPoints",
-  setExpandedRegion: "setExpandedRegion"
+  setExpandedRegion: "setExpandedRegion",
+  setSelectedPoints: "setSelectedPoints",
+  togglePoint: "togglePoint",
+  selectAllPoints: "selectAllPoints",
+  deselectAllPoints: "deselectAllPoints"
 };
 exports.Actions = Actions;

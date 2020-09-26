@@ -40,14 +40,25 @@ var App = function App() {
       message = _useState2[0],
       setMessage = _useState2[1];
 
-  var onMessageChange = function onMessageChange(message) {
+  var onChangeMessage = function onChangeMessage(message) {
     setMessage(message);
+  };
+
+  var _useState3 = (0, _react.useState)([]),
+      _useState4 = _slicedToArray(_useState3, 2),
+      selectedPointIds = _useState4[0],
+      setSelectedPointIds = _useState4[1];
+
+  var onChangeSelectedPointIds = function onChangeSelectedPointIds(selectedPointIds) {
+    setSelectedPointIds(selectedPointIds);
   };
 
   return /*#__PURE__*/_react.default.createElement(_SemanticScreen.default, {
     message: message,
+    onChangeMessage: onChangeMessage,
+    selectedPointIds: selectedPointIds,
+    onChangeSelectedPointIds: onChangeSelectedPointIds,
     readOnly: readOnly,
-    onMessageChange: onMessageChange,
     darkMode: darkMode
   });
 };

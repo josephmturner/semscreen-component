@@ -26,7 +26,6 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 var RegionHeader = function RegionHeader(props) {
   var imageUrl = require("../images/".concat(props.shape, ".svg"));
 
-  console.log(props.darkMode);
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
     darkMode: props.darkMode
   }, /*#__PURE__*/_react.default.createElement("img", {

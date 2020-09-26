@@ -15,6 +15,8 @@ var _store = require("../reducers/store");
 
 var _messageActions = require("../actions/messageActions");
 
+var _selectPointActions = require("../actions/selectPointActions");
+
 var _SemanticScreenLogic = _interopRequireDefault(require("./SemanticScreenLogic"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -43,7 +45,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 */
 var SemanticScreen = function SemanticScreen(props) {
   var message = props.message,
-      onMessageChange = props.onMessageChange;
+      onChangeMessage = props.onChangeMessage,
+      selectedPointIds = props.selectedPointIds,
+      onChangeSelectedPointIds = props.onChangeSelectedPointIds;
   var store = (0, _react.useMemo)(_store.createStore, []);
   (0, _react.useLayoutEffect)(function () {
     if (message && message !== store.getState().message) {
@@ -51,17 +55,27 @@ var SemanticScreen = function SemanticScreen(props) {
         message: message
       }));
     }
-  }, [store, message]);
+
+    if (selectedPointIds && selectedPointIds !== store.getState().selectedPoints.pointIds) {
+      store.dispatch((0, _selectPointActions.setSelectedPoints)({
+        pointIds: selectedPointIds
+      }));
+    }
+  }, [store, message, selectedPointIds]);
   (0, _react.useEffect)(function () {
     var unsubscribe = store.subscribe(function () {
-      if (onMessageChange && store.getState().message !== message) {
-        onMessageChange(store.getState().message);
+      if (onChangeMessage && store.getState().message !== message) {
+        onChangeMessage(store.getState().message);
+      }
+
+      if (onChangeSelectedPointIds && store.getState().selectedPoints.pointIds !== selectedPointIds) {
+        onChangeSelectedPointIds(store.getState().selectedPoints.pointIds);
       }
     });
     return function () {
       return unsubscribe();
     };
-  }, [store, onMessageChange, message]);
+  }, [store, onChangeMessage, message, onChangeSelectedPointIds, selectedPointIds]);
   return /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
     store: store
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreenLogic.default, {

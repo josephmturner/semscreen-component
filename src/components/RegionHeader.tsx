@@ -4,7 +4,6 @@ import styled from "styled-components";
 
 const RegionHeader = (props: { shape: PointShape; darkMode?: boolean }) => {
   const imageUrl = require(`../images/${props.shape}.svg`);
-  console.log(props.darkMode);
 
   return (
     <StyledSpan darkMode={props.darkMode}>

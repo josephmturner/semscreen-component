@@ -80,6 +80,7 @@ var FocusRegion = function FocusRegion(props) {
 
   return /*#__PURE__*/_react.default.createElement(_StyledFocusRegion.default, {
     ref: drop,
+    borderColor: props.author.color,
     onClick: function onClick() {
       return onRegionClick(region, isExpanded !== "expanded");
     }

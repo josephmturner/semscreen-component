@@ -63,7 +63,6 @@ const SemanticScreen = (props: {
     color: randomColor(),
   };
 
-  console.log(author.color);
   const createEmptyPoint = (
     shape: PointShape,
     index: number,
@@ -140,12 +139,14 @@ const SemanticScreen = (props: {
         ref={semanticScreenRef}
         darkMode={props.darkMode}
       >
-        <Banner
-          text={author.name}
-          color={author.color}
-          placement={{ top: "0", right: "0" }}
-          darkMode={props.darkMode}
-        />
+        {props.readOnly && (
+          <Banner
+            text={author.name}
+            color={author.color}
+            placement={{ top: "0", right: "0" }}
+            darkMode={props.darkMode}
+          />
+        )}
         {regions.map((region: RegionI) => {
           if (region === "merits") {
             return (
@@ -163,6 +164,7 @@ const SemanticScreen = (props: {
                 region={region}
                 isExpanded={isExpanded(region)}
                 readOnly={props.readOnly}
+                author={author}
                 point={
                   message.focus
                     ? Object.values(message.points)

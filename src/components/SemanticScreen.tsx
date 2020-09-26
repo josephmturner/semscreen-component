@@ -33,7 +33,12 @@ const SemanticScreen = (props: {
   readOnly?: boolean;
   darkMode?: boolean;
 }) => {
-  const { message, onChangeMessage, selectedPointIds, onChangeSelectedPointIds } = props;
+  const {
+    message,
+    onChangeMessage,
+    selectedPointIds,
+    onChangeSelectedPointIds,
+  } = props;
 
   const store = useMemo(createStore, []);
 
@@ -41,7 +46,10 @@ const SemanticScreen = (props: {
     if (message && message !== store.getState().message) {
       store.dispatch(setMessage({ message: message }));
     }
-    if (selectedPointIds && selectedPointIds !== store.getState().selectedPoints.pointIds) {
+    if (
+      selectedPointIds &&
+      selectedPointIds !== store.getState().selectedPoints.pointIds
+    ) {
       store.dispatch(setSelectedPoints({ pointIds: selectedPointIds }));
     }
   }, [store, message, selectedPointIds]);
@@ -51,12 +59,21 @@ const SemanticScreen = (props: {
       if (onChangeMessage && store.getState().message !== message) {
         onChangeMessage(store.getState().message);
       }
-      if (onChangeSelectedPointIds && store.getState().selectedPoints.pointIds !== selectedPointIds) {
+      if (
+        onChangeSelectedPointIds &&
+        store.getState().selectedPoints.pointIds !== selectedPointIds
+      ) {
         onChangeSelectedPointIds(store.getState().selectedPoints.pointIds);
       }
     });
     return () => unsubscribe();
-  }, [store, onChangeMessage, message, onChangeSelectedPointIds, selectedPointIds]);
+  }, [
+    store,
+    onChangeMessage,
+    message,
+    onChangeSelectedPointIds,
+    selectedPointIds,
+  ]);
 
   return (
     <Provider store={store}>
