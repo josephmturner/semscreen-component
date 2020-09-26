@@ -17,12 +17,15 @@ var _message = require("./message");
 
 var _expandedRegion = require("./expandedRegion");
 
+var _selectedPoints = require("./selectedPoints");
+
 function createAppStore() {
   var initialAppState = {
     editingPoint: _editingPoint.initialEditingPointState,
     cursorPosition: _cursorPosition.initialCursorPositionState,
     message: _message.initialMessageState,
-    expandedRegion: _expandedRegion.initialExpandedRegionState
+    expandedRegion: _expandedRegion.initialExpandedRegionState,
+    selectedPoints: _selectedPoints.initialSelectedPointsState
   };
 
   var appReducer = function appReducer() {
@@ -32,7 +35,8 @@ function createAppStore() {
       editingPoint: (0, _editingPoint.editingPointReducer)(state.editingPoint, action, state),
       cursorPosition: (0, _cursorPosition.cursorPositionReducer)(state.cursorPosition, action, state),
       message: (0, _message.messageReducer)(state.message, action, state),
-      expandedRegion: (0, _expandedRegion.expandedRegionReducer)(state.expandedRegion, action, state)
+      expandedRegion: (0, _expandedRegion.expandedRegionReducer)(state.expandedRegion, action, state),
+      selectedPoints: (0, _selectedPoints.selectedPointsReducer)(state.selectedPoints, action, state)
     };
     return newState;
   };

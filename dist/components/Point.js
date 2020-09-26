@@ -33,6 +33,8 @@ var _messageActions = require("../actions/messageActions");
 
 var _expandedRegionActions = require("../actions/expandedRegionActions");
 
+var _selectPointActions = require("../actions/selectPointActions");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
@@ -224,6 +226,19 @@ var Point = function Point(props) {
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
+  var onClickShapeIcon = function onClickShapeIcon() {
+    props.togglePoint({
+      pointId: point.pointId
+    }); // TODO: Uncomment this to bring back toggling main point feature.
+    // if (props.readOnly) {
+    //   return;
+    // } else {
+    //   props.isMainPoint
+    //     ? props.setMainPoint({ pointId: "" })
+    //     : props.setMainPoint({ pointId: point.pointId });
+    // }
+  };
+
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
     ref: pointRef,
     isEditing: props.isEditing,
@@ -234,17 +249,7 @@ var Point = function Point(props) {
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
-    onClick: function onClick() {
-      if (props.readOnly) {
-        return;
-      } else {
-        props.isMainPoint ? props.setMainPoint({
-          pointId: ""
-        }) : props.setMainPoint({
-          pointId: point.pointId
-        });
-      }
-    },
+    onClick: onClickShapeIcon,
     isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
     height: props.isMainPoint ? 23 : 17,
@@ -369,7 +374,8 @@ var mapActionsToProps = {
   pointMove: _messageActions.pointMove,
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
-  setExpandedRegion: _expandedRegionActions.setExpandedRegion
+  setExpandedRegion: _expandedRegionActions.setExpandedRegion,
+  togglePoint: _selectPointActions.togglePoint
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(Point);
