@@ -56,7 +56,7 @@ const Region = (props: {
 }) => {
   const { region, points, cursorPosition } = props;
 
-  const renderPoints = points.filter((p) => p.pointId !== props.focusPointId);
+  const renderPoints = points.filter((p) => p._id !== props.focusPointId);
 
   const placeholderText = `New ${region.toLowerCase()} point`;
   const placeholderImg = require(`../images/${region}.svg`);
@@ -120,16 +120,16 @@ const Region = (props: {
         <RegionHeader shape={region} darkMode={props.darkMode} />
         {renderPoints.map((p: PointI) => (
           <Point
-            key={p.pointId}
+            key={p._id}
             point={p}
             shape={region}
             readOnly={props.readOnly}
             isExpanded={props.isExpanded}
-            isMainPoint={props.mainPointId === p.pointId}
-            index={points.findIndex((point) => point.pointId === p.pointId)}
-            isEditing={props.editingPointId === p.pointId}
+            isMainPoint={props.mainPointId === p._id}
+            index={points.findIndex((point) => point._id === p._id)}
+            isEditing={props.editingPointId === p._id}
             cursorPositionIndex={
-              cursorPosition && cursorPosition.pointId === p.pointId
+              cursorPosition && cursorPosition.pointId === p._id
                 ? cursorPosition.index
                 : undefined
             }

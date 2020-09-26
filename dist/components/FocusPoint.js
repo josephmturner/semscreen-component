@@ -120,7 +120,7 @@ var FocusPoint = function FocusPoint(props) {
         isMainPoint ? props.setMainPoint({
           pointId: ""
         }) : props.setMainPoint({
-          pointId: point.pointId
+          pointId: point._id
         });
       }
     },
@@ -132,7 +132,7 @@ var FocusPoint = function FocusPoint(props) {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: function onFocus() {
-      props.setEditingPoint(point.pointId);
+      props.setEditingPoint(point._id);
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
     ref: ref,

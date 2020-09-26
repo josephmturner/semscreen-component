@@ -58,7 +58,7 @@ var Region = function Region(props) {
       points = props.points,
       cursorPosition = props.cursorPosition;
   var renderPoints = points.filter(function (p) {
-    return p.pointId !== props.focusPointId;
+    return p._id !== props.focusPointId;
   });
   var placeholderText = "New ".concat(region.toLowerCase(), " point");
 
@@ -121,17 +121,17 @@ var Region = function Region(props) {
     darkMode: props.darkMode
   }), renderPoints.map(function (p) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
-      key: p.pointId,
+      key: p._id,
       point: p,
       shape: region,
       readOnly: props.readOnly,
       isExpanded: props.isExpanded,
-      isMainPoint: props.mainPointId === p.pointId,
+      isMainPoint: props.mainPointId === p._id,
       index: points.findIndex(function (point) {
-        return point.pointId === p.pointId;
+        return point._id === p._id;
       }),
-      isEditing: props.editingPointId === p.pointId,
-      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p.pointId ? cursorPosition.index : undefined,
+      isEditing: props.editingPointId === p._id,
+      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p._id ? cursorPosition.index : undefined,
       darkMode: props.darkMode
     });
   }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {

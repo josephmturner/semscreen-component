@@ -48,7 +48,7 @@ export interface AuthorI {
 export interface PointI {
   quotedAuthor?: AuthorI;
   content: string;
-  pointId: string;
+  _id: string;
   pointDate: Date;
 }
 

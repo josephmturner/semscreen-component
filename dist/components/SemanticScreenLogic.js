@@ -92,7 +92,7 @@ var SemanticScreen = function SemanticScreen(props) {
       pointIds: Object.values(message.points).flat().filter(function (p) {
         return !p.content;
       }).map(function (p) {
-        return p.pointId;
+        return p._id;
       })
     });
   };
@@ -151,13 +151,13 @@ var SemanticScreen = function SemanticScreen(props) {
         readOnly: props.readOnly,
         author: author,
         point: message.focus ? Object.values(message.points).flat().find(function (p) {
-          return message.focus && p.pointId === message.focus.pointId;
+          return message.focus && p._id === message.focus._id;
         }) : undefined,
         shape: message.focus ? message.focus.shape : undefined,
         index: message.focus ? message.points[message.focus.shape].findIndex(function (p) {
-          return message.focus && p.pointId === message.focus.pointId;
+          return message.focus && p._id === message.focus._id;
         }) : undefined,
-        isMainPoint: message.focus && message.main === message.focus.pointId ? true : false,
+        isMainPoint: message.focus && message.main === message.focus._id ? true : false,
         createEmptyFocus: createEmptyFocus,
         onRegionClick: handleRegionClick,
         key: region,
@@ -170,7 +170,7 @@ var SemanticScreen = function SemanticScreen(props) {
         readOnly: props.readOnly,
         author: author,
         points: message.points[region],
-        focusPointId: message.focus && message.focus.pointId,
+        focusPointId: message.focus && message.focus._id,
         mainPointId: message.main,
         createEmptyPoint: createEmptyPoint,
         onRegionClick: handleRegionClick,

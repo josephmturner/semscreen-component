@@ -51,7 +51,7 @@ function handleSetCursorPosition(state, action, appState) {
   if (action.params.moveTo === "beginningOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1].pointId,
+        pointId: points[index - 1]._id,
         index: 0,
         shape: shape
       }
@@ -59,7 +59,7 @@ function handleSetCursorPosition(state, action, appState) {
   } else if (action.params.moveTo === "endOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1].pointId,
+        pointId: points[index - 1]._id,
         index: points[index - 1].content.length,
         shape: shape
       }
@@ -68,7 +68,7 @@ function handleSetCursorPosition(state, action, appState) {
     if (index !== points.length - 1) {
       newState = {
         details: {
-          pointId: points[index + 1].pointId,
+          pointId: points[index + 1]._id,
           index: 0,
           shape: shape
         }
@@ -91,11 +91,11 @@ function handleCombinePoints(state, action, appState) {
   var prevPoint = appState.message.points[action.params.shape][action.params.index - 1];
   var currentPoint = appState.message.points[action.params.shape][action.params.index];
   var newCursorPosition = action.params.aboveOrBelow === "above" ? {
-    pointId: prevPoint.pointId,
+    pointId: prevPoint._id,
     index: prevPoint.content.length,
     shape: action.params.shape
   } : {
-    pointId: currentPoint.pointId,
+    pointId: currentPoint._id,
     index: currentPoint.content.length,
     shape: action.params.shape
   };

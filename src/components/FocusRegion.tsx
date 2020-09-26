@@ -80,7 +80,7 @@ const FocusRegion = (props: {
             index={index}
             readOnly={props.readOnly}
             isMainPoint={props.isMainPoint}
-            isEditing={props.editingPointId === point.pointId}
+            isEditing={props.editingPointId === point._id}
             onClick={() => onRegionClick(region, true)}
             darkMode={props.darkMode}
           />
