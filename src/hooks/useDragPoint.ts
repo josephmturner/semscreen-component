@@ -28,7 +28,7 @@ export const useDragPoint = (
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
-      pointId: point.pointId,
+      pointId: point._id,
       originalShape: shape,
       originalIndex: index,
       shape: shape,
@@ -39,7 +39,7 @@ export const useDragPoint = (
       isDragging: monitor.isDragging(),
     }),
     isDragging: (monitor) => {
-      return point.pointId === monitor.getItem().pointId;
+      return point._id === monitor.getItem().pointId;
     },
   });
   return { isDragging, drag, preview };

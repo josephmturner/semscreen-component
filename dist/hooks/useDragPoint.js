@@ -25,7 +25,7 @@ var useDragPoint = function useDragPoint(point, shape, index) {
   var _useDrag = (0, _reactDnd.useDrag)({
     item: {
       type: _ReactDnd.ItemTypes.POINT,
-      pointId: point.pointId,
+      pointId: point._id,
       originalShape: shape,
       originalIndex: index,
       shape: shape,
@@ -38,7 +38,7 @@ var useDragPoint = function useDragPoint(point, shape, index) {
       };
     },
     isDragging: function isDragging(monitor) {
-      return point.pointId === monitor.getItem().pointId;
+      return point._id === monitor.getItem().pointId;
     }
   }),
       _useDrag2 = _slicedToArray(_useDrag, 3),

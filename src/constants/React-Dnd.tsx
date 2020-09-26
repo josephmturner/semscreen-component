@@ -6,7 +6,7 @@ export const ItemTypes = {
 
 export interface DraggablePointType {
   type: "point";
-  pointId: PointI["pointId"];
+  pointId: PointI["_id"];
   shape: PointShape;
   index: number;
   originalShape: PointShape;

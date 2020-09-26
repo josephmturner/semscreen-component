@@ -24,17 +24,17 @@ import {
 } from "../actions/messageActions";
 
 export interface MessageState {
-  messageId: string;
+  _id: string;
   revisionOf?: string;
   author: AuthorI;
   points: PointsI;
-  focus?: { pointId: string; shape: PointShape };
+  focus?: { _id: string; shape: PointShape };
   main?: string;
   createdAt: Date;
 }
 
 export const initialMessageState: MessageState = {
-  messageId: uuidv4(),
+  _id: uuidv4(),
   author: { name: "anonymous", color: randomColor() },
   points: {
     facts: [],
@@ -112,7 +112,7 @@ function handlePointCreate(
   const newPoints = state.points[action.params.shape].slice();
   newPoints.splice(action.params.index, 0, {
     ...action.params.point,
-    pointId: action.params.newPointId,
+    _id: action.params.newPointId,
     pointDate: new Date(),
   });
   return action.params.focus
@@ -123,7 +123,7 @@ function handlePointCreate(
           [action.params.shape]: newPoints,
         },
         focus: {
-          pointId: action.params.newPointId,
+          _id: action.params.newPointId,
           shape: action.params.shape,
         },
       }
@@ -145,7 +145,7 @@ function handlePointUpdate(
     points: {
       ...state.points,
       [action.params.shape]: state.points[action.params.shape].map((p) => {
-        if (p.pointId === action.params.point.pointId) {
+        if (p._id === action.params.point._id) {
           return action.params.point;
         }
         return p;
@@ -159,10 +159,10 @@ function handlePointMove(
   action: Action<PointMoveParams>
 ): MessageState {
   const pointWithNewShape = state.points[action.params.oldShape].find(
-    (p) => p.pointId === action.params.pointId
+    (p) => p._id === action.params.pointId
   ) as PointI;
   let newFocus = state.focus;
-  if (state.focus && action.params.pointId === state.focus.pointId) {
+  if (state.focus && action.params.pointId === state.focus._id) {
     newFocus = undefined;
   }
   return action.params.oldShape === action.params.newShape
@@ -211,7 +211,7 @@ function handlePointsDelete(
     ...state,
     points: allPointShapes.reduce((obj: PointsI, pointShape: PointShape) => {
       obj[pointShape] = state.points[pointShape].filter((p) => {
-        return !action.params.pointIds.includes(p.pointId);
+        return !action.params.pointIds.includes(p._id);
       });
       return obj;
     }, state.points),
@@ -229,7 +229,7 @@ function handleSetFocus(
 
   return {
     ...intermediateState,
-    focus: { pointId: action.params.pointId, shape: action.params.newShape },
+    focus: { _id: action.params.pointId, shape: action.params.newShape },
   };
 }
 
@@ -291,7 +291,7 @@ function handleSplitIntoTwoPoints(
     },
     {
       ...action.params.bottomPoint,
-      pointId: action.params.newPointId,
+      _id: action.params.newPointId,
       pointDate: new Date(),
     }
   );

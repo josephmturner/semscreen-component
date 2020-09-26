@@ -24,7 +24,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var initialMessageState = {
-  messageId: (0, _uuid.v4)(),
+  _id: (0, _uuid.v4)(),
   author: {
     name: "anonymous",
     color: (0, _randomcolor.default)()
@@ -98,13 +98,13 @@ function setMessage(state, action) {
 function handlePointCreate(state, action) {
   var newPoints = state.points[action.params.shape].slice();
   newPoints.splice(action.params.index, 0, _objectSpread(_objectSpread({}, action.params.point), {}, {
-    pointId: action.params.newPointId,
+    _id: action.params.newPointId,
     pointDate: new Date()
   }));
   return action.params.focus ? _objectSpread(_objectSpread({}, state), {}, {
     points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, newPoints)),
     focus: {
-      pointId: action.params.newPointId,
+      _id: action.params.newPointId,
       shape: action.params.shape
     }
   }) : _objectSpread(_objectSpread({}, state), {}, {
@@ -115,7 +115,7 @@ function handlePointCreate(state, action) {
 function handlePointUpdate(state, action) {
   return _objectSpread(_objectSpread({}, state), {}, {
     points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, state.points[action.params.shape].map(function (p) {
-      if (p.pointId === action.params.point.pointId) {
+      if (p._id === action.params.point._id) {
         return action.params.point;
       }
 
@@ -128,11 +128,11 @@ function handlePointMove(state, action) {
   var _objectSpread6;
 
   var pointWithNewShape = state.points[action.params.oldShape].find(function (p) {
-    return p.pointId === action.params.pointId;
+    return p._id === action.params.pointId;
   });
   var newFocus = state.focus;
 
-  if (state.focus && action.params.pointId === state.focus.pointId) {
+  if (state.focus && action.params.pointId === state.focus._id) {
     newFocus = undefined;
   }
 
@@ -155,7 +155,7 @@ function handlePointsDelete(state, action) {
   return _objectSpread(_objectSpread({}, state), {}, {
     points: _dataModels.allPointShapes.reduce(function (obj, pointShape) {
       obj[pointShape] = state.points[pointShape].filter(function (p) {
-        return !action.params.pointIds.includes(p.pointId);
+        return !action.params.pointIds.includes(p._id);
       });
       return obj;
     }, state.points)
@@ -166,7 +166,7 @@ function handleSetFocus(state, action) {
   var intermediateState = handlePointMove(state, action);
   return _objectSpread(_objectSpread({}, intermediateState), {}, {
     focus: {
-      pointId: action.params.pointId,
+      _id: action.params.pointId,
       shape: action.params.newShape
     }
   });
@@ -203,7 +203,7 @@ function handleSplitIntoTwoPoints(state, action) {
   splitPoints.splice(action.params.index, 1, _objectSpread(_objectSpread({}, state.points[action.params.shape][action.params.index]), {}, {
     content: action.params.topPoint.content
   }), _objectSpread(_objectSpread({}, action.params.bottomPoint), {}, {
-    pointId: action.params.newPointId,
+    _id: action.params.newPointId,
     pointDate: new Date()
   }));
   return _objectSpread(_objectSpread({}, state), {}, {

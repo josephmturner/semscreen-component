@@ -26,7 +26,7 @@ exports.messages = void 0;
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
 var messages = [{
-  messageId: "messageId1",
+  _id: "messageId1",
   author: {
     name: "KindWoman",
     color: "#7d3989"
@@ -38,16 +38,16 @@ var messages = [{
     needs: [],
     topics: [{
       content: "Online Deliberation",
-      pointId: "pointId1",
+      _id: "pointId1",
       pointDate: new Date()
     }, {
       content: "Graph database!",
-      pointId: "pointId6",
+      _id: "pointId6",
       pointDate: new Date()
     }],
     actions: [{
       content: "Build an open, collaborative, compassionate system to share information and make decisions",
-      pointId: "pointId2",
+      _id: "pointId2",
       pointDate: new Date()
     }, {
       quotedAuthor: {
@@ -55,25 +55,25 @@ var messages = [{
         color: "#209924"
       },
       content: "Create a frontend which can ride on federated and distributed backends.",
-      pointId: "pointId3",
+      _id: "pointId3",
       pointDate: new Date()
     }, {
       content: "Get plenty of sleep :)",
-      pointId: "pointId4",
+      _id: "pointId4",
       pointDate: new Date()
     }, {
       content: "Brainstorm and implement other components, including a list view of messages",
-      pointId: "pointId7",
+      _id: "pointId7",
       pointDate: new Date()
     }, {
       content: "Make a p2p deliberation app that runs in node, web browser, and hopefully React Native",
-      pointId: "pointId5",
+      _id: "pointId5",
       pointDate: new Date()
     }],
     people: []
   },
   focus: {
-    pointId: "pointId1",
+    _id: "pointId1",
     shape: "topics"
   },
   main: "pointId5",

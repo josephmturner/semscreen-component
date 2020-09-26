@@ -106,12 +106,12 @@ var Point = function Point(props) {
     props.splitIntoTwoPoints({
       topPoint: {
         content: topContent,
-        pointId: point.pointId,
+        _id: point._id,
         pointDate: new Date()
       },
       bottomPoint: {
         content: bottomContent,
-        pointId: newPointId,
+        _id: newPointId,
         pointDate: new Date()
       },
       shape: shape,
@@ -228,7 +228,7 @@ var Point = function Point(props) {
 
   var onClickShapeIcon = function onClickShapeIcon() {
     props.togglePoint({
-      pointId: point.pointId
+      pointId: point._id
     }); // TODO: Uncomment this to bring back toggling main point feature.
     // if (props.readOnly) {
     //   return;
@@ -259,7 +259,7 @@ var Point = function Point(props) {
     onBlur: handleBlur,
     onChange: handleChange,
     onFocus: function onFocus() {
-      props.setEditingPoint(point.pointId);
+      props.setEditingPoint(point._id);
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
     isMainPoint: props.isMainPoint,

@@ -90,7 +90,7 @@ const FocusPoint = (props: {
           } else {
             isMainPoint
               ? props.setMainPoint({ pointId: "" })
-              : props.setMainPoint({ pointId: point.pointId });
+              : props.setMainPoint({ pointId: point._id });
           }
         }}
         quotedAuthor={point.quotedAuthor}
@@ -102,7 +102,7 @@ const FocusPoint = (props: {
         onBlur={handleBlur}
         onChange={handleChange}
         onFocus={() => {
-          props.setEditingPoint(point.pointId);
+          props.setEditingPoint(point._id);
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}

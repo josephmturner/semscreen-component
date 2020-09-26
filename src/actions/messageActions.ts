@@ -55,7 +55,7 @@ export const pointUpdate = (
 };
 
 export interface PointMoveParams {
-  pointId: PointI["pointId"];
+  pointId: PointI["_id"];
   oldShape: PointShape;
   oldIndex: number;
   newShape: PointShape;
