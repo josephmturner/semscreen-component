@@ -202,15 +202,16 @@ const Point = (props: {
 
   const onClickShapeIcon = () => {
     props.togglePoint({ pointId: point._id });
+  };
 
-    // TODO: Uncomment this to bring back toggling main point feature.
-    // if (props.readOnly) {
-    //   return;
-    // } else {
-    //   props.isMainPoint
-    //     ? props.setMainPoint({ pointId: "" })
-    //     : props.setMainPoint({ pointId: point.pointId });
-    // }
+  const onDoubleClickShapeIcon = () => {
+    if (props.readOnly) {
+      return;
+    } else {
+      props.isMainPoint
+        ? props.setMainPoint({ pointId: "" })
+        : props.setMainPoint({ pointId: point._id });
+    }
   };
 
   return (
@@ -226,6 +227,7 @@ const Point = (props: {
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
+        onDoubleClick={onDoubleClickShapeIcon}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         height={props.isMainPoint ? 23 : 17}
