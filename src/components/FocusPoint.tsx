@@ -68,6 +68,16 @@ const FocusPoint = (props: {
     props.onClick();
   };
 
+  const onDoubleClickShapeIcon = () => {
+    if (props.readOnly) {
+      return;
+    } else {
+      props.isMainPoint
+        ? props.setMainPoint({ pointId: "" })
+        : props.setMainPoint({ pointId: point._id });
+    }
+  };
+
   const imageUrl = require(`../images/${shape}.svg`);
 
   const { isDragging, drag, preview } = useDragPoint(point, shape, index);
@@ -84,15 +94,7 @@ const FocusPoint = (props: {
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
-        onClick={() => {
-          if (props.readOnly) {
-            return;
-          } else {
-            isMainPoint
-              ? props.setMainPoint({ pointId: "" })
-              : props.setMainPoint({ pointId: point._id });
-          }
-        }}
+        onDoubleClick={onDoubleClickShapeIcon}
         quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
         alt={shape}
