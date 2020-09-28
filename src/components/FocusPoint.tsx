@@ -30,6 +30,7 @@ import {
   setMainPoint,
   SetMainPointParams,
 } from "../actions/messageActions";
+import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 
 const FocusPoint = (props: {
   point: PointI;
@@ -39,8 +40,10 @@ const FocusPoint = (props: {
   darkMode: boolean;
   isMainPoint: boolean;
   isEditing: boolean;
+  isSelected: boolean;
   onClick: () => void;
   setEditingPoint: (pointId: string) => void;
+  togglePoint: (params: TogglePointParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
 }) => {
@@ -66,6 +69,10 @@ const FocusPoint = (props: {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     props.onClick();
+  };
+
+  const onClickShapeIcon = () => {
+    props.togglePoint({ pointId: point._id });
   };
 
   const onDoubleClickShapeIcon = () => {
@@ -94,9 +101,12 @@ const FocusPoint = (props: {
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
+        onClick={onClickShapeIcon}
         onDoubleClick={onDoubleClickShapeIcon}
         quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
+        isSelected={props.isSelected}
+        darkMode={props.darkMode}
         alt={shape}
       />
       <StyledTextArea
@@ -128,6 +138,7 @@ interface StyledProps {
   isMainPoint?: boolean;
   isEditing?: boolean;
   isDragging?: boolean;
+  isSelected?: boolean;
   quotedAuthor?: AuthorI;
   darkMode?: boolean;
 }
@@ -155,6 +166,12 @@ const StyledImg = styled.img<StyledProps>`
   height: 20px;
   margin: auto;
   opacity: 0.7;
+  ${(props) =>
+    props.isSelected &&
+    `
+border: 2px solid ${props.darkMode ? "white" : "black"};
+border-radius: 5px;
+`}
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
@@ -180,6 +197,7 @@ const mapActionsToProps = {
   setEditingPoint,
   pointUpdate,
   setMainPoint,
+  togglePoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

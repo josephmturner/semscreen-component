@@ -52,7 +52,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n  ", "\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -257,6 +257,8 @@ var Point = function Point(props) {
     onClick: onClickShapeIcon,
     onDoubleClick: onDoubleClickShapeIcon,
     isMainPoint: props.isMainPoint,
+    isSelected: props.isSelected,
+    darkMode: props.darkMode,
     quotedAuthor: point.quotedAuthor,
     height: props.isMainPoint ? 23 : 17,
     alt: shape
@@ -353,6 +355,8 @@ var StyledImg = _styledComponents.default.img(_templateObject2(), function (prop
   return props.quotedAuthor ? "0.8rem" : 0;
 }, function (props) {
   return props.quotedAuthor ? "7px" : 0;
+}, function (props) {
+  return props.isSelected && "\nborder: 2px solid ".concat(props.darkMode ? "white" : "black", ";\nborder-radius: 5px;\n");
 });
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {

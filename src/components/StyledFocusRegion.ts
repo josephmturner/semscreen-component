@@ -23,10 +23,6 @@ interface StyledFocusRegionProps {
 }
 
 const StyledFocusRegion = styled.div<StyledFocusRegionProps>`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   overflow: auto;
   border: 2px solid ${(props) => props.borderColor};
   border-radius: 7px;

@@ -52,6 +52,7 @@ const Region = (props: {
   editingPointId: string;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (region: string) => void;
+  selectedPoints: string[];
   darkMode?: boolean;
 }) => {
   const { region, points, cursorPosition } = props;
@@ -123,11 +124,12 @@ const Region = (props: {
             key={p._id}
             point={p}
             shape={region}
+            index={points.findIndex((point) => point._id === p._id)}
             readOnly={props.readOnly}
             isExpanded={props.isExpanded}
             isMainPoint={props.mainPointId === p._id}
-            index={points.findIndex((point) => point._id === p._id)}
             isEditing={props.editingPointId === p._id}
+            isSelected={props.selectedPoints.includes(p._id)}
             cursorPositionIndex={
               cursorPosition && cursorPosition.pointId === p._id
                 ? cursorPosition.index
@@ -169,6 +171,7 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
 const mapStateToProps = (state: AppState) => ({
   editingPointId: state.editingPoint.editingPointId,
   cursorPosition: state.cursorPosition.details,
+  selectedPoints: state.selectedPoints.pointIds,
 });
 
 const mapDispatchToProps = {

@@ -53,11 +53,12 @@ import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 const Point = (props: {
   point: PointI;
   shape: PointShape;
+  index: number;
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
-  index: number;
   isEditing: boolean;
+  isSelected: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
@@ -229,6 +230,8 @@ const Point = (props: {
         onClick={onClickShapeIcon}
         onDoubleClick={onDoubleClickShapeIcon}
         isMainPoint={props.isMainPoint}
+        isSelected={props.isSelected}
+        darkMode={props.darkMode}
         quotedAuthor={point.quotedAuthor}
         height={props.isMainPoint ? 23 : 17}
         alt={shape}
@@ -324,6 +327,7 @@ interface StyledProps {
   isMainPoint?: boolean;
   isDragging?: boolean;
   isFirst?: boolean;
+  isSelected?: boolean;
   quotedAuthor?: AuthorI;
   darkMode?: boolean;
 }
@@ -351,6 +355,12 @@ const StyledImg = styled.img<StyledProps>`
   margin-top: ${(props) => (props.quotedAuthor ? "0.8rem" : 0)};
   left: ${(props) => (props.quotedAuthor ? "7px" : 0)};
   opacity: 0.7;
+  ${(props) =>
+    props.isSelected &&
+    `
+border: 2px solid ${props.darkMode ? "white" : "black"};
+border-radius: 5px;
+`}
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`

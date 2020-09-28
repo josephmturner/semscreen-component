@@ -124,13 +124,14 @@ var Region = function Region(props) {
       key: p._id,
       point: p,
       shape: region,
-      readOnly: props.readOnly,
-      isExpanded: props.isExpanded,
-      isMainPoint: props.mainPointId === p._id,
       index: points.findIndex(function (point) {
         return point._id === p._id;
       }),
+      readOnly: props.readOnly,
+      isExpanded: props.isExpanded,
+      isMainPoint: props.mainPointId === p._id,
       isEditing: props.editingPointId === p._id,
+      isSelected: props.selectedPoints.includes(p._id),
       cursorPositionIndex: cursorPosition && cursorPosition.pointId === p._id ? cursorPosition.index : undefined,
       darkMode: props.darkMode
     });
@@ -156,7 +157,8 @@ var DropTargetDiv = _styledComponents.default.div(_templateObject(), function (p
 var mapStateToProps = function mapStateToProps(state) {
   return {
     editingPointId: state.editingPoint.editingPointId,
-    cursorPosition: state.cursorPosition.details
+    cursorPosition: state.cursorPosition.details,
+    selectedPoints: state.selectedPoints.pointIds
   };
 };
 

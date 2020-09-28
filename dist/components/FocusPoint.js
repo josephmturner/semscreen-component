@@ -23,6 +23,8 @@ var _editingPointActions = require("../actions/editingPointActions");
 
 var _messageActions = require("../actions/messageActions");
 
+var _selectPointActions = require("../actions/selectPointActions");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
@@ -40,7 +42,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  height: 20px;\n  margin: auto;\n  opacity: 0.7;\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 20px;\n  margin: auto;\n  opacity: 0.7;\n  ", "\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -96,6 +98,12 @@ var FocusPoint = function FocusPoint(props) {
     props.onClick();
   };
 
+  var onClickShapeIcon = function onClickShapeIcon() {
+    props.togglePoint({
+      pointId: point._id
+    });
+  };
+
   var onDoubleClickShapeIcon = function onDoubleClickShapeIcon() {
     if (props.readOnly) {
       return;
@@ -125,9 +133,12 @@ var FocusPoint = function FocusPoint(props) {
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
+    onClick: onClickShapeIcon,
     onDoubleClick: onDoubleClickShapeIcon,
     quotedAuthor: point.quotedAuthor,
     height: isMainPoint ? 30 : 20,
+    isSelected: props.isSelected,
+    darkMode: props.darkMode,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
@@ -160,7 +171,9 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
   return props.isMainPoint && "\n  padding: 1% 0;\n";
 });
 
-var StyledImg = _styledComponents.default.img(_templateObject2());
+var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
+  return props.isSelected && "\nborder: 2px solid ".concat(props.darkMode ? "white" : "black", ";\nborder-radius: 5px;\n");
+});
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
   return props.darkMode ? "#fff" : "#000";
@@ -177,7 +190,8 @@ var mapStateToProps = function mapStateToProps() {
 var mapActionsToProps = {
   setEditingPoint: _editingPointActions.setEditingPoint,
   pointUpdate: _messageActions.pointUpdate,
-  setMainPoint: _messageActions.setMainPoint
+  setMainPoint: _messageActions.setMainPoint,
+  togglePoint: _selectPointActions.togglePoint
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(FocusPoint);
