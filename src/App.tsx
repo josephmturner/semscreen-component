@@ -17,9 +17,17 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
+
 import SemanticScreen from "./components/SemanticScreen";
+import BottomButton from "./components/BottomButton";
+import ParkingSpace from "./components/ParkingSpace";
+
+import usePanel, { PanelState } from "./hooks/usePanel";
+
 import { messages } from "./constants/initialState";
 import { MessageState } from "./reducers/message";
+
+import styled from "styled-components";
 
 const App = () => {
   const readOnly = false;
@@ -35,16 +43,48 @@ const App = () => {
     setSelectedPointIds(selectedPointIds);
   };
 
+  const [panelState, panelDispatch] = usePanel();
+
   return (
-    <SemanticScreen
-      message={message}
-      onChangeMessage={onChangeMessage}
-      selectedPointIds={selectedPointIds}
-      onChangeSelectedPointIds={onChangeSelectedPointIds}
-      readOnly={readOnly}
-      darkMode={darkMode}
-    />
+    <>
+      <SemscreenPanel bottom={panelState.bottom}>
+        <SemanticScreen
+          message={message}
+          onChangeMessage={onChangeMessage}
+          selectedPointIds={selectedPointIds}
+          onChangeSelectedPointIds={onChangeSelectedPointIds}
+          readOnly={readOnly}
+          darkMode={darkMode}
+        />
+      </SemscreenPanel>
+      {!panelState.bottom && (
+        <BottomButton
+          onClick={() => {
+            panelDispatch({ panel: "bottom", show: true });
+          }}
+          darkMode={darkMode}
+        />
+      )}
+      {panelState.bottom && (
+        <BottomPanel>
+          <ParkingSpace
+            closeButton={() => panelDispatch({ panel: "bottom", show: false })}
+            darkMode={darkMode}
+          />
+        </BottomPanel>
+      )}
+    </>
   );
 };
+
+const SemscreenPanel = styled.div<PanelState>`
+  height: ${(props) => (props.bottom ? "calc(100% - 4rem)" : "100%")};
+`;
+
+const BottomPanel = styled.div`
+  position: absolute;
+  height: 4rem;
+  width: 100%;
+`;
 
 export default App;
