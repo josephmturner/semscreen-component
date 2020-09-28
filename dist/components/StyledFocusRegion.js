@@ -10,7 +10,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  overflow: auto;\n  border: 2px solid ", ";\n  border-radius: 7px;\n"]);
+  var data = _taggedTemplateLiteral(["\n  overflow: auto;\n  border: 2px solid ", ";\n  border-radius: 7px;\n"]);
 
   _templateObject = function _templateObject() {
     return data;
