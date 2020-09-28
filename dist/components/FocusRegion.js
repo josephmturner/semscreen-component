@@ -91,6 +91,7 @@ var FocusRegion = function FocusRegion(props) {
     readOnly: props.readOnly,
     isMainPoint: props.isMainPoint,
     isEditing: props.editingPointId === point._id,
+    isSelected: props.selectedPoints.includes(point._id),
     onClick: function onClick() {
       return onRegionClick(region, true);
     },
@@ -105,7 +106,8 @@ var StyledDiv = _styledComponents.default.div(_templateObject());
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    editingPointId: state.editingPoint.editingPointId
+    editingPointId: state.editingPoint.editingPointId,
+    selectedPoints: state.selectedPoints.pointIds
   };
 };
 
