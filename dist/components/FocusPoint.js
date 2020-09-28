@@ -96,6 +96,18 @@ var FocusPoint = function FocusPoint(props) {
     props.onClick();
   };
 
+  var onDoubleClickShapeIcon = function onDoubleClickShapeIcon() {
+    if (props.readOnly) {
+      return;
+    } else {
+      props.isMainPoint ? props.setMainPoint({
+        pointId: ""
+      }) : props.setMainPoint({
+        pointId: point._id
+      });
+    }
+  };
+
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
   var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
@@ -113,17 +125,7 @@ var FocusPoint = function FocusPoint(props) {
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
-    onClick: function onClick() {
-      if (props.readOnly) {
-        return;
-      } else {
-        isMainPoint ? props.setMainPoint({
-          pointId: ""
-        }) : props.setMainPoint({
-          pointId: point._id
-        });
-      }
-    },
+    onDoubleClick: onDoubleClickShapeIcon,
     quotedAuthor: point.quotedAuthor,
     height: isMainPoint ? 30 : 20,
     alt: shape
