@@ -102,32 +102,29 @@ const App = () => {
 
 const AppStyles = styled.div<{ darkMode: boolean }>`
   height: 100%;
-  *>div {
+
   ${(props) =>
     props.darkMode
       ? `
-  scrollbar-color: white black;
-  scrollbar-width: thin;
+    --thumbBG: #7e7e7e;
+    --scrollbarBG: black;
   `
       : `
-  scrollbar-color: black white;
-  scrollbar-width: thin;
-  `};
+    --thumbBG: #696969;
+    --scrollbarBG: white;
+  `}
+
+  *>div {
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+    scrollbar-width: thin;
   }
-  *>div ::-webkit-scrollbar {
+  * > div ::-webkit-scrollbar {
     width: 11px;
   }
-  *>div ::-webkit-scrollbar-thumb {
-   ${(props) =>
-     props.darkMode
-       ? `
-    background-color: white;
-    border: 3px solid black;
-   `
-       : `
-    background-color: black;
-    border: 3px solid white;
-   `}
+  * > div ::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border: 3px solid var(--scrollbarBG);
+  }
 `;
 
 const SemscreenPanel = styled.div<PanelState>`

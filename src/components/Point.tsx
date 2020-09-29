@@ -337,6 +337,7 @@ const StyledSpan = styled.span<StyledProps>`
   left: 2px;
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
+  margin-right: 4px;
   ${(props) =>
     props.quotedAuthor &&
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;

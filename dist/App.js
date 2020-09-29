@@ -60,7 +60,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  height: 100%;\n  *>div {\n  ", ";\n  }\n  *>div ::-webkit-scrollbar {\n    width: 11px;\n  }\n  *>div ::-webkit-scrollbar-thumb {\n   ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 100%;\n\n  ", "\n\n  *>div {\n    scrollbar-color: var(--thumbBG) var(--scrollbarBG);\n    scrollbar-width: thin;\n  }\n  * > div ::-webkit-scrollbar {\n    width: 11px;\n  }\n  * > div ::-webkit-scrollbar-thumb {\n    background-color: var(--thumbBG);\n    border: 3px solid var(--scrollbarBG);\n  }\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -166,9 +166,7 @@ var App = function App() {
 };
 
 var AppStyles = _styledComponents.default.div(_templateObject(), function (props) {
-  return props.darkMode ? "\n  scrollbar-color: white black;\n  scrollbar-width: thin;\n  " : "\n  scrollbar-color: black white;\n  scrollbar-width: thin;\n  ";
-}, function (props) {
-  return props.darkMode ? "\n    background-color: white;\n    border: 3px solid black;\n   " : "\n    background-color: black;\n    border: 3px solid white;\n   ";
+  return props.darkMode ? "\n    --thumbBG: #7e7e7e;\n    --scrollbarBG: black;\n  " : "\n    --thumbBG: #696969;\n    --scrollbarBG: white;\n  ";
 });
 
 var SemscreenPanel = _styledComponents.default.div(_templateObject2(), function (props) {
