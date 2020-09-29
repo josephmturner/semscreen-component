@@ -19,7 +19,8 @@
 import React, { useState } from "react";
 
 import SemanticScreen from "./components/SemanticScreen";
-import BottomButton from "./components/BottomButton";
+import OpenPanelButton from "./components/OpenPanelButton";
+import ClosePanelButton from "./components/ClosePanelButton";
 import ParkingSpace from "./components/ParkingSpace";
 
 import usePanel, { PanelState } from "./hooks/usePanel";
@@ -47,7 +48,7 @@ const App = () => {
 
   return (
     <>
-      <SemscreenPanel bottom={panelState.bottom}>
+      <SemscreenPanel right={panelState.right} bottom={panelState.bottom}>
         <SemanticScreen
           message={message}
           onChangeMessage={onChangeMessage}
@@ -57,8 +58,28 @@ const App = () => {
           darkMode={darkMode}
         />
       </SemscreenPanel>
+      {!panelState.right && (
+        <OpenPanelButton
+          side={"right"}
+          onClick={() => {
+            panelDispatch({ panel: "right", show: true });
+          }}
+          darkMode={darkMode}
+        />
+      )}
+      {panelState.right && (
+        <RightPanel>
+          <ParkingSpace darkMode={darkMode} />
+          <ClosePanelButton
+            side={"right"}
+            onClick={() => panelDispatch({ panel: "right", show: false })}
+            darkMode={darkMode}
+          />
+        </RightPanel>
+      )}
       {!panelState.bottom && (
-        <BottomButton
+        <OpenPanelButton
+          side={"bottom"}
           onClick={() => {
             panelDispatch({ panel: "bottom", show: true });
           }}
@@ -67,8 +88,10 @@ const App = () => {
       )}
       {panelState.bottom && (
         <BottomPanel>
-          <ParkingSpace
-            closeButton={() => panelDispatch({ panel: "bottom", show: false })}
+          <ParkingSpace darkMode={darkMode} />
+          <ClosePanelButton
+            side={"bottom"}
+            onClick={() => panelDispatch({ panel: "bottom", show: false })}
             darkMode={darkMode}
           />
         </BottomPanel>
@@ -79,6 +102,15 @@ const App = () => {
 
 const SemscreenPanel = styled.div<PanelState>`
   height: ${(props) => (props.bottom ? "calc(100% - 4rem)" : "100%")};
+  width: ${(props) => (props.right ? "calc(100% - 16rem)" : "100%")};
+`;
+
+const RightPanel = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 16rem;
 `;
 
 const BottomPanel = styled.div`
