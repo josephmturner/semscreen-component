@@ -62,7 +62,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  ", "\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
