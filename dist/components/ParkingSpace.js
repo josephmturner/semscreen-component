@@ -9,8 +9,6 @@ var _react = _interopRequireDefault(require("react"));
 
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 
-var _CloseBottomPanel = _interopRequireDefault(require("./CloseBottomPanel"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
@@ -28,10 +26,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 var ParkingSpace = function ParkingSpace(props) {
   return /*#__PURE__*/_react.default.createElement(StyledParkingSpace, {
     darkMode: props.darkMode
-  }, /*#__PURE__*/_react.default.createElement(_CloseBottomPanel.default, {
-    onClick: props.closeButton,
-    darkMode: props.darkMode
-  }));
+  });
 };
 
 var StyledParkingSpace = _styledComponents.default.div(_templateObject(), function (props) {

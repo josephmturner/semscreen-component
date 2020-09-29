@@ -1,14 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import CloseBottomPanel from "./CloseBottomPanel";
 
-const ParkingSpace = (props: {
-  closeButton: () => void;
-  darkMode: boolean;
-}) => (
-  <StyledParkingSpace darkMode={props.darkMode}>
-    <CloseBottomPanel onClick={props.closeButton} darkMode={props.darkMode} />
-  </StyledParkingSpace>
+const ParkingSpace = (props: { darkMode: boolean }) => (
+  <StyledParkingSpace darkMode={props.darkMode}></StyledParkingSpace>
 );
 
 interface StyledProps {
