@@ -35,11 +35,12 @@ interface StyledProps {
 }
 const StyledSvg = styled.svg<StyledProps>`
   position: absolute;
+  z-index: 999;
   ${(props) =>
     props.side === "right" &&
     `
   top: 0;
-  right: 0;
+  right: 0.5rem;
   bottom: 0;
   margin: auto 0;
 `}

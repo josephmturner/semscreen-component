@@ -12,7 +12,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  ", "\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  z-index: 999;\n  ", "\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -42,7 +42,7 @@ var OpenPanelButton = function OpenPanelButton(props) {
 };
 
 var StyledSvg = _styledComponents.default.svg(_templateObject(), function (props) {
-  return props.side === "right" && "\n  top: 0;\n  right: 0;\n  bottom: 0;\n  margin: auto 0;\n";
+  return props.side === "right" && "\n  top: 0;\n  right: 0.5rem;\n  bottom: 0;\n  margin: auto 0;\n";
 }, function (props) {
   return props.side === "bottom" && "\n  left: 0;\n  right: 0;\n  bottom: 0;\n  margin: 0 auto;\n";
 });

@@ -47,7 +47,7 @@ const App = () => {
   const [panelState, panelDispatch] = usePanel();
 
   return (
-    <>
+    <AppStyles darkMode={darkMode}>
       <SemscreenPanel right={panelState.right} bottom={panelState.bottom}>
         <SemanticScreen
           message={message}
@@ -96,9 +96,39 @@ const App = () => {
           />
         </BottomPanel>
       )}
-    </>
+    </AppStyles>
   );
 };
+
+const AppStyles = styled.div<{ darkMode: boolean }>`
+  height: 100%;
+  *>div {
+  ${(props) =>
+    props.darkMode
+      ? `
+  scrollbar-color: white black;
+  scrollbar-width: thin;
+  `
+      : `
+  scrollbar-color: black white;
+  scrollbar-width: thin;
+  `};
+  }
+  *>div ::-webkit-scrollbar {
+    width: 11px;
+  }
+  *>div ::-webkit-scrollbar-thumb {
+   ${(props) =>
+     props.darkMode
+       ? `
+    background-color: white;
+    border: 3px solid black;
+   `
+       : `
+    background-color: black;
+    border: 3px solid white;
+   `}
+`;
 
 const SemscreenPanel = styled.div<PanelState>`
   height: ${(props) => (props.bottom ? "calc(100% - 4rem)" : "100%")};

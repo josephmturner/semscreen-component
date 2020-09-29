@@ -29,8 +29,18 @@ function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return 
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _templateObject3() {
+function _templateObject4() {
   var data = _taggedTemplateLiteral(["\n  position: absolute;\n  height: 4rem;\n  width: 100%;\n"]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: 0;\n  right: 0;\n  height: 100%;\n  width: 16rem;\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -40,7 +50,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: 0;\n  right: 0;\n  height: 100%;\n  width: 16rem;\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: ", ";\n  width: ", ";\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -50,7 +60,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  height: ", ";\n  width: ", ";\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 100%;\n  *>div {\n  ", ";\n  }\n  *>div ::-webkit-scrollbar {\n    width: 11px;\n  }\n  *>div ::-webkit-scrollbar-thumb {\n   ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -100,7 +110,9 @@ var App = function App() {
       panelState = _usePanel2[0],
       panelDispatch = _usePanel2[1];
 
-  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(SemscreenPanel, {
+  return /*#__PURE__*/_react.default.createElement(AppStyles, {
+    darkMode: darkMode
+  }, /*#__PURE__*/_react.default.createElement(SemscreenPanel, {
     right: panelState.right,
     bottom: panelState.bottom
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreen.default, {
@@ -153,15 +165,21 @@ var App = function App() {
   })));
 };
 
-var SemscreenPanel = _styledComponents.default.div(_templateObject(), function (props) {
+var AppStyles = _styledComponents.default.div(_templateObject(), function (props) {
+  return props.darkMode ? "\n  scrollbar-color: white black;\n  scrollbar-width: thin;\n  " : "\n  scrollbar-color: black white;\n  scrollbar-width: thin;\n  ";
+}, function (props) {
+  return props.darkMode ? "\n    background-color: white;\n    border: 3px solid black;\n   " : "\n    background-color: black;\n    border: 3px solid white;\n   ";
+});
+
+var SemscreenPanel = _styledComponents.default.div(_templateObject2(), function (props) {
   return props.bottom ? "calc(100% - 4rem)" : "100%";
 }, function (props) {
   return props.right ? "calc(100% - 16rem)" : "100%";
 });
 
-var RightPanel = _styledComponents.default.div(_templateObject2());
+var RightPanel = _styledComponents.default.div(_templateObject3());
 
-var BottomPanel = _styledComponents.default.div(_templateObject3());
+var BottomPanel = _styledComponents.default.div(_templateObject4());
 
 var _default = App;
 exports.default = _default;
