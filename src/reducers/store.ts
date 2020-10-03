@@ -24,6 +24,11 @@ import {
   SelectedPointsState,
 } from "./selectedPoints";
 
+import { messages } from '../constants/initialState';
+
+// Set this to false if you don't want initial message data.
+const populatedInitialMessageState = true ? messages[0] : null;
+
 export interface AppState {
   editingPoint: EditingPointState;
   cursorPosition: CursorPositionState;
@@ -36,7 +41,7 @@ function createAppStore() {
   const initialAppState: AppState = {
     editingPoint: initialEditingPointState,
     cursorPosition: initialCursorPositionState,
-    message: initialMessageState,
+    message: populatedInitialMessageState ?? initialMessageState,
     expandedRegion: initialExpandedRegionState,
     selectedPoints: initialSelectedPointsState,
   };
@@ -66,4 +71,4 @@ function createAppStore() {
   return createStore(appReducer, composeWithDevTools());
 }
 
-export { createAppStore as createStore };
+export const store = createAppStore();

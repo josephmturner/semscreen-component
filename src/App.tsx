@@ -16,7 +16,8 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
+import { Provider } from "react-redux";
 
 import SemanticScreen from "./components/SemanticScreen";
 import OpenPanelButton from "./components/OpenPanelButton";
@@ -25,78 +26,66 @@ import ParkingSpace from "./components/ParkingSpace";
 
 import usePanel, { PanelState } from "./hooks/usePanel";
 
-import { messages } from "./constants/initialState";
-import { MessageState } from "./reducers/message";
+import { store } from "./reducers/store";
 
 import styled from "styled-components";
+
 
 const App = () => {
   const readOnly = false;
   const darkMode = true;
 
-  const [message, setMessage] = useState<MessageState>(messages[0]);
-  const onChangeMessage = (message: MessageState) => {
-    setMessage(message);
-  };
-
-  const [selectedPointIds, setSelectedPointIds] = useState<string[]>([]);
-  const onChangeSelectedPointIds = (selectedPointIds: string[]) => {
-    setSelectedPointIds(selectedPointIds);
-  };
-
   const [panelState, panelDispatch] = usePanel();
 
   return (
-    <AppStyles darkMode={darkMode}>
-      <SemscreenPanel right={panelState.right} bottom={panelState.bottom}>
-        <SemanticScreen
-          message={message}
-          onChangeMessage={onChangeMessage}
-          selectedPointIds={selectedPointIds}
-          onChangeSelectedPointIds={onChangeSelectedPointIds}
-          readOnly={readOnly}
-          darkMode={darkMode}
-        />
-      </SemscreenPanel>
-      {!panelState.right && (
-        <OpenPanelButton
-          side={"right"}
-          onClick={() => {
-            panelDispatch({ panel: "right", show: true });
-          }}
-          darkMode={darkMode}
-        />
-      )}
-      {panelState.right && (
-        <RightPanel>
-          <ParkingSpace darkMode={darkMode} />
-          <ClosePanelButton
+    <Provider store={store}>
+      <AppStyles darkMode={darkMode}>
+        <SemscreenPanel right={panelState.right} bottom={panelState.bottom}>
+          <SemanticScreen
+            readOnly={readOnly || false}
+            darkMode={darkMode || false}
+          />
+        </SemscreenPanel>
+        {!panelState.right && (
+          <OpenPanelButton
             side={"right"}
-            onClick={() => panelDispatch({ panel: "right", show: false })}
+            onClick={() => {
+              panelDispatch({ panel: "right", show: true });
+            }}
             darkMode={darkMode}
           />
-        </RightPanel>
-      )}
-      {!panelState.bottom && (
-        <OpenPanelButton
-          side={"bottom"}
-          onClick={() => {
-            panelDispatch({ panel: "bottom", show: true });
-          }}
-          darkMode={darkMode}
-        />
-      )}
-      {panelState.bottom && (
-        <BottomPanel>
-          <ParkingSpace darkMode={darkMode} />
-          <ClosePanelButton
+        )}
+        {panelState.right && (
+          <RightPanel>
+            <ParkingSpace darkMode={darkMode} />
+            <ClosePanelButton
+              side={"right"}
+              onClick={() => panelDispatch({ panel: "right", show: false })}
+              darkMode={darkMode}
+            />
+          </RightPanel>
+        )}
+        {!panelState.bottom && (
+          <OpenPanelButton
             side={"bottom"}
-            onClick={() => panelDispatch({ panel: "bottom", show: false })}
+            onClick={() => {
+              panelDispatch({ panel: "bottom", show: true });
+            }}
             darkMode={darkMode}
           />
-        </BottomPanel>
-      )}
-    </AppStyles>
+        )}
+        {panelState.bottom && (
+          <BottomPanel>
+            <ParkingSpace darkMode={darkMode} />
+            <ClosePanelButton
+              side={"bottom"}
+              onClick={() => panelDispatch({ panel: "bottom", show: false })}
+              darkMode={darkMode}
+            />
+          </BottomPanel>
+        )}
+      </AppStyles>
+    </Provider>
   );
 };
 
