@@ -16,73 +16,216 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useMemo, useEffect, useLayoutEffect } from "react";
-import { Provider } from "react-redux";
-import { createStore } from "../reducers/store";
-import { MessageState } from "../reducers/message";
-import { setMessage } from "../actions/messageActions";
-import { setSelectedPoints } from "../actions/selectPointActions";
+import React, { useEffect, useRef } from "react";
 
-import SemanticScreenLogic from "./SemanticScreenLogic";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { wrapGrid } from "animate-css-grid";
+import { v4 as uuidv4 } from "uuid";
+import randomColor from "randomcolor";
+
+import Region from "./Region";
+import MeritsRegion from "./MeritsRegion";
+import FocusRegion from "./FocusRegion";
+import Banner from "./Banner";
+import StyledSemanticScreen from "./StyledSemanticScreen";
+
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { MessageState } from "../reducers/message";
+import { setEditingPoint } from "../actions/editingPointActions";
+import {
+  pointCreate,
+  pointsDelete,
+  PointCreateParams,
+  PointsDeleteParams,
+} from "../actions/messageActions";
+import { setExpandedRegion } from "../actions/expandedRegionActions";
+
+import { PointShape, RegionI } from "../dataModels";
 
 const SemanticScreen = (props: {
-  message?: MessageState;
-  onChangeMessage?: (message: MessageState) => void;
-  selectedPointIds?: string[];
-  onChangeSelectedPointIds?: (pointIds: string[]) => void;
-  readOnly?: boolean;
-  darkMode?: boolean;
+  message: MessageState;
+  readOnly: boolean;
+  darkMode: boolean;
+  expandedRegion: string;
+  setEditingPoint: (pointId: string) => void;
+  pointCreate: (params: PointCreateParams) => void;
+  pointsDelete: (params: PointsDeleteParams) => void;
+  setExpandedRegion: (region: string) => void;
 }) => {
-  const {
-    message,
-    onChangeMessage,
-    selectedPointIds,
-    onChangeSelectedPointIds,
-  } = props;
+  const { message, expandedRegion } = props;
 
-  const store = useMemo(createStore, []);
+  const author = message.author || {
+    name: "anonymous",
+    authorId: uuidv4(),
+    authorDate: new Date(),
+    color: randomColor(),
+  };
 
-  useLayoutEffect(() => {
-    if (message && message !== store.getState().message) {
-      store.dispatch(setMessage({ message: message }));
+  const createEmptyPoint = (
+    shape: PointShape,
+    index: number,
+    focus?: boolean
+  ) => {
+    props.pointCreate({
+      point: {
+        author: author,
+        content: "",
+      },
+      shape: shape,
+      index: index,
+      focus: focus,
+    });
+  };
+
+  const createEmptyFocus = (shape: PointShape) => {
+    createEmptyPoint(shape, message.points[shape].length, true);
+  };
+
+  const deleteEmptyPoints = () => {
+    props.pointsDelete({
+      pointIds: Object.values(message.points)
+        .flat()
+        .filter((p) => !p.content)
+        .map((p) => p._id),
+    });
+  };
+
+  const handleRegionClick = (region: RegionI, expand: boolean): void => {
+    if (!expand && region === expandedRegion) {
+      props.setExpandedRegion("");
+      !props.readOnly && deleteEmptyPoints();
+    } else if (expand && region !== expandedRegion) {
+      props.setExpandedRegion(region);
+      !props.readOnly && deleteEmptyPoints();
     }
-    if (
-      selectedPointIds &&
-      selectedPointIds !== store.getState().selectedPoints.pointIds
-    ) {
-      store.dispatch(setSelectedPoints({ pointIds: selectedPointIds }));
-    }
-  }, [store, message, selectedPointIds]);
+  };
+
+  const regions: Array<RegionI> = [
+    "facts",
+    "merits",
+    "people",
+    "thoughts",
+    "focus",
+    "actions",
+    "feelings",
+    "needs",
+    "topics",
+  ];
+
+  const semanticScreenRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      if (onChangeMessage && store.getState().message !== message) {
-        onChangeMessage(store.getState().message);
-      }
-      if (
-        onChangeSelectedPointIds &&
-        store.getState().selectedPoints.pointIds !== selectedPointIds
-      ) {
-        onChangeSelectedPointIds(store.getState().selectedPoints.pointIds);
-      }
-    });
-    return () => unsubscribe();
-  }, [
-    store,
-    onChangeMessage,
-    message,
-    onChangeSelectedPointIds,
-    selectedPointIds,
-  ]);
+    semanticScreenRef.current &&
+      wrapGrid(semanticScreenRef.current, {
+        duration: 150,
+        easing: "linear",
+      });
+  }, []);
+
+  const isExpanded = (region: RegionI) => {
+    return region === expandedRegion
+      ? "expanded"
+      : expandedRegion === ""
+      ? "balanced"
+      : "minimized";
+  };
 
   return (
-    <Provider store={store}>
-      <SemanticScreenLogic
-        readOnly={props.readOnly || false}
-        darkMode={props.darkMode || false}
-      />
-    </Provider>
+    <DndProvider backend={HTML5Backend}>
+      <StyledSemanticScreen
+        expandedRegion={expandedRegion}
+        ref={semanticScreenRef}
+        darkMode={props.darkMode}
+      >
+        {props.readOnly && (
+          <Banner
+            text={author.name}
+            color={author.color}
+            placement={{ top: "0", right: "0" }}
+            darkMode={props.darkMode}
+          />
+        )}
+        {regions.map((region: RegionI) => {
+          if (region === "merits") {
+            return (
+              <MeritsRegion
+                region={region}
+                isExpanded={isExpanded(region)}
+                onRegionClick={handleRegionClick}
+                key={region}
+              />
+            );
+          }
+          if (region === "focus") {
+            return (
+              <FocusRegion
+                region={region}
+                isExpanded={isExpanded(region)}
+                readOnly={props.readOnly}
+                author={author}
+                point={
+                  message.focus
+                    ? Object.values(message.points)
+                        .flat()
+                        .find(
+                          (p) => message.focus && p._id === message.focus._id
+                        )
+                    : undefined
+                }
+                shape={message.focus ? message.focus.shape : undefined}
+                index={
+                  message.focus
+                    ? message.points[message.focus.shape].findIndex(
+                        (p) => message.focus && p._id === message.focus._id
+                      )
+                    : undefined
+                }
+                isMainPoint={
+                  message.focus && message.main === message.focus._id
+                    ? true
+                    : false
+                }
+                createEmptyFocus={createEmptyFocus}
+                onRegionClick={handleRegionClick}
+                key={region}
+                darkMode={props.darkMode}
+              />
+            );
+          } else {
+            return (
+              <Region
+                region={region}
+                isExpanded={isExpanded(region)}
+                readOnly={props.readOnly}
+                author={author}
+                points={message.points[region as PointShape]}
+                focusPointId={message.focus && message.focus._id}
+                mainPointId={message.main}
+                createEmptyPoint={createEmptyPoint}
+                onRegionClick={handleRegionClick}
+                key={region}
+                darkMode={props.darkMode}
+              />
+            );
+          }
+        })}
+      </StyledSemanticScreen>
+    </DndProvider>
   );
 };
 
-export default SemanticScreen;
+const mapStateToProps = (state: AppState) => ({
+  message: state.message,
+  expandedRegion: state.expandedRegion.region,
+});
+
+const mapDispatchToProps = {
+  pointCreate,
+  pointsDelete,
+  setEditingPoint,
+  setExpandedRegion,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SemanticScreen);
