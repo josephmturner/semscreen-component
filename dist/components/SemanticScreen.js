@@ -9,15 +9,33 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _reactDnd = require("react-dnd");
+
+var _reactDndHtml5Backend = require("react-dnd-html5-backend");
+
+var _animateCssGrid = require("animate-css-grid");
+
+var _uuid = require("uuid");
+
+var _randomcolor = _interopRequireDefault(require("randomcolor"));
+
+var _Region = _interopRequireDefault(require("./Region"));
+
+var _MeritsRegion = _interopRequireDefault(require("./MeritsRegion"));
+
+var _FocusRegion = _interopRequireDefault(require("./FocusRegion"));
+
+var _Banner = _interopRequireDefault(require("./Banner"));
+
+var _StyledSemanticScreen = _interopRequireDefault(require("./StyledSemanticScreen"));
+
 var _reactRedux = require("react-redux");
 
-var _store = require("../reducers/store");
+var _editingPointActions = require("../actions/editingPointActions");
 
 var _messageActions = require("../actions/messageActions");
 
-var _selectPointActions = require("../actions/selectPointActions");
-
-var _SemanticScreenLogic = _interopRequireDefault(require("./SemanticScreenLogic"));
+var _expandedRegionActions = require("../actions/expandedRegionActions");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45,44 +63,138 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 */
 var SemanticScreen = function SemanticScreen(props) {
   var message = props.message,
-      onChangeMessage = props.onChangeMessage,
-      selectedPointIds = props.selectedPointIds,
-      onChangeSelectedPointIds = props.onChangeSelectedPointIds;
-  var store = (0, _react.useMemo)(_store.createStore, []);
-  (0, _react.useLayoutEffect)(function () {
-    if (message && message !== store.getState().message) {
-      store.dispatch((0, _messageActions.setMessage)({
-        message: message
-      }));
-    }
+      expandedRegion = props.expandedRegion;
+  var author = message.author || {
+    name: "anonymous",
+    authorId: (0, _uuid.v4)(),
+    authorDate: new Date(),
+    color: (0, _randomcolor.default)()
+  };
 
-    if (selectedPointIds && selectedPointIds !== store.getState().selectedPoints.pointIds) {
-      store.dispatch((0, _selectPointActions.setSelectedPoints)({
-        pointIds: selectedPointIds
-      }));
-    }
-  }, [store, message, selectedPointIds]);
-  (0, _react.useEffect)(function () {
-    var unsubscribe = store.subscribe(function () {
-      if (onChangeMessage && store.getState().message !== message) {
-        onChangeMessage(store.getState().message);
-      }
-
-      if (onChangeSelectedPointIds && store.getState().selectedPoints.pointIds !== selectedPointIds) {
-        onChangeSelectedPointIds(store.getState().selectedPoints.pointIds);
-      }
+  var createEmptyPoint = function createEmptyPoint(shape, index, focus) {
+    props.pointCreate({
+      point: {
+        author: author,
+        content: ""
+      },
+      shape: shape,
+      index: index,
+      focus: focus
     });
-    return function () {
-      return unsubscribe();
-    };
-  }, [store, onChangeMessage, message, onChangeSelectedPointIds, selectedPointIds]);
-  return /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
-    store: store
-  }, /*#__PURE__*/_react.default.createElement(_SemanticScreenLogic.default, {
-    readOnly: props.readOnly || false,
-    darkMode: props.darkMode || false
-  }));
+  };
+
+  var createEmptyFocus = function createEmptyFocus(shape) {
+    createEmptyPoint(shape, message.points[shape].length, true);
+  };
+
+  var deleteEmptyPoints = function deleteEmptyPoints() {
+    props.pointsDelete({
+      pointIds: Object.values(message.points).flat().filter(function (p) {
+        return !p.content;
+      }).map(function (p) {
+        return p._id;
+      })
+    });
+  };
+
+  var handleRegionClick = function handleRegionClick(region, expand) {
+    if (!expand && region === expandedRegion) {
+      props.setExpandedRegion("");
+      !props.readOnly && deleteEmptyPoints();
+    } else if (expand && region !== expandedRegion) {
+      props.setExpandedRegion(region);
+      !props.readOnly && deleteEmptyPoints();
+    }
+  };
+
+  var regions = ["facts", "merits", "people", "thoughts", "focus", "actions", "feelings", "needs", "topics"];
+  var semanticScreenRef = (0, _react.useRef)();
+  (0, _react.useEffect)(function () {
+    semanticScreenRef.current && (0, _animateCssGrid.wrapGrid)(semanticScreenRef.current, {
+      duration: 150,
+      easing: "linear"
+    });
+  }, []);
+
+  var isExpanded = function isExpanded(region) {
+    return region === expandedRegion ? "expanded" : expandedRegion === "" ? "balanced" : "minimized";
+  };
+
+  return /*#__PURE__*/_react.default.createElement(_reactDnd.DndProvider, {
+    backend: _reactDndHtml5Backend.HTML5Backend
+  }, /*#__PURE__*/_react.default.createElement(_StyledSemanticScreen.default, {
+    expandedRegion: expandedRegion,
+    ref: semanticScreenRef,
+    darkMode: props.darkMode
+  }, props.readOnly && /*#__PURE__*/_react.default.createElement(_Banner.default, {
+    text: author.name,
+    color: author.color,
+    placement: {
+      top: "0",
+      right: "0"
+    },
+    darkMode: props.darkMode
+  }), regions.map(function (region) {
+    if (region === "merits") {
+      return /*#__PURE__*/_react.default.createElement(_MeritsRegion.default, {
+        region: region,
+        isExpanded: isExpanded(region),
+        onRegionClick: handleRegionClick,
+        key: region
+      });
+    }
+
+    if (region === "focus") {
+      return /*#__PURE__*/_react.default.createElement(_FocusRegion.default, {
+        region: region,
+        isExpanded: isExpanded(region),
+        readOnly: props.readOnly,
+        author: author,
+        point: message.focus ? Object.values(message.points).flat().find(function (p) {
+          return message.focus && p._id === message.focus._id;
+        }) : undefined,
+        shape: message.focus ? message.focus.shape : undefined,
+        index: message.focus ? message.points[message.focus.shape].findIndex(function (p) {
+          return message.focus && p._id === message.focus._id;
+        }) : undefined,
+        isMainPoint: message.focus && message.main === message.focus._id ? true : false,
+        createEmptyFocus: createEmptyFocus,
+        onRegionClick: handleRegionClick,
+        key: region,
+        darkMode: props.darkMode
+      });
+    } else {
+      return /*#__PURE__*/_react.default.createElement(_Region.default, {
+        region: region,
+        isExpanded: isExpanded(region),
+        readOnly: props.readOnly,
+        author: author,
+        points: message.points[region],
+        focusPointId: message.focus && message.focus._id,
+        mainPointId: message.main,
+        createEmptyPoint: createEmptyPoint,
+        onRegionClick: handleRegionClick,
+        key: region,
+        darkMode: props.darkMode
+      });
+    }
+  })));
 };
 
-var _default = SemanticScreen;
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    message: state.message,
+    expandedRegion: state.expandedRegion.region
+  };
+};
+
+var mapDispatchToProps = {
+  pointCreate: _messageActions.pointCreate,
+  pointsDelete: _messageActions.pointsDelete,
+  setEditingPoint: _editingPointActions.setEditingPoint,
+  setExpandedRegion: _expandedRegionActions.setExpandedRegion
+};
+
+var _default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SemanticScreen);
+
 exports.default = _default;

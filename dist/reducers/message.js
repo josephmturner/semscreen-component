@@ -179,7 +179,14 @@ function handleSetMainPoint(state, action) {
 }
 
 function handleCombinePoints(state, action) {
+  // Don't attempt to combine a point with the point below it if no point
+  // exists below it.
   if (action.params.aboveOrBelow === "below" && action.params.index === state.points[action.params.shape].length - 1) {
+    return state;
+  } // Don't combine points with quoted points:
+
+
+  if (action.params.aboveOrBelow === "below" && state.points[action.params.shape][action.params.index + 1].quotedAuthor || action.params.aboveOrBelow === "above" && state.points[action.params.shape][action.params.index - 1].quotedAuthor) {
     return state;
   }
 

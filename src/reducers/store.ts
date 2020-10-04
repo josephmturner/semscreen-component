@@ -24,7 +24,7 @@ import {
   SelectedPointsState,
 } from "./selectedPoints";
 
-import { messages } from '../constants/initialState';
+import { messages } from "../constants/initialState";
 
 // Set this to false if you don't want initial message data.
 const populatedInitialMessageState = true ? messages[0] : null;

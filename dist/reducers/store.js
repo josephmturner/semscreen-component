@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createStore = createAppStore;
+exports.store = void 0;
 
 var _redux = require("redux");
 
@@ -19,11 +19,16 @@ var _expandedRegion = require("./expandedRegion");
 
 var _selectedPoints = require("./selectedPoints");
 
+var _initialState = require("../constants/initialState");
+
+// Set this to false if you don't want initial message data.
+var populatedInitialMessageState = true ? _initialState.messages[0] : null;
+
 function createAppStore() {
   var initialAppState = {
     editingPoint: _editingPoint.initialEditingPointState,
     cursorPosition: _cursorPosition.initialCursorPositionState,
-    message: _message.initialMessageState,
+    message: populatedInitialMessageState !== null && populatedInitialMessageState !== void 0 ? populatedInitialMessageState : _message.initialMessageState,
     expandedRegion: _expandedRegion.initialExpandedRegionState,
     selectedPoints: _selectedPoints.initialSelectedPointsState
   };
@@ -43,3 +48,6 @@ function createAppStore() {
 
   return (0, _redux.createStore)(appReducer, (0, _developmentOnly.composeWithDevTools)());
 }
+
+var store = createAppStore();
+exports.store = store;
