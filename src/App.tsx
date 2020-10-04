@@ -30,7 +30,6 @@ import { store } from "./reducers/store";
 
 import styled from "styled-components";
 
-
 const App = () => {
   const readOnly = false;
   const darkMode = true;
