@@ -40,7 +40,6 @@ function handleSetSelectedPoints(state, action) {
 }
 
 function handleTogglePoint(state, action) {
-  console.log("handling toggle point");
   var newPointIds = state.pointIds.filter(function (pointId) {
     return pointId !== action.params.pointId;
   });

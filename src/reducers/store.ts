@@ -3,11 +3,6 @@ import { createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
 
 import {
-  initialEditingPointState,
-  editingPointReducer,
-  EditingPointState,
-} from "./editingPoint";
-import {
   initialCursorPositionState,
   cursorPositionReducer,
   CursorPositionState,
@@ -30,7 +25,6 @@ import { messages } from "../constants/initialState";
 const populatedInitialMessageState = true ? messages[0] : null;
 
 export interface AppState {
-  editingPoint: EditingPointState;
   cursorPosition: CursorPositionState;
   message: MessageState;
   expandedRegion: ExpandedRegionState;
@@ -39,7 +33,6 @@ export interface AppState {
 
 function createAppStore() {
   const initialAppState: AppState = {
-    editingPoint: initialEditingPointState,
     cursorPosition: initialCursorPositionState,
     message: populatedInitialMessageState ?? initialMessageState,
     expandedRegion: initialExpandedRegionState,
@@ -48,7 +41,6 @@ function createAppStore() {
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
     let newState: AppState = {
-      editingPoint: editingPointReducer(state.editingPoint, action, state),
       cursorPosition: cursorPositionReducer(
         state.cursorPosition,
         action,

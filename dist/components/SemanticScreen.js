@@ -31,8 +31,6 @@ var _StyledSemanticScreen = _interopRequireDefault(require("./StyledSemanticScre
 
 var _reactRedux = require("react-redux");
 
-var _editingPointActions = require("../actions/editingPointActions");
-
 var _messageActions = require("../actions/messageActions");
 
 var _expandedRegionActions = require("../actions/expandedRegionActions");
@@ -191,7 +189,6 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = {
   pointCreate: _messageActions.pointCreate,
   pointsDelete: _messageActions.pointsDelete,
-  setEditingPoint: _editingPointActions.setEditingPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion
 };
 

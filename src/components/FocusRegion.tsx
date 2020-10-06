@@ -39,7 +39,6 @@ const FocusRegion = (props: {
   shape: PointShape | undefined;
   index: number | undefined;
   isMainPoint: boolean;
-  editingPointId: string;
   onRegionClick: (region: RegionI, expand: boolean) => void;
   setFocus: (params: SetFocusParams) => void;
   createEmptyFocus: (shape: PointShape) => void;
@@ -81,7 +80,6 @@ const FocusRegion = (props: {
             index={index}
             readOnly={props.readOnly}
             isMainPoint={props.isMainPoint}
-            isEditing={props.editingPointId === point._id}
             isSelected={props.selectedPoints.includes(point._id)}
             onClick={() => onRegionClick(region, true)}
             darkMode={props.darkMode}
@@ -107,7 +105,6 @@ const StyledDiv = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => ({
-  editingPointId: state.editingPoint.editingPointId,
   selectedPoints: state.selectedPoints.pointIds,
 });
 

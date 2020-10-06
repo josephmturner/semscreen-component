@@ -33,7 +33,6 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { MessageState } from "../reducers/message";
-import { setEditingPoint } from "../actions/editingPointActions";
 import {
   pointCreate,
   pointsDelete,
@@ -49,7 +48,6 @@ const SemanticScreen = (props: {
   readOnly: boolean;
   darkMode: boolean;
   expandedRegion: string;
-  setEditingPoint: (pointId: string) => void;
   pointCreate: (params: PointCreateParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   setExpandedRegion: (region: string) => void;
@@ -224,7 +222,6 @@ const mapStateToProps = (state: AppState) => ({
 const mapDispatchToProps = {
   pointCreate,
   pointsDelete,
-  setEditingPoint,
   setExpandedRegion,
 };
 

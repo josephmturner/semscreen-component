@@ -15,7 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { AuthorI, PointI, PointShape } from "../dataModels";
 import { useDragPoint } from "../hooks/useDragPoint";
 import TextareaAutosize from "react-textarea-autosize";
@@ -23,7 +23,6 @@ import styled from "styled-components";
 import Banner from "./Banner";
 
 import { connect } from "react-redux";
-import { setEditingPoint } from "../actions/editingPointActions";
 import {
   pointUpdate,
   PointUpdateParams,
@@ -39,31 +38,21 @@ const FocusPoint = (props: {
   readOnly: boolean;
   darkMode: boolean;
   isMainPoint: boolean;
-  isEditing: boolean;
   isSelected: boolean;
   onClick: () => void;
-  setEditingPoint: (pointId: string) => void;
   togglePoint: (params: TogglePointParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
 }) => {
-  const { point, shape, index, isMainPoint, isEditing } = props;
+  const { point, shape, index, isMainPoint } = props;
 
   const ref = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
       shape: shape,
     });
-  };
-
-  const handleBlur = () => {
-    props.setEditingPoint("");
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -94,7 +83,6 @@ const FocusPoint = (props: {
       ref={preview}
       onClick={handleClick}
       isMainPoint={isMainPoint}
-      isEditing={isEditing}
       isDragging={isDragging}
       quotedAuthor={point.quotedAuthor}
     >
@@ -111,13 +99,10 @@ const FocusPoint = (props: {
       />
       <StyledTextArea
         value={point.content}
-        onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() => {
-          props.setEditingPoint(point._id);
-        }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}
+        autoFocus={true}
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
@@ -136,7 +121,6 @@ const FocusPoint = (props: {
 
 interface StyledProps {
   isMainPoint?: boolean;
-  isEditing?: boolean;
   isDragging?: boolean;
   isSelected?: boolean;
   quotedAuthor?: AuthorI;
@@ -148,12 +132,6 @@ const StyledSpan = styled.span<StyledProps>`
   margin: auto;
   display: flex;
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
-  ${(props) =>
-    props.isEditing &&
-    `
-  background-color: #777;
-  border-radius: 5px;
-`}
 
   ${(props) =>
     props.isMainPoint &&
@@ -194,7 +172,6 @@ const mapStateToProps = () => {
 };
 
 const mapActionsToProps = {
-  setEditingPoint,
   pointUpdate,
   setMainPoint,
   togglePoint,

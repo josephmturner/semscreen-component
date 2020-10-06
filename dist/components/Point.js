@@ -25,8 +25,6 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactRedux = require("react-redux");
 
-var _editingPointActions = require("../actions/editingPointActions");
-
 var _cursorPositionActions = require("../actions/cursorPositionActions");
 
 var _messageActions = require("../actions/messageActions");
@@ -62,7 +60,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -95,7 +93,6 @@ var Point = function Point(props) {
   var point = props.point,
       shape = props.shape,
       index = props.index,
-      isEditing = props.isEditing,
       combinePoints = props.combinePoints,
       cursorPositionIndex = props.cursorPositionIndex,
       clearCursorPosition = props.clearCursorPosition,
@@ -169,9 +166,6 @@ var Point = function Point(props) {
       drop = _useDrop2[1];
 
   var ref = (0, _react.useRef)(null);
-  (0, _react.useEffect)(function () {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
   var pointRef = (0, _react.useRef)(null);
 
   var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
@@ -220,10 +214,6 @@ var Point = function Point(props) {
     });
   };
 
-  var handleBlur = function handleBlur() {
-    props.setEditingPoint("");
-  };
-
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
   var onClickShapeIcon = function onClickShapeIcon() {
@@ -246,7 +236,6 @@ var Point = function Point(props) {
 
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
     ref: pointRef,
-    isEditing: props.isEditing,
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
     isFirst: index === 0 ? true : false,
@@ -264,16 +253,13 @@ var Point = function Point(props) {
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
-    onBlur: handleBlur,
     onChange: handleChange,
-    onFocus: function onFocus() {
-      props.setEditingPoint(point._id);
-    },
     readOnly: !!point.quotedAuthor || props.readOnly,
     isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
     darkMode: props.darkMode,
     ref: ref,
+    autoFocus: true,
     onKeyDown: function onKeyDown(e) {
       if (props.readOnly) {
         return;
@@ -345,8 +331,6 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
   return props.isFirst ? "1px" : "0px";
 }, function (props) {
   return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
-}, function (props) {
-  return props.isEditing && "\n  background-color: #777;\n  border-radius: 5px;\n";
 });
 
 var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
@@ -378,7 +362,6 @@ var mapStateToProps = function mapStateToProps() {
 var mapActionsToProps = {
   splitIntoTwoPoints: _messageActions.splitIntoTwoPoints,
   combinePoints: _messageActions.combinePoints,
-  setEditingPoint: _editingPointActions.setEditingPoint,
   setCursorPosition: _cursorPositionActions.setCursorPosition,
   clearCursorPosition: _cursorPositionActions.clearCursorPosition,
   pointMove: _messageActions.pointMove,

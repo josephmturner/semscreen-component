@@ -29,7 +29,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
-import { setEditingPoint } from "../actions/editingPointActions";
 import {
   setCursorPosition,
   clearCursorPosition,
@@ -57,12 +56,10 @@ const Point = (props: {
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
-  isEditing: boolean;
   isSelected: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
-  setEditingPoint: (pointId: string) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
   pointMove: (params: PointMoveParams) => void;
@@ -76,7 +73,6 @@ const Point = (props: {
     point,
     shape,
     index,
-    isEditing,
     combinePoints,
     cursorPositionIndex,
     clearCursorPosition,
@@ -151,10 +147,6 @@ const Point = (props: {
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
-
   const pointRef = useRef<HTMLSpanElement>(null);
 
   const { isDragging, drag, preview } = useDragPoint(point, shape, index);
@@ -195,10 +187,6 @@ const Point = (props: {
     });
   };
 
-  const handleBlur = () => {
-    props.setEditingPoint("");
-  };
-
   const imageUrl = require(`../images/${shape}.svg`);
 
   const onClickShapeIcon = () => {
@@ -218,7 +206,6 @@ const Point = (props: {
   return (
     <StyledSpan
       ref={pointRef}
-      isEditing={props.isEditing}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
@@ -238,16 +225,13 @@ const Point = (props: {
       />
       <StyledTextArea
         value={point.content}
-        onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() => {
-          props.setEditingPoint(point._id);
-        }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
         ref={ref}
+        autoFocus={true}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
             return;
@@ -323,7 +307,6 @@ const Point = (props: {
 };
 
 interface StyledProps {
-  isEditing?: boolean;
   isMainPoint?: boolean;
   isDragging?: boolean;
   isFirst?: boolean;
@@ -342,12 +325,6 @@ const StyledSpan = styled.span<StyledProps>`
     props.quotedAuthor &&
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
    `}
-  ${(props) =>
-    props.isEditing &&
-    `
-  background-color: #777;
-  border-radius: 5px;
-`}
 `;
 
 const StyledImg = styled.img<StyledProps>`
@@ -388,7 +365,6 @@ const mapStateToProps = () => {
 const mapActionsToProps = {
   splitIntoTwoPoints,
   combinePoints,
-  setEditingPoint,
   setCursorPosition,
   clearCursorPosition,
   pointMove,

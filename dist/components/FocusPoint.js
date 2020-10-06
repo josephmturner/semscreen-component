@@ -19,8 +19,6 @@ var _Banner = _interopRequireDefault(require("./Banner"));
 
 var _reactRedux = require("react-redux");
 
-var _editingPointActions = require("../actions/editingPointActions");
-
 var _messageActions = require("../actions/messageActions");
 
 var _selectPointActions = require("../actions/selectPointActions");
@@ -52,7 +50,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  margin: auto;\n  display: flex;\n  opacity: ", ";\n  ", "\n\n  ", ";\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  margin: auto;\n  display: flex;\n  opacity: ", ";\n\n  ", ";\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -73,12 +71,8 @@ var FocusPoint = function FocusPoint(props) {
   var point = props.point,
       shape = props.shape,
       index = props.index,
-      isMainPoint = props.isMainPoint,
-      isEditing = props.isEditing;
+      isMainPoint = props.isMainPoint;
   var ref = (0, _react.useRef)(null);
-  (0, _react.useEffect)(function () {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
@@ -87,10 +81,6 @@ var FocusPoint = function FocusPoint(props) {
       }),
       shape: shape
     });
-  };
-
-  var handleBlur = function handleBlur() {
-    props.setEditingPoint("");
   };
 
   var handleClick = function handleClick(e) {
@@ -127,7 +117,6 @@ var FocusPoint = function FocusPoint(props) {
     ref: preview,
     onClick: handleClick,
     isMainPoint: isMainPoint,
-    isEditing: isEditing,
     isDragging: isDragging,
     quotedAuthor: point.quotedAuthor
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
@@ -142,13 +131,10 @@ var FocusPoint = function FocusPoint(props) {
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
-    onBlur: handleBlur,
     onChange: handleChange,
-    onFocus: function onFocus() {
-      props.setEditingPoint(point._id);
-    },
     readOnly: !!point.quotedAuthor || props.readOnly,
     ref: ref,
+    autoFocus: true,
     isMainPoint: isMainPoint,
     quotedAuthor: point.quotedAuthor,
     darkMode: props.darkMode
@@ -165,8 +151,6 @@ var FocusPoint = function FocusPoint(props) {
 
 var StyledSpan = _styledComponents.default.span(_templateObject(), function (props) {
   return props.isDragging ? 0.4 : 1;
-}, function (props) {
-  return props.isEditing && "\n  background-color: #777;\n  border-radius: 5px;\n";
 }, function (props) {
   return props.isMainPoint && "\n  padding: 1% 0;\n";
 });
@@ -188,7 +172,6 @@ var mapStateToProps = function mapStateToProps() {
 };
 
 var mapActionsToProps = {
-  setEditingPoint: _editingPointActions.setEditingPoint,
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   togglePoint: _selectPointActions.togglePoint

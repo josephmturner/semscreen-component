@@ -130,7 +130,6 @@ var Region = function Region(props) {
       readOnly: props.readOnly,
       isExpanded: props.isExpanded,
       isMainPoint: props.mainPointId === p._id,
-      isEditing: props.editingPointId === p._id,
       isSelected: props.selectedPoints.includes(p._id),
       cursorPositionIndex: cursorPosition && cursorPosition.pointId === p._id ? cursorPosition.index : undefined,
       darkMode: props.darkMode
@@ -156,7 +155,6 @@ var DropTargetDiv = _styledComponents.default.div(_templateObject(), function (p
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    editingPointId: state.editingPoint.editingPointId,
     cursorPosition: state.cursorPosition.details,
     selectedPoints: state.selectedPoints.pointIds
   };
