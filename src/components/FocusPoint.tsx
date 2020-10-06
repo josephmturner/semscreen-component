@@ -31,7 +31,12 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/messageActions";
-import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 const FocusPoint = (props: {
   point: PointI;
@@ -43,6 +48,7 @@ const FocusPoint = (props: {
   isMainPoint: boolean;
   isSelected: boolean;
   togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -62,19 +68,16 @@ const FocusPoint = (props: {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
     }
+    if (e.ctrlKey) {
+      props.togglePoint({ pointId: point._id });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
   };
 
   const onClickShapeIcon = () => {
-    props.togglePoint({ pointId: point._id });
-  };
-
-  const onDoubleClickShapeIcon = () => {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint
-        ? props.setMainPoint({ pointId: "" })
-        : props.setMainPoint({ pointId: point._id });
+    if (!props.readOnly) {
+      props.setMainPoint({ pointId: point._id });
     }
   };
 
@@ -94,7 +97,6 @@ const FocusPoint = (props: {
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
-        onDoubleClick={onDoubleClickShapeIcon}
         quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
         isSelected={props.isSelected}
@@ -182,6 +184,7 @@ const mapActionsToProps = {
   pointUpdate,
   setMainPoint,
   togglePoint,
+  setSelectedPoints,
   pointsDelete,
 };
 

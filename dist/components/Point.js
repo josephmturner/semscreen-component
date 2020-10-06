@@ -50,7 +50,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -60,7 +60,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -220,21 +220,21 @@ var Point = function Point(props) {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
     }
+
+    if (e.ctrlKey) {
+      props.togglePoint({
+        pointId: point._id
+      });
+    } else {
+      props.setSelectedPoints({
+        pointIds: []
+      });
+    }
   };
 
   var onClickShapeIcon = function onClickShapeIcon() {
-    props.togglePoint({
-      pointId: point._id
-    });
-  };
-
-  var onDoubleClickShapeIcon = function onDoubleClickShapeIcon() {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint ? props.setMainPoint({
-        pointId: ""
-      }) : props.setMainPoint({
+    if (!props.readOnly) {
+      props.setMainPoint({
         pointId: point._id
       });
     }
@@ -246,14 +246,13 @@ var Point = function Point(props) {
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
     isFirst: index === 0 ? true : false,
+    isSelected: props.isSelected,
     quotedAuthor: point.quotedAuthor
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
-    onDoubleClick: onDoubleClickShapeIcon,
     isMainPoint: props.isMainPoint,
-    isSelected: props.isSelected,
     darkMode: props.darkMode,
     quotedAuthor: point.quotedAuthor,
     height: props.isMainPoint ? 23 : 17,
@@ -343,6 +342,8 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
   return props.isFirst ? "1px" : "0px";
 }, function (props) {
   return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
+}, function (props) {
+  return props.isSelected && "                                                                  \n  background-color: #777;                                          \n  border-radius: 5px;\n";
 });
 
 var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
@@ -351,8 +352,6 @@ var StyledImg = _styledComponents.default.img(_templateObject2(), function (prop
   return props.quotedAuthor ? "0.8rem" : 0;
 }, function (props) {
   return props.quotedAuthor ? "7px" : 0;
-}, function (props) {
-  return props.isSelected && "\nborder: 2px solid ".concat(props.darkMode ? "white" : "black", ";\nborder-radius: 5px;\n");
 });
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
@@ -381,6 +380,7 @@ var mapActionsToProps = {
   setMainPoint: _messageActions.setMainPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion,
   togglePoint: _selectPointActions.togglePoint,
+  setSelectedPoints: _selectPointActions.setSelectedPoints,
   pointsDelete: _messageActions.pointsDelete
 };
 

@@ -87,21 +87,21 @@ var FocusPoint = function FocusPoint(props) {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
     }
+
+    if (e.ctrlKey) {
+      props.togglePoint({
+        pointId: point._id
+      });
+    } else {
+      props.setSelectedPoints({
+        pointIds: []
+      });
+    }
   };
 
   var onClickShapeIcon = function onClickShapeIcon() {
-    props.togglePoint({
-      pointId: point._id
-    });
-  };
-
-  var onDoubleClickShapeIcon = function onDoubleClickShapeIcon() {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint ? props.setMainPoint({
-        pointId: ""
-      }) : props.setMainPoint({
+    if (!props.readOnly) {
+      props.setMainPoint({
         pointId: point._id
       });
     }
@@ -124,7 +124,6 @@ var FocusPoint = function FocusPoint(props) {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
-    onDoubleClick: onDoubleClickShapeIcon,
     quotedAuthor: point.quotedAuthor,
     height: isMainPoint ? 30 : 20,
     isSelected: props.isSelected,
@@ -181,6 +180,7 @@ var mapActionsToProps = {
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   togglePoint: _selectPointActions.togglePoint,
+  setSelectedPoints: _selectPointActions.setSelectedPoints,
   pointsDelete: _messageActions.pointsDelete
 };
 

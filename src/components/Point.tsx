@@ -49,7 +49,12 @@ import {
   PointsDeleteParams,
 } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
-import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 const Point = (props: {
   point: PointI;
@@ -69,6 +74,7 @@ const Point = (props: {
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
   togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   darkMode?: boolean;
 }) => {
@@ -196,19 +202,16 @@ const Point = (props: {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
     }
+    if (e.ctrlKey) {
+      props.togglePoint({ pointId: point._id });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
   };
 
   const onClickShapeIcon = () => {
-    props.togglePoint({ pointId: point._id });
-  };
-
-  const onDoubleClickShapeIcon = () => {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint
-        ? props.setMainPoint({ pointId: "" })
-        : props.setMainPoint({ pointId: point._id });
+    if (!props.readOnly) {
+      props.setMainPoint({ pointId: point._id });
     }
   };
 
@@ -219,15 +222,14 @@ const Point = (props: {
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
+      isSelected={props.isSelected}
       quotedAuthor={point.quotedAuthor}
     >
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
-        onDoubleClick={onDoubleClickShapeIcon}
         isMainPoint={props.isMainPoint}
-        isSelected={props.isSelected}
         darkMode={props.darkMode}
         quotedAuthor={point.quotedAuthor}
         height={props.isMainPoint ? 23 : 17}
@@ -338,6 +340,12 @@ const StyledSpan = styled.span<StyledProps>`
     props.quotedAuthor &&
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
    `}
+  ${(props) =>
+    props.isSelected &&
+    `                                                                  
+  background-color: #777;                                          
+  border-radius: 5px;
+`}
 `;
 
 const StyledImg = styled.img<StyledProps>`
@@ -346,12 +354,6 @@ const StyledImg = styled.img<StyledProps>`
   margin-top: ${(props) => (props.quotedAuthor ? "0.8rem" : 0)};
   left: ${(props) => (props.quotedAuthor ? "7px" : 0)};
   opacity: 0.7;
-  ${(props) =>
-    props.isSelected &&
-    `
-border: 2px solid ${props.darkMode ? "white" : "black"};
-border-radius: 5px;
-`}
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
@@ -385,6 +387,7 @@ const mapActionsToProps = {
   setMainPoint,
   setExpandedRegion,
   togglePoint,
+  setSelectedPoints,
   pointsDelete,
 };
 
