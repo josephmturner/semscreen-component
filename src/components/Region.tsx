@@ -21,7 +21,7 @@ import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
-import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
+import { AuthorI, PointI, PointShape } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -48,7 +48,6 @@ const Region = (props: {
   cursorPosition: CursorPositionDetails | null;
   pointCreate: (params: PointCreateParams) => void;
   createEmptyPoint: (shape: PointShape, index: number) => void;
-  onRegionClick: (region: RegionI, expand: boolean) => void;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (region: string) => void;
   selectedPoints: string[];
@@ -94,19 +93,15 @@ const Region = (props: {
   });
 
   const onClickRemainingSpace = () => {
-    if (props.isExpanded === "expanded") {
-      props.onRegionClick(region, false);
-    } else {
-      if (!props.readOnly) {
-        props.pointCreate({
-          point: {
-            author: props.author,
-            content: "",
-          },
-          shape: region,
-          index: points.length,
-        });
-      }
+    if (props.isExpanded !== "expanded" && !props.readOnly) {
+      props.pointCreate({
+        point: {
+          author: props.author,
+          content: "",
+        },
+        shape: region,
+        index: points.length,
+      });
     }
   };
 
@@ -114,7 +109,7 @@ const Region = (props: {
     <StyledRegion
       isExpanded={props.isExpanded}
       borderColor={props.author.color}
-      onClick={() => props.onRegionClick(region, true)}
+      onClick={() => props.setExpandedRegion(region)}
     >
       <div>
         <RegionHeader shape={region} darkMode={props.darkMode} />

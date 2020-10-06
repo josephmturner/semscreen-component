@@ -28,6 +28,8 @@ import {
   PointUpdateParams,
   setMainPoint,
   SetMainPointParams,
+  pointsDelete,
+  PointsDeleteParams,
 } from "../actions/messageActions";
 import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 
@@ -36,13 +38,14 @@ const FocusPoint = (props: {
   shape: PointShape;
   index: number;
   readOnly: boolean;
+  isExpanded: "expanded" | "minimized" | "balanced";
   darkMode: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
-  onClick: () => void;
   togglePoint: (params: TogglePointParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
+  pointsDelete: (params: PointsDeleteParams) => void;
 }) => {
   const { point, shape, index, isMainPoint } = props;
 
@@ -56,8 +59,9 @@ const FocusPoint = (props: {
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    props.onClick();
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
   };
 
   const onClickShapeIcon = () => {
@@ -100,6 +104,9 @@ const FocusPoint = (props: {
       <StyledTextArea
         value={point.content}
         onChange={handleChange}
+        onBlur={() => {
+          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
+        }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}
         autoFocus={true}
@@ -175,6 +182,7 @@ const mapActionsToProps = {
   pointUpdate,
   setMainPoint,
   togglePoint,
+  pointsDelete,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

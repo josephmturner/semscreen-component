@@ -216,6 +216,12 @@ var Point = function Point(props) {
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
+  var handleClick = function handleClick(e) {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+  };
+
   var onClickShapeIcon = function onClickShapeIcon() {
     props.togglePoint({
       pointId: point._id
@@ -235,6 +241,7 @@ var Point = function Point(props) {
   };
 
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
+    onClick: handleClick,
     ref: pointRef,
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
@@ -254,6 +261,11 @@ var Point = function Point(props) {
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
     onChange: handleChange,
+    onBlur: function onBlur() {
+      if (!point.content) props.pointsDelete({
+        pointIds: [point._id]
+      });
+    },
     readOnly: !!point.quotedAuthor || props.readOnly,
     isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
@@ -368,7 +380,8 @@ var mapActionsToProps = {
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion,
-  togglePoint: _selectPointActions.togglePoint
+  togglePoint: _selectPointActions.togglePoint,
+  pointsDelete: _messageActions.pointsDelete
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(Point);

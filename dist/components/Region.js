@@ -94,19 +94,15 @@ var Region = function Region(props) {
       drop = _useDrop2[1];
 
   var onClickRemainingSpace = function onClickRemainingSpace() {
-    if (props.isExpanded === "expanded") {
-      props.onRegionClick(region, false);
-    } else {
-      if (!props.readOnly) {
-        props.pointCreate({
-          point: {
-            author: props.author,
-            content: ""
-          },
-          shape: region,
-          index: points.length
-        });
-      }
+    if (props.isExpanded !== "expanded" && !props.readOnly) {
+      props.pointCreate({
+        point: {
+          author: props.author,
+          content: ""
+        },
+        shape: region,
+        index: points.length
+      });
     }
   };
 
@@ -114,7 +110,7 @@ var Region = function Region(props) {
     isExpanded: props.isExpanded,
     borderColor: props.author.color,
     onClick: function onClick() {
-      return props.onRegionClick(region, true);
+      return props.setExpandedRegion(region);
     }
   }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_RegionHeader.default, {
     shape: region,

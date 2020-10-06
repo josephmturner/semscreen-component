@@ -45,6 +45,8 @@ import {
   PointUpdateParams,
   setMainPoint,
   SetMainPointParams,
+  pointsDelete,
+  PointsDeleteParams,
 } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
 import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
@@ -67,6 +69,7 @@ const Point = (props: {
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
   togglePoint: (params: TogglePointParams) => void;
+  pointsDelete: (params: PointsDeleteParams) => void;
   darkMode?: boolean;
 }) => {
   const {
@@ -189,6 +192,12 @@ const Point = (props: {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+  };
+
   const onClickShapeIcon = () => {
     props.togglePoint({ pointId: point._id });
   };
@@ -205,6 +214,7 @@ const Point = (props: {
 
   return (
     <StyledSpan
+      onClick={handleClick}
       ref={pointRef}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
@@ -226,6 +236,9 @@ const Point = (props: {
       <StyledTextArea
         value={point.content}
         onChange={handleChange}
+        onBlur={() => {
+          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
+        }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
@@ -372,6 +385,7 @@ const mapActionsToProps = {
   setMainPoint,
   setExpandedRegion,
   togglePoint,
+  pointsDelete,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

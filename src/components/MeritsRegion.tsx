@@ -31,10 +31,9 @@ import { setExpandedRegion } from "../actions/expandedRegionActions";
 const MeritsRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  onRegionClick: (region: RegionI, expand: boolean) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
-  const { region, isExpanded, onRegionClick } = props;
+  const { region, isExpanded } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -58,7 +57,7 @@ const MeritsRegion = (props: {
   return (
     <StyledMeritsRegion
       ref={drop}
-      onClick={() => onRegionClick(region, isExpanded !== "expanded")}
+      onClick={() => props.setExpandedRegion(region)}
     >
       <StyledDiv></StyledDiv>
     </StyledMeritsRegion>

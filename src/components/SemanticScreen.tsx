@@ -33,12 +33,7 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { MessageState } from "../reducers/message";
-import {
-  pointCreate,
-  pointsDelete,
-  PointCreateParams,
-  PointsDeleteParams,
-} from "../actions/messageActions";
+import { pointCreate, PointCreateParams } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
 
 import { PointShape, RegionI } from "../dataModels";
@@ -49,7 +44,6 @@ const SemanticScreen = (props: {
   darkMode: boolean;
   expandedRegion: string;
   pointCreate: (params: PointCreateParams) => void;
-  pointsDelete: (params: PointsDeleteParams) => void;
   setExpandedRegion: (region: string) => void;
 }) => {
   const { message, expandedRegion } = props;
@@ -79,25 +73,6 @@ const SemanticScreen = (props: {
 
   const createEmptyFocus = (shape: PointShape) => {
     createEmptyPoint(shape, message.points[shape].length, true);
-  };
-
-  const deleteEmptyPoints = () => {
-    props.pointsDelete({
-      pointIds: Object.values(message.points)
-        .flat()
-        .filter((p) => !p.content)
-        .map((p) => p._id),
-    });
-  };
-
-  const handleRegionClick = (region: RegionI, expand: boolean): void => {
-    if (!expand && region === expandedRegion) {
-      props.setExpandedRegion("");
-      !props.readOnly && deleteEmptyPoints();
-    } else if (expand && region !== expandedRegion) {
-      props.setExpandedRegion(region);
-      !props.readOnly && deleteEmptyPoints();
-    }
   };
 
   const regions: Array<RegionI> = [
@@ -151,7 +126,6 @@ const SemanticScreen = (props: {
               <MeritsRegion
                 region={region}
                 isExpanded={isExpanded(region)}
-                onRegionClick={handleRegionClick}
                 key={region}
               />
             );
@@ -186,7 +160,6 @@ const SemanticScreen = (props: {
                     : false
                 }
                 createEmptyFocus={createEmptyFocus}
-                onRegionClick={handleRegionClick}
                 key={region}
                 darkMode={props.darkMode}
               />
@@ -202,7 +175,6 @@ const SemanticScreen = (props: {
                 focusPointId={message.focus && message.focus._id}
                 mainPointId={message.main}
                 createEmptyPoint={createEmptyPoint}
-                onRegionClick={handleRegionClick}
                 key={region}
                 darkMode={props.darkMode}
               />
@@ -221,7 +193,6 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = {
   pointCreate,
-  pointsDelete,
   setExpandedRegion,
 };
 

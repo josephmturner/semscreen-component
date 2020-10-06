@@ -84,8 +84,9 @@ var FocusPoint = function FocusPoint(props) {
   };
 
   var handleClick = function handleClick(e) {
-    e.stopPropagation();
-    props.onClick();
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
   };
 
   var onClickShapeIcon = function onClickShapeIcon() {
@@ -132,6 +133,11 @@ var FocusPoint = function FocusPoint(props) {
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
     onChange: handleChange,
+    onBlur: function onBlur() {
+      if (!point.content) props.pointsDelete({
+        pointIds: [point._id]
+      });
+    },
     readOnly: !!point.quotedAuthor || props.readOnly,
     ref: ref,
     autoFocus: true,
@@ -174,7 +180,8 @@ var mapStateToProps = function mapStateToProps() {
 var mapActionsToProps = {
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
-  togglePoint: _selectPointActions.togglePoint
+  togglePoint: _selectPointActions.togglePoint,
+  pointsDelete: _messageActions.pointsDelete
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(FocusPoint);
