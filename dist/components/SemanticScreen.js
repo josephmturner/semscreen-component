@@ -31,8 +31,6 @@ var _StyledSemanticScreen = _interopRequireDefault(require("./StyledSemanticScre
 
 var _reactRedux = require("react-redux");
 
-var _editingPointActions = require("../actions/editingPointActions");
-
 var _messageActions = require("../actions/messageActions");
 
 var _expandedRegionActions = require("../actions/expandedRegionActions");
@@ -87,26 +85,6 @@ var SemanticScreen = function SemanticScreen(props) {
     createEmptyPoint(shape, message.points[shape].length, true);
   };
 
-  var deleteEmptyPoints = function deleteEmptyPoints() {
-    props.pointsDelete({
-      pointIds: Object.values(message.points).flat().filter(function (p) {
-        return !p.content;
-      }).map(function (p) {
-        return p._id;
-      })
-    });
-  };
-
-  var handleRegionClick = function handleRegionClick(region, expand) {
-    if (!expand && region === expandedRegion) {
-      props.setExpandedRegion("");
-      !props.readOnly && deleteEmptyPoints();
-    } else if (expand && region !== expandedRegion) {
-      props.setExpandedRegion(region);
-      !props.readOnly && deleteEmptyPoints();
-    }
-  };
-
   var regions = ["facts", "merits", "people", "thoughts", "focus", "actions", "feelings", "needs", "topics"];
   var semanticScreenRef = (0, _react.useRef)();
   (0, _react.useEffect)(function () {
@@ -139,7 +117,6 @@ var SemanticScreen = function SemanticScreen(props) {
       return /*#__PURE__*/_react.default.createElement(_MeritsRegion.default, {
         region: region,
         isExpanded: isExpanded(region),
-        onRegionClick: handleRegionClick,
         key: region
       });
     }
@@ -159,7 +136,6 @@ var SemanticScreen = function SemanticScreen(props) {
         }) : undefined,
         isMainPoint: message.focus && message.main === message.focus._id ? true : false,
         createEmptyFocus: createEmptyFocus,
-        onRegionClick: handleRegionClick,
         key: region,
         darkMode: props.darkMode
       });
@@ -173,7 +149,6 @@ var SemanticScreen = function SemanticScreen(props) {
         focusPointId: message.focus && message.focus._id,
         mainPointId: message.main,
         createEmptyPoint: createEmptyPoint,
-        onRegionClick: handleRegionClick,
         key: region,
         darkMode: props.darkMode
       });
@@ -190,8 +165,6 @@ var mapStateToProps = function mapStateToProps(state) {
 
 var mapDispatchToProps = {
   pointCreate: _messageActions.pointCreate,
-  pointsDelete: _messageActions.pointsDelete,
-  setEditingPoint: _editingPointActions.setEditingPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion
 };
 

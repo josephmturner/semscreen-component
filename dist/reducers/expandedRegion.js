@@ -30,7 +30,17 @@ var expandedRegionReducer = function expandedRegionReducer() {
 exports.expandedRegionReducer = expandedRegionReducer;
 
 function handleSetExpandedRegion(state, action) {
-  return {
-    region: action.params.region
-  };
+  var newState = state;
+
+  if (state.region === action.params.region) {
+    newState = {
+      region: ""
+    };
+  } else {
+    newState = {
+      region: action.params.region
+    };
+  }
+
+  return newState;
 }

@@ -55,8 +55,7 @@ var FocusRegion = function FocusRegion(props) {
   var region = props.region,
       isExpanded = props.isExpanded,
       point = props.point,
-      index = props.index,
-      onRegionClick = props.onRegionClick;
+      index = props.index;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
@@ -82,19 +81,16 @@ var FocusRegion = function FocusRegion(props) {
     ref: drop,
     borderColor: props.author.color,
     onClick: function onClick() {
-      return onRegionClick(region, isExpanded !== "expanded");
+      return props.setExpandedRegion(region);
     }
   }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, point && props.shape && typeof index === "number" && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
     point: point,
     shape: props.shape,
     index: index,
     readOnly: props.readOnly,
+    isExpanded: props.isExpanded,
     isMainPoint: props.isMainPoint,
-    isEditing: props.editingPointId === point._id,
     isSelected: props.selectedPoints.includes(point._id),
-    onClick: function onClick() {
-      return onRegionClick(region, true);
-    },
     darkMode: props.darkMode
   }), !point && isExpanded === "expanded" && /*#__PURE__*/_react.default.createElement(_SevenShapes.default, {
     onShapeClick: props.createEmptyFocus,
@@ -106,7 +102,6 @@ var StyledDiv = _styledComponents.default.div(_templateObject());
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    editingPointId: state.editingPoint.editingPointId,
     selectedPoints: state.selectedPoints.pointIds
   };
 };

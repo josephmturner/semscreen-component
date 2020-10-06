@@ -25,8 +25,6 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactRedux = require("react-redux");
 
-var _editingPointActions = require("../actions/editingPointActions");
-
 var _cursorPositionActions = require("../actions/cursorPositionActions");
 
 var _messageActions = require("../actions/messageActions");
@@ -52,7 +50,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -95,7 +93,6 @@ var Point = function Point(props) {
   var point = props.point,
       shape = props.shape,
       index = props.index,
-      isEditing = props.isEditing,
       combinePoints = props.combinePoints,
       cursorPositionIndex = props.cursorPositionIndex,
       clearCursorPosition = props.clearCursorPosition,
@@ -169,9 +166,6 @@ var Point = function Point(props) {
       drop = _useDrop2[1];
 
   var ref = (0, _react.useRef)(null);
-  (0, _react.useEffect)(function () {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
   var pointRef = (0, _react.useRef)(null);
 
   var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
@@ -220,60 +214,63 @@ var Point = function Point(props) {
     });
   };
 
-  var handleBlur = function handleBlur() {
-    props.setEditingPoint("");
-  };
-
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
-  var onClickShapeIcon = function onClickShapeIcon() {
-    props.togglePoint({
-      pointId: point._id
-    });
+  var handleClick = function handleClick(e) {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+
+    if (e.ctrlKey) {
+      props.togglePoint({
+        pointId: point._id
+      });
+    } else {
+      props.setSelectedPoints({
+        pointIds: []
+      });
+    }
   };
 
-  var onDoubleClickShapeIcon = function onDoubleClickShapeIcon() {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint ? props.setMainPoint({
-        pointId: ""
-      }) : props.setMainPoint({
+  var onClickShapeIcon = function onClickShapeIcon() {
+    if (!props.readOnly) {
+      props.setMainPoint({
         pointId: point._id
       });
     }
   };
 
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
+    onClick: handleClick,
     ref: pointRef,
-    isEditing: props.isEditing,
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
     isFirst: index === 0 ? true : false,
+    isSelected: props.isSelected,
     quotedAuthor: point.quotedAuthor
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
-    onDoubleClick: onDoubleClickShapeIcon,
     isMainPoint: props.isMainPoint,
-    isSelected: props.isSelected,
     darkMode: props.darkMode,
     quotedAuthor: point.quotedAuthor,
     height: props.isMainPoint ? 23 : 17,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
     value: point.content,
-    onBlur: handleBlur,
     onChange: handleChange,
-    onFocus: function onFocus() {
-      props.setEditingPoint(point._id);
+    onBlur: function onBlur() {
+      if (!point.content) props.pointsDelete({
+        pointIds: [point._id]
+      });
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
     isMainPoint: props.isMainPoint,
     quotedAuthor: point.quotedAuthor,
     darkMode: props.darkMode,
     ref: ref,
+    autoFocus: true,
     onKeyDown: function onKeyDown(e) {
       if (props.readOnly) {
         return;
@@ -346,7 +343,7 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
 }, function (props) {
   return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
 }, function (props) {
-  return props.isEditing && "\n  background-color: #777;\n  border-radius: 5px;\n";
+  return props.isSelected && "                                                                  \n  background-color: #777;                                          \n  border-radius: 5px;\n";
 });
 
 var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
@@ -355,8 +352,6 @@ var StyledImg = _styledComponents.default.img(_templateObject2(), function (prop
   return props.quotedAuthor ? "0.8rem" : 0;
 }, function (props) {
   return props.quotedAuthor ? "7px" : 0;
-}, function (props) {
-  return props.isSelected && "\nborder: 2px solid ".concat(props.darkMode ? "white" : "black", ";\nborder-radius: 5px;\n");
 });
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
@@ -378,14 +373,15 @@ var mapStateToProps = function mapStateToProps() {
 var mapActionsToProps = {
   splitIntoTwoPoints: _messageActions.splitIntoTwoPoints,
   combinePoints: _messageActions.combinePoints,
-  setEditingPoint: _editingPointActions.setEditingPoint,
   setCursorPosition: _cursorPositionActions.setCursorPosition,
   clearCursorPosition: _cursorPositionActions.clearCursorPosition,
   pointMove: _messageActions.pointMove,
   pointUpdate: _messageActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion,
-  togglePoint: _selectPointActions.togglePoint
+  togglePoint: _selectPointActions.togglePoint,
+  setSelectedPoints: _selectPointActions.setSelectedPoints,
+  pointsDelete: _messageActions.pointsDelete
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(Point);

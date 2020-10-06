@@ -29,7 +29,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
-import { setEditingPoint } from "../actions/editingPointActions";
 import {
   setCursorPosition,
   clearCursorPosition,
@@ -46,9 +45,16 @@ import {
   PointUpdateParams,
   setMainPoint,
   SetMainPointParams,
+  pointsDelete,
+  PointsDeleteParams,
 } from "../actions/messageActions";
 import { setExpandedRegion } from "../actions/expandedRegionActions";
-import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 const Point = (props: {
   point: PointI;
@@ -57,12 +63,10 @@ const Point = (props: {
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
-  isEditing: boolean;
   isSelected: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   cursorPositionIndex: number | undefined;
-  setEditingPoint: (pointId: string) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
   pointMove: (params: PointMoveParams) => void;
@@ -70,13 +74,14 @@ const Point = (props: {
   setMainPoint: (params: SetMainPointParams) => void;
   setExpandedRegion: (region: string) => void;
   togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  pointsDelete: (params: PointsDeleteParams) => void;
   darkMode?: boolean;
 }) => {
   const {
     point,
     shape,
     index,
-    isEditing,
     combinePoints,
     cursorPositionIndex,
     clearCursorPosition,
@@ -151,10 +156,6 @@ const Point = (props: {
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    isEditing && ref.current && ref.current.focus();
-  }, [isEditing]);
-
   const pointRef = useRef<HTMLSpanElement>(null);
 
   const { isDragging, drag, preview } = useDragPoint(point, shape, index);
@@ -195,42 +196,40 @@ const Point = (props: {
     });
   };
 
-  const handleBlur = () => {
-    props.setEditingPoint("");
-  };
-
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const onClickShapeIcon = () => {
-    props.togglePoint({ pointId: point._id });
+  const handleClick = (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+    if (e.ctrlKey) {
+      props.togglePoint({ pointId: point._id });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
   };
 
-  const onDoubleClickShapeIcon = () => {
-    if (props.readOnly) {
-      return;
-    } else {
-      props.isMainPoint
-        ? props.setMainPoint({ pointId: "" })
-        : props.setMainPoint({ pointId: point._id });
+  const onClickShapeIcon = () => {
+    if (!props.readOnly) {
+      props.setMainPoint({ pointId: point._id });
     }
   };
 
   return (
     <StyledSpan
+      onClick={handleClick}
       ref={pointRef}
-      isEditing={props.isEditing}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
       isFirst={index === 0 ? true : false}
+      isSelected={props.isSelected}
       quotedAuthor={point.quotedAuthor}
     >
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
-        onDoubleClick={onDoubleClickShapeIcon}
         isMainPoint={props.isMainPoint}
-        isSelected={props.isSelected}
         darkMode={props.darkMode}
         quotedAuthor={point.quotedAuthor}
         height={props.isMainPoint ? 23 : 17}
@@ -238,16 +237,16 @@ const Point = (props: {
       />
       <StyledTextArea
         value={point.content}
-        onBlur={handleBlur}
         onChange={handleChange}
-        onFocus={() => {
-          props.setEditingPoint(point._id);
+        onBlur={() => {
+          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
         ref={ref}
+        autoFocus={true}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
             return;
@@ -323,7 +322,6 @@ const Point = (props: {
 };
 
 interface StyledProps {
-  isEditing?: boolean;
   isMainPoint?: boolean;
   isDragging?: boolean;
   isFirst?: boolean;
@@ -343,9 +341,9 @@ const StyledSpan = styled.span<StyledProps>`
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
    `}
   ${(props) =>
-    props.isEditing &&
-    `
-  background-color: #777;
+    props.isSelected &&
+    `                                                                  
+  background-color: #777;                                          
   border-radius: 5px;
 `}
 `;
@@ -356,12 +354,6 @@ const StyledImg = styled.img<StyledProps>`
   margin-top: ${(props) => (props.quotedAuthor ? "0.8rem" : 0)};
   left: ${(props) => (props.quotedAuthor ? "7px" : 0)};
   opacity: 0.7;
-  ${(props) =>
-    props.isSelected &&
-    `
-border: 2px solid ${props.darkMode ? "white" : "black"};
-border-radius: 5px;
-`}
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
@@ -388,7 +380,6 @@ const mapStateToProps = () => {
 const mapActionsToProps = {
   splitIntoTwoPoints,
   combinePoints,
-  setEditingPoint,
   setCursorPosition,
   clearCursorPosition,
   pointMove,
@@ -396,6 +387,8 @@ const mapActionsToProps = {
   setMainPoint,
   setExpandedRegion,
   togglePoint,
+  setSelectedPoints,
+  pointsDelete,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

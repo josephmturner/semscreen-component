@@ -32,7 +32,11 @@ function handleSetExpandedRegion(
   state: ExpandedRegionState,
   action: Action<ExpandedRegionParams>
 ): ExpandedRegionState {
-  return {
-    region: action.params.region,
-  };
+  let newState = state;
+  if (state.region === action.params.region) {
+    newState = { region: "" };
+  } else {
+    newState = { region: action.params.region };
+  }
+  return newState;
 }

@@ -39,15 +39,13 @@ const FocusRegion = (props: {
   shape: PointShape | undefined;
   index: number | undefined;
   isMainPoint: boolean;
-  editingPointId: string;
-  onRegionClick: (region: RegionI, expand: boolean) => void;
   setFocus: (params: SetFocusParams) => void;
   createEmptyFocus: (shape: PointShape) => void;
   setExpandedRegion: (params: string) => void;
   selectedPoints: string[];
   darkMode: boolean;
 }) => {
-  const { region, isExpanded, point, index, onRegionClick } = props;
+  const { region, isExpanded, point, index } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -71,7 +69,7 @@ const FocusRegion = (props: {
     <StyledFocusRegion
       ref={drop}
       borderColor={props.author.color}
-      onClick={() => onRegionClick(region, isExpanded !== "expanded")}
+      onClick={() => props.setExpandedRegion(region)}
     >
       <StyledDiv>
         {point && props.shape && typeof index === "number" && (
@@ -80,10 +78,9 @@ const FocusRegion = (props: {
             shape={props.shape}
             index={index}
             readOnly={props.readOnly}
+            isExpanded={props.isExpanded}
             isMainPoint={props.isMainPoint}
-            isEditing={props.editingPointId === point._id}
             isSelected={props.selectedPoints.includes(point._id)}
-            onClick={() => onRegionClick(region, true)}
             darkMode={props.darkMode}
           />
         )}
@@ -107,7 +104,6 @@ const StyledDiv = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => ({
-  editingPointId: state.editingPoint.editingPointId,
   selectedPoints: state.selectedPoints.pointIds,
 });
 

@@ -47,8 +47,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var MeritsRegion = function MeritsRegion(props) {
   var region = props.region,
-      isExpanded = props.isExpanded,
-      onRegionClick = props.onRegionClick;
+      isExpanded = props.isExpanded;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
@@ -74,7 +73,7 @@ var MeritsRegion = function MeritsRegion(props) {
   return /*#__PURE__*/_react.default.createElement(_StyledMeritsRegion.default, {
     ref: drop,
     onClick: function onClick() {
-      return onRegionClick(region, isExpanded !== "expanded");
+      return props.setExpandedRegion(region);
     }
   }, /*#__PURE__*/_react.default.createElement(StyledDiv, null));
 };
