@@ -23,4 +23,7 @@ export const Actions = {
   togglePoint: "togglePoint",
   selectAllPoints: "selectAllPoints",
   deselectAllPoints: "deselectAllPoints",
+
+  showPanel: "showPanel",
+  hidePanel: "hidePanel",
 };
