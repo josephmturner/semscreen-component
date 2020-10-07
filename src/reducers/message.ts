@@ -252,7 +252,7 @@ function handleCombinePoints(
   };
 
   const isQuoted = (index: number): boolean => {
-    return state.points[action.params.shape][index].quotedAuthor !== undefined;
+    return !!state.points[action.params.shape][index].quotedAuthor;
   };
 
   // Don't attempt to combine a point with the point below it if no point
