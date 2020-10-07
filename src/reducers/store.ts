@@ -18,6 +18,11 @@ import {
   selectedPointsReducer,
   SelectedPointsState,
 } from "./selectedPoints";
+import {
+  initialPanelsState,
+  panelsReducer,
+  PanelsState,
+} from "./panels";
 
 import { messages } from "../constants/initialState";
 
@@ -29,6 +34,7 @@ export interface AppState {
   message: MessageState;
   expandedRegion: ExpandedRegionState;
   selectedPoints: SelectedPointsState;
+  panels: PanelsState;
 }
 
 function createAppStore() {
@@ -37,6 +43,7 @@ function createAppStore() {
     message: populatedInitialMessageState ?? initialMessageState,
     expandedRegion: initialExpandedRegionState,
     selectedPoints: initialSelectedPointsState,
+    panels: initialPanelsState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
@@ -57,6 +64,7 @@ function createAppStore() {
         action,
         state
       ),
+      panels: panelsReducer(state.panels, action, state),
     };
     return newState;
   };

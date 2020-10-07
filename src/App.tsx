@@ -17,74 +17,74 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { Provider } from "react-redux";
+import { connect } from "react-redux";
 
 import SemanticScreen from "./components/SemanticScreen";
 import OpenPanelButton from "./components/OpenPanelButton";
 import ClosePanelButton from "./components/ClosePanelButton";
 import ParkingSpace from "./components/ParkingSpace";
 
-import usePanel, { PanelState } from "./hooks/usePanel";
-
-import { store } from "./reducers/store";
+import { showPanel, hidePanel, PanelParams } from "./actions/panelsActions";
+import { PanelsState } from "./reducers/panels";
+import { AppState } from "./reducers/store";
 
 import styled from "styled-components";
 
-const App = () => {
+const App = (props: {
+  showPanel: (params: PanelParams) => void;
+  hidePanel: (params: PanelParams) => void;
+  panels: PanelsState;
+}) => {
   const readOnly = false;
   const darkMode = true;
 
-  const [panelState, panelDispatch] = usePanel();
-
   return (
-    <Provider store={store}>
-      <AppStyles darkMode={darkMode}>
-        <SemscreenPanel right={panelState.right} bottom={panelState.bottom}>
-          <SemanticScreen
-            readOnly={readOnly || false}
-            darkMode={darkMode || false}
-          />
-        </SemscreenPanel>
-        {!panelState.right && (
-          <OpenPanelButton
+    <AppStyles darkMode={darkMode}>
+      <SemscreenPanel right={props.panels.right} bottom={props.panels.bottom}>
+        <SemanticScreen
+          readOnly={readOnly || false}
+          darkMode={darkMode || false}
+        />
+      </SemscreenPanel>
+      {!props.panels.right && (
+        <OpenPanelButton
+          side={"right"}
+          onClick={() => {
+            props.showPanel({ location: "right" });
+          }}
+          darkMode={darkMode}
+        />
+      )}
+      {props.panels.right && (
+        <RightPanel>
+          <ParkingSpace darkMode={darkMode} />
+          <ClosePanelButton
             side={"right"}
-            onClick={() => {
-              panelDispatch({ panel: "right", show: true });
-            }}
+            onClick={() => props.hidePanel({ location: "right" })}
             darkMode={darkMode}
           />
-        )}
-        {panelState.right && (
-          <RightPanel>
-            <ParkingSpace darkMode={darkMode} />
-            <ClosePanelButton
-              side={"right"}
-              onClick={() => panelDispatch({ panel: "right", show: false })}
-              darkMode={darkMode}
-            />
-          </RightPanel>
-        )}
-        {!panelState.bottom && (
-          <OpenPanelButton
+        </RightPanel>
+      )}
+      {!props.panels.bottom && (
+        <OpenPanelButton
+          side={"bottom"}
+          onClick={() => {
+            props.showPanel({ location: "bottom" });
+          }}
+          darkMode={darkMode}
+        />
+      )}
+      {props.panels.bottom && (
+        <BottomPanel>
+          <ParkingSpace darkMode={darkMode} />
+          <ClosePanelButton
             side={"bottom"}
-            onClick={() => {
-              panelDispatch({ panel: "bottom", show: true });
-            }}
+            onClick={() => props.hidePanel({ location: "bottom" })}
             darkMode={darkMode}
           />
-        )}
-        {panelState.bottom && (
-          <BottomPanel>
-            <ParkingSpace darkMode={darkMode} />
-            <ClosePanelButton
-              side={"bottom"}
-              onClick={() => panelDispatch({ panel: "bottom", show: false })}
-              darkMode={darkMode}
-            />
-          </BottomPanel>
-        )}
-      </AppStyles>
-    </Provider>
+        </BottomPanel>
+      )}
+    </AppStyles>
   );
 };
 
@@ -115,7 +115,7 @@ const AppStyles = styled.div<{ darkMode: boolean }>`
   }
 `;
 
-const SemscreenPanel = styled.div<PanelState>`
+const SemscreenPanel = styled.div<PanelsState>`
   height: ${(props) => (props.bottom ? "calc(100% - 4rem)" : "100%")};
   width: ${(props) => (props.right ? "calc(100% - 16rem)" : "100%")};
 `;
@@ -134,4 +134,15 @@ const BottomPanel = styled.div`
   width: 100%;
 `;
 
-export default App;
+const mapStateToProps = (state: AppState) => {
+  return {
+    panels: state.panels,
+  };
+};
+
+const mapActionsToProps = {
+  showPanel,
+  hidePanel,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(App);
