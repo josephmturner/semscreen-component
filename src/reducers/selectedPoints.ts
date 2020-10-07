@@ -3,7 +3,9 @@ import {
   SetSelectedPointsParams,
   TogglePointParams,
 } from "../actions/selectPointActions";
+import { CombinePointsParams, PointsDeleteParams } from "../actions/messageActions";
 import { AppState } from "./store";
+
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -28,6 +30,12 @@ export const selectedPointsReducer = (
       break;
     case Actions.togglePoint:
       newState = handleTogglePoint(state, action as Action<TogglePointParams>);
+      break;
+    case Actions.pointsDelete:
+      newState = handlePointsDelete(state, action as Action<PointsDeleteParams>);
+      break;
+    case Actions.combinePoints:
+      newState = handleCombinePoints(state, action as Action<CombinePointsParams>, appState);
       break;
   }
   return newState;
@@ -54,5 +62,21 @@ function handleTogglePoint(
   }
   return {
     pointIds: newPointIds,
+  };
+}
+
+function handlePointsDelete(state: SelectedPointsState, action: Action<PointsDeleteParams>): SelectedPointsState {
+  const newPointIds = state.pointIds.filter(pointId => {
+    return !action.params.pointIds.includes(pointId);
+  });
+  return {
+    pointIds: newPointIds,
+  };
+}
+
+function handleCombinePoints(state: SelectedPointsState, action: Action<CombinePointsParams>, appState: AppState): SelectedPointsState {
+  const deletedPointId = appState.message.points[action.params.shape][action.params.deleteIndex]._id;
+  return {
+    pointIds: state.pointIds.filter(id => id !== deletedPointId),
   };
 }

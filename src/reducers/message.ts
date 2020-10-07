@@ -247,45 +247,46 @@ function handleCombinePoints(
   state: MessageState,
   action: Action<CombinePointsParams>
 ): MessageState {
+  const withinBounds = (index: number): boolean => {
+    return index >= 0 && index < state.points[action.params.shape].length;
+  };
+
+  const isQuoted = (index: number): boolean => {
+    return state.points[action.params.shape][index].quotedAuthor !== undefined;
+  };
+
   // Don't attempt to combine a point with the point below it if no point
   // exists below it.
-  if (
-    action.params.aboveOrBelow === "below" &&
-    action.params.index === state.points[action.params.shape].length - 1
-  ) {
+  if (!withinBounds(action.params.keepIndex) || !withinBounds(action.params.deleteIndex)) {
     return state;
   }
 
   // Don't combine points with quoted points:
-  if (
-    (action.params.aboveOrBelow === "below" &&
-      state.points[action.params.shape][action.params.index + 1]
-        .quotedAuthor) ||
-    (action.params.aboveOrBelow === "above" &&
-      state.points[action.params.shape][action.params.index - 1].quotedAuthor)
-  ) {
+  if (isQuoted(action.params.keepIndex) || isQuoted(action.params.deleteIndex)) {
     return state;
   }
 
-  const prevPoint = state.points[action.params.shape][action.params.index - 1];
-  const currentPoint = state.points[action.params.shape][action.params.index];
-  const nextPoint = state.points[action.params.shape][action.params.index + 1];
-  const combinedPoints = state.points[action.params.shape].slice();
-  action.params.aboveOrBelow === "above" &&
-    combinedPoints.splice(action.params.index - 1, 2, {
-      ...prevPoint,
-      content: prevPoint.content + currentPoint.content,
+  const pointToKeep = state.points[action.params.shape][action.params.keepIndex];
+  const pointToDelete = state.points[action.params.shape][action.params.deleteIndex];
+
+  const newContent = action.params.keepIndex < action.params.deleteIndex ?
+    pointToKeep.content + pointToDelete.content : pointToDelete.content + pointToKeep.content;
+
+
+  const newPoints = state.points[action.params.shape]
+    .filter(point => point._id !== pointToDelete._id)
+    .map(point => {
+      return point._id === pointToKeep._id ? ({
+        ...point,
+        content: newContent,
+      }) : point;
     });
-  action.params.aboveOrBelow === "below" &&
-    combinedPoints.splice(action.params.index, 2, {
-      ...currentPoint,
-      content: currentPoint.content + nextPoint.content,
-    });
+
   return {
     ...state,
     points: {
       ...state.points,
-      [action.params.shape]: combinedPoints,
+      [action.params.shape]: newPoints,
     },
   };
 }
