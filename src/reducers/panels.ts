@@ -13,7 +13,11 @@ export const initialPanelsState: PanelsState = {
   right: false,
 };
 
-export const panelsReducer = (state: PanelsState, action: Action, appState: AppState): PanelsState => {
+export const panelsReducer = (
+  state: PanelsState,
+  action: Action,
+  appState: AppState
+): PanelsState => {
   let newState = state;
   switch (action.type) {
     case Actions.showPanel:
@@ -26,14 +30,20 @@ export const panelsReducer = (state: PanelsState, action: Action, appState: AppS
   return newState;
 };
 
-function handleShowPanel(state: PanelsState, action: Action<PanelParams>): PanelsState {
+function handleShowPanel(
+  state: PanelsState,
+  action: Action<PanelParams>
+): PanelsState {
   return {
     ...state,
     [action.params.location]: true,
   };
 }
 
-function handleHidePanel(state: PanelsState, action: Action<PanelParams>): PanelsState {
+function handleHidePanel(
+  state: PanelsState,
+  action: Action<PanelParams>
+): PanelsState {
   return {
     ...state,
     [action.params.location]: false,

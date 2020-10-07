@@ -88,15 +88,11 @@ function handleClearCursorPosition(state, action) {
 }
 
 function handleCombinePoints(state, action, appState) {
-  var prevPoint = appState.message.points[action.params.shape][action.params.index - 1];
-  var currentPoint = appState.message.points[action.params.shape][action.params.index];
-  var newCursorPosition = action.params.aboveOrBelow === "above" ? {
-    pointId: prevPoint._id,
+  var smallerIndex = Math.min(action.params.keepIndex, action.params.deleteIndex);
+  var prevPoint = appState.message.points[action.params.shape][smallerIndex];
+  var newCursorPosition = {
+    pointId: appState.message.points[action.params.shape][action.params.keepIndex]._id,
     index: prevPoint.content.length,
-    shape: action.params.shape
-  } : {
-    pointId: currentPoint._id,
-    index: currentPoint.content.length,
     shape: action.params.shape
   };
   return {

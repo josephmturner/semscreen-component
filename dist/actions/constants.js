@@ -20,6 +20,8 @@ var Actions = {
   setSelectedPoints: "setSelectedPoints",
   togglePoint: "togglePoint",
   selectAllPoints: "selectAllPoints",
-  deselectAllPoints: "deselectAllPoints"
+  deselectAllPoints: "deselectAllPoints",
+  showPanel: "showPanel",
+  hidePanel: "hidePanel"
 };
 exports.Actions = Actions;

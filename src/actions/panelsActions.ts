@@ -1,6 +1,5 @@
 import { Action, Actions } from "./constants";
 
-
 export interface PanelParams {
   location: "bottom" | "right";
 }

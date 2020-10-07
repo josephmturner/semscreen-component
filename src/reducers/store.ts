@@ -18,11 +18,7 @@ import {
   selectedPointsReducer,
   SelectedPointsState,
 } from "./selectedPoints";
-import {
-  initialPanelsState,
-  panelsReducer,
-  PanelsState,
-} from "./panels";
+import { initialPanelsState, panelsReducer, PanelsState } from "./panels";
 
 import { messages } from "../constants/initialState";
 

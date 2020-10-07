@@ -17,6 +17,8 @@ var _expandedRegion = require("./expandedRegion");
 
 var _selectedPoints = require("./selectedPoints");
 
+var _panels = require("./panels");
+
 var _initialState = require("../constants/initialState");
 
 // Set this to false if you don't want initial message data.
@@ -27,7 +29,8 @@ function createAppStore() {
     cursorPosition: _cursorPosition.initialCursorPositionState,
     message: populatedInitialMessageState !== null && populatedInitialMessageState !== void 0 ? populatedInitialMessageState : _message.initialMessageState,
     expandedRegion: _expandedRegion.initialExpandedRegionState,
-    selectedPoints: _selectedPoints.initialSelectedPointsState
+    selectedPoints: _selectedPoints.initialSelectedPointsState,
+    panels: _panels.initialPanelsState
   };
 
   var appReducer = function appReducer() {
@@ -37,7 +40,8 @@ function createAppStore() {
       cursorPosition: (0, _cursorPosition.cursorPositionReducer)(state.cursorPosition, action, state),
       message: (0, _message.messageReducer)(state.message, action, state),
       expandedRegion: (0, _expandedRegion.expandedRegionReducer)(state.expandedRegion, action, state),
-      selectedPoints: (0, _selectedPoints.selectedPointsReducer)(state.selectedPoints, action, state)
+      selectedPoints: (0, _selectedPoints.selectedPointsReducer)(state.selectedPoints, action, state),
+      panels: (0, _panels.panelsReducer)(state.panels, action, state)
     };
     return newState;
   };

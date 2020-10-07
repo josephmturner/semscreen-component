@@ -282,27 +282,24 @@ var Point = function Point(props) {
           if (index !== 0) {
             e.preventDefault();
             combinePoints({
-              aboveOrBelow: "above",
-              point: point,
               shape: shape,
-              index: index
+              keepIndex: index - 1,
+              deleteIndex: index
             });
           } else if (index === 0 && !point.content) {
             e.preventDefault();
             combinePoints({
-              aboveOrBelow: "below",
-              point: point,
               shape: shape,
-              index: index
+              keepIndex: index,
+              deleteIndex: index + 1
             });
           }
         } else if (e.key === "Delete" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
           combinePoints({
-            aboveOrBelow: "below",
-            point: point,
             shape: shape,
-            index: index
+            keepIndex: index,
+            deleteIndex: index + 1
           });
         } else if (e.key === "ArrowLeft" && ref.current && ref.current.selectionStart === 0 && ref.current.selectionStart === ref.current.selectionEnd && index !== 0) {
           e.preventDefault();

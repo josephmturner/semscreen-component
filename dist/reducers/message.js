@@ -179,29 +179,37 @@ function handleSetMainPoint(state, action) {
 }
 
 function handleCombinePoints(state, action) {
-  // Don't attempt to combine a point with the point below it if no point
+  var withinBounds = function withinBounds(index) {
+    return index >= 0 && index < state.points[action.params.shape].length;
+  };
+
+  var isQuoted = function isQuoted(index) {
+    return !!state.points[action.params.shape][index].quotedAuthor;
+  }; // Don't attempt to combine a point with the point below it if no point
   // exists below it.
-  if (action.params.aboveOrBelow === "below" && action.params.index === state.points[action.params.shape].length - 1) {
+
+
+  if (!withinBounds(action.params.keepIndex) || !withinBounds(action.params.deleteIndex)) {
     return state;
   } // Don't combine points with quoted points:
 
 
-  if (action.params.aboveOrBelow === "below" && state.points[action.params.shape][action.params.index + 1].quotedAuthor || action.params.aboveOrBelow === "above" && state.points[action.params.shape][action.params.index - 1].quotedAuthor) {
+  if (isQuoted(action.params.keepIndex) || isQuoted(action.params.deleteIndex)) {
     return state;
   }
 
-  var prevPoint = state.points[action.params.shape][action.params.index - 1];
-  var currentPoint = state.points[action.params.shape][action.params.index];
-  var nextPoint = state.points[action.params.shape][action.params.index + 1];
-  var combinedPoints = state.points[action.params.shape].slice();
-  action.params.aboveOrBelow === "above" && combinedPoints.splice(action.params.index - 1, 2, _objectSpread(_objectSpread({}, prevPoint), {}, {
-    content: prevPoint.content + currentPoint.content
-  }));
-  action.params.aboveOrBelow === "below" && combinedPoints.splice(action.params.index, 2, _objectSpread(_objectSpread({}, currentPoint), {}, {
-    content: currentPoint.content + nextPoint.content
-  }));
+  var pointToKeep = state.points[action.params.shape][action.params.keepIndex];
+  var pointToDelete = state.points[action.params.shape][action.params.deleteIndex];
+  var newContent = action.params.keepIndex < action.params.deleteIndex ? pointToKeep.content + pointToDelete.content : pointToDelete.content + pointToKeep.content;
+  var newPoints = state.points[action.params.shape].filter(function (point) {
+    return point._id !== pointToDelete._id;
+  }).map(function (point) {
+    return point._id === pointToKeep._id ? _objectSpread(_objectSpread({}, point), {}, {
+      content: newContent
+    }) : point;
+  });
   return _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, combinedPoints))
+    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, newPoints))
   });
 }
 

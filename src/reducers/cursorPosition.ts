@@ -113,15 +113,16 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): CursorPositionState {
-
-  const smallerIndex = Math.min(action.params.keepIndex, action.params.deleteIndex);
-  const biggerIndex = Math.max(action.params.keepIndex, action.params.deleteIndex);
+  const smallerIndex = Math.min(
+    action.params.keepIndex,
+    action.params.deleteIndex
+  );
 
   const prevPoint = appState.message.points[action.params.shape][smallerIndex];
-  const currentPoint = appState.message.points[action.params.shape][biggerIndex];
 
   const newCursorPosition = {
-    pointId: appState.message.points[action.params.shape][action.params.keepIndex]._id,
+    pointId:
+      appState.message.points[action.params.shape][action.params.keepIndex]._id,
     index: prevPoint.content.length,
     shape: action.params.shape,
   };
