@@ -105,10 +105,9 @@ export const setMainPoint = (
 };
 
 export interface CombinePointsParams {
-  aboveOrBelow: "above" | "below";
-  point: PointI;
   shape: PointShape;
-  index: number;
+  keepIndex: number;
+  deleteIndex: number;
 }
 
 export const combinePoints = (

@@ -267,10 +267,18 @@ const Point = (props: {
             ) {
               if (index !== 0) {
                 e.preventDefault();
-                combinePoints({ aboveOrBelow: "above", point, shape, index });
+                combinePoints({
+                  shape,
+                  keepIndex: index - 1,
+                  deleteIndex: index,
+                });
               } else if (index === 0 && !point.content) {
                 e.preventDefault();
-                combinePoints({ aboveOrBelow: "below", point, shape, index });
+                combinePoints({
+                  shape,
+                  keepIndex: index,
+                  deleteIndex: index + 1,
+                });
               }
             } else if (
               e.key === "Delete" &&
@@ -279,7 +287,11 @@ const Point = (props: {
               ref.current.selectionStart === ref.current.selectionEnd
             ) {
               e.preventDefault();
-              combinePoints({ aboveOrBelow: "below", point, shape, index });
+              combinePoints({
+                shape,
+                keepIndex: index,
+                deleteIndex: index + 1,
+              });
             } else if (
               e.key === "ArrowLeft" &&
               ref.current &&
