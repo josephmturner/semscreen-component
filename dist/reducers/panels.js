@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.panelsReducer = exports.initialPanelsState = void 0;
 
-var _react = require("react");
+var _constants = require("../actions/constants");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -13,28 +13,34 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var initialPanelState = {
-  right: false,
-  bottom: false
+var initialPanelsState = {
+  bottom: false,
+  right: false
+};
+exports.initialPanelsState = initialPanelsState;
+
+var panelsReducer = function panelsReducer(state, action, appState) {
+  var newState = state;
+
+  switch (action.type) {
+    case _constants.Actions.showPanel:
+      newState = handleShowPanel(state, action);
+      break;
+
+    case _constants.Actions.hidePanel:
+      newState = handleHidePanel(state, action);
+      break;
+  }
+
+  return newState;
 };
 
-function panelReducer(panelState, action) {
-  switch (action.panel) {
-    case "right":
-      return _objectSpread(_objectSpread({}, panelState), {}, {
-        right: action.show
-      });
+exports.panelsReducer = panelsReducer;
 
-    case "bottom":
-      return _objectSpread(_objectSpread({}, panelState), {}, {
-        bottom: action.show
-      });
-  }
+function handleShowPanel(state, action) {
+  return _objectSpread(_objectSpread({}, state), {}, _defineProperty({}, action.params.location, true));
 }
 
-var usePanel = function usePanel() {
-  return (0, _react.useReducer)(panelReducer, initialPanelState);
-};
-
-var _default = usePanel;
-exports.default = _default;
+function handleHidePanel(state, action) {
+  return _objectSpread(_objectSpread({}, state), {}, _defineProperty({}, action.params.location, false));
+}

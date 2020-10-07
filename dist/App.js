@@ -17,9 +17,7 @@ var _ClosePanelButton = _interopRequireDefault(require("./components/ClosePanelB
 
 var _ParkingSpace = _interopRequireDefault(require("./components/ParkingSpace"));
 
-var _usePanel3 = _interopRequireDefault(require("./hooks/usePanel"));
-
-var _store = require("./reducers/store");
+var _panelsActions = require("./actions/panelsActions");
 
 var _styledComponents = _interopRequireDefault(require("styled-components"));
 
@@ -67,78 +65,54 @@ function _templateObject() {
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-var App = function App() {
+var App = function App(props) {
   var readOnly = false;
   var darkMode = true;
-
-  var _usePanel = (0, _usePanel3.default)(),
-      _usePanel2 = _slicedToArray(_usePanel, 2),
-      panelState = _usePanel2[0],
-      panelDispatch = _usePanel2[1];
-
-  return /*#__PURE__*/_react.default.createElement(_reactRedux.Provider, {
-    store: _store.store
-  }, /*#__PURE__*/_react.default.createElement(AppStyles, {
+  return /*#__PURE__*/_react.default.createElement(AppStyles, {
     darkMode: darkMode
   }, /*#__PURE__*/_react.default.createElement(SemscreenPanel, {
-    right: panelState.right,
-    bottom: panelState.bottom
+    right: props.panels.right,
+    bottom: props.panels.bottom
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreen.default, {
     readOnly: readOnly || false,
     darkMode: darkMode || false
-  })), !panelState.right && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
+  })), !props.panels.right && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
     side: "right",
     onClick: function onClick() {
-      panelDispatch({
-        panel: "right",
-        show: true
+      props.showPanel({
+        location: "right"
       });
     },
     darkMode: darkMode
-  }), panelState.right && /*#__PURE__*/_react.default.createElement(RightPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
+  }), props.panels.right && /*#__PURE__*/_react.default.createElement(RightPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
     darkMode: darkMode
   }), /*#__PURE__*/_react.default.createElement(_ClosePanelButton.default, {
     side: "right",
     onClick: function onClick() {
-      return panelDispatch({
-        panel: "right",
-        show: false
+      return props.hidePanel({
+        location: "right"
       });
     },
     darkMode: darkMode
-  })), !panelState.bottom && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
+  })), !props.panels.bottom && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
     side: "bottom",
     onClick: function onClick() {
-      panelDispatch({
-        panel: "bottom",
-        show: true
+      props.showPanel({
+        location: "bottom"
       });
     },
     darkMode: darkMode
-  }), panelState.bottom && /*#__PURE__*/_react.default.createElement(BottomPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
+  }), props.panels.bottom && /*#__PURE__*/_react.default.createElement(BottomPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
     darkMode: darkMode
   }), /*#__PURE__*/_react.default.createElement(_ClosePanelButton.default, {
     side: "bottom",
     onClick: function onClick() {
-      return panelDispatch({
-        panel: "bottom",
-        show: false
+      return props.hidePanel({
+        location: "bottom"
       });
     },
     darkMode: darkMode
-  }))));
+  })));
 };
 
 var AppStyles = _styledComponents.default.div(_templateObject(), function (props) {
@@ -155,5 +129,17 @@ var RightPanel = _styledComponents.default.div(_templateObject3());
 
 var BottomPanel = _styledComponents.default.div(_templateObject4());
 
-var _default = App;
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    panels: state.panels
+  };
+};
+
+var mapActionsToProps = {
+  showPanel: _panelsActions.showPanel,
+  hidePanel: _panelsActions.hidePanel
+};
+
+var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(App);
+
 exports.default = _default;

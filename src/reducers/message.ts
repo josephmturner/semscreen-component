@@ -257,29 +257,40 @@ function handleCombinePoints(
 
   // Don't attempt to combine a point with the point below it if no point
   // exists below it.
-  if (!withinBounds(action.params.keepIndex) || !withinBounds(action.params.deleteIndex)) {
+  if (
+    !withinBounds(action.params.keepIndex) ||
+    !withinBounds(action.params.deleteIndex)
+  ) {
     return state;
   }
 
   // Don't combine points with quoted points:
-  if (isQuoted(action.params.keepIndex) || isQuoted(action.params.deleteIndex)) {
+  if (
+    isQuoted(action.params.keepIndex) ||
+    isQuoted(action.params.deleteIndex)
+  ) {
     return state;
   }
 
-  const pointToKeep = state.points[action.params.shape][action.params.keepIndex];
-  const pointToDelete = state.points[action.params.shape][action.params.deleteIndex];
+  const pointToKeep =
+    state.points[action.params.shape][action.params.keepIndex];
+  const pointToDelete =
+    state.points[action.params.shape][action.params.deleteIndex];
 
-  const newContent = action.params.keepIndex < action.params.deleteIndex ?
-    pointToKeep.content + pointToDelete.content : pointToDelete.content + pointToKeep.content;
-
+  const newContent =
+    action.params.keepIndex < action.params.deleteIndex
+      ? pointToKeep.content + pointToDelete.content
+      : pointToDelete.content + pointToKeep.content;
 
   const newPoints = state.points[action.params.shape]
-    .filter(point => point._id !== pointToDelete._id)
-    .map(point => {
-      return point._id === pointToKeep._id ? ({
-        ...point,
-        content: newContent,
-      }) : point;
+    .filter((point) => point._id !== pointToDelete._id)
+    .map((point) => {
+      return point._id === pointToKeep._id
+        ? {
+            ...point,
+            content: newContent,
+          }
+        : point;
     });
 
   return {

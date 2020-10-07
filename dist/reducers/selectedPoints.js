@@ -26,6 +26,14 @@ var selectedPointsReducer = function selectedPointsReducer() {
     case _constants.Actions.togglePoint:
       newState = handleTogglePoint(state, action);
       break;
+
+    case _constants.Actions.pointsDelete:
+      newState = handlePointsDelete(state, action);
+      break;
+
+    case _constants.Actions.combinePoints:
+      newState = handleCombinePoints(state, action, appState);
+      break;
   }
 
   return newState;
@@ -50,5 +58,23 @@ function handleTogglePoint(state, action) {
 
   return {
     pointIds: newPointIds
+  };
+}
+
+function handlePointsDelete(state, action) {
+  var newPointIds = state.pointIds.filter(function (pointId) {
+    return !action.params.pointIds.includes(pointId);
+  });
+  return {
+    pointIds: newPointIds
+  };
+}
+
+function handleCombinePoints(state, action, appState) {
+  var deletedPointId = appState.message.points[action.params.shape][action.params.deleteIndex]._id;
+  return {
+    pointIds: state.pointIds.filter(function (id) {
+      return id !== deletedPointId;
+    })
   };
 }
