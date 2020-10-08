@@ -40,7 +40,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  height: 20px;\n  margin: auto;\n  opacity: 0.7;\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  height: 20px;\n  margin: auto;\n  opacity: 0.7;\n"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -50,7 +50,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  margin: auto;\n  display: flex;\n  opacity: ", ";\n\n  ", ";\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: relative;\n  margin: auto;\n  display: flex;\n  opacity: ", ";\n\n  ", ";\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -119,6 +119,7 @@ var FocusPoint = function FocusPoint(props) {
     onClick: handleClick,
     isMainPoint: isMainPoint,
     isDragging: isDragging,
+    isSelected: props.isSelected,
     quotedAuthor: point.quotedAuthor
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
     ref: props.readOnly ? null : drag,
@@ -126,7 +127,6 @@ var FocusPoint = function FocusPoint(props) {
     onClick: onClickShapeIcon,
     quotedAuthor: point.quotedAuthor,
     height: isMainPoint ? 30 : 20,
-    isSelected: props.isSelected,
     darkMode: props.darkMode,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
@@ -158,11 +158,11 @@ var StyledSpan = _styledComponents.default.span(_templateObject(), function (pro
   return props.isDragging ? 0.4 : 1;
 }, function (props) {
   return props.isMainPoint && "\n  padding: 1% 0;\n";
+}, function (props) {
+  return props.isSelected && "                                                                  \n  background-color: #777;                                          \n  border-radius: 5px;\n";
 });
 
-var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
-  return props.isSelected && "\nborder: 2px solid ".concat(props.darkMode ? "white" : "black", ";\nborder-radius: 5px;\n");
-});
+var StyledImg = _styledComponents.default.img(_templateObject2());
 
 var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
   return props.darkMode ? "#fff" : "#000";

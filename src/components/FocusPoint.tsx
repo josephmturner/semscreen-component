@@ -91,6 +91,7 @@ const FocusPoint = (props: {
       onClick={handleClick}
       isMainPoint={isMainPoint}
       isDragging={isDragging}
+      isSelected={props.isSelected}
       quotedAuthor={point.quotedAuthor}
     >
       <StyledImg
@@ -99,7 +100,6 @@ const FocusPoint = (props: {
         onClick={onClickShapeIcon}
         quotedAuthor={point.quotedAuthor}
         height={isMainPoint ? 30 : 20}
-        isSelected={props.isSelected}
         darkMode={props.darkMode}
         alt={shape}
       />
@@ -147,18 +147,18 @@ const StyledSpan = styled.span<StyledProps>`
     `
   padding: 1% 0;
 `};
+  ${(props) =>
+    props.isSelected &&
+    `                                                                  
+  background-color: #777;                                          
+  border-radius: 5px;
+`}
 `;
 
 const StyledImg = styled.img<StyledProps>`
   height: 20px;
   margin: auto;
   opacity: 0.7;
-  ${(props) =>
-    props.isSelected &&
-    `
-border: 2px solid ${props.darkMode ? "white" : "black"};
-border-radius: 5px;
-`}
 `;
 
 const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
