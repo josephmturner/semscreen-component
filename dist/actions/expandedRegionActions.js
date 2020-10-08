@@ -7,12 +7,10 @@ exports.setExpandedRegion = void 0;
 
 var _constants = require("./constants");
 
-var setExpandedRegion = function setExpandedRegion(region) {
+var setExpandedRegion = function setExpandedRegion(params) {
   return {
     type: _constants.Actions.setExpandedRegion,
-    params: {
-      region: region
-    }
+    params: params
   };
 };
 

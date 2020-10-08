@@ -7,6 +7,7 @@ import {
   cursorPositionReducer,
   CursorPositionState,
 } from "./cursorPosition";
+import { initialPointsState, pointsReducer, PointsState } from "./points";
 import { initialMessageState, messageReducer, MessageState } from "./message";
 import {
   initialExpandedRegionState,
@@ -20,13 +21,16 @@ import {
 } from "./selectedPoints";
 import { initialPanelsState, panelsReducer, PanelsState } from "./panels";
 
-import { messages } from "../constants/initialState";
+import { messages, points } from "../constants/initialState";
 
 // Set this to false if you don't want initial message data.
-const populatedInitialMessageState = true ? messages[0] : null;
+const populate = true ? true : false;
+const populatedInitialMessageState = populate ? messages[0] : null;
+const populatedInitialPointsState = populate ? points : null;
 
 export interface AppState {
   cursorPosition: CursorPositionState;
+  points: PointsState;
   message: MessageState;
   expandedRegion: ExpandedRegionState;
   selectedPoints: SelectedPointsState;
@@ -36,6 +40,7 @@ export interface AppState {
 function createAppStore() {
   const initialAppState: AppState = {
     cursorPosition: initialCursorPositionState,
+    points: populatedInitialPointsState ?? initialPointsState,
     message: populatedInitialMessageState ?? initialMessageState,
     expandedRegion: initialExpandedRegionState,
     selectedPoints: initialSelectedPointsState,
@@ -49,6 +54,7 @@ function createAppStore() {
         action,
         state
       ),
+      points: pointsReducer(state.points, action, state),
       message: messageReducer(state.message, action, state),
       expandedRegion: expandedRegionReducer(
         state.expandedRegion,

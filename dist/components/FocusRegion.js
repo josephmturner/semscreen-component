@@ -21,6 +21,8 @@ var _ReactDnd = require("../constants/React-Dnd");
 
 var _reactRedux = require("react-redux");
 
+var _pointsActions = require("../actions/pointsActions");
+
 var _messageActions = require("../actions/messageActions");
 
 var _expandedRegionActions = require("../actions/expandedRegionActions");
@@ -54,46 +56,58 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var FocusRegion = function FocusRegion(props) {
   var region = props.region,
       isExpanded = props.isExpanded,
-      point = props.point,
-      index = props.index;
+      pointId = props.pointId;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover() {
       if (isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({
+          region: region
+        });
       }
     },
     drop: function drop(item) {
-      props.setFocus({
-        pointId: item.pointId,
-        oldShape: item.shape,
-        oldIndex: item.index,
-        newShape: item.originalShape,
-        newIndex: item.originalIndex
-      });
+      if (typeof item.index === "number") {
+        props.setFocus({
+          pointId: item.pointId,
+          oldIndex: item.index,
+          originalShape: item.originalShape
+        });
+      }
     }
   }),
       _useDrop2 = _slicedToArray(_useDrop, 2),
       drop = _useDrop2[1];
 
+  var createEmptyFocus = function createEmptyFocus(shape) {
+    props.pointCreate({
+      point: {
+        author: props.author,
+        content: "",
+        shape: shape
+      },
+      focus: true
+    });
+  };
+
   return /*#__PURE__*/_react.default.createElement(_StyledFocusRegion.default, {
     ref: drop,
     borderColor: props.author.color,
     onClick: function onClick() {
-      return props.setExpandedRegion(region);
+      return props.setExpandedRegion({
+        region: region
+      });
     }
-  }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, point && props.shape && typeof index === "number" && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
-    point: point,
-    shape: props.shape,
-    index: index,
+  }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, pointId && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
+    pointId: pointId,
     readOnly: props.readOnly,
     isExpanded: props.isExpanded,
     isMainPoint: props.isMainPoint,
-    isSelected: props.selectedPoints.includes(point._id),
+    isSelected: props.selectedPoints.includes(pointId),
     darkMode: props.darkMode
-  }), !point && isExpanded === "expanded" && /*#__PURE__*/_react.default.createElement(_SevenShapes.default, {
-    onShapeClick: props.createEmptyFocus,
+  }), !pointId && isExpanded === "expanded" && /*#__PURE__*/_react.default.createElement(_SevenShapes.default, {
+    onShapeClick: createEmptyFocus,
     darkMode: props.darkMode
   })));
 };
@@ -101,14 +115,19 @@ var FocusRegion = function FocusRegion(props) {
 var StyledDiv = _styledComponents.default.div(_templateObject());
 
 var mapStateToProps = function mapStateToProps(state) {
+  var isMainPoint = state.message.focus === state.message.main;
   return {
-    selectedPoints: state.selectedPoints.pointIds
+    author: state.message.author,
+    pointId: state.message.focus,
+    selectedPoints: state.selectedPoints.pointIds,
+    isMainPoint: isMainPoint
   };
 };
 
 var mapDispatchToProps = {
   setFocus: _messageActions.setFocus,
-  setExpandedRegion: _expandedRegionActions.setExpandedRegion
+  setExpandedRegion: _expandedRegionActions.setExpandedRegion,
+  pointCreate: _pointsActions.pointCreate
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(FocusRegion);

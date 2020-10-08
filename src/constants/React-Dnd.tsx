@@ -8,8 +8,7 @@ export interface DraggablePointType {
   type: "point";
   pointId: PointI["_id"];
   shape: PointShape;
-  index: number;
+  index?: number;
   originalShape: PointShape;
-  originalIndex: number;
   quoted: boolean;
 }

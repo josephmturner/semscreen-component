@@ -44,14 +44,19 @@ exports.cursorPositionReducer = cursorPositionReducer;
 function handleSetCursorPosition(state, action, appState) {
   var newState = state;
   var _action$params = action.params,
-      shape = _action$params.shape,
+      pointId = _action$params.pointId,
       index = _action$params.index;
-  var points = appState.message.points[shape];
+  var point = appState.points.byId[pointId];
+  var shape = point.shape;
+  var pointIds = appState.message.shapes[shape];
+  var prevPointId = pointIds[index - 1];
+  var prevPoint = appState.points.byId[prevPointId];
+  var nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1]._id,
+        pointId: prevPointId,
         index: 0,
         shape: shape
       }
@@ -59,16 +64,16 @@ function handleSetCursorPosition(state, action, appState) {
   } else if (action.params.moveTo === "endOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1]._id,
-        index: points[index - 1].content.length,
+        pointId: prevPointId,
+        index: prevPoint.content.length,
         shape: shape
       }
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
-    if (index !== points.length - 1) {
+    if (index !== pointIds.length - 1) {
       newState = {
         details: {
-          pointId: points[index + 1]._id,
+          pointId: nextPointId,
           index: 0,
           shape: shape
         }
@@ -89,9 +94,10 @@ function handleClearCursorPosition(state, action) {
 
 function handleCombinePoints(state, action, appState) {
   var smallerIndex = Math.min(action.params.keepIndex, action.params.deleteIndex);
-  var prevPoint = appState.message.points[action.params.shape][smallerIndex];
+  var prevPointId = appState.message.shapes[action.params.shape][smallerIndex];
+  var prevPoint = appState.points.byId[prevPointId];
   var newCursorPosition = {
-    pointId: appState.message.points[action.params.shape][action.params.keepIndex]._id,
+    pointId: appState.message.shapes[action.params.shape][action.params.keepIndex],
     index: prevPoint.content.length,
     shape: action.params.shape
   };
@@ -101,11 +107,12 @@ function handleCombinePoints(state, action, appState) {
 }
 
 function handleSplitIntoTwoPoints(state, action, appState) {
+  var shape = appState.points.byId[action.params.pointId].shape;
   return {
     details: {
       pointId: action.params.newPointId,
       index: 0,
-      shape: action.params.shape
+      shape: shape
     }
   };
 }

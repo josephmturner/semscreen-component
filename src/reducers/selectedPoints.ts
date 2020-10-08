@@ -6,7 +6,7 @@ import {
 import {
   CombinePointsParams,
   PointsDeleteParams,
-} from "../actions/messageActions";
+} from "../actions/pointsActions";
 import { AppState } from "./store";
 
 export interface SelectedPointsState {
@@ -92,7 +92,7 @@ function handleCombinePoints(
   appState: AppState
 ): SelectedPointsState {
   const deletedPointId =
-    appState.message.points[action.params.shape][action.params.deleteIndex]._id;
+    appState.message.shapes[action.params.shape][action.params.deleteIndex];
   return {
     pointIds: state.pointIds.filter((id) => id !== deletedPointId),
   };

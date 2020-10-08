@@ -5,12 +5,10 @@ export interface ExpandedRegionParams {
 }
 
 export const setExpandedRegion = (
-  region: string
+  params: ExpandedRegionParams
 ): Action<ExpandedRegionParams> => {
   return {
     type: Actions.setExpandedRegion,
-    params: {
-      region,
-    },
+    params,
   };
 };

@@ -18,21 +18,16 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { PointI, PointShape } from "../dataModels";
+import { PointI } from "../dataModels";
 
-export const useDragPoint = (
-  point: PointI,
-  shape: PointShape,
-  index: number
-) => {
+export const useDragPoint = (point: PointI, index?: number) => {
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
       pointId: point._id,
-      originalShape: shape,
-      originalIndex: index,
-      shape: shape,
+      shape: point.shape,
       index: index,
+      originalShape: point.shape,
       quoted: !!point.quotedAuthor,
     },
     collect: (monitor) => ({

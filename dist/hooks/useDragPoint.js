@@ -21,15 +21,14 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var useDragPoint = function useDragPoint(point, shape, index) {
+var useDragPoint = function useDragPoint(point, index) {
   var _useDrag = (0, _reactDnd.useDrag)({
     item: {
       type: _ReactDnd.ItemTypes.POINT,
       pointId: point._id,
-      originalShape: shape,
-      originalIndex: index,
-      shape: shape,
+      shape: point.shape,
       index: index,
+      originalShape: point.shape,
       quoted: !!point.quotedAuthor
     },
     collect: function collect(monitor) {
