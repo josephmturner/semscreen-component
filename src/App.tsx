@@ -20,8 +20,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import SemanticScreen from "./components/SemanticScreen";
-import OpenPanelButton from "./components/OpenPanelButton";
-import ClosePanelButton from "./components/ClosePanelButton";
+import PanelButton from "./components/PanelButton";
 import ParkingSpace from "./components/ParkingSpace";
 
 import { showPanel, hidePanel, PanelParams } from "./actions/panelsActions";
@@ -47,8 +46,9 @@ const App = (props: {
         />
       </SemscreenPanel>
       {!props.panels.right && (
-        <OpenPanelButton
+        <PanelButton
           side={"right"}
+          openClose={"open"}
           onClick={() => {
             props.showPanel({ location: "right" });
           }}
@@ -58,16 +58,18 @@ const App = (props: {
       {props.panels.right && (
         <RightPanel>
           <ParkingSpace darkMode={darkMode} />
-          <ClosePanelButton
+          <PanelButton
             side={"right"}
+            openClose={"close"}
             onClick={() => props.hidePanel({ location: "right" })}
             darkMode={darkMode}
           />
         </RightPanel>
       )}
       {!props.panels.bottom && (
-        <OpenPanelButton
+        <PanelButton
           side={"bottom"}
+          openClose={"open"}
           onClick={() => {
             props.showPanel({ location: "bottom" });
           }}
@@ -77,8 +79,9 @@ const App = (props: {
       {props.panels.bottom && (
         <BottomPanel>
           <ParkingSpace darkMode={darkMode} />
-          <ClosePanelButton
+          <PanelButton
             side={"bottom"}
+            openClose={"close"}
             onClick={() => props.hidePanel({ location: "bottom" })}
             darkMode={darkMode}
           />

@@ -11,9 +11,7 @@ var _reactRedux = require("react-redux");
 
 var _SemanticScreen = _interopRequireDefault(require("./components/SemanticScreen"));
 
-var _OpenPanelButton = _interopRequireDefault(require("./components/OpenPanelButton"));
-
-var _ClosePanelButton = _interopRequireDefault(require("./components/ClosePanelButton"));
+var _PanelButton = _interopRequireDefault(require("./components/PanelButton"));
 
 var _ParkingSpace = _interopRequireDefault(require("./components/ParkingSpace"));
 
@@ -76,8 +74,9 @@ var App = function App(props) {
   }, /*#__PURE__*/_react.default.createElement(_SemanticScreen.default, {
     readOnly: readOnly || false,
     darkMode: darkMode || false
-  })), !props.panels.right && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
+  })), !props.panels.right && /*#__PURE__*/_react.default.createElement(_PanelButton.default, {
     side: "right",
+    openClose: "open",
     onClick: function onClick() {
       props.showPanel({
         location: "right"
@@ -86,16 +85,18 @@ var App = function App(props) {
     darkMode: darkMode
   }), props.panels.right && /*#__PURE__*/_react.default.createElement(RightPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
     darkMode: darkMode
-  }), /*#__PURE__*/_react.default.createElement(_ClosePanelButton.default, {
+  }), /*#__PURE__*/_react.default.createElement(_PanelButton.default, {
     side: "right",
+    openClose: "close",
     onClick: function onClick() {
       return props.hidePanel({
         location: "right"
       });
     },
     darkMode: darkMode
-  })), !props.panels.bottom && /*#__PURE__*/_react.default.createElement(_OpenPanelButton.default, {
+  })), !props.panels.bottom && /*#__PURE__*/_react.default.createElement(_PanelButton.default, {
     side: "bottom",
+    openClose: "open",
     onClick: function onClick() {
       props.showPanel({
         location: "bottom"
@@ -104,8 +105,9 @@ var App = function App(props) {
     darkMode: darkMode
   }), props.panels.bottom && /*#__PURE__*/_react.default.createElement(BottomPanel, null, /*#__PURE__*/_react.default.createElement(_ParkingSpace.default, {
     darkMode: darkMode
-  }), /*#__PURE__*/_react.default.createElement(_ClosePanelButton.default, {
+  }), /*#__PURE__*/_react.default.createElement(_PanelButton.default, {
     side: "bottom",
+    openClose: "close",
     onClick: function onClick() {
       return props.hidePanel({
         location: "bottom"
