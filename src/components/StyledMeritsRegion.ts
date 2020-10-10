@@ -19,11 +19,15 @@
 import styled from "styled-components";
 
 const StyledFocusRegion = styled.div`
+  overflow: hidden;
+  &:hover {
+    overflow-y: auto;
+  }
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: auto;
 `;
 
 export default StyledFocusRegion;

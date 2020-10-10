@@ -24,8 +24,11 @@ interface StyledRegionProps {
 }
 
 const StyledRegion = styled.div<StyledRegionProps>`
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+  &:hover {
+    overflow-y: auto;
+  }
+
   border: 2px solid ${(props) => props.borderColor};
   border-radius: 7px;
   margin: 0.5px;

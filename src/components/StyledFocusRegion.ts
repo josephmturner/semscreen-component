@@ -23,7 +23,11 @@ interface StyledFocusRegionProps {
 }
 
 const StyledFocusRegion = styled.div<StyledFocusRegionProps>`
-  overflow: auto;
+  overflow: hidden;
+  &:hover {
+    overflow-y: auto;
+  }
+
   border: 2px solid ${(props) => props.borderColor};
   border-radius: 7px;
 `;
