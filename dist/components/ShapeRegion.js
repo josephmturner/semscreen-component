@@ -158,9 +158,7 @@ var ShapeRegion = function ShapeRegion(props) {
 
 var DropTargetDiv = _styledComponents.default.div(_templateObject(), function (props) {
   return props.isExpanded ? "50px" : 0;
-}); //TODO: fix types of ownProps, create 2 interfaces at top of file, one
-//extending the other?
-
+});
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {

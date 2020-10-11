@@ -38,20 +38,25 @@ import {
   TogglePointParams,
 } from "../actions/selectPointActions";
 
-const FocusPoint = (props: {
+interface OwnProps {
   pointId: string;
-  point: PointI;
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
-  darkMode: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
+  darkMode: boolean;
+}
+
+interface AllProps extends OwnProps {
+  point: PointI;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
-}) => {
+}
+
+const FocusPoint = (props: AllProps) => {
   const { point, pointId, isMainPoint } = props;
   const shape = point.shape;
 
@@ -175,8 +180,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
     ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
-//TODO: fix type of ownProps
-const mapStateToProps = (state: AppState, ownProps: any) => ({
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],
 });
 

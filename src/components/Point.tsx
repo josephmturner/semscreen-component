@@ -58,17 +58,21 @@ import {
   TogglePointParams,
 } from "../actions/selectPointActions";
 
-const Point = (props: {
+interface OwnProps {
   pointId: string;
-  point: PointI;
   index: number;
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
-  isMainPoint: boolean;
   isSelected: boolean;
+  cursorPositionIndex: number | undefined;
+  darkMode?: boolean;
+}
+
+interface AllProps extends OwnProps {
+  point: PointI;
+  isMainPoint: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
-  cursorPositionIndex: number | undefined;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
   pointMove: (params: PointMoveParams) => void;
@@ -78,8 +82,9 @@ const Point = (props: {
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
-  darkMode?: boolean;
-}) => {
+}
+
+const Point = (props: AllProps) => {
   const {
     point,
     pointId,
@@ -379,8 +384,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
     ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
-//TODO: fix type of ownProps
-const mapStateToProps = (state: AppState, ownProps: any) => ({
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],
   isMainPoint: ownProps.pointId === state.message.main,
 });

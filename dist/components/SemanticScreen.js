@@ -110,8 +110,7 @@ var SemanticScreen = function SemanticScreen(props) {
       });
     }
   })));
-}; //TODO: fix type of ownProps
-
+};
 
 var mapStateToProps = function mapStateToProps(state) {
   return {

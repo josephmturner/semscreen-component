@@ -40,10 +40,14 @@ import {
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
 
-interface ShapeRegionI {
+interface OwnProps {
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
   readOnly: boolean;
+  darkMode?: boolean;
+}
+
+interface AllProps extends OwnProps {
   author: AuthorI;
   pointIds: string[];
   cursorPosition: CursorPositionDetails | null;
@@ -51,10 +55,9 @@ interface ShapeRegionI {
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
-  darkMode?: boolean;
 }
 
-const ShapeRegion = (props: ShapeRegionI) => {
+const ShapeRegion = (props: AllProps) => {
   const { shape, pointIds, cursorPosition } = props;
 
   const placeholderText = `New ${shape.toLowerCase()} point`;
@@ -170,17 +173,7 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
-//TODO: fix types of ownProps, create 2 interfaces at top of file, one
-//extending the other?
-const mapStateToProps = (
-  state: AppState,
-  ownProps: {
-    shape: PointShape;
-    isExpanded: "expanded" | "minimized" | "balanced";
-    readOnly: boolean;
-    darkMode?: boolean;
-  }
-) => ({
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   author: state.message.author,
   pointIds: state.message.shapes[ownProps.shape],
   cursorPosition: state.cursorPosition.details,
