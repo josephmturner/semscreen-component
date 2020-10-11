@@ -34,21 +34,26 @@ import {
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
 
-const FocusRegion = (props: {
-  //TODO: don't pass region to FocusRegion, since its only ever the
-  //Focus region
+interface OwnProps {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
   readOnly: boolean;
+  darkMode: boolean;
+}
+
+interface AllProps extends OwnProps {
   author: AuthorI;
   pointId: string | undefined;
+  selectedPoints: string[];
   isMainPoint: boolean;
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
-  selectedPoints: string[];
-  darkMode: boolean;
-}) => {
+}
+
+//TODO: don't pass region to FocusRegion, since its only ever the
+//Focus region
+const FocusRegion = (props: AllProps) => {
   const { region, isExpanded, pointId } = props;
 
   const [, drop] = useDrop({

@@ -33,12 +33,14 @@ import { AppState } from "../reducers/store";
 
 import { AuthorI, RegionI } from "../dataModels";
 
-const SemanticScreen = (props: {
+interface Props {
   author: AuthorI;
   readOnly: boolean;
   darkMode: boolean;
   expandedRegion: string;
-}) => {
+}
+
+const SemanticScreen = (props: Props) => {
   const { author, expandedRegion } = props;
 
   // TODO: move regions to constants and rename allRegions
@@ -126,7 +128,6 @@ const SemanticScreen = (props: {
   );
 };
 
-//TODO: fix type of ownProps
 const mapStateToProps = (state: AppState) => ({
   author: state.message.author,
   expandedRegion: state.expandedRegion.region,

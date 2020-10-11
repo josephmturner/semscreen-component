@@ -356,7 +356,7 @@ var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.defau
   return props.isMainPoint ? "1.6em" : "1.4em";
 }, function (props) {
   return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
-}); //TODO: fix type of ownProps
+});
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
