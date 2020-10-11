@@ -26,12 +26,15 @@ import { ItemTypes } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { setExpandedRegion } from "../actions/expandedRegionActions";
+import {
+  setExpandedRegion,
+  ExpandedRegionParams,
+} from "../actions/expandedRegionActions";
 
 const MeritsRegion = (props: {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  setExpandedRegion: (region: string) => void;
+  setExpandedRegion: (params: ExpandedRegionParams) => void;
 }) => {
   const { region, isExpanded } = props;
 
@@ -39,7 +42,7 @@ const MeritsRegion = (props: {
     accept: ItemTypes.POINT,
     hover: () => {
       if (isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({ region });
       }
     },
     //    drop: (item: DraggablePointType) => {
@@ -49,7 +52,6 @@ const MeritsRegion = (props: {
     //        oldShape: item.shape,
     //        oldIndex: item.index,
     //        newShape: item.originalShape,
-    //        newIndex: item.originalIndex,
     //      });
     //    },
   });
@@ -57,7 +59,7 @@ const MeritsRegion = (props: {
   return (
     <StyledMeritsRegion
       ref={drop}
-      onClick={() => props.setExpandedRegion(region)}
+      onClick={() => props.setExpandedRegion({ region })}
     >
       <StyledDiv></StyledDiv>
     </StyledMeritsRegion>

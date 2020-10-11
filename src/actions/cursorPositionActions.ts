@@ -1,5 +1,4 @@
 import { Action, Actions } from "./constants";
-import { PointShape } from "../dataModels";
 
 export type MoveToType =
   | "beginningOfPriorPoint"
@@ -9,7 +8,7 @@ export type MoveToType =
 export interface CursorPositionParams {
   moveTo: MoveToType;
   index: number;
-  shape: PointShape;
+  pointId: string;
 }
 
 export const setCursorPosition = (

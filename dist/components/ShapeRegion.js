@@ -23,7 +23,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactRedux = require("react-redux");
 
-var _messageActions = require("../actions/messageActions");
+var _pointsActions = require("../actions/pointsActions");
 
 var _expandedRegionActions = require("../actions/expandedRegionActions");
 
@@ -53,56 +53,69 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var Region = function Region(props) {
-  var region = props.region,
-      points = props.points,
+var ShapeRegion = function ShapeRegion(props) {
+  var shape = props.shape,
+      pointIds = props.pointIds,
       cursorPosition = props.cursorPosition;
-  var renderPoints = points.filter(function (p) {
-    return p._id !== props.focusPointId;
-  });
-  var placeholderText = "New ".concat(region.toLowerCase(), " point");
+  var placeholderText = "New ".concat(shape.toLowerCase(), " point");
 
-  var placeholderImg = require("../images/".concat(region, ".svg"));
+  var placeholderImg = require("../images/".concat(shape, ".svg"));
 
-  var placeholderImgAlt = region;
+  var placeholderImgAlt = shape;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover(item) {
-      //TODO: consider only calling appDispatch after the animation transition ends.
-      if (item.quoted && item.shape !== region) return;
+      if (item.quoted && item.shape !== shape) return;
 
       if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({
+          region: shape
+        });
       }
 
-      if (item.shape !== region || item.index !== points.length - 1 || item.pointId === props.focusPointId) {
-        var newIndex = item.shape === region ? points.length - 1 : points.length;
+      var newIndex = item.shape === shape && typeof item.index === "number" ? pointIds.length - 1 : pointIds.length; //Point was the focus (lacks index)
+
+      if (typeof item.index !== "number") {
         props.pointMove({
           pointId: item.pointId,
-          oldShape: item.shape,
-          oldIndex: item.index,
-          newShape: region,
-          newIndex: newIndex
+          newShape: shape,
+          newIndex: pointIds.length
         });
         item.index = newIndex;
-        item.shape = region;
+        item.shape = shape;
+      } else {
+        //Point wasn't already at the bottom of this region
+        if (item.shape !== shape || item.index !== pointIds.length - 1) {
+          props.pointMove({
+            pointId: item.pointId,
+            oldIndex: item.index,
+            newShape: shape,
+            newIndex: newIndex
+          });
+          item.index = newIndex;
+          item.shape = shape;
+        }
       }
     }
   }),
       _useDrop2 = _slicedToArray(_useDrop, 2),
       drop = _useDrop2[1];
 
+  var createEmptyPoint = function createEmptyPoint() {
+    props.pointCreate({
+      point: {
+        author: props.author,
+        content: "",
+        shape: shape
+      },
+      index: pointIds.length
+    });
+  };
+
   var onClickRemainingSpace = function onClickRemainingSpace() {
     if (props.isExpanded !== "expanded" && !props.readOnly) {
-      props.pointCreate({
-        point: {
-          author: props.author,
-          content: ""
-        },
-        shape: region,
-        index: points.length
-      });
+      createEmptyPoint();
     }
   };
 
@@ -110,33 +123,31 @@ var Region = function Region(props) {
     isExpanded: props.isExpanded,
     borderColor: props.author.color,
     onClick: function onClick() {
-      return props.setExpandedRegion(region);
+      return props.setExpandedRegion({
+        region: shape
+      });
     }
   }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_RegionHeader.default, {
-    shape: region,
+    shape: shape,
     darkMode: props.darkMode
-  }), renderPoints.map(function (p) {
+  }), pointIds.map(function (id) {
     return /*#__PURE__*/_react.default.createElement(_Point.default, {
-      key: p._id,
-      point: p,
-      shape: region,
-      index: points.findIndex(function (point) {
-        return point._id === p._id;
+      key: id,
+      pointId: id,
+      index: pointIds.findIndex(function (pId) {
+        return pId === id;
       }),
       readOnly: props.readOnly,
       isExpanded: props.isExpanded,
-      isMainPoint: props.mainPointId === p._id,
-      isSelected: props.selectedPoints.includes(p._id),
-      cursorPositionIndex: cursorPosition && cursorPosition.pointId === p._id ? cursorPosition.index : undefined,
+      isSelected: props.selectedPoints.includes(id),
+      cursorPositionIndex: cursorPosition && cursorPosition.pointId === id ? cursorPosition.index : undefined,
       darkMode: props.darkMode
     });
   }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
     text: placeholderText,
     img: placeholderImg,
     imgAlt: placeholderImgAlt,
-    onClick: function onClick() {
-      props.createEmptyPoint(region, points.length);
-    },
+    onClick: createEmptyPoint,
     darkMode: props.darkMode
   }), /*#__PURE__*/_react.default.createElement(DropTargetDiv, {
     ref: drop,
@@ -147,21 +158,25 @@ var Region = function Region(props) {
 
 var DropTargetDiv = _styledComponents.default.div(_templateObject(), function (props) {
   return props.isExpanded ? "50px" : 0;
-});
+}); //TODO: fix types of ownProps, create 2 interfaces at top of file, one
+//extending the other?
 
-var mapStateToProps = function mapStateToProps(state) {
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
+    author: state.message.author,
+    pointIds: state.message.shapes[ownProps.shape],
     cursorPosition: state.cursorPosition.details,
     selectedPoints: state.selectedPoints.pointIds
   };
 };
 
 var mapDispatchToProps = {
-  pointCreate: _messageActions.pointCreate,
-  pointMove: _messageActions.pointMove,
+  pointCreate: _pointsActions.pointCreate,
+  pointMove: _pointsActions.pointMove,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion
 };
 
-var _default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Region);
+var _default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ShapeRegion);
 
 exports.default = _default;

@@ -7,11 +7,11 @@ exports.messageReducer = exports.initialMessageState = void 0;
 
 var _constants = require("../actions/constants");
 
-var _immutabilityHelper = _interopRequireDefault(require("immutability-helper"));
-
-var _uuid = require("uuid");
+var _immer = _interopRequireDefault(require("immer"));
 
 var _randomcolor = _interopRequireDefault(require("randomcolor"));
+
+var _uuid = require("uuid");
 
 var _dataModels = require("../dataModels");
 
@@ -26,10 +26,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 var initialMessageState = {
   _id: (0, _uuid.v4)(),
   author: {
-    name: "anonymous",
+    name: "author0",
     color: (0, _randomcolor.default)()
   },
-  points: {
+  shapes: {
     facts: [],
     thoughts: [],
     feelings: [],
@@ -49,20 +49,12 @@ var messageReducer = function messageReducer() {
   var newState = state;
 
   switch (action.type) {
-    case _constants.Actions.setMessage:
-      newState = setMessage(state, action);
-      break;
-
     case _constants.Actions.pointCreate:
       newState = handlePointCreate(state, action);
       break;
 
-    case _constants.Actions.pointUpdate:
-      newState = handlePointUpdate(state, action);
-      break;
-
     case _constants.Actions.pointMove:
-      newState = handlePointMove(state, action);
+      newState = handlePointMove(state, action, appState);
       break;
 
     case _constants.Actions.pointsDelete:
@@ -70,7 +62,7 @@ var messageReducer = function messageReducer() {
       break;
 
     case _constants.Actions.setFocus:
-      newState = handleSetFocus(state, action);
+      newState = handleSetFocus(state, action, appState);
       break;
 
     case _constants.Actions.setMainPoint:
@@ -78,97 +70,82 @@ var messageReducer = function messageReducer() {
       break;
 
     case _constants.Actions.combinePoints:
-      newState = handleCombinePoints(state, action);
+      newState = handleCombinePoints(state, action, appState);
       break;
 
     case _constants.Actions.splitIntoTwoPoints:
-      newState = handleSplitIntoTwoPoints(state, action);
+      newState = handleSplitIntoTwoPoints(state, action, appState);
       break;
   }
 
   return newState;
-};
+}; //function setMessage(
+//  state: MessageState,
+//  action: Action<SetMessageParams>
+//): MessageState {
+//  return action.params.message;
+//}
+
 
 exports.messageReducer = messageReducer;
 
-function setMessage(state, action) {
-  return action.params.message;
-}
-
 function handlePointCreate(state, action) {
-  var newPoints = state.points[action.params.shape].slice();
-  newPoints.splice(action.params.index, 0, _objectSpread(_objectSpread({}, action.params.point), {}, {
-    _id: action.params.newPointId,
-    pointDate: new Date()
-  }));
-  return action.params.focus ? _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, newPoints)),
-    focus: {
-      _id: action.params.newPointId,
-      shape: action.params.shape
+  var shape = action.params.point.shape;
+  return (0, _immer.default)(state, function (draft) {
+    if (action.params.focus) {
+      draft.focus = action.params.newPointId;
+    } else if (action.params.index) {
+      draft.shapes[shape].splice(action.params.index, 0, action.params.newPointId);
     }
-  }) : _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, newPoints))
   });
 }
 
-function handlePointUpdate(state, action) {
-  return _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, state.points[action.params.shape].map(function (p) {
-      if (p._id === action.params.point._id) {
-        return action.params.point;
-      }
-
-      return p;
-    })))
-  });
-}
-
-function handlePointMove(state, action) {
-  var _objectSpread6;
-
-  var pointWithNewShape = state.points[action.params.oldShape].find(function (p) {
-    return p._id === action.params.pointId;
-  });
-  var newFocus = state.focus;
-
-  if (state.focus && action.params.pointId === state.focus._id) {
-    newFocus = undefined;
-  }
-
-  return action.params.oldShape === action.params.newShape ? _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.oldShape, (0, _immutabilityHelper.default)(state.points[action.params.oldShape], {
-      $splice: [[action.params.oldIndex, 1], [action.params.newIndex, 0, pointWithNewShape]]
-    }))),
-    focus: newFocus
-  }) : _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, (_objectSpread6 = {}, _defineProperty(_objectSpread6, action.params.oldShape, (0, _immutabilityHelper.default)(state.points[action.params.oldShape], {
-      $splice: [[action.params.oldIndex, 1]]
-    })), _defineProperty(_objectSpread6, action.params.newShape, (0, _immutabilityHelper.default)(state.points[action.params.newShape], {
-      $splice: [[action.params.newIndex, 0, pointWithNewShape]]
-    })), _objectSpread6)),
-    focus: newFocus
+function handlePointMove(state, action, appState) {
+  //TODO: oldShape also gets defined later in handleSetFocus. Can we
+  //reuse it?
+  var oldShape = appState.points.byId[action.params.pointId].shape;
+  return (0, _immer.default)(state, function (draft) {
+    //If point was the focus (lacks index)...
+    if (typeof action.params.oldIndex !== "number") {
+      draft.shapes[action.params.newShape].splice(action.params.newIndex, 0, action.params.pointId);
+      delete draft.focus; //If point was already inside the region...
+    } else if (oldShape === action.params.newShape) {
+      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
+      draft.shapes[oldShape].splice(action.params.newIndex, 0, action.params.pointId);
+    } else {
+      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
+      draft.shapes[action.params.newShape].splice(action.params.newIndex, 0, action.params.pointId);
+    }
   });
 }
 
 function handlePointsDelete(state, action) {
-  return _objectSpread(_objectSpread({}, state), {}, {
-    points: _dataModels.allPointShapes.reduce(function (obj, pointShape) {
-      obj[pointShape] = state.points[pointShape].filter(function (p) {
-        return !action.params.pointIds.includes(p._id);
+  return (0, _immer.default)(state, function (draft) {
+    _dataModels.allPointShapes.forEach(function (shape) {
+      draft.shapes[shape] = draft.shapes[shape].filter(function (id) {
+        return !action.params.pointIds.includes(id);
       });
-      return obj;
-    }, state.points)
+    });
+
+    draft.focus && action.params.pointIds.includes(draft.focus) && delete draft.focus;
   });
 }
 
-function handleSetFocus(state, action) {
-  var intermediateState = handlePointMove(state, action);
-  return _objectSpread(_objectSpread({}, intermediateState), {}, {
-    focus: {
-      _id: action.params.pointId,
-      shape: action.params.newShape
+function handleSetFocus(state, action, appState) {
+  //newFocusShape refers to the current shape of the point.
+  //Note that this may be different from its originalShape.
+  var newFocusShape = appState.points.byId[action.params.pointId].shape;
+  return (0, _immer.default)(state, function (draft) {
+    draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(function (id) {
+      return id !== action.params.pointId;
+    });
+
+    if (draft.focus) {
+      var oldFocusShape = appState.points.byId[draft.focus].shape;
+      draft.shapes[oldFocusShape].push(draft.focus);
     }
+
+    draft.focus = action.params.pointId;
   });
 }
 
@@ -178,13 +155,14 @@ function handleSetMainPoint(state, action) {
   });
 }
 
-function handleCombinePoints(state, action) {
+function handleCombinePoints(state, action, appState) {
   var withinBounds = function withinBounds(index) {
-    return index >= 0 && index < state.points[action.params.shape].length;
+    return index >= 0 && index < state.shapes[action.params.shape].length;
   };
 
   var isQuoted = function isQuoted(index) {
-    return !!state.points[action.params.shape][index].quotedAuthor;
+    var pointId = state.shapes[action.params.shape][index];
+    return !!appState.points.byId[pointId].quotedAuthor;
   }; // Don't attempt to combine a point with the point below it if no point
   // exists below it.
 
@@ -198,30 +176,20 @@ function handleCombinePoints(state, action) {
     return state;
   }
 
-  var pointToKeep = state.points[action.params.shape][action.params.keepIndex];
-  var pointToDelete = state.points[action.params.shape][action.params.deleteIndex];
-  var newContent = action.params.keepIndex < action.params.deleteIndex ? pointToKeep.content + pointToDelete.content : pointToDelete.content + pointToKeep.content;
-  var newPoints = state.points[action.params.shape].filter(function (point) {
-    return point._id !== pointToDelete._id;
-  }).map(function (point) {
-    return point._id === pointToKeep._id ? _objectSpread(_objectSpread({}, point), {}, {
-      content: newContent
-    }) : point;
-  });
-  return _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, newPoints))
+  var pointIdToDelete = state.shapes[action.params.shape][action.params.deleteIndex];
+  return (0, _immer.default)(state, function (draft) {
+    draft.shapes[action.params.shape] = draft.shapes[action.params.shape].filter(function (id) {
+      return id !== pointIdToDelete;
+    });
   });
 }
 
-function handleSplitIntoTwoPoints(state, action) {
-  var splitPoints = state.points[action.params.shape].slice();
-  splitPoints.splice(action.params.index, 1, _objectSpread(_objectSpread({}, state.points[action.params.shape][action.params.index]), {}, {
-    content: action.params.topPoint.content
-  }), _objectSpread(_objectSpread({}, action.params.bottomPoint), {}, {
-    _id: action.params.newPointId,
-    pointDate: new Date()
-  }));
-  return _objectSpread(_objectSpread({}, state), {}, {
-    points: _objectSpread(_objectSpread({}, state.points), {}, _defineProperty({}, action.params.shape, splitPoints))
+function handleSplitIntoTwoPoints(state, action, appState) {
+  return (0, _immer.default)(state, function (draft) {
+    var shape = appState.points.byId[action.params.pointId].shape;
+    var splitPointIndex = draft.shapes[shape].findIndex(function (id) {
+      return id === action.params.pointId;
+    }) + 1;
+    draft.shapes[shape].splice(splitPointIndex, 0, action.params.newPointId);
   });
 }

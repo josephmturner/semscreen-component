@@ -19,6 +19,8 @@ var _Banner = _interopRequireDefault(require("./Banner"));
 
 var _reactRedux = require("react-redux");
 
+var _pointsActions = require("../actions/pointsActions");
+
 var _messageActions = require("../actions/messageActions");
 
 var _selectPointActions = require("../actions/selectPointActions");
@@ -69,17 +71,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var FocusPoint = function FocusPoint(props) {
   var point = props.point,
-      shape = props.shape,
-      index = props.index,
+      pointId = props.pointId,
       isMainPoint = props.isMainPoint;
+  var shape = point.shape;
   var ref = (0, _react.useRef)(null);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
       point: _objectSpread(_objectSpread({}, point), {}, {
         content: e.target.value
-      }),
-      shape: shape
+      })
     });
   };
 
@@ -90,7 +91,7 @@ var FocusPoint = function FocusPoint(props) {
 
     if (e.ctrlKey) {
       props.togglePoint({
-        pointId: point._id
+        pointId: pointId
       });
     } else {
       props.setSelectedPoints({
@@ -102,14 +103,14 @@ var FocusPoint = function FocusPoint(props) {
   var onClickShapeIcon = function onClickShapeIcon() {
     if (!props.readOnly) {
       props.setMainPoint({
-        pointId: point._id
+        pointId: pointId
       });
     }
   };
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
-  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
+  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point),
       isDragging = _useDragPoint.isDragging,
       drag = _useDragPoint.drag,
       preview = _useDragPoint.preview;
@@ -170,18 +171,20 @@ var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.defau
   return props.isMainPoint ? "bold" : "normal";
 }, function (props) {
   return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
-});
+}); //TODO: fix type of ownProps
 
-var mapStateToProps = function mapStateToProps() {
-  return {};
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    point: state.points.byId[ownProps.pointId]
+  };
 };
 
 var mapActionsToProps = {
-  pointUpdate: _messageActions.pointUpdate,
+  pointUpdate: _pointsActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   togglePoint: _selectPointActions.togglePoint,
   setSelectedPoints: _selectPointActions.setSelectedPoints,
-  pointsDelete: _messageActions.pointsDelete
+  pointsDelete: _pointsActions.pointsDelete
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(FocusPoint);

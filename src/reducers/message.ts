@@ -1,42 +1,33 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
-import update from "immutability-helper";
-import { v4 as uuidv4 } from "uuid";
+import produce from "immer";
 import randomColor from "randomcolor";
+import { v4 as uuidv4 } from "uuid";
 
-import {
-  allPointShapes,
-  PointI,
-  AuthorI,
-  PointsI,
-  PointShape,
-} from "../dataModels";
+import { allPointShapes, AuthorI, ShapesI } from "../dataModels";
 import {
   _PointCreateParams,
-  PointUpdateParams,
   PointMoveParams,
   PointsDeleteParams,
-  SetFocusParams,
-  SetMainPointParams,
   CombinePointsParams,
-  SplitIntoTwoPointsParams,
-  SetMessageParams,
-} from "../actions/messageActions";
+  _SplitIntoTwoPointsParams,
+} from "../actions/pointsActions";
+import { SetFocusParams, SetMainPointParams } from "../actions/messageActions";
 
 export interface MessageState {
   _id: string;
   revisionOf?: string;
   author: AuthorI;
-  points: PointsI;
-  focus?: { _id: string; shape: PointShape };
+  shapes: ShapesI;
+  focus?: string;
   main?: string;
   createdAt: Date;
 }
 
 export const initialMessageState: MessageState = {
   _id: uuidv4(),
-  author: { name: "anonymous", color: randomColor() },
-  points: {
+  author: { name: "author0", color: randomColor() },
+  shapes: {
     facts: [],
     thoughts: [],
     feelings: [],
@@ -55,17 +46,15 @@ export const messageReducer = (
 ): MessageState => {
   let newState = state;
   switch (action.type) {
-    case Actions.setMessage:
-      newState = setMessage(state, action as Action<SetMessageParams>);
-      break;
     case Actions.pointCreate:
       newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
-    case Actions.pointUpdate:
-      newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
-      break;
     case Actions.pointMove:
-      newState = handlePointMove(state, action as Action<PointMoveParams>);
+      newState = handlePointMove(
+        state,
+        action as Action<PointMoveParams>,
+        appState
+      );
       break;
     case Actions.pointsDelete:
       newState = handlePointsDelete(
@@ -74,7 +63,11 @@ export const messageReducer = (
       );
       break;
     case Actions.setFocus:
-      newState = handleSetFocus(state, action as Action<SetFocusParams>);
+      newState = handleSetFocus(
+        state,
+        action as Action<SetFocusParams>,
+        appState
+      );
       break;
     case Actions.setMainPoint:
       newState = handleSetMainPoint(
@@ -85,152 +78,119 @@ export const messageReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<CombinePointsParams>
+        action as Action<CombinePointsParams>,
+        appState
       );
       break;
     case Actions.splitIntoTwoPoints:
       newState = handleSplitIntoTwoPoints(
         state,
-        action as Action<SplitIntoTwoPointsParams>
+        action as Action<_SplitIntoTwoPointsParams>,
+        appState
       );
       break;
   }
   return newState;
 };
 
-function setMessage(
-  state: MessageState,
-  action: Action<SetMessageParams>
-): MessageState {
-  return action.params.message;
-}
+//function setMessage(
+//  state: MessageState,
+//  action: Action<SetMessageParams>
+//): MessageState {
+//  return action.params.message;
+//}
 
 function handlePointCreate(
   state: MessageState,
   action: Action<_PointCreateParams>
 ): MessageState {
-  const newPoints = state.points[action.params.shape].slice();
-  newPoints.splice(action.params.index, 0, {
-    ...action.params.point,
-    _id: action.params.newPointId,
-    pointDate: new Date(),
-  });
-  return action.params.focus
-    ? {
-        ...state,
-        points: {
-          ...state.points,
-          [action.params.shape]: newPoints,
-        },
-        focus: {
-          _id: action.params.newPointId,
-          shape: action.params.shape,
-        },
-      }
-    : {
-        ...state,
-        points: {
-          ...state.points,
-          [action.params.shape]: newPoints,
-        },
-      };
-}
+  const shape = action.params.point.shape;
 
-function handlePointUpdate(
-  state: MessageState,
-  action: Action<PointUpdateParams>
-): MessageState {
-  return {
-    ...state,
-    points: {
-      ...state.points,
-      [action.params.shape]: state.points[action.params.shape].map((p) => {
-        if (p._id === action.params.point._id) {
-          return action.params.point;
-        }
-        return p;
-      }),
-    },
-  };
+  return produce(state, (draft) => {
+    if (action.params.focus) {
+      draft.focus = action.params.newPointId;
+    } else if (action.params.index) {
+      draft.shapes[shape].splice(
+        action.params.index,
+        0,
+        action.params.newPointId
+      );
+    }
+  });
 }
 
 function handlePointMove(
   state: MessageState,
-  action: Action<PointMoveParams>
+  action: Action<PointMoveParams>,
+  appState: AppState
 ): MessageState {
-  const pointWithNewShape = state.points[action.params.oldShape].find(
-    (p) => p._id === action.params.pointId
-  ) as PointI;
-  let newFocus = state.focus;
-  if (state.focus && action.params.pointId === state.focus._id) {
-    newFocus = undefined;
-  }
-  return action.params.oldShape === action.params.newShape
-    ? {
-        ...state,
-        points: {
-          ...state.points,
-          [action.params.oldShape]: update(
-            state.points[action.params.oldShape],
-            {
-              $splice: [
-                [action.params.oldIndex, 1],
-                [action.params.newIndex, 0, pointWithNewShape],
-              ],
-            }
-          ),
-        },
-        focus: newFocus,
-      }
-    : {
-        ...state,
-        points: {
-          ...state.points,
-          [action.params.oldShape]: update(
-            state.points[action.params.oldShape],
-            {
-              $splice: [[action.params.oldIndex, 1]],
-            }
-          ),
-          [action.params.newShape]: update(
-            state.points[action.params.newShape],
-            {
-              $splice: [[action.params.newIndex, 0, pointWithNewShape]],
-            }
-          ),
-        },
-        focus: newFocus,
-      };
+  //TODO: oldShape also gets defined later in handleSetFocus. Can we
+  //reuse it?
+  const oldShape = appState.points.byId[action.params.pointId].shape;
+
+  return produce(state, (draft) => {
+    //If point was the focus (lacks index)...
+    if (typeof action.params.oldIndex !== "number") {
+      draft.shapes[action.params.newShape].splice(
+        action.params.newIndex,
+        0,
+        action.params.pointId
+      );
+      delete draft.focus;
+      //If point was already inside the region...
+    } else if (oldShape === action.params.newShape) {
+      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
+      draft.shapes[oldShape].splice(
+        action.params.newIndex,
+        0,
+        action.params.pointId
+      );
+    } else {
+      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
+      draft.shapes[action.params.newShape].splice(
+        action.params.newIndex,
+        0,
+        action.params.pointId
+      );
+    }
+  });
 }
 
 function handlePointsDelete(
   state: MessageState,
   action: Action<PointsDeleteParams>
 ): MessageState {
-  return {
-    ...state,
-    points: allPointShapes.reduce((obj: PointsI, pointShape: PointShape) => {
-      obj[pointShape] = state.points[pointShape].filter((p) => {
-        return !action.params.pointIds.includes(p._id);
-      });
-      return obj;
-    }, state.points),
-  };
+  return produce(state, (draft) => {
+    allPointShapes.forEach((shape) => {
+      draft.shapes[shape] = draft.shapes[shape].filter(
+        (id) => !action.params.pointIds.includes(id)
+      );
+    });
+    draft.focus &&
+      action.params.pointIds.includes(draft.focus) &&
+      delete draft.focus;
+  });
 }
 
 function handleSetFocus(
   state: MessageState,
-  action: Action<SetFocusParams>
+  action: Action<SetFocusParams>,
+  appState: AppState
 ): MessageState {
-  const intermediateState = handlePointMove(
-    state,
-    action as Action<PointMoveParams>
-  );
+  //newFocusShape refers to the current shape of the point.
+  //Note that this may be different from its originalShape.
+  const newFocusShape = appState.points.byId[action.params.pointId].shape;
 
-  return {
-    ...intermediateState,
-    focus: { _id: action.params.pointId, shape: action.params.newShape },
-  };
+  return produce(state, (draft) => {
+    draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(
+      (id) => id !== action.params.pointId
+    );
+    if (draft.focus) {
+      const oldFocusShape = appState.points.byId[draft.focus].shape;
+      draft.shapes[oldFocusShape].push(draft.focus);
+    }
+    draft.focus = action.params.pointId;
+  });
 }
 
 function handleSetMainPoint(
@@ -245,14 +205,16 @@ function handleSetMainPoint(
 
 function handleCombinePoints(
   state: MessageState,
-  action: Action<CombinePointsParams>
+  action: Action<CombinePointsParams>,
+  appState: AppState
 ): MessageState {
   const withinBounds = (index: number): boolean => {
-    return index >= 0 && index < state.points[action.params.shape].length;
+    return index >= 0 && index < state.shapes[action.params.shape].length;
   };
 
   const isQuoted = (index: number): boolean => {
-    return !!state.points[action.params.shape][index].quotedAuthor;
+    const pointId = state.shapes[action.params.shape][index];
+    return !!appState.points.byId[pointId].quotedAuthor;
   };
 
   // Don't attempt to combine a point with the point below it if no point
@@ -272,59 +234,24 @@ function handleCombinePoints(
     return state;
   }
 
-  const pointToKeep =
-    state.points[action.params.shape][action.params.keepIndex];
-  const pointToDelete =
-    state.points[action.params.shape][action.params.deleteIndex];
-
-  const newContent =
-    action.params.keepIndex < action.params.deleteIndex
-      ? pointToKeep.content + pointToDelete.content
-      : pointToDelete.content + pointToKeep.content;
-
-  const newPoints = state.points[action.params.shape]
-    .filter((point) => point._id !== pointToDelete._id)
-    .map((point) => {
-      return point._id === pointToKeep._id
-        ? {
-            ...point,
-            content: newContent,
-          }
-        : point;
-    });
-
-  return {
-    ...state,
-    points: {
-      ...state.points,
-      [action.params.shape]: newPoints,
-    },
-  };
+  const pointIdToDelete =
+    state.shapes[action.params.shape][action.params.deleteIndex];
+  return produce(state, (draft) => {
+    draft.shapes[action.params.shape] = draft.shapes[
+      action.params.shape
+    ].filter((id) => id !== pointIdToDelete);
+  });
 }
 
 function handleSplitIntoTwoPoints(
   state: MessageState,
-  action: Action<SplitIntoTwoPointsParams>
+  action: Action<_SplitIntoTwoPointsParams>,
+  appState: AppState
 ): MessageState {
-  const splitPoints = state.points[action.params.shape].slice();
-  splitPoints.splice(
-    action.params.index,
-    1,
-    {
-      ...state.points[action.params.shape][action.params.index],
-      content: action.params.topPoint.content,
-    },
-    {
-      ...action.params.bottomPoint,
-      _id: action.params.newPointId,
-      pointDate: new Date(),
-    }
-  );
-  return {
-    ...state,
-    points: {
-      ...state.points,
-      [action.params.shape]: splitPoints,
-    },
-  };
+  return produce(state, (draft) => {
+    const shape = appState.points.byId[action.params.pointId].shape;
+    const splitPointIndex =
+      draft.shapes[shape].findIndex((id) => id === action.params.pointId) + 1;
+    draft.shapes[shape].splice(splitPointIndex, 0, action.params.newPointId);
+  });
 }

@@ -15,11 +15,7 @@ var _reactDndHtml5Backend = require("react-dnd-html5-backend");
 
 var _animateCssGrid = require("animate-css-grid");
 
-var _uuid = require("uuid");
-
-var _randomcolor = _interopRequireDefault(require("randomcolor"));
-
-var _Region = _interopRequireDefault(require("./Region"));
+var _ShapeRegion = _interopRequireDefault(require("./ShapeRegion"));
 
 var _MeritsRegion = _interopRequireDefault(require("./MeritsRegion"));
 
@@ -30,10 +26,6 @@ var _Banner = _interopRequireDefault(require("./Banner"));
 var _StyledSemanticScreen = _interopRequireDefault(require("./StyledSemanticScreen"));
 
 var _reactRedux = require("react-redux");
-
-var _messageActions = require("../actions/messageActions");
-
-var _expandedRegionActions = require("../actions/expandedRegionActions");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60,30 +52,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 var SemanticScreen = function SemanticScreen(props) {
-  var message = props.message,
-      expandedRegion = props.expandedRegion;
-  var author = message.author || {
-    name: "anonymous",
-    authorId: (0, _uuid.v4)(),
-    authorDate: new Date(),
-    color: (0, _randomcolor.default)()
-  };
-
-  var createEmptyPoint = function createEmptyPoint(shape, index, focus) {
-    props.pointCreate({
-      point: {
-        author: author,
-        content: ""
-      },
-      shape: shape,
-      index: index,
-      focus: focus
-    });
-  };
-
-  var createEmptyFocus = function createEmptyFocus(shape) {
-    createEmptyPoint(shape, message.points[shape].length, true);
-  };
+  var author = props.author,
+      expandedRegion = props.expandedRegion; // TODO: move regions to constants and rename allRegions
 
   var regions = ["facts", "merits", "people", "thoughts", "focus", "actions", "feelings", "needs", "topics"];
   var semanticScreenRef = (0, _react.useRef)();
@@ -92,7 +62,7 @@ var SemanticScreen = function SemanticScreen(props) {
       duration: 150,
       easing: "linear"
     });
-  }, []);
+  }, []); //TODO: move isExpanded logic inside mapStateToProps in each region?
 
   var isExpanded = function isExpanded(region) {
     return region === expandedRegion ? "expanded" : expandedRegion === "" ? "balanced" : "minimized";
@@ -113,6 +83,7 @@ var SemanticScreen = function SemanticScreen(props) {
     },
     darkMode: props.darkMode
   }), regions.map(function (region) {
+    //TODO: short-circuit evaluation instead of if statements?
     if (region === "merits") {
       return /*#__PURE__*/_react.default.createElement(_MeritsRegion.default, {
         region: region,
@@ -126,47 +97,30 @@ var SemanticScreen = function SemanticScreen(props) {
         region: region,
         isExpanded: isExpanded(region),
         readOnly: props.readOnly,
-        author: author,
-        point: message.focus ? Object.values(message.points).flat().find(function (p) {
-          return message.focus && p._id === message.focus._id;
-        }) : undefined,
-        shape: message.focus ? message.focus.shape : undefined,
-        index: message.focus ? message.points[message.focus.shape].findIndex(function (p) {
-          return message.focus && p._id === message.focus._id;
-        }) : undefined,
-        isMainPoint: message.focus && message.main === message.focus._id ? true : false,
-        createEmptyFocus: createEmptyFocus,
         key: region,
         darkMode: props.darkMode
       });
     } else {
-      return /*#__PURE__*/_react.default.createElement(_Region.default, {
-        region: region,
+      return /*#__PURE__*/_react.default.createElement(_ShapeRegion.default, {
+        shape: region,
         isExpanded: isExpanded(region),
         readOnly: props.readOnly,
-        author: author,
-        points: message.points[region],
-        focusPointId: message.focus && message.focus._id,
-        mainPointId: message.main,
-        createEmptyPoint: createEmptyPoint,
         key: region,
         darkMode: props.darkMode
       });
     }
   })));
-};
+}; //TODO: fix type of ownProps
+
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    message: state.message,
+    author: state.message.author,
     expandedRegion: state.expandedRegion.region
   };
 };
 
-var mapDispatchToProps = {
-  pointCreate: _messageActions.pointCreate,
-  setExpandedRegion: _expandedRegionActions.setExpandedRegion
-};
+var mapDispatchToProps = {};
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SemanticScreen);
 

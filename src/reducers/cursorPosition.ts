@@ -3,8 +3,8 @@ import { CursorPositionParams } from "../actions/cursorPositionActions";
 import { PointShape } from "../dataModels";
 import {
   CombinePointsParams,
-  SplitIntoTwoPointsParams,
-} from "../actions/messageActions";
+  _SplitIntoTwoPointsParams,
+} from "../actions/pointsActions";
 
 import { AppState } from "./store";
 
@@ -49,7 +49,7 @@ export const cursorPositionReducer = (
     case Actions.splitIntoTwoPoints:
       newState = handleSplitIntoTwoPoints(
         state,
-        action as Action<SplitIntoTwoPointsParams>,
+        action as Action<_SplitIntoTwoPointsParams>,
         appState
       );
       break;
@@ -64,13 +64,18 @@ function handleSetCursorPosition(
 ): CursorPositionState {
   let newState = state;
 
-  const { shape, index } = action.params;
-  const points = appState.message.points[shape];
+  const { pointId, index } = action.params;
+  const point = appState.points.byId[pointId];
+  const shape = point.shape;
+  const pointIds = appState.message.shapes[shape];
+  const prevPointId = pointIds[index - 1];
+  const prevPoint = appState.points.byId[prevPointId];
+  const nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1]._id,
+        pointId: prevPointId,
         index: 0,
         shape,
       },
@@ -78,16 +83,16 @@ function handleSetCursorPosition(
   } else if (action.params.moveTo === "endOfPriorPoint") {
     newState = {
       details: {
-        pointId: points[index - 1]._id,
-        index: points[index - 1].content.length,
+        pointId: prevPointId,
+        index: prevPoint.content.length,
         shape,
       },
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
-    if (index !== points.length - 1) {
+    if (index !== pointIds.length - 1) {
       newState = {
         details: {
-          pointId: points[index + 1]._id,
+          pointId: nextPointId,
           index: 0,
           shape,
         },
@@ -118,11 +123,13 @@ function handleCombinePoints(
     action.params.deleteIndex
   );
 
-  const prevPoint = appState.message.points[action.params.shape][smallerIndex];
+  const prevPointId =
+    appState.message.shapes[action.params.shape][smallerIndex];
+  const prevPoint = appState.points.byId[prevPointId];
 
   const newCursorPosition = {
     pointId:
-      appState.message.points[action.params.shape][action.params.keepIndex]._id,
+      appState.message.shapes[action.params.shape][action.params.keepIndex],
     index: prevPoint.content.length,
     shape: action.params.shape,
   };
@@ -134,14 +141,15 @@ function handleCombinePoints(
 
 function handleSplitIntoTwoPoints(
   state: CursorPositionState,
-  action: Action<SplitIntoTwoPointsParams>,
+  action: Action<_SplitIntoTwoPointsParams>,
   appState: AppState
 ): CursorPositionState {
+  const shape = appState.points.byId[action.params.pointId].shape;
   return {
     details: {
       pointId: action.params.newPointId,
       index: 0,
-      shape: action.params.shape,
+      shape,
     },
   };
 }

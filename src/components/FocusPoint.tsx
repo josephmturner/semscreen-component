@@ -16,21 +16,21 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useRef } from "react";
-import { AuthorI, PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI } from "../dataModels";
 import { useDragPoint } from "../hooks/useDragPoint";
 import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 import Banner from "./Banner";
 
 import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
 import {
   pointUpdate,
   PointUpdateParams,
-  setMainPoint,
-  SetMainPointParams,
   pointsDelete,
   PointsDeleteParams,
-} from "../actions/messageActions";
+} from "../actions/pointsActions";
+import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
 import {
   setSelectedPoints,
   SetSelectedPointsParams,
@@ -39,9 +39,8 @@ import {
 } from "../actions/selectPointActions";
 
 const FocusPoint = (props: {
+  pointId: string;
   point: PointI;
-  shape: PointShape;
-  index: number;
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   darkMode: boolean;
@@ -53,14 +52,14 @@ const FocusPoint = (props: {
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
 }) => {
-  const { point, shape, index, isMainPoint } = props;
+  const { point, pointId, isMainPoint } = props;
+  const shape = point.shape;
 
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
-      shape: shape,
     });
   };
 
@@ -69,7 +68,7 @@ const FocusPoint = (props: {
       e.stopPropagation();
     }
     if (e.ctrlKey) {
-      props.togglePoint({ pointId: point._id });
+      props.togglePoint({ pointId });
     } else {
       props.setSelectedPoints({ pointIds: [] });
     }
@@ -77,13 +76,13 @@ const FocusPoint = (props: {
 
   const onClickShapeIcon = () => {
     if (!props.readOnly) {
-      props.setMainPoint({ pointId: point._id });
+      props.setMainPoint({ pointId });
     }
   };
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const { isDragging, drag, preview } = useDragPoint(point, shape, index);
+  const { isDragging, drag, preview } = useDragPoint(point);
 
   return (
     <StyledSpan
@@ -111,7 +110,7 @@ const FocusPoint = (props: {
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}
-        autoFocus={true}
+        autoFocus
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
@@ -176,9 +175,10 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
     ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
-const mapStateToProps = () => {
-  return {};
-};
+//TODO: fix type of ownProps
+const mapStateToProps = (state: AppState, ownProps: any) => ({
+  point: state.points.byId[ownProps.pointId],
+});
 
 const mapActionsToProps = {
   pointUpdate,

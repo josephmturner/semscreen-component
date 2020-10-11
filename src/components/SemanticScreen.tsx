@@ -21,10 +21,8 @@ import React, { useEffect, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { wrapGrid } from "animate-css-grid";
-import { v4 as uuidv4 } from "uuid";
-import randomColor from "randomcolor";
 
-import Region from "./Region";
+import ShapeRegion from "./ShapeRegion";
 import MeritsRegion from "./MeritsRegion";
 import FocusRegion from "./FocusRegion";
 import Banner from "./Banner";
@@ -32,50 +30,19 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { MessageState } from "../reducers/message";
-import { pointCreate, PointCreateParams } from "../actions/messageActions";
-import { setExpandedRegion } from "../actions/expandedRegionActions";
 
-import { PointShape, RegionI } from "../dataModels";
+import { AuthorI, RegionI } from "../dataModels";
 
 const SemanticScreen = (props: {
-  message: MessageState;
+  author: AuthorI;
   readOnly: boolean;
   darkMode: boolean;
   expandedRegion: string;
-  pointCreate: (params: PointCreateParams) => void;
-  setExpandedRegion: (region: string) => void;
 }) => {
-  const { message, expandedRegion } = props;
+  const { author, expandedRegion } = props;
 
-  const author = message.author || {
-    name: "anonymous",
-    authorId: uuidv4(),
-    authorDate: new Date(),
-    color: randomColor(),
-  };
-
-  const createEmptyPoint = (
-    shape: PointShape,
-    index: number,
-    focus?: boolean
-  ) => {
-    props.pointCreate({
-      point: {
-        author: author,
-        content: "",
-      },
-      shape: shape,
-      index: index,
-      focus: focus,
-    });
-  };
-
-  const createEmptyFocus = (shape: PointShape) => {
-    createEmptyPoint(shape, message.points[shape].length, true);
-  };
-
-  const regions: Array<RegionI> = [
+  // TODO: move regions to constants and rename allRegions
+  const regions: RegionI[] = [
     "facts",
     "merits",
     "people",
@@ -97,6 +64,7 @@ const SemanticScreen = (props: {
       });
   }, []);
 
+  //TODO: move isExpanded logic inside mapStateToProps in each region?
   const isExpanded = (region: RegionI) => {
     return region === expandedRegion
       ? "expanded"
@@ -121,6 +89,7 @@ const SemanticScreen = (props: {
           />
         )}
         {regions.map((region: RegionI) => {
+          //TODO: short-circuit evaluation instead of if statements?
           if (region === "merits") {
             return (
               <MeritsRegion
@@ -136,45 +105,16 @@ const SemanticScreen = (props: {
                 region={region}
                 isExpanded={isExpanded(region)}
                 readOnly={props.readOnly}
-                author={author}
-                point={
-                  message.focus
-                    ? Object.values(message.points)
-                        .flat()
-                        .find(
-                          (p) => message.focus && p._id === message.focus._id
-                        )
-                    : undefined
-                }
-                shape={message.focus ? message.focus.shape : undefined}
-                index={
-                  message.focus
-                    ? message.points[message.focus.shape].findIndex(
-                        (p) => message.focus && p._id === message.focus._id
-                      )
-                    : undefined
-                }
-                isMainPoint={
-                  message.focus && message.main === message.focus._id
-                    ? true
-                    : false
-                }
-                createEmptyFocus={createEmptyFocus}
                 key={region}
                 darkMode={props.darkMode}
               />
             );
           } else {
             return (
-              <Region
-                region={region}
+              <ShapeRegion
+                shape={region}
                 isExpanded={isExpanded(region)}
                 readOnly={props.readOnly}
-                author={author}
-                points={message.points[region as PointShape]}
-                focusPointId={message.focus && message.focus._id}
-                mainPointId={message.main}
-                createEmptyPoint={createEmptyPoint}
                 key={region}
                 darkMode={props.darkMode}
               />
@@ -186,14 +126,12 @@ const SemanticScreen = (props: {
   );
 };
 
+//TODO: fix type of ownProps
 const mapStateToProps = (state: AppState) => ({
-  message: state.message,
+  author: state.message.author,
   expandedRegion: state.expandedRegion.region,
 });
 
-const mapDispatchToProps = {
-  pointCreate,
-  setExpandedRegion,
-};
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SemanticScreen);

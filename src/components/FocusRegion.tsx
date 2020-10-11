@@ -20,73 +20,86 @@ import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledFocusRegion from "./StyledFocusRegion";
 import SevenShapes from "./SevenShapes";
-import { AuthorI, PointI, PointShape, RegionI } from "../dataModels";
+import { AuthorI, PointShape, RegionI } from "../dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
+import { pointCreate, PointCreateParams } from "../actions/pointsActions";
 import { setFocus, SetFocusParams } from "../actions/messageActions";
-import { setExpandedRegion } from "../actions/expandedRegionActions";
+import {
+  setExpandedRegion,
+  ExpandedRegionParams,
+} from "../actions/expandedRegionActions";
 
 const FocusRegion = (props: {
+  //TODO: don't pass region to FocusRegion, since its only ever the
+  //Focus region
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
   readOnly: boolean;
   author: AuthorI;
-  point: PointI | undefined;
-  shape: PointShape | undefined;
-  index: number | undefined;
+  pointId: string | undefined;
   isMainPoint: boolean;
   setFocus: (params: SetFocusParams) => void;
-  createEmptyFocus: (shape: PointShape) => void;
-  setExpandedRegion: (params: string) => void;
+  setExpandedRegion: (params: ExpandedRegionParams) => void;
+  pointCreate: (params: PointCreateParams) => void;
   selectedPoints: string[];
   darkMode: boolean;
 }) => {
-  const { region, isExpanded, point, index } = props;
+  const { region, isExpanded, pointId } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: () => {
       if (isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({ region });
       }
     },
     drop: (item: DraggablePointType) => {
-      props.setFocus({
-        pointId: item.pointId,
-        oldShape: item.shape,
-        oldIndex: item.index,
-        newShape: item.originalShape,
-        newIndex: item.originalIndex,
-      });
+      if (typeof item.index === "number") {
+        props.setFocus({
+          pointId: item.pointId,
+          oldIndex: item.index,
+          originalShape: item.originalShape,
+        });
+      }
     },
   });
+
+  const createEmptyFocus = (shape: PointShape) => {
+    props.pointCreate({
+      point: {
+        author: props.author,
+        content: "",
+        shape,
+      },
+      focus: true,
+    });
+  };
 
   return (
     <StyledFocusRegion
       ref={drop}
       borderColor={props.author.color}
-      onClick={() => props.setExpandedRegion(region)}
+      onClick={() => props.setExpandedRegion({ region })}
     >
       <StyledDiv>
-        {point && props.shape && typeof index === "number" && (
+        {pointId && (
           <FocusPoint
-            point={point}
-            shape={props.shape}
-            index={index}
+            pointId={pointId}
             readOnly={props.readOnly}
             isExpanded={props.isExpanded}
             isMainPoint={props.isMainPoint}
-            isSelected={props.selectedPoints.includes(point._id)}
+            isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}
           />
         )}
-        {!point && isExpanded === "expanded" && (
+        {!pointId && isExpanded === "expanded" && (
           <SevenShapes
-            onShapeClick={props.createEmptyFocus}
+            onShapeClick={createEmptyFocus}
             darkMode={props.darkMode}
           />
         )}
@@ -103,13 +116,20 @@ const StyledDiv = styled.div`
   align-items: center;
 `;
 
-const mapStateToProps = (state: AppState) => ({
-  selectedPoints: state.selectedPoints.pointIds,
-});
+const mapStateToProps = (state: AppState) => {
+  const isMainPoint = state.message.focus === state.message.main;
+  return {
+    author: state.message.author,
+    pointId: state.message.focus,
+    selectedPoints: state.selectedPoints.pointIds,
+    isMainPoint,
+  };
+};
 
 const mapDispatchToProps = {
   setFocus,
   setExpandedRegion,
+  pointCreate,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

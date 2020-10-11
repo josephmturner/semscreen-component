@@ -21,7 +21,7 @@ import Point from "./Point";
 import Placeholder from "./Placeholder";
 import StyledRegion from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
-import { AuthorI, PointI, PointShape } from "../dataModels";
+import { AuthorI, PointShape } from "../dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -34,74 +34,87 @@ import {
   PointCreateParams,
   pointMove,
   PointMoveParams,
-} from "../actions/messageActions";
-import { setExpandedRegion } from "../actions/expandedRegionActions";
+} from "../actions/pointsActions";
+import {
+  setExpandedRegion,
+  ExpandedRegionParams,
+} from "../actions/expandedRegionActions";
 
-const Region = (props: {
-  region: PointShape;
+interface ShapeRegionI {
+  shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
   readOnly: boolean;
   author: AuthorI;
-  points: PointI[];
-  focusPointId: string | undefined;
-  mainPointId: string | undefined;
+  pointIds: string[];
   cursorPosition: CursorPositionDetails | null;
   pointCreate: (params: PointCreateParams) => void;
-  createEmptyPoint: (shape: PointShape, index: number) => void;
   pointMove: (params: PointMoveParams) => void;
-  setExpandedRegion: (region: string) => void;
+  setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
   darkMode?: boolean;
-}) => {
-  const { region, points, cursorPosition } = props;
+}
 
-  const renderPoints = points.filter((p) => p._id !== props.focusPointId);
+const ShapeRegion = (props: ShapeRegionI) => {
+  const { shape, pointIds, cursorPosition } = props;
 
-  const placeholderText = `New ${region.toLowerCase()} point`;
-  const placeholderImg = require(`../images/${region}.svg`);
-  const placeholderImgAlt = region;
+  const placeholderText = `New ${shape.toLowerCase()} point`;
+  const placeholderImg = require(`../images/${shape}.svg`);
+  const placeholderImgAlt = shape;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      //TODO: consider only calling appDispatch after the animation transition ends.
-      if (item.quoted && item.shape !== region) return;
+      if (item.quoted && item.shape !== shape) return;
       if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({ region: shape });
       }
 
-      if (
-        item.shape !== region ||
-        item.index !== points.length - 1 ||
-        item.pointId === props.focusPointId
-      ) {
-        const newIndex =
-          item.shape === region ? points.length - 1 : points.length;
+      const newIndex =
+        item.shape === shape && typeof item.index === "number"
+          ? pointIds.length - 1
+          : pointIds.length;
 
+      //Point was the focus (lacks index)
+      if (typeof item.index !== "number") {
         props.pointMove({
           pointId: item.pointId,
-          oldShape: item.shape,
-          oldIndex: item.index,
-          newShape: region,
-          newIndex: newIndex,
+          newShape: shape,
+          newIndex: pointIds.length,
         });
 
         item.index = newIndex;
-        item.shape = region;
+        item.shape = shape;
+      } else {
+        //Point wasn't already at the bottom of this region
+        if (item.shape !== shape || item.index !== pointIds.length - 1) {
+          props.pointMove({
+            pointId: item.pointId,
+            oldIndex: item.index,
+            newShape: shape,
+            newIndex: newIndex,
+          });
+
+          item.index = newIndex;
+          item.shape = shape;
+        }
       }
     },
   });
 
+  const createEmptyPoint = () => {
+    props.pointCreate({
+      point: {
+        author: props.author,
+        content: "",
+        shape,
+      },
+      index: pointIds.length,
+    });
+  };
+
   const onClickRemainingSpace = () => {
     if (props.isExpanded !== "expanded" && !props.readOnly) {
-      props.pointCreate({
-        point: {
-          author: props.author,
-          content: "",
-        },
-        shape: region,
-        index: points.length,
-      });
+      createEmptyPoint();
     }
   };
 
@@ -109,22 +122,20 @@ const Region = (props: {
     <StyledRegion
       isExpanded={props.isExpanded}
       borderColor={props.author.color}
-      onClick={() => props.setExpandedRegion(region)}
+      onClick={() => props.setExpandedRegion({ region: shape })}
     >
       <div>
-        <RegionHeader shape={region} darkMode={props.darkMode} />
-        {renderPoints.map((p: PointI) => (
+        <RegionHeader shape={shape} darkMode={props.darkMode} />
+        {pointIds.map((id: string) => (
           <Point
-            key={p._id}
-            point={p}
-            shape={region}
-            index={points.findIndex((point) => point._id === p._id)}
+            key={id}
+            pointId={id}
+            index={pointIds.findIndex((pId) => pId === id)}
             readOnly={props.readOnly}
             isExpanded={props.isExpanded}
-            isMainPoint={props.mainPointId === p._id}
-            isSelected={props.selectedPoints.includes(p._id)}
+            isSelected={props.selectedPoints.includes(id)}
             cursorPositionIndex={
-              cursorPosition && cursorPosition.pointId === p._id
+              cursorPosition && cursorPosition.pointId === id
                 ? cursorPosition.index
                 : undefined
             }
@@ -136,9 +147,7 @@ const Region = (props: {
             text={placeholderText}
             img={placeholderImg}
             imgAlt={placeholderImgAlt}
-            onClick={() => {
-              props.createEmptyPoint(region, points.length);
-            }}
+            onClick={createEmptyPoint}
             darkMode={props.darkMode}
           />
         )}
@@ -161,7 +170,19 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
-const mapStateToProps = (state: AppState) => ({
+//TODO: fix types of ownProps, create 2 interfaces at top of file, one
+//extending the other?
+const mapStateToProps = (
+  state: AppState,
+  ownProps: {
+    shape: PointShape;
+    isExpanded: "expanded" | "minimized" | "balanced";
+    readOnly: boolean;
+    darkMode?: boolean;
+  }
+) => ({
+  author: state.message.author,
+  pointIds: state.message.shapes[ownProps.shape],
   cursorPosition: state.cursorPosition.details,
   selectedPoints: state.selectedPoints.pointIds,
 });
@@ -172,4 +193,4 @@ const mapDispatchToProps = {
   setExpandedRegion,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Region);
+export default connect(mapStateToProps, mapDispatchToProps)(ShapeRegion);

@@ -71,7 +71,7 @@ function handlePointsDelete(state, action) {
 }
 
 function handleCombinePoints(state, action, appState) {
-  var deletedPointId = appState.message.points[action.params.shape][action.params.deleteIndex]._id;
+  var deletedPointId = appState.message.shapes[action.params.shape][action.params.deleteIndex];
   return {
     pointIds: state.pointIds.filter(function (id) {
       return id !== deletedPointId;

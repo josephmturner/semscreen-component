@@ -13,8 +13,6 @@ var _ReactDnd = require("../constants/React-Dnd");
 
 var _Banner = _interopRequireDefault(require("./Banner"));
 
-var _uuid = require("uuid");
-
 var _reactDnd = require("react-dnd");
 
 var _useDragPoint2 = require("../hooks/useDragPoint");
@@ -26,6 +24,8 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 var _reactRedux = require("react-redux");
 
 var _cursorPositionActions = require("../actions/cursorPositionActions");
+
+var _pointsActions = require("../actions/pointsActions");
 
 var _messageActions = require("../actions/messageActions");
 
@@ -91,75 +91,68 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Point = function Point(props) {
   var point = props.point,
-      shape = props.shape,
+      pointId = props.pointId,
       index = props.index,
       combinePoints = props.combinePoints,
       cursorPositionIndex = props.cursorPositionIndex,
       clearCursorPosition = props.clearCursorPosition,
       setCursorPosition = props.setCursorPosition;
-
-  var createPointBelow = function createPointBelow(topContent, bottomContent) {
-    var newPointId = (0, _uuid.v4)();
-    props.splitIntoTwoPoints({
-      topPoint: {
-        content: topContent,
-        _id: point._id,
-        pointDate: new Date()
-      },
-      bottomPoint: {
-        content: bottomContent,
-        _id: newPointId,
-        pointDate: new Date()
-      },
-      shape: shape,
-      index: index,
-      newPointId: newPointId
-    });
-  };
+  var shape = point.shape;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover(item, monitor) {
-      var _ref$current;
-
       if (!ref.current || item.quoted && item.shape !== shape) {
         return;
       }
 
       if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion(shape);
-      } //TODO: only call the following logic after the animation transition ends. 150ms timeout?
-
-
-      var dragIndex = item.index;
-      var hoverIndex = index;
-
-      if (dragIndex === hoverIndex) {
-        return;
+        props.setExpandedRegion({
+          region: shape
+        });
       }
 
-      var hoverBoundingRect = (_ref$current = ref.current) === null || _ref$current === void 0 ? void 0 : _ref$current.getBoundingClientRect();
-      var hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      var clientOffset = monitor.getClientOffset();
-      var hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      var hoverIndex = index; //Point was the focus (lacks index)
 
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
+      if (typeof item.index !== "number") {
+        props.pointMove({
+          pointId: item.pointId,
+          newShape: shape,
+          newIndex: hoverIndex
+        });
+        item.index = hoverIndex;
+        item.shape = shape;
+      } else {
+        var _ref$current;
+
+        var dragIndex = item.index;
+
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+
+        var hoverBoundingRect = (_ref$current = ref.current) === null || _ref$current === void 0 ? void 0 : _ref$current.getBoundingClientRect();
+        var hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        var clientOffset = monitor.getClientOffset();
+        var hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+          return;
+        }
+
+        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+          return;
+        }
+
+        props.pointMove({
+          pointId: item.pointId,
+          oldIndex: item.index,
+          newShape: shape,
+          newIndex: hoverIndex
+        });
+        item.index = hoverIndex;
+        item.shape = shape;
       }
-
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
-      props.pointMove({
-        pointId: item.pointId,
-        oldShape: item.shape,
-        oldIndex: item.index,
-        newShape: shape,
-        newIndex: hoverIndex
-      });
-      item.index = hoverIndex;
-      item.shape = shape;
     }
   }),
       _useDrop2 = _slicedToArray(_useDrop, 2),
@@ -168,7 +161,7 @@ var Point = function Point(props) {
   var ref = (0, _react.useRef)(null);
   var pointRef = (0, _react.useRef)(null);
 
-  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, shape, index),
+  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, index),
       isDragging = _useDragPoint.isDragging,
       drag = _useDragPoint.drag,
       preview = _useDragPoint.preview;
@@ -192,25 +185,24 @@ var Point = function Point(props) {
       ref.current && ref.current.selectionStart === 0 && setCursorPosition({
         moveTo: "beginningOfPriorPoint",
         index: index,
-        shape: shape
+        pointId: pointId
       });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
       ref.current && ref.current.selectionStart === point.content.length && setCursorPosition({
         moveTo: "beginningOfNextPoint",
         index: index,
-        shape: shape
+        pointId: pointId
       });
     }
 
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
+  }, [arrowPressed, index, point.content.length, setCursorPosition, pointId]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
       point: _objectSpread(_objectSpread({}, point), {}, {
         content: e.target.value
-      }),
-      shape: shape
+      })
     });
   };
 
@@ -223,7 +215,7 @@ var Point = function Point(props) {
 
     if (e.ctrlKey) {
       props.togglePoint({
-        pointId: point._id
+        pointId: pointId
       });
     } else {
       props.setSelectedPoints({
@@ -235,7 +227,7 @@ var Point = function Point(props) {
   var onClickShapeIcon = function onClickShapeIcon() {
     if (!props.readOnly) {
       props.setMainPoint({
-        pointId: point._id
+        pointId: pointId
       });
     }
   };
@@ -262,7 +254,7 @@ var Point = function Point(props) {
     onChange: handleChange,
     onBlur: function onBlur() {
       if (!point.content) props.pointsDelete({
-        pointIds: [point._id]
+        pointIds: [pointId]
       });
     },
     readOnly: !!point.quotedAuthor || props.readOnly,
@@ -277,7 +269,10 @@ var Point = function Point(props) {
       } else {
         if (e.key === "Enter") {
           e.preventDefault();
-          ref.current && !!point.content && createPointBelow(point.content.slice(0, ref.current.selectionStart), point.content.slice(ref.current.selectionStart));
+          ref.current && !!point.content && props.splitIntoTwoPoints({
+            pointId: pointId,
+            sliceIndex: ref.current.selectionStart
+          });
         } else if (e.key === "Backspace" && ref.current && ref.current.selectionStart === 0 && ref.current.selectionStart === ref.current.selectionEnd) {
           if (index !== 0) {
             e.preventDefault();
@@ -306,14 +301,14 @@ var Point = function Point(props) {
           setCursorPosition({
             moveTo: "endOfPriorPoint",
             index: index,
-            shape: shape
+            pointId: pointId
           });
         } else if (e.key === "ArrowRight" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
           setCursorPosition({
             moveTo: "beginningOfNextPoint",
             index: index,
-            shape: shape
+            pointId: pointId
           });
         } else if (e.key === "ArrowUp" && index !== 0) {
           setArrowPressed("ArrowUp");
@@ -361,24 +356,27 @@ var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.defau
   return props.isMainPoint ? "1.6em" : "1.4em";
 }, function (props) {
   return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
-});
+}); //TODO: fix type of ownProps
 
-var mapStateToProps = function mapStateToProps() {
-  return {};
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    point: state.points.byId[ownProps.pointId],
+    isMainPoint: ownProps.pointId === state.message.main
+  };
 };
 
 var mapActionsToProps = {
-  splitIntoTwoPoints: _messageActions.splitIntoTwoPoints,
-  combinePoints: _messageActions.combinePoints,
+  splitIntoTwoPoints: _pointsActions.splitIntoTwoPoints,
+  combinePoints: _pointsActions.combinePoints,
   setCursorPosition: _cursorPositionActions.setCursorPosition,
   clearCursorPosition: _cursorPositionActions.clearCursorPosition,
-  pointMove: _messageActions.pointMove,
-  pointUpdate: _messageActions.pointUpdate,
+  pointMove: _pointsActions.pointMove,
+  pointUpdate: _pointsActions.pointUpdate,
   setMainPoint: _messageActions.setMainPoint,
   setExpandedRegion: _expandedRegionActions.setExpandedRegion,
   togglePoint: _selectPointActions.togglePoint,
   setSelectedPoints: _selectPointActions.setSelectedPoints,
-  pointsDelete: _messageActions.pointsDelete
+  pointsDelete: _pointsActions.pointsDelete
 };
 
 var _default = (0, _reactRedux.connect)(mapStateToProps, mapActionsToProps)(Point);

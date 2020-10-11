@@ -49,6 +49,7 @@ export interface PointI {
   quotedAuthor?: AuthorI;
   content: string;
   _id: string;
+  shape: PointShape;
   pointDate: Date;
 }
 
@@ -56,10 +57,11 @@ export interface PointI {
 export interface PointNoIdI {
   author: AuthorI;
   content: string;
+  shape: PointShape;
 }
 
-export type PointsI = {
-  [shape in PointShape]: PointI[];
+export type ShapesI = {
+  [shape in PointShape]: string[];
 };
 
 export interface CursorPositionI {

@@ -53,7 +53,9 @@ var MeritsRegion = function MeritsRegion(props) {
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover() {
       if (isExpanded !== "expanded") {
-        props.setExpandedRegion(region);
+        props.setExpandedRegion({
+          region: region
+        });
       }
     } //    drop: (item: DraggablePointType) => {
     //      appDispatch({
@@ -62,7 +64,6 @@ var MeritsRegion = function MeritsRegion(props) {
     //        oldShape: item.shape,
     //        oldIndex: item.index,
     //        newShape: item.originalShape,
-    //        newIndex: item.originalIndex,
     //      });
     //    },
 
@@ -73,7 +74,9 @@ var MeritsRegion = function MeritsRegion(props) {
   return /*#__PURE__*/_react.default.createElement(_StyledMeritsRegion.default, {
     ref: drop,
     onClick: function onClick() {
-      return props.setExpandedRegion(region);
+      return props.setExpandedRegion({
+        region: region
+      });
     }
   }, /*#__PURE__*/_react.default.createElement(StyledDiv, null));
 };

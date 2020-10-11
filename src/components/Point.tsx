@@ -17,10 +17,9 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { AuthorI, PointI, PointShape } from "../dataModels";
+import { AuthorI, PointI } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Banner from "./Banner";
-import { v4 as uuidv4 } from "uuid";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -29,6 +28,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
 import {
   setCursorPosition,
   clearCursorPosition,
@@ -43,12 +43,14 @@ import {
   PointMoveParams,
   pointUpdate,
   PointUpdateParams,
-  setMainPoint,
-  SetMainPointParams,
   pointsDelete,
   PointsDeleteParams,
-} from "../actions/messageActions";
-import { setExpandedRegion } from "../actions/expandedRegionActions";
+} from "../actions/pointsActions";
+import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
+import {
+  setExpandedRegion,
+  ExpandedRegionParams,
+} from "../actions/expandedRegionActions";
 import {
   setSelectedPoints,
   SetSelectedPointsParams,
@@ -57,8 +59,8 @@ import {
 } from "../actions/selectPointActions";
 
 const Point = (props: {
+  pointId: string;
   point: PointI;
-  shape: PointShape;
   index: number;
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
@@ -72,7 +74,7 @@ const Point = (props: {
   pointMove: (params: PointMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
-  setExpandedRegion: (region: string) => void;
+  setExpandedRegion: (params: ExpandedRegionParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -80,32 +82,14 @@ const Point = (props: {
 }) => {
   const {
     point,
-    shape,
+    pointId,
     index,
     combinePoints,
     cursorPositionIndex,
     clearCursorPosition,
     setCursorPosition,
   } = props;
-
-  const createPointBelow = (topContent: string, bottomContent: string) => {
-    const newPointId = uuidv4();
-    props.splitIntoTwoPoints({
-      topPoint: {
-        content: topContent,
-        _id: point._id,
-        pointDate: new Date(),
-      },
-      bottomPoint: {
-        content: bottomContent,
-        _id: newPointId,
-        pointDate: new Date(),
-      },
-      shape: shape,
-      index: index,
-      newPointId: newPointId,
-    });
-  };
+  const shape = point.shape;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -114,43 +98,54 @@ const Point = (props: {
         return;
       }
       if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion(shape);
+        props.setExpandedRegion({ region: shape });
       }
-      //TODO: only call the following logic after the animation transition ends. 150ms timeout?
-      const dragIndex = item.index;
+
       const hoverIndex = index;
 
-      if (dragIndex === hoverIndex) {
-        return;
+      //Point was the focus (lacks index)
+      if (typeof item.index !== "number") {
+        props.pointMove({
+          pointId: item.pointId,
+          newShape: shape,
+          newIndex: hoverIndex,
+        });
+        item.index = hoverIndex;
+        item.shape = shape;
+      } else {
+        const dragIndex = item.index as number;
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+
+        const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+        const hoverMiddleY =
+          (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+        const clientOffset = monitor.getClientOffset();
+
+        const hoverClientY =
+          (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+          return;
+        }
+
+        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+          return;
+        }
+
+        props.pointMove({
+          pointId: item.pointId,
+          oldIndex: item.index,
+          newShape: shape,
+          newIndex: hoverIndex,
+        });
+
+        item.index = hoverIndex;
+        item.shape = shape;
       }
-
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      const clientOffset = monitor.getClientOffset();
-
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-
-      props.pointMove({
-        pointId: item.pointId,
-        oldShape: item.shape,
-        oldIndex: item.index,
-        newShape: shape,
-        newIndex: hoverIndex,
-      });
-
-      item.index = hoverIndex;
-      item.shape = shape;
     },
   });
 
@@ -158,7 +153,7 @@ const Point = (props: {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const { isDragging, drag, preview } = useDragPoint(point, shape, index);
+  const { isDragging, drag, preview } = useDragPoint(point, index);
 
   drop(preview(pointRef));
 
@@ -180,19 +175,18 @@ const Point = (props: {
     if (arrowPressed === "ArrowUp" && ref.current) {
       ref.current &&
         ref.current.selectionStart === 0 &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", index, shape });
+        setCursorPosition({ moveTo: "beginningOfPriorPoint", index, pointId });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
       ref.current &&
         ref.current.selectionStart === point.content.length &&
-        setCursorPosition({ moveTo: "beginningOfNextPoint", index, shape });
+        setCursorPosition({ moveTo: "beginningOfNextPoint", index, pointId });
     }
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition, shape]);
+  }, [arrowPressed, index, point.content.length, setCursorPosition, pointId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
-      shape: shape,
     });
   };
 
@@ -203,7 +197,7 @@ const Point = (props: {
       e.stopPropagation();
     }
     if (e.ctrlKey) {
-      props.togglePoint({ pointId: point._id });
+      props.togglePoint({ pointId });
     } else {
       props.setSelectedPoints({ pointIds: [] });
     }
@@ -211,7 +205,7 @@ const Point = (props: {
 
   const onClickShapeIcon = () => {
     if (!props.readOnly) {
-      props.setMainPoint({ pointId: point._id });
+      props.setMainPoint({ pointId });
     }
   };
 
@@ -239,14 +233,14 @@ const Point = (props: {
         value={point.content}
         onChange={handleChange}
         onBlur={() => {
-          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
+          if (!point.content) props.pointsDelete({ pointIds: [pointId] });
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
         isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
         ref={ref}
-        autoFocus={true}
+        autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
             return;
@@ -255,10 +249,10 @@ const Point = (props: {
               e.preventDefault();
               ref.current &&
                 !!point.content &&
-                createPointBelow(
-                  point.content.slice(0, ref.current.selectionStart),
-                  point.content.slice(ref.current.selectionStart)
-                );
+                props.splitIntoTwoPoints({
+                  pointId,
+                  sliceIndex: ref.current.selectionStart,
+                });
             } else if (
               e.key === "Backspace" &&
               ref.current &&
@@ -300,7 +294,7 @@ const Point = (props: {
               index !== 0
             ) {
               e.preventDefault();
-              setCursorPosition({ moveTo: "endOfPriorPoint", index, shape });
+              setCursorPosition({ moveTo: "endOfPriorPoint", index, pointId });
             } else if (
               e.key === "ArrowRight" &&
               ref.current &&
@@ -311,7 +305,7 @@ const Point = (props: {
               setCursorPosition({
                 moveTo: "beginningOfNextPoint",
                 index,
-                shape,
+                pointId,
               });
             } else if (e.key === "ArrowUp" && index !== 0) {
               setArrowPressed("ArrowUp");
@@ -385,9 +379,11 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
     ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 `;
 
-const mapStateToProps = () => {
-  return {};
-};
+//TODO: fix type of ownProps
+const mapStateToProps = (state: AppState, ownProps: any) => ({
+  point: state.points.byId[ownProps.pointId],
+  isMainPoint: ownProps.pointId === state.message.main,
+});
 
 const mapActionsToProps = {
   splitIntoTwoPoints,
