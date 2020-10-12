@@ -94,7 +94,7 @@ function handlePointCreate(state, action) {
   return (0, _immer.default)(state, function (draft) {
     if (action.params.focus) {
       draft.focus = action.params.newPointId;
-    } else if (action.params.index) {
+    } else if (typeof action.params.index === "number") {
       draft.shapes[shape].splice(action.params.index, 0, action.params.newPointId);
     }
   });
