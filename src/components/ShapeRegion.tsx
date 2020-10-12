@@ -117,7 +117,6 @@ const ShapeRegion = (props: AllProps) => {
 
   return (
     <StyledRegion
-      isExpanded={props.isExpanded}
       borderColor={props.author.color}
       onClick={() => props.setExpandedRegion({ region: shape })}
     >

@@ -18,7 +18,7 @@
 */
 import React from "react";
 import FocusPoint from "./FocusPoint";
-import StyledFocusRegion from "./StyledFocusRegion";
+import StyledRegion from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { AuthorI, PointShape, RegionI } from "../dataModels";
 import styled from "styled-components";
@@ -86,10 +86,10 @@ const FocusRegion = (props: AllProps) => {
   };
 
   return (
-    <StyledFocusRegion
-      ref={drop}
+    <StyledRegion
       borderColor={props.author.color}
       onClick={() => props.setExpandedRegion({ region })}
+      ref={drop}
     >
       <StyledDiv>
         {pointId && (
@@ -109,7 +109,7 @@ const FocusRegion = (props: AllProps) => {
           />
         )}
       </StyledDiv>
-    </StyledFocusRegion>
+    </StyledRegion>
   );
 };
 

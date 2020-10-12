@@ -20,7 +20,6 @@ import styled from "styled-components";
 
 interface StyledRegionProps {
   borderColor: string;
-  isExpanded: string | undefined;
 }
 
 const StyledRegion = styled.div<StyledRegionProps>`
@@ -32,23 +31,6 @@ const StyledRegion = styled.div<StyledRegionProps>`
   border: 2px solid ${(props) => props.borderColor};
   border-radius: 7px;
   margin: 0.5px;
-
-  @media (max-width: 799px) {
-    --minimized-border: 0;
-    --minimized-border-radius: 0;
-  }
-
-  @media (min-width: 800px) {
-    --minimized-border: 2px solid ${(props) => props.borderColor};
-    --minimized-border-radius: 10px;
-  }
-
-  ${({ isExpanded }) =>
-    isExpanded === "minimized" &&
-    `
-border: var(--minimized-border);
-border-radius: var(--minimized-border-radius);
-`}
 
   & > div {
     display: flex;
