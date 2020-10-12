@@ -7,7 +7,6 @@ export type MoveToType =
 
 export interface CursorPositionParams {
   moveTo: MoveToType;
-  index: number;
   pointId: string;
 }
 
