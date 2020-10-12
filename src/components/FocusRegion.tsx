@@ -20,7 +20,7 @@ import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledRegion from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
-import { AuthorI, PointShape, RegionI } from "../dataModels";
+import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";

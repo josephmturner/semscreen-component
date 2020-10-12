@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "./constants";
-import { RegionI } from "../dataModels";
+import { RegionI } from "../dataModels/dataModels";
 
 export interface ExpandedRegionParams {
   region: RegionI | "";

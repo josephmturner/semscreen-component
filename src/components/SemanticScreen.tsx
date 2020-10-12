@@ -31,7 +31,7 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
-import { AuthorI, RegionI } from "../dataModels";
+import { AuthorI, RegionI } from "../dataModels/dataModels";
 
 interface Props {
   author: AuthorI;

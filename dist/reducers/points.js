@@ -9,6 +9,8 @@ var _constants = require("../actions/constants");
 
 var _immer = _interopRequireDefault(require("immer"));
 
+var _getters = require("../dataModels/getters");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -76,7 +78,7 @@ function handlePointUpdate(state, action) {
 }
 
 function handlePointMove(state, action) {
-  if (state.byId[action.params.pointId].shape === action.params.newShape) return state;
+  if ((0, _getters.getPointById)(action.params.pointId, state).shape === action.params.newShape) return state;
   return (0, _immer.default)(state, function (draft) {
     draft.byId[action.params.pointId] = _objectSpread(_objectSpread({}, state.byId[action.params.pointId]), {}, {
       shape: action.params.newShape
@@ -103,7 +105,7 @@ function handleCombinePoints(state, action, appState) {
 
   var isQuoted = function isQuoted(index) {
     var pointId = appState.message.shapes[action.params.shape][index];
-    return !!state.byId[pointId].quotedAuthor;
+    return !!(0, _getters.getReferencedPointId)(pointId, state);
   }; // Don't attempt to combine a point with the point below it if no point
   // exists below it.
 
@@ -119,22 +121,22 @@ function handleCombinePoints(state, action, appState) {
 
   var pointIdToKeep = appState.message.shapes[action.params.shape][action.params.keepIndex];
   var pointIdToDelete = appState.message.shapes[action.params.shape][action.params.deleteIndex];
-  var newContent = action.params.keepIndex < action.params.deleteIndex ? state.byId[pointIdToKeep].content + state.byId[pointIdToDelete].content : state.byId[pointIdToDelete].content + state.byId[pointIdToKeep].content;
+  var newContent = action.params.keepIndex < action.params.deleteIndex ? (0, _getters.getPointById)(pointIdToKeep, state).content + (0, _getters.getPointById)(pointIdToDelete, state).content : (0, _getters.getPointById)(pointIdToDelete, state).content + (0, _getters.getPointById)(pointIdToKeep, state).content;
   return (0, _immer.default)(state, function (draft) {
     delete draft.byId[pointIdToDelete];
-    draft.byId[pointIdToKeep].content = newContent;
+    (0, _getters.getPointById)(pointIdToKeep, draft).content = newContent;
   });
 }
 
 function handleSplitIntoTwoPoints(state, action) {
-  var topContent = state.byId[action.params.pointId].content.slice(0, action.params.sliceIndex);
-  var bottomContent = state.byId[action.params.pointId].content.slice(action.params.sliceIndex);
+  var topContent = (0, _getters.getPointById)(action.params.pointId, state).content.slice(0, action.params.sliceIndex);
+  var bottomContent = (0, _getters.getPointById)(action.params.pointId, state).content.slice(action.params.sliceIndex);
   return (0, _immer.default)(state, function (draft) {
-    draft.byId[action.params.pointId].content = topContent;
+    (0, _getters.getPointById)(action.params.pointId, draft).content = topContent;
     draft.byId[action.params.newPointId] = {
       content: bottomContent,
       _id: action.params.newPointId,
-      shape: state.byId[action.params.pointId].shape,
+      shape: (0, _getters.getPointById)(action.params.pointId, draft).shape,
       pointDate: new Date()
     };
   });
@@ -144,6 +146,6 @@ function handleSetFocus(state, action) {
   return (0, _immer.default)(state, function (draft) {
     //Ensures that points retain their original shape when set to
     //focus even if they've been dragged through another region
-    draft.byId[action.params.pointId].shape = action.params.originalShape;
+    (0, _getters.getPointById)(action.params.pointId, draft).shape = action.params.originalShape;
   });
 }

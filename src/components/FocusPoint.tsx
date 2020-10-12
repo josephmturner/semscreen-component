@@ -16,7 +16,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { PointI } from "../dataModels";
+import { PointI } from "../dataModels/dataModels";
+import { getPointById } from "../dataModels/getters";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -138,7 +139,7 @@ const FocusPoint = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  point: state.points.byId[ownProps.pointId],
+  point: getPointById(ownProps.pointId, state.points),
 });
 
 const mapActionsToProps = {

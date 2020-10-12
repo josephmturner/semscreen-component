@@ -21,7 +21,7 @@ import Point from "./Point";
 import NewPointButton from "./NewPointButton";
 import StyledRegion from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
-import { AuthorI, PointShape } from "../dataModels";
+import { AuthorI, PointShape } from "../dataModels/dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -71,6 +71,7 @@ const ShapeRegion = (props: AllProps) => {
           ? pointIds.length - 1
           : pointIds.length;
 
+      // TODO: some redundant logic, don't need if-else
       //Point was the focus (lacks index)
       if (typeof item.index !== "number") {
         props.pointMove({

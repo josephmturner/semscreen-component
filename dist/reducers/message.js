@@ -13,7 +13,9 @@ var _randomcolor = _interopRequireDefault(require("randomcolor"));
 
 var _uuid = require("uuid");
 
-var _dataModels = require("../dataModels");
+var _dataModels = require("../dataModels/dataModels");
+
+var _getters = require("../dataModels/getters");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -103,7 +105,7 @@ function handlePointCreate(state, action) {
 function handlePointMove(state, action, appState) {
   //TODO: oldShape also gets defined later in handleSetFocus. Can we
   //reuse it?
-  var oldShape = appState.points.byId[action.params.pointId].shape;
+  var oldShape = (0, _getters.getPointById)(action.params.pointId, appState.points).shape;
   return (0, _immer.default)(state, function (draft) {
     //If point was the focus (lacks index)...
     if (typeof action.params.oldIndex !== "number") {
@@ -135,14 +137,14 @@ function handlePointsDelete(state, action) {
 function handleSetFocus(state, action, appState) {
   //newFocusShape refers to the current shape of the point.
   //Note that this may be different from its originalShape.
-  var newFocusShape = appState.points.byId[action.params.pointId].shape;
+  var newFocusShape = (0, _getters.getPointById)(action.params.pointId, appState.points).shape;
   return (0, _immer.default)(state, function (draft) {
     draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(function (id) {
       return id !== action.params.pointId;
     });
 
     if (draft.focus) {
-      var oldFocusShape = appState.points.byId[draft.focus].shape;
+      var oldFocusShape = (0, _getters.getPointById)(draft.focus, appState.points).shape;
       draft.shapes[oldFocusShape].push(draft.focus);
     }
 
@@ -162,8 +164,8 @@ function handleCombinePoints(state, action, appState) {
   };
 
   var isQuoted = function isQuoted(index) {
-    var pointId = state.shapes[action.params.shape][index];
-    return !!appState.points.byId[pointId].quotedAuthor;
+    var pointId = appState.message.shapes[action.params.shape][index];
+    return !!(0, _getters.getReferencedPointId)(pointId, appState.points);
   }; // Don't attempt to combine a point with the point below it if no point
   // exists below it.
 
@@ -188,7 +190,7 @@ function handleCombinePoints(state, action, appState) {
 
 function handleSplitIntoTwoPoints(state, action, appState) {
   return (0, _immer.default)(state, function (draft) {
-    var shape = appState.points.byId[action.params.pointId].shape;
+    var shape = (0, _getters.getPointById)(action.params.pointId, appState.points).shape;
     var splitPointIndex = draft.shapes[shape].findIndex(function (id) {
       return id === action.params.pointId;
     }) + 1;

@@ -20,7 +20,7 @@
 //contained in the semscreen?
 import randomColor from "randomcolor";
 
-import { AuthorI } from "../dataModels";
+import { AuthorI } from "../dataModels/dataModels";
 import { MessageState } from "../reducers/message";
 import { PointsState } from "../reducers/points";
 
@@ -61,6 +61,11 @@ export const points: PointsState = {
       shape: "actions",
       pointDate: new Date(),
     },
+    REFERENCE_TO_pointId3: {
+      _id: "REFERENCE_TO_pointId3",
+      referencePointId: "pointId3",
+      referenceMessageId: "messageId0",
+    },
     pointId4: {
       content: "Get plenty of sleep :)",
       _id: "pointId4",
@@ -94,7 +99,13 @@ export const messages: MessageState[] = [
       feelings: [],
       needs: [],
       topics: ["pointId6"],
-      actions: ["pointId2", "pointId3", "pointId4", "pointId7", "pointId5"],
+      actions: [
+        "pointId2",
+        "REFERENCE_TO_pointId3",
+        "pointId4",
+        "pointId7",
+        "pointId5",
+      ],
       people: [],
     },
     focus: "pointId1",

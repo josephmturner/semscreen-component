@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
-import { PointShape } from "../dataModels";
+import { PointShape } from "../dataModels/dataModels";
 
 function SevenShapes(props: {
   onShapeClick: (shape: PointShape) => void;

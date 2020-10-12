@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "./constants";
-import { PointI, PointShape } from "../dataModels";
+import { PointI, PointShape } from "../dataModels/dataModels";
 
 //import { MessageState } from "../reducers/message";
 

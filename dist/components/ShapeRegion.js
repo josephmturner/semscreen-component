@@ -68,7 +68,8 @@ var ShapeRegion = function ShapeRegion(props) {
         });
       }
 
-      var newIndex = item.shape === shape && typeof item.index === "number" ? pointIds.length - 1 : pointIds.length; //Point was the focus (lacks index)
+      var newIndex = item.shape === shape && typeof item.index === "number" ? pointIds.length - 1 : pointIds.length; // TODO: some redundant logic, don't need if-else
+      //Point was the focus (lacks index)
 
       if (typeof item.index !== "number") {
         props.pointMove({
@@ -114,7 +115,6 @@ var ShapeRegion = function ShapeRegion(props) {
   };
 
   return /*#__PURE__*/_react.default.createElement(_StyledRegion.default, {
-    isExpanded: props.isExpanded,
     borderColor: props.author.color,
     onClick: function onClick() {
       return props.setExpandedRegion({

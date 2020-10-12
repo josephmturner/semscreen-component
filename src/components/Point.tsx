@@ -17,7 +17,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../dataModels";
+import { PointI } from "../dataModels/dataModels";
+import { getPointById } from "../dataModels/getters";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -335,7 +336,7 @@ const Point = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  point: state.points.byId[ownProps.pointId],
+  point: getPointById(ownProps.pointId, state.points),
   isMainPoint: ownProps.pointId === state.message.main,
   cursorPositionIndex:
     state.cursorPosition.details &&

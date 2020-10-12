@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { PointShape } from "../dataModels";
+import { PointShape } from "../dataModels/dataModels";
 import styled from "styled-components";
 
 interface Props {

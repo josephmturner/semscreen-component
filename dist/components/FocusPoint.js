@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _getters = require("../dataModels/getters");
+
 var _useDragPoint2 = require("../hooks/useDragPoint");
 
 var _StyledPoint = require("./StyledPoint");
@@ -124,7 +126,7 @@ var FocusPoint = function FocusPoint(props) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    point: state.points.byId[ownProps.pointId]
+    point: (0, _getters.getPointById)(ownProps.pointId, state.points)
   };
 };
 

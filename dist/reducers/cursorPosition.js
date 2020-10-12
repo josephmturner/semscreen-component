@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.cursorPositionReducer = exports.initialCursorPositionState = void 0;
 
+var _getters = require("../dataModels/getters");
+
 var _constants = require("../actions/constants");
 
 var initialCursorPositionState = {};
@@ -42,14 +44,14 @@ exports.cursorPositionReducer = cursorPositionReducer;
 function handleSetCursorPosition(state, action, appState) {
   var newState = state;
   var pointId = action.params.pointId;
-  var point = appState.points.byId[pointId];
+  var point = (0, _getters.getPointById)(pointId, appState.points);
   var shape = point.shape;
   var pointIds = appState.message.shapes[shape];
   var index = pointIds.findIndex(function (id) {
     return id === pointId;
   });
   var prevPointId = pointIds[index - 1];
-  var prevPoint = appState.points.byId[prevPointId];
+  var prevPoint = (0, _getters.getPointById)(prevPointId, appState.points);
   var nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
@@ -89,7 +91,7 @@ function handleClearCursorPosition(state, action) {
 function handleCombinePoints(state, action, appState) {
   var smallerIndex = Math.min(action.params.keepIndex, action.params.deleteIndex);
   var prevPointId = appState.message.shapes[action.params.shape][smallerIndex];
-  var prevPoint = appState.points.byId[prevPointId];
+  var prevPoint = (0, _getters.getPointById)(prevPointId, appState.points);
   var newCursorPosition = {
     pointId: appState.message.shapes[action.params.shape][action.params.keepIndex],
     contentIndex: prevPoint.content.length

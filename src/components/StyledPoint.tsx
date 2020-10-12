@@ -18,7 +18,7 @@
 */
 import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
-import { AuthorI } from "../dataModels";
+import { AuthorI } from "../dataModels/dataModels";
 
 interface StyledPointProps {
   isMainPoint?: boolean;

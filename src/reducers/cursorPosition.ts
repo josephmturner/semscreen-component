@@ -16,6 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import { getPointById } from "../dataModels/getters";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
 import {

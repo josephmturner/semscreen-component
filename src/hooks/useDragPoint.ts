@@ -18,7 +18,7 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { PointI } from "../dataModels";
+import { PointI } from "../dataModels/dataModels";
 
 export const useDragPoint = (point: PointI, index?: number) => {
   const [{ isDragging }, drag, preview] = useDrag({

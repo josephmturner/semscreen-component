@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _FocusPoint = _interopRequireDefault(require("./FocusPoint"));
 
-var _StyledFocusRegion = _interopRequireDefault(require("./StyledFocusRegion"));
+var _StyledRegion = _interopRequireDefault(require("./StyledRegion"));
 
 var _SevenShapes = _interopRequireDefault(require("./SevenShapes"));
 
@@ -93,14 +93,14 @@ var FocusRegion = function FocusRegion(props) {
     });
   };
 
-  return /*#__PURE__*/_react.default.createElement(_StyledFocusRegion.default, {
-    ref: drop,
+  return /*#__PURE__*/_react.default.createElement(_StyledRegion.default, {
     borderColor: props.author.color,
     onClick: function onClick() {
       return props.setExpandedRegion({
         region: region
       });
-    }
+    },
+    ref: drop
   }, /*#__PURE__*/_react.default.createElement(StyledDiv, null, pointId && /*#__PURE__*/_react.default.createElement(_FocusPoint.default, {
     pointId: pointId,
     readOnly: props.readOnly,

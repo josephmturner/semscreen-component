@@ -9,6 +9,8 @@ exports.default = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
+var _getters = require("../dataModels/getters");
+
 var _ReactDnd = require("../constants/React-Dnd");
 
 var _StyledPoint = require("./StyledPoint");
@@ -64,6 +66,7 @@ var Point = function Point(props) {
       clearCursorPosition = props.clearCursorPosition,
       setCursorPosition = props.setCursorPosition;
   var shape = point.shape;
+  console.log(pointId);
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
@@ -290,7 +293,7 @@ var Point = function Point(props) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    point: state.points.byId[ownProps.pointId],
+    point: (0, _getters.getPointById)(ownProps.pointId, state.points),
     isMainPoint: ownProps.pointId === state.message.main,
     cursorPositionIndex: state.cursorPosition.details && state.cursorPosition.details.pointId === ownProps.pointId ? state.cursorPosition.details.contentIndex : undefined
   };
