@@ -63,7 +63,6 @@ const StyledDiv = styled.div<StyledProps>`
   opacity: 0.4;
   margin-top: 1px;
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
-  font-size: small;
 `;
 
 export default NewPointButton;

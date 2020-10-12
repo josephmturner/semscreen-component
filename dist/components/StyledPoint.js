@@ -12,7 +12,7 @@ var _reactTextareaAutosize = _interopRequireDefault(require("react-textarea-auto
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0;\n  color: ", ";\n  background-color: transparent;\n  font-size: ", ";\n  font-weight: ", ";\n  resize: none;\n  text-indent: ", ";\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0;\n  color: ", ";\n  background-color: transparent;\n  font-family: Arial;\n  font-size: ", ";\n  font-weight: ", ";\n  resize: none;\n  text-indent: ", ";\n  ", "\n"]);
 
   _templateObject3 = function _templateObject3() {
     return data;

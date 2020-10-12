@@ -57,6 +57,7 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   border: 0;
   color: ${(props) => (props.darkMode ? "white" : "black")};
   background-color: transparent;
+  font-family: Arial;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   resize: none;
