@@ -94,7 +94,7 @@ function handlePointCreate(state, action) {
   return (0, _immer.default)(state, function (draft) {
     if (action.params.focus) {
       draft.focus = action.params.newPointId;
-    } else if (action.params.index) {
+    } else if (typeof action.params.index === "number") {
       draft.shapes[shape].splice(action.params.index, 0, action.params.newPointId);
     }
   });
@@ -128,6 +128,7 @@ function handlePointsDelete(state, action) {
     });
 
     draft.focus && action.params.pointIds.includes(draft.focus) && delete draft.focus;
+    draft.main && action.params.pointIds.includes(draft.main) && delete draft.main;
   });
 }
 
@@ -181,6 +182,7 @@ function handleCombinePoints(state, action, appState) {
     draft.shapes[action.params.shape] = draft.shapes[action.params.shape].filter(function (id) {
       return id !== pointIdToDelete;
     });
+    draft.main === pointIdToDelete && delete draft.main;
   });
 }
 

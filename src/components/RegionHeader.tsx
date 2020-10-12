@@ -22,7 +22,6 @@ const StyledSpan = styled.span<StyledProps>`
   align-items: center;
   justify-content: center;
   color: "#000";
-  font-size: small;
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
 `;
 export default RegionHeader;

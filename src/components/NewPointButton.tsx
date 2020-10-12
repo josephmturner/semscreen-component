@@ -17,16 +17,17 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
+import { PointShape } from "../dataModels";
 import styled from "styled-components";
 
-const Placeholder = (props: {
-  text: string;
-  img: string;
-  imgAlt: string;
-  onClick: () => void;
+interface Props {
+  shape: PointShape;
   darkMode?: boolean;
-}) => {
-  const { text, img, imgAlt, onClick } = props;
+  onClick: () => void;
+}
+
+const NewPointButton = (props: Props) => {
+  const { shape, onClick } = props;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,8 +36,10 @@ const Placeholder = (props: {
 
   return (
     <StyledSpan onClick={handleClick}>
-      <StyledImg src={img} alt={imgAlt} />
-      <StyledDiv darkMode={props.darkMode}>{text}</StyledDiv>
+      <StyledImg src={require(`../images/${shape}.svg`)} alt={shape} />
+      <StyledDiv
+        darkMode={props.darkMode}
+      >{`New ${shape.toLowerCase()} point`}</StyledDiv>
     </StyledSpan>
   );
 };
@@ -60,7 +63,6 @@ const StyledDiv = styled.div<StyledProps>`
   opacity: 0.4;
   margin-top: 1px;
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
-  font-size: small;
 `;
 
-export default Placeholder;
+export default NewPointButton;

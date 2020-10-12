@@ -18,7 +18,7 @@
 
 import React from "react";
 import Point from "./Point";
-import Placeholder from "./Placeholder";
+import NewPointButton from "./NewPointButton";
 import StyledRegion from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
 import { AuthorI, PointShape } from "../dataModels";
@@ -57,10 +57,6 @@ interface AllProps extends OwnProps {
 
 const ShapeRegion = (props: AllProps) => {
   const { shape, pointIds } = props;
-
-  const placeholderText = `New ${shape.toLowerCase()} point`;
-  const placeholderImg = require(`../images/${shape}.svg`);
-  const placeholderImgAlt = shape;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -139,10 +135,8 @@ const ShapeRegion = (props: AllProps) => {
           />
         ))}
         {props.isExpanded === "expanded" && !props.readOnly && (
-          <Placeholder
-            text={placeholderText}
-            img={placeholderImg}
-            imgAlt={placeholderImgAlt}
+          <NewPointButton
+            shape={shape}
             onClick={createEmptyPoint}
             darkMode={props.darkMode}
           />

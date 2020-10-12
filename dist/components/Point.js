@@ -11,15 +11,13 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _ReactDnd = require("../constants/React-Dnd");
 
+var _StyledPoint = require("./StyledPoint");
+
 var _Banner = _interopRequireDefault(require("./Banner"));
 
 var _reactDnd = require("react-dnd");
 
 var _useDragPoint2 = require("../hooks/useDragPoint");
-
-var _reactTextareaAutosize = _interopRequireDefault(require("react-textarea-autosize"));
-
-var _styledComponents = _interopRequireDefault(require("styled-components"));
 
 var _reactRedux = require("react-redux");
 
@@ -38,38 +36,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _templateObject3() {
-  var data = _taggedTemplateLiteral(["\n  width: 100%;\n  border: 0;\n  color: ", ";\n  background-color: transparent;\n  font-family: arial;\n  font-size: ", ";\n  font-weight: ", ";\n  outline: 0;\n  resize: none;\n  overflow: hidden;\n  text-indent: ", ";\n  ", "\n"]);
-
-  _templateObject3 = function _templateObject3() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject2() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  top: ", ";\n  margin-top: ", ";\n  left: ", ";\n  opacity: 0.7;\n"]);
-
-  _templateObject2 = function _templateObject2() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: relative;\n  left: 2px;\n  opacity: ", ";\n  padding-top: ", ";\n  margin-right: 4px;\n  ", "\n  ", "\n"]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
-
-function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -168,7 +134,7 @@ var Point = function Point(props) {
 
   drop(preview(pointRef));
   (0, _react.useEffect)(function () {
-    if (!isNaN(cursorPositionIndex) && ref.current) {
+    if (typeof cursorPositionIndex === "number" && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(cursorPositionIndex, cursorPositionIndex);
       clearCursorPosition();
@@ -182,21 +148,19 @@ var Point = function Point(props) {
 
   (0, _react.useEffect)(function () {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      ref.current && ref.current.selectionStart === 0 && setCursorPosition({
+      (point.quotedAuthor || ref.current && ref.current.selectionStart === 0) && setCursorPosition({
         moveTo: "beginningOfPriorPoint",
-        index: index,
         pointId: pointId
       });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      ref.current && ref.current.selectionStart === point.content.length && setCursorPosition({
+      (point.quotedAuthor || ref.current && ref.current.selectionStart === point.content.length) && setCursorPosition({
         moveTo: "beginningOfNextPoint",
-        index: index,
         pointId: pointId
       });
     }
 
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition, pointId]);
+  }, [arrowPressed, point.content.length, point.quotedAuthor, setCursorPosition, pointId]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
@@ -232,24 +196,22 @@ var Point = function Point(props) {
     }
   };
 
-  return /*#__PURE__*/_react.default.createElement(StyledSpan, {
+  return /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledSpan, {
     onClick: handleClick,
     ref: pointRef,
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
-    isFirst: index === 0 ? true : false,
     isSelected: props.isSelected,
     quotedAuthor: point.quotedAuthor
-  }, /*#__PURE__*/_react.default.createElement(StyledImg, {
+  }, /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
     isMainPoint: props.isMainPoint,
-    darkMode: props.darkMode,
     quotedAuthor: point.quotedAuthor,
-    height: props.isMainPoint ? 23 : 17,
+    darkMode: props.darkMode,
     alt: shape
-  }), /*#__PURE__*/_react.default.createElement(StyledTextArea, {
+  }), /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledTextArea, {
     value: point.content,
     onChange: handleChange,
     onBlur: function onBlur() {
@@ -300,14 +262,12 @@ var Point = function Point(props) {
           e.preventDefault();
           setCursorPosition({
             moveTo: "endOfPriorPoint",
-            index: index,
             pointId: pointId
           });
         } else if (e.key === "ArrowRight" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
           setCursorPosition({
             moveTo: "beginningOfNextPoint",
-            index: index,
             pointId: pointId
           });
         } else if (e.key === "ArrowUp" && index !== 0) {
@@ -328,40 +288,11 @@ var Point = function Point(props) {
   }));
 };
 
-var StyledSpan = _styledComponents.default.span(_templateObject(), function (props) {
-  return props.isDragging ? 0.4 : 1;
-}, function (props) {
-  return props.isFirst ? "1px" : "0px";
-}, function (props) {
-  return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
-}, function (props) {
-  return props.isSelected && "                                                                  \n  background-color: #777;                                          \n  border-radius: 5px;\n";
-});
-
-var StyledImg = _styledComponents.default.img(_templateObject2(), function (props) {
-  return props.isMainPoint ? 0 : "2px";
-}, function (props) {
-  return props.quotedAuthor ? "0.8rem" : 0;
-}, function (props) {
-  return props.quotedAuthor ? "7px" : 0;
-});
-
-var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.default)(_templateObject3(), function (props) {
-  return props.darkMode ? "#fff" : "#000";
-}, function (props) {
-  return props.isMainPoint ? "medium" : "small";
-}, function (props) {
-  return props.isMainPoint ? "bold" : "normal";
-}, function (props) {
-  return props.isMainPoint ? "1.6em" : "1.4em";
-}, function (props) {
-  return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
-});
-
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     point: state.points.byId[ownProps.pointId],
-    isMainPoint: ownProps.pointId === state.message.main
+    isMainPoint: ownProps.pointId === state.message.main,
+    cursorPositionIndex: state.cursorPosition.details && state.cursorPosition.details.pointId === ownProps.pointId ? state.cursorPosition.details.contentIndex : undefined
   };
 };
 
