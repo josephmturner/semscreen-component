@@ -64,13 +64,13 @@ interface OwnProps {
   readOnly: boolean;
   isExpanded: "expanded" | "minimized" | "balanced";
   isSelected: boolean;
-  cursorPositionIndex: number | undefined;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
   point: PointI;
   isMainPoint: boolean;
+  cursorPositionIndex?: number;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
@@ -163,7 +163,7 @@ const Point = (props: AllProps) => {
   drop(preview(pointRef));
 
   useEffect(() => {
-    if (!isNaN(cursorPositionIndex as number) && ref.current) {
+    if (typeof cursorPositionIndex === "number" && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(
         cursorPositionIndex as number,
@@ -178,16 +178,14 @@ const Point = (props: AllProps) => {
   >(undefined);
   useEffect(() => {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      ref.current &&
-        ref.current.selectionStart === 0 &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", index, pointId });
+        ( point.quotedAuthor || ( ref.current && ref.current.selectionStart === 0 ) ) && 
+       setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      ref.current &&
-        ref.current.selectionStart === point.content.length &&
-        setCursorPosition({ moveTo: "beginningOfNextPoint", index, pointId });
+        ( point.quotedAuthor || ( ref.current && ref.current.selectionStart === point.content.length ) ) && 
+        setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
     }
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition, pointId]);
+  }, [arrowPressed, point.content.length, point.quotedAuthor, setCursorPosition, pointId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
@@ -299,7 +297,7 @@ const Point = (props: AllProps) => {
               index !== 0
             ) {
               e.preventDefault();
-              setCursorPosition({ moveTo: "endOfPriorPoint", index, pointId });
+              setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
             } else if (
               e.key === "ArrowRight" &&
               ref.current &&
@@ -309,7 +307,6 @@ const Point = (props: AllProps) => {
               e.preventDefault();
               setCursorPosition({
                 moveTo: "beginningOfNextPoint",
-                index,
                 pointId,
               });
             } else if (e.key === "ArrowUp" && index !== 0) {
@@ -387,6 +384,7 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],
   isMainPoint: ownProps.pointId === state.message.main,
+  cursorPositionIndex: state.cursorPosition.details && ( state.cursorPosition.details.pointId === ownProps.pointId ) ? state.cursorPosition.details.contentIndex : undefined,
 });
 
 const mapActionsToProps = {

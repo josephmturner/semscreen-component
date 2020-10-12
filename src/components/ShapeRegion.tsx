@@ -28,7 +28,6 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { Details as CursorPositionDetails } from "../reducers/cursorPosition";
 import {
   pointCreate,
   PointCreateParams,
@@ -50,7 +49,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   author: AuthorI;
   pointIds: string[];
-  cursorPosition: CursorPositionDetails | null;
   pointCreate: (params: PointCreateParams) => void;
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
@@ -58,7 +56,7 @@ interface AllProps extends OwnProps {
 }
 
 const ShapeRegion = (props: AllProps) => {
-  const { shape, pointIds, cursorPosition } = props;
+  const { shape, pointIds } = props;
 
   const placeholderText = `New ${shape.toLowerCase()} point`;
   const placeholderImg = require(`../images/${shape}.svg`);
@@ -137,11 +135,6 @@ const ShapeRegion = (props: AllProps) => {
             readOnly={props.readOnly}
             isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(id)}
-            cursorPositionIndex={
-              cursorPosition && cursorPosition.pointId === id
-                ? cursorPosition.index
-                : undefined
-            }
             darkMode={props.darkMode}
           />
         ))}
@@ -176,7 +169,6 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   author: state.message.author,
   pointIds: state.message.shapes[ownProps.shape],
-  cursorPosition: state.cursorPosition.details,
   selectedPoints: state.selectedPoints.pointIds,
 });
 

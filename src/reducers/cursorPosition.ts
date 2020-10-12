@@ -1,6 +1,5 @@
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
-import { PointShape } from "../dataModels";
 import {
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -10,17 +9,14 @@ import { AppState } from "./store";
 
 export interface Details {
   pointId: string;
-  index: number;
-  shape: PointShape;
+  contentIndex: number;
 }
 
 export interface CursorPositionState {
-  details: Details | null;
+  details?: Details;
 }
 
-export const initialCursorPositionState: CursorPositionState = {
-  details: null,
-};
+export const initialCursorPositionState: CursorPositionState = {};
 
 export const cursorPositionReducer = (
   state = initialCursorPositionState,
@@ -64,10 +60,11 @@ function handleSetCursorPosition(
 ): CursorPositionState {
   let newState = state;
 
-  const { pointId, index } = action.params;
+  const pointId = action.params.pointId;
   const point = appState.points.byId[pointId];
   const shape = point.shape;
   const pointIds = appState.message.shapes[shape];
+  const index = pointIds.findIndex((id) => id === pointId)
   const prevPointId = pointIds[index - 1];
   const prevPoint = appState.points.byId[prevPointId];
   const nextPointId = pointIds[index + 1];
@@ -76,16 +73,14 @@ function handleSetCursorPosition(
     newState = {
       details: {
         pointId: prevPointId,
-        index: 0,
-        shape,
+        contentIndex: 0,
       },
     };
   } else if (action.params.moveTo === "endOfPriorPoint") {
     newState = {
       details: {
         pointId: prevPointId,
-        index: prevPoint.content.length,
-        shape,
+        contentIndex: prevPoint.content.length,
       },
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
@@ -93,8 +88,7 @@ function handleSetCursorPosition(
       newState = {
         details: {
           pointId: nextPointId,
-          index: 0,
-          shape,
+          contentIndex: 0,
         },
       };
     }
@@ -109,7 +103,6 @@ function handleClearCursorPosition(
   action: Action
 ): CursorPositionState {
   return {
-    details: null,
   };
 }
 
@@ -130,8 +123,7 @@ function handleCombinePoints(
   const newCursorPosition = {
     pointId:
       appState.message.shapes[action.params.shape][action.params.keepIndex],
-    index: prevPoint.content.length,
-    shape: action.params.shape,
+    contentIndex: prevPoint.content.length,
   };
 
   return {
@@ -144,12 +136,10 @@ function handleSplitIntoTwoPoints(
   action: Action<_SplitIntoTwoPointsParams>,
   appState: AppState
 ): CursorPositionState {
-  const shape = appState.points.byId[action.params.pointId].shape;
   return {
     details: {
       pointId: action.params.newPointId,
-      index: 0,
-      shape,
+      contentIndex: 0,
     },
   };
 }
