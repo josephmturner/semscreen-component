@@ -64,7 +64,7 @@ function handleSetCursorPosition(
   const point = appState.points.byId[pointId];
   const shape = point.shape;
   const pointIds = appState.message.shapes[shape];
-  const index = pointIds.findIndex((id) => id === pointId)
+  const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
   const prevPoint = appState.points.byId[prevPointId];
   const nextPointId = pointIds[index + 1];
@@ -102,8 +102,7 @@ function handleClearCursorPosition(
   state: CursorPositionState,
   action: Action
 ): CursorPositionState {
-  return {
-  };
+  return {};
 }
 
 function handleCombinePoints(

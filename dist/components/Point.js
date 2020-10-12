@@ -168,7 +168,7 @@ var Point = function Point(props) {
 
   drop(preview(pointRef));
   (0, _react.useEffect)(function () {
-    if (!isNaN(cursorPositionIndex) && ref.current) {
+    if (typeof cursorPositionIndex === "number" && ref.current) {
       ref.current.focus();
       ref.current.setSelectionRange(cursorPositionIndex, cursorPositionIndex);
       clearCursorPosition();
@@ -182,21 +182,19 @@ var Point = function Point(props) {
 
   (0, _react.useEffect)(function () {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      ref.current && ref.current.selectionStart === 0 && setCursorPosition({
+      (point.quotedAuthor || ref.current && ref.current.selectionStart === 0) && setCursorPosition({
         moveTo: "beginningOfPriorPoint",
-        index: index,
         pointId: pointId
       });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      ref.current && ref.current.selectionStart === point.content.length && setCursorPosition({
+      (point.quotedAuthor || ref.current && ref.current.selectionStart === point.content.length) && setCursorPosition({
         moveTo: "beginningOfNextPoint",
-        index: index,
         pointId: pointId
       });
     }
 
     setArrowPressed(undefined);
-  }, [arrowPressed, index, point.content.length, setCursorPosition, pointId]);
+  }, [arrowPressed, point.content.length, point.quotedAuthor, setCursorPosition, pointId]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
@@ -300,14 +298,12 @@ var Point = function Point(props) {
           e.preventDefault();
           setCursorPosition({
             moveTo: "endOfPriorPoint",
-            index: index,
             pointId: pointId
           });
         } else if (e.key === "ArrowRight" && ref.current && ref.current.selectionStart === point.content.length && ref.current.selectionStart === ref.current.selectionEnd) {
           e.preventDefault();
           setCursorPosition({
             moveTo: "beginningOfNextPoint",
-            index: index,
             pointId: pointId
           });
         } else if (e.key === "ArrowUp" && index !== 0) {
@@ -361,7 +357,8 @@ var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.defau
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     point: state.points.byId[ownProps.pointId],
-    isMainPoint: ownProps.pointId === state.message.main
+    isMainPoint: ownProps.pointId === state.message.main,
+    cursorPositionIndex: state.cursorPosition.details && state.cursorPosition.details.pointId === ownProps.pointId ? state.cursorPosition.details.contentIndex : undefined
   };
 };
 

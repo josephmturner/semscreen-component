@@ -178,14 +178,22 @@ const Point = (props: AllProps) => {
   >(undefined);
   useEffect(() => {
     if (arrowPressed === "ArrowUp" && ref.current) {
-        ( point.quotedAuthor || ( ref.current && ref.current.selectionStart === 0 ) ) && 
-       setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
+      (point.quotedAuthor ||
+        (ref.current && ref.current.selectionStart === 0)) &&
+        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-        ( point.quotedAuthor || ( ref.current && ref.current.selectionStart === point.content.length ) ) && 
+      (point.quotedAuthor ||
+        (ref.current && ref.current.selectionStart === point.content.length)) &&
         setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
     }
     setArrowPressed(undefined);
-  }, [arrowPressed, point.content.length, point.quotedAuthor, setCursorPosition, pointId]);
+  }, [
+    arrowPressed,
+    point.content.length,
+    point.quotedAuthor,
+    setCursorPosition,
+    pointId,
+  ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
@@ -384,7 +392,11 @@ const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],
   isMainPoint: ownProps.pointId === state.message.main,
-  cursorPositionIndex: state.cursorPosition.details && ( state.cursorPosition.details.pointId === ownProps.pointId ) ? state.cursorPosition.details.contentIndex : undefined,
+  cursorPositionIndex:
+    state.cursorPosition.details &&
+    state.cursorPosition.details.pointId === ownProps.pointId
+      ? state.cursorPosition.details.contentIndex
+      : undefined,
 });
 
 const mapActionsToProps = {

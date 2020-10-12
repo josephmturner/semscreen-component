@@ -128,6 +128,7 @@ function handlePointsDelete(state, action) {
     });
 
     draft.focus && action.params.pointIds.includes(draft.focus) && delete draft.focus;
+    draft.main && action.params.pointIds.includes(draft.main) && delete draft.main;
   });
 }
 
@@ -181,6 +182,7 @@ function handleCombinePoints(state, action, appState) {
     draft.shapes[action.params.shape] = draft.shapes[action.params.shape].filter(function (id) {
       return id !== pointIdToDelete;
     });
+    draft.main === pointIdToDelete && delete draft.main;
   });
 }
 

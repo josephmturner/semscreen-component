@@ -55,8 +55,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var ShapeRegion = function ShapeRegion(props) {
   var shape = props.shape,
-      pointIds = props.pointIds,
-      cursorPosition = props.cursorPosition;
+      pointIds = props.pointIds;
   var placeholderText = "New ".concat(shape.toLowerCase(), " point");
 
   var placeholderImg = require("../images/".concat(shape, ".svg"));
@@ -140,7 +139,6 @@ var ShapeRegion = function ShapeRegion(props) {
       readOnly: props.readOnly,
       isExpanded: props.isExpanded,
       isSelected: props.selectedPoints.includes(id),
-      cursorPositionIndex: cursorPosition && cursorPosition.pointId === id ? cursorPosition.index : undefined,
       darkMode: props.darkMode
     });
   }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
@@ -164,7 +162,6 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     author: state.message.author,
     pointIds: state.message.shapes[ownProps.shape],
-    cursorPosition: state.cursorPosition.details,
     selectedPoints: state.selectedPoints.pointIds
   };
 };

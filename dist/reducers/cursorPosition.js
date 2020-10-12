@@ -7,9 +7,7 @@ exports.cursorPositionReducer = exports.initialCursorPositionState = void 0;
 
 var _constants = require("../actions/constants");
 
-var initialCursorPositionState = {
-  details: null
-};
+var initialCursorPositionState = {};
 exports.initialCursorPositionState = initialCursorPositionState;
 
 var cursorPositionReducer = function cursorPositionReducer() {
@@ -43,12 +41,13 @@ exports.cursorPositionReducer = cursorPositionReducer;
 
 function handleSetCursorPosition(state, action, appState) {
   var newState = state;
-  var _action$params = action.params,
-      pointId = _action$params.pointId,
-      index = _action$params.index;
+  var pointId = action.params.pointId;
   var point = appState.points.byId[pointId];
   var shape = point.shape;
   var pointIds = appState.message.shapes[shape];
+  var index = pointIds.findIndex(function (id) {
+    return id === pointId;
+  });
   var prevPointId = pointIds[index - 1];
   var prevPoint = appState.points.byId[prevPointId];
   var nextPointId = pointIds[index + 1];
@@ -57,16 +56,14 @@ function handleSetCursorPosition(state, action, appState) {
     newState = {
       details: {
         pointId: prevPointId,
-        index: 0,
-        shape: shape
+        contentIndex: 0
       }
     };
   } else if (action.params.moveTo === "endOfPriorPoint") {
     newState = {
       details: {
         pointId: prevPointId,
-        index: prevPoint.content.length,
-        shape: shape
+        contentIndex: prevPoint.content.length
       }
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
@@ -74,8 +71,7 @@ function handleSetCursorPosition(state, action, appState) {
       newState = {
         details: {
           pointId: nextPointId,
-          index: 0,
-          shape: shape
+          contentIndex: 0
         }
       };
     }
@@ -87,9 +83,7 @@ function handleSetCursorPosition(state, action, appState) {
 }
 
 function handleClearCursorPosition(state, action) {
-  return {
-    details: null
-  };
+  return {};
 }
 
 function handleCombinePoints(state, action, appState) {
@@ -98,8 +92,7 @@ function handleCombinePoints(state, action, appState) {
   var prevPoint = appState.points.byId[prevPointId];
   var newCursorPosition = {
     pointId: appState.message.shapes[action.params.shape][action.params.keepIndex],
-    index: prevPoint.content.length,
-    shape: action.params.shape
+    contentIndex: prevPoint.content.length
   };
   return {
     details: newCursorPosition
@@ -107,12 +100,10 @@ function handleCombinePoints(state, action, appState) {
 }
 
 function handleSplitIntoTwoPoints(state, action, appState) {
-  var shape = appState.points.byId[action.params.pointId].shape;
   return {
     details: {
       pointId: action.params.newPointId,
-      index: 0,
-      shape: shape
+      contentIndex: 0
     }
   };
 }
