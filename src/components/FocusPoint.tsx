@@ -15,11 +15,10 @@
   You should have received a copy of the GNU General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from "react";
-import { AuthorI, PointI } from "../dataModels";
+import React from "react";
+import { PointI } from "../dataModels";
 import { useDragPoint } from "../hooks/useDragPoint";
-import TextareaAutosize from "react-textarea-autosize";
-import styled from "styled-components";
+import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 
 import { connect } from "react-redux";
@@ -60,8 +59,6 @@ const FocusPoint = (props: AllProps) => {
   const { point, pointId, isMainPoint } = props;
   const shape = point.shape;
 
-  const ref = useRef<HTMLTextAreaElement>(null);
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
@@ -91,8 +88,8 @@ const FocusPoint = (props: AllProps) => {
 
   return (
     <StyledSpan
-      ref={preview}
       onClick={handleClick}
+      ref={preview}
       isMainPoint={isMainPoint}
       isDragging={isDragging}
       isSelected={props.isSelected}
@@ -102,8 +99,8 @@ const FocusPoint = (props: AllProps) => {
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
+        isMainPoint={props.isMainPoint}
         quotedAuthor={point.quotedAuthor}
-        height={isMainPoint ? 30 : 20}
         darkMode={props.darkMode}
         alt={shape}
       />
@@ -114,7 +111,9 @@ const FocusPoint = (props: AllProps) => {
           if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
         readOnly={!!point.quotedAuthor || props.readOnly}
-        ref={ref}
+        isMainPoint={isMainPoint}
+        quotedAuthor={point.quotedAuthor}
+        darkMode={props.darkMode}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.readOnly) {
@@ -125,9 +124,6 @@ const FocusPoint = (props: AllProps) => {
             }
           }
         }}
-        isMainPoint={isMainPoint}
-        quotedAuthor={point.quotedAuthor}
-        darkMode={props.darkMode}
       />
       {point.quotedAuthor && (
         <Banner
@@ -140,54 +136,6 @@ const FocusPoint = (props: AllProps) => {
     </StyledSpan>
   );
 };
-
-interface StyledProps {
-  isMainPoint?: boolean;
-  isDragging?: boolean;
-  isSelected?: boolean;
-  quotedAuthor?: AuthorI;
-  darkMode?: boolean;
-}
-
-const StyledSpan = styled.span<StyledProps>`
-  position: relative;
-  margin: auto;
-  display: flex;
-  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
-
-  ${(props) =>
-    props.isMainPoint &&
-    `
-  padding: 1% 0;
-`};
-  ${(props) =>
-    props.isSelected &&
-    `                                                                  
-  background-color: #777;                                          
-  border-radius: 5px;
-`}
-`;
-
-const StyledImg = styled.img<StyledProps>`
-  height: 20px;
-  margin: auto;
-  opacity: 0.7;
-`;
-
-const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
-  width: 100%;
-  border: 0px;
-  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
-  background-color: transparent;
-  font-family: arial;
-  font-size: medium;
-  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
-  outline: 0;
-  resize: none;
-  ${(props) =>
-    props.quotedAuthor &&
-    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
-`;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],

@@ -17,15 +17,14 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { AuthorI, PointI } from "../dataModels";
+import { PointI } from "../dataModels";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
+import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { XYCoord } from "dnd-core";
-import TextareaAutosize from "react-textarea-autosize";
-import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -226,7 +225,6 @@ const Point = (props: AllProps) => {
       ref={pointRef}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
-      isFirst={index === 0 ? true : false}
       isSelected={props.isSelected}
       quotedAuthor={point.quotedAuthor}
     >
@@ -235,9 +233,8 @@ const Point = (props: AllProps) => {
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
-        darkMode={props.darkMode}
         quotedAuthor={point.quotedAuthor}
-        height={props.isMainPoint ? 23 : 17}
+        darkMode={props.darkMode}
         alt={shape}
       />
       <StyledTextArea
@@ -336,58 +333,6 @@ const Point = (props: AllProps) => {
     </StyledSpan>
   );
 };
-
-interface StyledProps {
-  isMainPoint?: boolean;
-  isDragging?: boolean;
-  isFirst?: boolean;
-  isSelected?: boolean;
-  quotedAuthor?: AuthorI;
-  darkMode?: boolean;
-}
-
-const StyledSpan = styled.span<StyledProps>`
-  position: relative;
-  left: 2px;
-  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
-  padding-top: ${(props) => (props.isFirst ? "1px" : "0px")};
-  margin-right: 4px;
-  ${(props) =>
-    props.quotedAuthor &&
-    `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
-   `}
-  ${(props) =>
-    props.isSelected &&
-    `                                                                  
-  background-color: #777;                                          
-  border-radius: 5px;
-`}
-`;
-
-const StyledImg = styled.img<StyledProps>`
-  position: absolute;
-  top: ${(props) => (props.isMainPoint ? 0 : "2px")};
-  margin-top: ${(props) => (props.quotedAuthor ? "0.8rem" : 0)};
-  left: ${(props) => (props.quotedAuthor ? "7px" : 0)};
-  opacity: 0.7;
-`;
-
-const StyledTextArea = styled(TextareaAutosize)<StyledProps>`
-  width: 100%;
-  border: 0;
-  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
-  background-color: transparent;
-  font-family: arial;
-  font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
-  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
-  outline: 0;
-  resize: none;
-  overflow: hidden;
-  text-indent: ${(props) => (props.isMainPoint ? "1.6em" : "1.4em")};
-  ${(props) =>
-    props.quotedAuthor &&
-    ` border: 1.5px solid ${props.quotedAuthor.color}; border-top: 0.5rem solid ${props.quotedAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
-`;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: state.points.byId[ownProps.pointId],
