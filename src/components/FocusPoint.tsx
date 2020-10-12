@@ -116,6 +116,15 @@ const FocusPoint = (props: AllProps) => {
         readOnly={!!point.quotedAuthor || props.readOnly}
         ref={ref}
         autoFocus
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (props.readOnly) {
+            return;
+          } else {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }
+        }}
         isMainPoint={isMainPoint}
         quotedAuthor={point.quotedAuthor}
         darkMode={props.darkMode}
