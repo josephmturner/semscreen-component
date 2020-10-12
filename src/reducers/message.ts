@@ -169,6 +169,9 @@ function handlePointsDelete(
     draft.focus &&
       action.params.pointIds.includes(draft.focus) &&
       delete draft.focus;
+    draft.main &&
+      action.params.pointIds.includes(draft.main) &&
+      delete draft.main;
   });
 }
 
@@ -240,6 +243,7 @@ function handleCombinePoints(
     draft.shapes[action.params.shape] = draft.shapes[
       action.params.shape
     ].filter((id) => id !== pointIdToDelete);
+    draft.main === pointIdToDelete && delete draft.main;
   });
 }
 
