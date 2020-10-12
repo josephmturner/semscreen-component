@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 
 var _Point = _interopRequireDefault(require("./Point"));
 
-var _Placeholder = _interopRequireDefault(require("./Placeholder"));
+var _NewPointButton = _interopRequireDefault(require("./NewPointButton"));
 
 var _StyledRegion = _interopRequireDefault(require("./StyledRegion"));
 
@@ -56,11 +56,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var ShapeRegion = function ShapeRegion(props) {
   var shape = props.shape,
       pointIds = props.pointIds;
-  var placeholderText = "New ".concat(shape.toLowerCase(), " point");
-
-  var placeholderImg = require("../images/".concat(shape, ".svg"));
-
-  var placeholderImgAlt = shape;
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
@@ -141,10 +136,8 @@ var ShapeRegion = function ShapeRegion(props) {
       isSelected: props.selectedPoints.includes(id),
       darkMode: props.darkMode
     });
-  }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_Placeholder.default, {
-    text: placeholderText,
-    img: placeholderImg,
-    imgAlt: placeholderImgAlt,
+  }), props.isExpanded === "expanded" && !props.readOnly && /*#__PURE__*/_react.default.createElement(_NewPointButton.default, {
+    shape: shape,
     onClick: createEmptyPoint,
     darkMode: props.darkMode
   }), /*#__PURE__*/_react.default.createElement(DropTargetDiv, {

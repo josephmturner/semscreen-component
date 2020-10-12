@@ -43,10 +43,8 @@ function _templateObject() {
 
 function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-var Placeholder = function Placeholder(props) {
-  var text = props.text,
-      img = props.img,
-      imgAlt = props.imgAlt,
+var NewPointButton = function NewPointButton(props) {
+  var shape = props.shape,
       onClick = props.onClick;
 
   var handleClick = function handleClick(e) {
@@ -57,11 +55,11 @@ var Placeholder = function Placeholder(props) {
   return /*#__PURE__*/_react.default.createElement(StyledSpan, {
     onClick: handleClick
   }, /*#__PURE__*/_react.default.createElement(StyledImg, {
-    src: img,
-    alt: imgAlt
+    src: require("../images/".concat(shape, ".svg")),
+    alt: shape
   }), /*#__PURE__*/_react.default.createElement(StyledDiv, {
     darkMode: props.darkMode
-  }, text));
+  }, "New ".concat(shape.toLowerCase(), " point")));
 };
 
 var StyledSpan = _styledComponents.default.span(_templateObject());
@@ -72,5 +70,5 @@ var StyledDiv = _styledComponents.default.div(_templateObject3(), function (prop
   return props.darkMode ? "#fff" : "#000";
 });
 
-var _default = Placeholder;
+var _default = NewPointButton;
 exports.default = _default;
