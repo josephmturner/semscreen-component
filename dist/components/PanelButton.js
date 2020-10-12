@@ -12,7 +12,7 @@ var _styledComponents = _interopRequireDefault(require("styled-components"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["\n  position: absolute;\n  border: 1px solid white;\n  ", "\n  ", "\n  ", "\n  ", "\n"]);
+  var data = _taggedTemplateLiteral(["\n  position: absolute;\nborder: 1px solid ", ";\n  ", "\n  ", "\n  ", "\n  ", "\n"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -33,7 +33,8 @@ var PanelButton = function PanelButton(props) {
     xmlns: "http://www.w3.org/2000/svg",
     onClick: props.onClick,
     side: props.side,
-    openClose: props.openClose
+    openClose: props.openClose,
+    darkMode: props.darkMode
   }, props.side === "right" && props.openClose === "open" && /*#__PURE__*/_react.default.createElement("path", {
     d: "M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671z"
   }), props.side === "right" && props.openClose === "close" && /*#__PURE__*/_react.default.createElement("path", {
@@ -46,6 +47,8 @@ var PanelButton = function PanelButton(props) {
 };
 
 var StyledSvg = _styledComponents.default.svg(_templateObject(), function (props) {
+  return props.darkMode ? "white" : "black";
+}, function (props) {
   return props.side === "right" && props.openClose === "open" && "\n  top: 0;\n  right: 0;\n  bottom: 0;\n  margin: auto 0;\n    border-right: none;\n    border-radius: 10px 0 0 10px;\n";
 }, function (props) {
   return props.side === "right" && props.openClose === "close" && "\n  top: 0;\n  bottom: 0;\n  left: 0;\n  margin: auto 0;\n    border-left: none;\n    border-radius: 0 10px 10px 0;\n";

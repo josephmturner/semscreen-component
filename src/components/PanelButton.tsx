@@ -19,6 +19,7 @@ const PanelButton = (props: PanelButtonProps) => (
     onClick={props.onClick}
     side={props.side}
     openClose={props.openClose}
+    darkMode={props.darkMode}
   >
     {props.side === "right" && props.openClose === "open" && (
       <path d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671z" />
@@ -38,10 +39,11 @@ const PanelButton = (props: PanelButtonProps) => (
 interface StyledProps {
   side: "right" | "bottom";
   openClose: "open" | "close";
+  darkMode?: boolean;
 }
 const StyledSvg = styled.svg<StyledProps>`
   position: absolute;
-  border: 1px solid white;
+border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
   ${(props) =>
     props.side === "right" &&
     props.openClose === "open" &&
