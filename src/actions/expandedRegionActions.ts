@@ -1,7 +1,8 @@
 import { Action, Actions } from "./constants";
+import { RegionI } from "../dataModels";
 
 export interface ExpandedRegionParams {
-  region: string;
+  region: RegionI | "";
 }
 
 export const setExpandedRegion = (

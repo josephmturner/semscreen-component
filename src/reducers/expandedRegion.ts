@@ -3,8 +3,10 @@ import { ExpandedRegionParams } from "../actions/expandedRegionActions";
 
 import { AppState } from "./store";
 
+import { RegionI } from "../dataModels";
+
 export interface ExpandedRegionState {
-  region: string;
+  region: RegionI | "";
 }
 
 export const initialExpandedRegionState: ExpandedRegionState = {
