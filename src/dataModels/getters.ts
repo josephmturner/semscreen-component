@@ -16,7 +16,12 @@ export function getPointById(
 export function getReferencedPointId(
   pointId: string,
   pointsState: PointsState
-): string | undefined {
+): string | null {
   const point = pointsState.byId[pointId];
-  return isReference(point) ? point.referencePointId : undefined;
+  return isReference(point) ? point.referencePointId : null;
+}
+
+export function getReferenceData(pointId: string, pointsState: PointsState): PointReferenceI | null {
+  const point = pointsState.byId[pointId];
+  return isReference(point) ? point : null;
 }

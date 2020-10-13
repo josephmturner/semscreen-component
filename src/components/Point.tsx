@@ -17,8 +17,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../dataModels/dataModels";
-import { getPointById } from "../dataModels/getters";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import { getPointById, getReferenceData } from "../dataModels/getters";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -69,6 +69,7 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   point: PointI;
+  referenceData: PointReferenceI | null;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
@@ -87,6 +88,7 @@ interface AllProps extends OwnProps {
 const Point = (props: AllProps) => {
   const {
     point,
+    referenceData,
     pointId,
     index,
     combinePoints,
@@ -158,7 +160,7 @@ const Point = (props: AllProps) => {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const { isDragging, drag, preview } = useDragPoint(point, index);
+  const { isDragging, drag, preview } = useDragPoint(pointId, index);
 
   drop(preview(pointRef));
 
@@ -337,6 +339,7 @@ const Point = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: getPointById(ownProps.pointId, state.points),
+  referenceData: getReferenceData(ownProps.pointId, state.points),
   isMainPoint: ownProps.pointId === state.message.main,
   cursorPositionIndex:
     state.cursorPosition.details &&

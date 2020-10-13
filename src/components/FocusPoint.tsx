@@ -16,8 +16,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { PointI } from "../dataModels/dataModels";
-import { getPointById } from "../dataModels/getters";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import { getPointById, getReferenceData } from "../dataModels/getters";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -49,6 +49,7 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   point: PointI;
+  referenceData: PointReferenceI | null;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
@@ -85,7 +86,7 @@ const FocusPoint = (props: AllProps) => {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const { isDragging, drag, preview } = useDragPoint(point);
+  const { isDragging, drag, preview } = useDragPoint(pointId);
 
   return (
     <StyledSpan
@@ -140,6 +141,7 @@ const FocusPoint = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
   point: getPointById(ownProps.pointId, state.points),
+  referenceData: getReferenceData(ownProps.pointId, state.points),
 });
 
 const mapActionsToProps = {
