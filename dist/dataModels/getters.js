@@ -5,19 +5,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getPointById = getPointById;
 exports.getReferencedPointId = getReferencedPointId;
+exports.getReferenceData = getReferenceData;
+
+function isReference(p) {
+  return p.referencePointId !== undefined;
+}
 
 function getPointById(pointId, pointsState) {
-  if (pointsState.byId[pointId].referencePointId) {
-    //TODO: why are the "as PointReferenceI" or "as PointI" type guard necessary here?
-    var referencePointId = pointsState.byId[pointId].referencePointId;
-    return pointsState.byId[referencePointId];
-  } else {
-    return pointsState.byId[pointId];
-  }
+  var point = pointsState.byId[pointId];
+  return isReference(point) ? pointsState.byId[point.referencePointId] : point;
 }
 
 function getReferencedPointId(pointId, pointsState) {
-  var _referencePointId;
+  var point = pointsState.byId[pointId];
+  return isReference(point) ? point.referencePointId : null;
+}
 
-  return (_referencePointId = pointsState.byId[pointId].referencePointId) !== null && _referencePointId !== void 0 ? _referencePointId : undefined;
+function getReferenceData(pointId, pointsState) {
+  var point = pointsState.byId[pointId];
+  return isReference(point) ? point : null;
 }

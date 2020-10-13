@@ -16,7 +16,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/getters";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
@@ -50,6 +50,7 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
+  referenceAuthor?: AuthorI;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
@@ -95,14 +96,14 @@ const FocusPoint = (props: AllProps) => {
       isMainPoint={isMainPoint}
       isDragging={isDragging}
       isSelected={props.isSelected}
-      quotedAuthor={point.quotedAuthor}
+      referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
         ref={props.readOnly ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
-        quotedAuthor={point.quotedAuthor}
+        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         alt={shape}
       />
@@ -112,9 +113,9 @@ const FocusPoint = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
-        readOnly={!!point.quotedAuthor || props.readOnly}
+        readOnly={!!props.referenceAuthor || props.readOnly}
         isMainPoint={isMainPoint}
-        quotedAuthor={point.quotedAuthor}
+        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
@@ -127,10 +128,9 @@ const FocusPoint = (props: AllProps) => {
           }
         }}
       />
-      {point.quotedAuthor && (
+      {props.referenceData && (
         <Banner
-          text={point.quotedAuthor.name}
-          color={point.quotedAuthor.color}
+          authorId={props.referenceData.referenceAuthorId}
           placement={{ top: "-0.5rem", right: "0.4rem" }}
           darkMode={props.darkMode}
         />
@@ -139,10 +139,18 @@ const FocusPoint = (props: AllProps) => {
   );
 };
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  point: getPointById(ownProps.pointId, state.points),
-  referenceData: getReferenceData(ownProps.pointId, state.points),
-});
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const referenceData = getReferenceData(ownProps.pointId, state.points);
+  let referenceAuthor;
+  if (referenceData) {
+    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+  }
+  return {
+    point: getPointById(ownProps.pointId, state.points),
+    referenceData,
+    referenceAuthor,
+  };
+};
 
 const mapActionsToProps = {
   pointUpdate,

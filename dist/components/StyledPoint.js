@@ -46,7 +46,7 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 var StyledSpan = _styledComponents.default.span(_templateObject(), function (props) {
   return props.isDragging ? 0.4 : 1;
 }, function (props) {
-  return props.quotedAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
+  return props.referenceAuthor && "padding: 0.3rem 0.8rem 0.2rem 0.2rem;\n   ";
 }, function (props) {
   return props.isSelected && "\n  background-color: #777;\n  border-radius: 5px;\n";
 });
@@ -58,9 +58,9 @@ var StyledImg = _styledComponents.default.img(_templateObject2(), function (prop
 }, function (props) {
   return props.isMainPoint ? 0 : "2px";
 }, function (props) {
-  return props.quotedAuthor ? "0.8rem" : 0;
+  return props.referenceAuthor ? "0.8rem" : 0;
 }, function (props) {
-  return props.quotedAuthor ? "7px" : 0;
+  return props.referenceAuthor ? "7px" : 0;
 });
 
 exports.StyledImg = StyledImg;
@@ -73,6 +73,6 @@ var StyledTextArea = (0, _styledComponents.default)(_reactTextareaAutosize.defau
 }, function (props) {
   return props.isMainPoint ? "2em" : "1.8em";
 }, function (props) {
-  return props.quotedAuthor && " border: 1.5px solid ".concat(props.quotedAuthor.color, "; border-top: 0.5rem solid ").concat(props.quotedAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
+  return props.referenceAuthor && " border: 1.5px solid ".concat(props.referenceAuthor.color, "; border-top: 0.5rem solid ").concat(props.referenceAuthor.color, "; border-radius: 3px; padding: 3px 0 3px 3px;");
 });
 exports.StyledTextArea = StyledTextArea;

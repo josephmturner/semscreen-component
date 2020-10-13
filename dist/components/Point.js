@@ -59,6 +59,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 var Point = function Point(props) {
   var point = props.point,
+      referenceData = props.referenceData,
       pointId = props.pointId,
       index = props.index,
       combinePoints = props.combinePoints,
@@ -66,12 +67,11 @@ var Point = function Point(props) {
       clearCursorPosition = props.clearCursorPosition,
       setCursorPosition = props.setCursorPosition;
   var shape = point.shape;
-  console.log(pointId);
 
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover(item, monitor) {
-      if (!ref.current || item.quoted && item.shape !== shape) {
+      if (!ref.current || item.isReferencedPoint && item.shape !== shape) {
         return;
       }
 
@@ -130,7 +130,7 @@ var Point = function Point(props) {
   var ref = (0, _react.useRef)(null);
   var pointRef = (0, _react.useRef)(null);
 
-  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point, index),
+  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(pointId, index),
       isDragging = _useDragPoint.isDragging,
       drag = _useDragPoint.drag,
       preview = _useDragPoint.preview;
@@ -151,19 +151,19 @@ var Point = function Point(props) {
 
   (0, _react.useEffect)(function () {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      (point.quotedAuthor || ref.current && ref.current.selectionStart === 0) && setCursorPosition({
+      (referenceData || ref.current && ref.current.selectionStart === 0) && setCursorPosition({
         moveTo: "beginningOfPriorPoint",
         pointId: pointId
       });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      (point.quotedAuthor || ref.current && ref.current.selectionStart === point.content.length) && setCursorPosition({
+      (referenceData || ref.current && ref.current.selectionStart === point.content.length) && setCursorPosition({
         moveTo: "beginningOfNextPoint",
         pointId: pointId
       });
     }
 
     setArrowPressed(undefined);
-  }, [arrowPressed, point.content.length, point.quotedAuthor, setCursorPosition, pointId]);
+  }, [arrowPressed, point.content.length, referenceData, setCursorPosition, pointId]);
 
   var handleChange = function handleChange(e) {
     props.pointUpdate({
@@ -205,13 +205,13 @@ var Point = function Point(props) {
     isMainPoint: props.isMainPoint,
     isDragging: isDragging,
     isSelected: props.isSelected,
-    quotedAuthor: point.quotedAuthor
+    referenceAuthor: props.referenceAuthor
   }, /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
     isMainPoint: props.isMainPoint,
-    quotedAuthor: point.quotedAuthor,
+    referenceAuthor: props.referenceAuthor,
     darkMode: props.darkMode,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledTextArea, {
@@ -222,9 +222,9 @@ var Point = function Point(props) {
         pointIds: [pointId]
       });
     },
-    readOnly: !!point.quotedAuthor || props.readOnly,
+    readOnly: !!props.referenceData || props.readOnly,
     isMainPoint: props.isMainPoint,
-    quotedAuthor: point.quotedAuthor,
+    referenceAuthor: props.referenceAuthor,
     darkMode: props.darkMode,
     ref: ref,
     autoFocus: true,
@@ -280,9 +280,8 @@ var Point = function Point(props) {
         }
       }
     }
-  }), point.quotedAuthor && /*#__PURE__*/_react.default.createElement(_Banner.default, {
-    text: point.quotedAuthor.name,
-    color: point.quotedAuthor.color,
+  }), referenceData && /*#__PURE__*/_react.default.createElement(_Banner.default, {
+    authorId: referenceData.referenceAuthorId,
     placement: {
       top: "-0.15rem",
       right: "0.8rem"
@@ -292,8 +291,20 @@ var Point = function Point(props) {
 };
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+  var referenceData = (0, _getters.getReferenceData)(ownProps.pointId, state.points); //TODO: Would it be cleaner not to access referenceAuthor in Point,
+  //but instead pass referenceAuthorId to the StyledPoint components?
+  //(we would then have to connect those components to redux)
+
+  var referenceAuthor;
+
+  if (referenceData) {
+    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+  }
+
   return {
     point: (0, _getters.getPointById)(ownProps.pointId, state.points),
+    referenceData: (0, _getters.getReferenceData)(ownProps.pointId, state.points),
+    referenceAuthor: referenceAuthor,
     isMainPoint: ownProps.pointId === state.message.main,
     cursorPositionIndex: state.cursorPosition.details && state.cursorPosition.details.pointId === ownProps.pointId ? state.cursorPosition.details.contentIndex : undefined
   };

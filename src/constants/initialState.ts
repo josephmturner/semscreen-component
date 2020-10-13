@@ -18,18 +18,16 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-import randomColor from "randomcolor";
-
-import { AuthorI } from "../dataModels/dataModels";
+import { AuthorsState } from "../reducers/authors";
 import { MessageState } from "../reducers/message";
 import { PointsState } from "../reducers/points";
 
-export const authors: AuthorI[] = [
-  //TODO: add Ids to authors
-  { name: "anonymous", color: randomColor() },
-  { name: "KindWoman", color: "#7d3989" },
-  { name: "BreatheOutBreatheIn", color: "#209924" },
-];
+export const authors: AuthorsState = {
+  byId: {
+    author1: { _id: "author1", name: "KindWoman", color: "#7d3989" },
+    author2: { _id: "author2", name: "BreatheOutBreatheIn", color: "#209924" },
+  },
+};
 
 export const points: PointsState = {
   byId: {
@@ -53,8 +51,6 @@ export const points: PointsState = {
       pointDate: new Date(),
     },
     pointId3: {
-      // TODO: replace authors with authorIds
-      quotedAuthor: authors[2],
       content:
         "Create a frontend which can ride on federated and distributed backends.",
       _id: "pointId3",
@@ -65,6 +61,7 @@ export const points: PointsState = {
       _id: "REFERENCE_TO_pointId3",
       referencePointId: "pointId3",
       referenceMessageId: "messageId0",
+      referenceAuthorId: "author2",
     },
     pointId4: {
       content: "Get plenty of sleep :)",
@@ -92,7 +89,7 @@ export const points: PointsState = {
 export const messages: MessageState[] = [
   {
     _id: "messageId1",
-    author: authors[1],
+    author: "author1",
     shapes: {
       facts: [],
       thoughts: [],

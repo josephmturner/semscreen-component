@@ -75,8 +75,7 @@ var SemanticScreen = function SemanticScreen(props) {
     ref: semanticScreenRef,
     darkMode: props.darkMode
   }, props.readOnly && /*#__PURE__*/_react.default.createElement(_Banner.default, {
-    text: author.name,
-    color: author.color,
+    authorId: author._id,
     placement: {
       top: "0",
       right: "0"
@@ -114,7 +113,7 @@ var SemanticScreen = function SemanticScreen(props) {
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    author: state.message.author,
+    author: state.authors.byId[state.message.author],
     expandedRegion: state.expandedRegion.region
   };
 };

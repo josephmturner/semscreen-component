@@ -83,6 +83,8 @@ var FocusRegion = function FocusRegion(props) {
       drop = _useDrop2[1];
 
   var createEmptyFocus = function createEmptyFocus(shape) {
+    //TODO: the author used to create a point should instead be some
+    //global author (not the author of the current message)
     props.pointCreate({
       point: {
         author: props.author,
@@ -119,7 +121,7 @@ var StyledDiv = _styledComponents.default.div(_templateObject());
 var mapStateToProps = function mapStateToProps(state) {
   var isMainPoint = state.message.focus === state.message.main;
   return {
-    author: state.message.author,
+    author: state.authors.byId[state.message.author],
     pointId: state.message.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint: isMainPoint

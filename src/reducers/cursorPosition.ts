@@ -80,12 +80,12 @@ function handleSetCursorPosition(
   let newState = state;
 
   const pointId = action.params.pointId;
-  const point = appState.points.byId[pointId];
+  const point = getPointById(pointId, appState.points);
   const shape = point.shape;
   const pointIds = appState.message.shapes[shape];
   const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
-  const prevPoint = appState.points.byId[prevPointId];
+  const prevPoint = getPointById(prevPointId, appState.points);
   const nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
@@ -136,7 +136,7 @@ function handleCombinePoints(
 
   const prevPointId =
     appState.message.shapes[action.params.shape][smallerIndex];
-  const prevPoint = appState.points.byId[prevPointId];
+  const prevPoint = getPointById(prevPointId, appState.points);
 
   const newCursorPosition = {
     pointId:

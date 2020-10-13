@@ -7,6 +7,7 @@ exports.Actions = void 0;
 var Actions = {
   setCursorPosition: "setCursorPosition",
   clearCursorPosition: "clearCursorPosition",
+  setAuthors: "setAuthors",
   setMessage: "setMessage",
   pointCreate: "pointCreate",
   pointUpdate: "pointUpdate",

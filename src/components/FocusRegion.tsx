@@ -75,6 +75,8 @@ const FocusRegion = (props: AllProps) => {
   });
 
   const createEmptyFocus = (shape: PointShape) => {
+    //TODO: the author used to create a point should instead be some
+    //global author (not the author of the current message)
     props.pointCreate({
       point: {
         author: props.author,
@@ -124,7 +126,7 @@ const StyledDiv = styled.div`
 const mapStateToProps = (state: AppState) => {
   const isMainPoint = state.message.focus === state.message.main;
   return {
-    author: state.message.author,
+    author: state.authors.byId[state.message.author],
     pointId: state.message.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,

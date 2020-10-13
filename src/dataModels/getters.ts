@@ -10,7 +10,9 @@ export function getPointById(
   pointsState: PointsState
 ): PointI {
   const point = pointsState.byId[pointId];
-  return isReference(point) ? pointsState.byId[point.referencePointId] as PointI : point;
+  return isReference(point)
+    ? (pointsState.byId[point.referencePointId] as PointI)
+    : point;
 }
 
 export function getReferencedPointId(
@@ -21,7 +23,10 @@ export function getReferencedPointId(
   return isReference(point) ? point.referencePointId : null;
 }
 
-export function getReferenceData(pointId: string, pointsState: PointsState): PointReferenceI | null {
+export function getReferenceData(
+  pointId: string,
+  pointsState: PointsState
+): PointReferenceI | null {
   const point = pointsState.byId[pointId];
   return isReference(point) ? point : null;
 }

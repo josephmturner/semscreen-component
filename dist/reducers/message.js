@@ -9,8 +9,6 @@ var _constants = require("../actions/constants");
 
 var _immer = _interopRequireDefault(require("immer"));
 
-var _randomcolor = _interopRequireDefault(require("randomcolor"));
-
 var _uuid = require("uuid");
 
 var _dataModels = require("../dataModels/dataModels");
@@ -27,10 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var initialMessageState = {
   _id: (0, _uuid.v4)(),
-  author: {
-    name: "author0",
-    color: (0, _randomcolor.default)()
-  },
+  author: "author0",
   shapes: {
     facts: [],
     thoughts: [],
@@ -164,7 +159,7 @@ function handleCombinePoints(state, action, appState) {
   };
 
   var isQuoted = function isQuoted(index) {
-    var pointId = appState.message.shapes[action.params.shape][index];
+    var pointId = state.shapes[action.params.shape][index];
     return !!(0, _getters.getReferencedPointId)(pointId, appState.points);
   }; // Don't attempt to combine a point with the point below it if no point
   // exists below it.

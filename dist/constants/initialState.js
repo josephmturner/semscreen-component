@@ -5,10 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.messages = exports.points = exports.authors = void 0;
 
-var _randomcolor = _interopRequireDefault(require("randomcolor"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /*
   Copyright (C) 2020 by USHIN, Inc.
 
@@ -29,17 +25,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
-var authors = [//TODO: add Ids to authors
-{
-  name: "anonymous",
-  color: (0, _randomcolor.default)()
-}, {
-  name: "KindWoman",
-  color: "#7d3989"
-}, {
-  name: "BreatheOutBreatheIn",
-  color: "#209924"
-}];
+var authors = {
+  byId: {
+    author1: {
+      _id: "author1",
+      name: "KindWoman",
+      color: "#7d3989"
+    },
+    author2: {
+      _id: "author2",
+      name: "BreatheOutBreatheIn",
+      color: "#209924"
+    }
+  }
+};
 exports.authors = authors;
 var points = {
   byId: {
@@ -62,8 +61,8 @@ var points = {
       pointDate: new Date()
     },
     pointId3: {
-      // TODO: replace authors with authorIds
-      quotedAuthor: authors[2],
+      // TODO: remove quotedAuthor attribute and use referenceAuthorId
+      // instead
       content: "Create a frontend which can ride on federated and distributed backends.",
       _id: "pointId3",
       shape: "actions",
@@ -72,7 +71,8 @@ var points = {
     REFERENCE_TO_pointId3: {
       _id: "REFERENCE_TO_pointId3",
       referencePointId: "pointId3",
-      referenceMessageId: "messageId0"
+      referenceMessageId: "messageId0",
+      referenceAuthorId: "author2"
     },
     pointId4: {
       content: "Get plenty of sleep :)",
@@ -97,7 +97,7 @@ var points = {
 exports.points = points;
 var messages = [{
   _id: "messageId1",
-  author: authors[1],
+  author: "author1",
   shapes: {
     facts: [],
     thoughts: [],

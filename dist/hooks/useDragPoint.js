@@ -9,6 +9,10 @@ var _reactDnd = require("react-dnd");
 
 var _ReactDnd = require("../constants/React-Dnd");
 
+var _getters = require("../dataModels/getters");
+
+var _reactRedux = require("react-redux");
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -21,15 +25,22 @@ function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var useDragPoint = function useDragPoint(point, index) {
+var useDragPoint = function useDragPoint(pointId, index) {
+  var point = (0, _reactRedux.useSelector)(function (state) {
+    return (0, _getters.getPointById)(pointId, state.points);
+  });
+  var isReferencedPoint = (0, _reactRedux.useSelector)(function (state) {
+    return !!(0, _getters.getReferencedPointId)(pointId, state.points);
+  });
+
   var _useDrag = (0, _reactDnd.useDrag)({
     item: {
       type: _ReactDnd.ItemTypes.POINT,
-      pointId: point._id,
+      pointId: pointId,
       shape: point.shape,
       index: index,
       originalShape: point.shape,
-      quoted: !!point.quotedAuthor
+      isReferencedPoint: isReferencedPoint
     },
     collect: function collect(monitor) {
       return {
@@ -37,7 +48,7 @@ var useDragPoint = function useDragPoint(point, index) {
       };
     },
     isDragging: function isDragging(monitor) {
-      return point._id === monitor.getItem().pointId;
+      return pointId === monitor.getItem().pointId;
     }
   }),
       _useDrag2 = _slicedToArray(_useDrag, 3),

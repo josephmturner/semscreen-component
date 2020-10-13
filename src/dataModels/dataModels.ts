@@ -42,6 +42,7 @@ export type PointShapeWithEmpty = PointShape | "";
 export type RegionI = PointShape | "merits" | "focus";
 
 export interface AuthorI {
+  _id: string;
   name: string;
   color: string;
 }
@@ -54,9 +55,7 @@ export interface PointNoIdI {
   shape: PointShape;
 }
 
-// TODO: make a new point reference
 export interface PointI {
-  quotedAuthor?: AuthorI; // TODO: remove
   content: string;
   _id: string;
   shape: PointShape;
@@ -67,6 +66,7 @@ export interface PointReferenceI {
   _id: string;
   referencePointId: string;
   referenceMessageId: string;
+  referenceAuthorId: string;
 }
 
 export type ShapesI = {

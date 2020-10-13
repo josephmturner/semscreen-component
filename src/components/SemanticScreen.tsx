@@ -84,8 +84,7 @@ const SemanticScreen = (props: Props) => {
       >
         {props.readOnly && (
           <Banner
-            text={author.name}
-            color={author.color}
+            authorId={author._id}
             placement={{ top: "0", right: "0" }}
             darkMode={props.darkMode}
           />
@@ -129,7 +128,7 @@ const SemanticScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-  author: state.message.author,
+  author: state.authors.byId[state.message.author],
   expandedRegion: state.expandedRegion.region,
 });
 

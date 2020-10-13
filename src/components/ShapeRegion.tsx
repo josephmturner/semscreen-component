@@ -61,7 +61,7 @@ const ShapeRegion = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (item.quoted && item.shape !== shape) return;
+      if (item.isReferencedPoint && item.shape !== shape) return;
       if (props.isExpanded !== "expanded") {
         props.setExpandedRegion({ region: shape });
       }
@@ -161,7 +161,7 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  author: state.message.author,
+  author: state.authors.byId[state.message.author],
   pointIds: state.message.shapes[ownProps.shape],
   selectedPoints: state.selectedPoints.pointIds,
 });

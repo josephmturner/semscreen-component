@@ -71,7 +71,7 @@ var FocusPoint = function FocusPoint(props) {
 
   var imageUrl = require("../images/".concat(shape, ".svg"));
 
-  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(point),
+  var _useDragPoint = (0, _useDragPoint2.useDragPoint)(pointId),
       isDragging = _useDragPoint.isDragging,
       drag = _useDragPoint.drag,
       preview = _useDragPoint.preview;
@@ -82,13 +82,13 @@ var FocusPoint = function FocusPoint(props) {
     isMainPoint: isMainPoint,
     isDragging: isDragging,
     isSelected: props.isSelected,
-    quotedAuthor: point.quotedAuthor
+    referenceAuthor: props.referenceAuthor
   }, /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledImg, {
     ref: props.readOnly ? null : drag,
     src: imageUrl,
     onClick: onClickShapeIcon,
     isMainPoint: props.isMainPoint,
-    quotedAuthor: point.quotedAuthor,
+    referenceAuthor: props.referenceAuthor,
     darkMode: props.darkMode,
     alt: shape
   }), /*#__PURE__*/_react.default.createElement(_StyledPoint.StyledTextArea, {
@@ -99,9 +99,9 @@ var FocusPoint = function FocusPoint(props) {
         pointIds: [point._id]
       });
     },
-    readOnly: !!point.quotedAuthor || props.readOnly,
+    readOnly: !!props.referenceAuthor || props.readOnly,
     isMainPoint: isMainPoint,
-    quotedAuthor: point.quotedAuthor,
+    referenceAuthor: props.referenceAuthor,
     darkMode: props.darkMode,
     autoFocus: true,
     onKeyDown: function onKeyDown(e) {
@@ -113,9 +113,8 @@ var FocusPoint = function FocusPoint(props) {
         }
       }
     }
-  }), point.quotedAuthor && /*#__PURE__*/_react.default.createElement(_Banner.default, {
-    text: point.quotedAuthor.name,
-    color: point.quotedAuthor.color,
+  }), props.referenceData && /*#__PURE__*/_react.default.createElement(_Banner.default, {
+    authorId: props.referenceData.referenceAuthorId,
     placement: {
       top: "-0.5rem",
       right: "0.4rem"
@@ -125,8 +124,17 @@ var FocusPoint = function FocusPoint(props) {
 };
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+  var referenceData = (0, _getters.getReferenceData)(ownProps.pointId, state.points);
+  var referenceAuthor;
+
+  if (referenceData) {
+    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+  }
+
   return {
-    point: (0, _getters.getPointById)(ownProps.pointId, state.points)
+    point: (0, _getters.getPointById)(ownProps.pointId, state.points),
+    referenceData: referenceData,
+    referenceAuthor: referenceAuthor
   };
 };
 

@@ -22,7 +22,7 @@ import produce from "immer";
 import randomColor from "randomcolor";
 import { v4 as uuidv4 } from "uuid";
 
-import { allPointShapes, AuthorI, ShapesI } from "../dataModels/dataModels";
+import { allPointShapes, ShapesI } from "../dataModels/dataModels";
 import { getPointById, getReferencedPointId } from "../dataModels/getters";
 import {
   _PointCreateParams,
@@ -36,7 +36,7 @@ import { SetFocusParams, SetMainPointParams } from "../actions/messageActions";
 export interface MessageState {
   _id: string;
   revisionOf?: string;
-  author: AuthorI;
+  author: string;
   shapes: ShapesI;
   focus?: string;
   main?: string;
@@ -45,7 +45,7 @@ export interface MessageState {
 
 export const initialMessageState: MessageState = {
   _id: uuidv4(),
-  author: { name: "author0", color: randomColor() },
+  author: "author0",
   shapes: {
     facts: [],
     thoughts: [],

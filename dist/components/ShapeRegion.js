@@ -60,7 +60,8 @@ var ShapeRegion = function ShapeRegion(props) {
   var _useDrop = (0, _reactDnd.useDrop)({
     accept: _ReactDnd.ItemTypes.POINT,
     hover: function hover(item) {
-      if (item.quoted && item.shape !== shape) return;
+      console.log(item.isReferencedPoint);
+      if (item.isReferencedPoint && item.shape !== shape) return;
 
       if (props.isExpanded !== "expanded") {
         props.setExpandedRegion({
@@ -153,7 +154,7 @@ var DropTargetDiv = _styledComponents.default.div(_templateObject(), function (p
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    author: state.message.author,
+    author: state.authors.byId[state.message.author],
     pointIds: state.message.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds
   };
