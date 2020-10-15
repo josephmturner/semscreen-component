@@ -85,7 +85,6 @@ function handleSetCursorPosition(
   const pointIds = appState.message.shapes[shape];
   const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
-  const prevPoint = getPointById(prevPointId, appState.points);
   const nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
@@ -99,7 +98,7 @@ function handleSetCursorPosition(
     newState = {
       details: {
         pointId: prevPointId,
-        contentIndex: prevPoint.content.length,
+        contentIndex: getPointById(prevPointId, appState.points).content.length,
       },
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
