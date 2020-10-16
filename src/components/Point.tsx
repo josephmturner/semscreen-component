@@ -47,22 +47,12 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
-import {
-  setExpandedRegion,
-  ExpandedRegionParams,
-} from "../actions/expandedRegionActions";
-import {
-  setSelectedPoints,
-  SetSelectedPointsParams,
-  togglePoint,
-  TogglePointParams,
-} from "../actions/selectPointActions";
 
 interface OwnProps {
   pointId: string;
   index: number;
+  onClick: (e: React.MouseEvent) => void;
   readOnly: boolean;
-  isExpanded: "expanded" | "minimized" | "balanced";
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -80,9 +70,6 @@ interface AllProps extends OwnProps {
   pointMove: (params: PointMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
-  setExpandedRegion: (params: ExpandedRegionParams) => void;
-  togglePoint: (params: TogglePointParams) => void;
-  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
 }
 
@@ -104,9 +91,6 @@ const Point = (props: AllProps) => {
     hover(item: DraggablePointType, monitor: DropTargetMonitor) {
       if (!ref.current || (item.isReferencedPoint && item.shape !== shape)) {
         return;
-      }
-      if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion({ region: shape });
       }
 
       const hoverIndex = index;
@@ -205,17 +189,6 @@ const Point = (props: AllProps) => {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-    if (e.ctrlKey) {
-      props.togglePoint({ pointId });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
-  };
-
   const onClickShapeIcon = () => {
     if (!props.readOnly) {
       props.setMainPoint({ pointId });
@@ -224,7 +197,7 @@ const Point = (props: AllProps) => {
 
   return (
     <StyledSpan
-      onClick={handleClick}
+      onClick={props.onClick}
       ref={pointRef}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
@@ -366,9 +339,6 @@ const mapActionsToProps = {
   pointMove,
   pointUpdate,
   setMainPoint,
-  setExpandedRegion,
-  togglePoint,
-  setSelectedPoints,
   pointsDelete,
 };
 

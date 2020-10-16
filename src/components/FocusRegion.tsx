@@ -33,6 +33,12 @@ import {
   setExpandedRegion,
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 interface OwnProps {
   region: RegionI;
@@ -49,6 +55,8 @@ interface AllProps extends OwnProps {
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
+  togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
 }
 
 //TODO: don't pass region to FocusRegion, since its only ever the
@@ -87,6 +95,17 @@ const FocusRegion = (props: AllProps) => {
     });
   };
 
+  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+    if (e.ctrlKey || e.metaKey) {
+      props.togglePoint({ pointId });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
+  };
+
   return (
     <StyledRegion
       borderColor={props.author.color}
@@ -98,7 +117,7 @@ const FocusRegion = (props: AllProps) => {
           <FocusPoint
             pointId={pointId}
             readOnly={props.readOnly}
-            isExpanded={props.isExpanded}
+            onClick={handlePointClick(pointId)}
             isMainPoint={props.isMainPoint}
             isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}
@@ -137,6 +156,8 @@ const mapDispatchToProps = {
   setFocus,
   setExpandedRegion,
   pointCreate,
+  togglePoint,
+  setSelectedPoints,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

@@ -38,6 +38,12 @@ import {
   setExpandedRegion,
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 interface OwnProps {
   shape: PointShape;
@@ -53,6 +59,8 @@ interface AllProps extends OwnProps {
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
+  togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
 }
 
 const ShapeRegion = (props: AllProps) => {
@@ -99,6 +107,15 @@ const ShapeRegion = (props: AllProps) => {
     },
   });
 
+  const [, expandRef] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: () => {
+      if (props.isExpanded !== "expanded") {
+        props.setExpandedRegion({ region: shape });
+      }
+    },
+  });
+
   const createEmptyPoint = () => {
     props.pointCreate({
       point: {
@@ -116,10 +133,23 @@ const ShapeRegion = (props: AllProps) => {
     }
   };
 
+  //TODO: this logic is duplicated in FocusPoint.tsx. Move into a hook?
+  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+    if (e.ctrlKey || e.metaKey) {
+      props.togglePoint({ pointId });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
+  };
+
   return (
     <StyledRegion
       borderColor={props.author.color}
       onClick={() => props.setExpandedRegion({ region: shape })}
+      ref={expandRef}
     >
       <div>
         <RegionHeader shape={shape} darkMode={props.darkMode} />
@@ -128,8 +158,8 @@ const ShapeRegion = (props: AllProps) => {
             key={id}
             pointId={id}
             index={pointIds.findIndex((pId) => pId === id)}
+            onClick={handlePointClick(id)}
             readOnly={props.readOnly}
-            isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(id)}
             darkMode={props.darkMode}
           />
@@ -170,6 +200,8 @@ const mapDispatchToProps = {
   pointCreate,
   pointMove,
   setExpandedRegion,
+  togglePoint,
+  setSelectedPoints,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShapeRegion);

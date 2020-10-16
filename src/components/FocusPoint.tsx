@@ -31,17 +31,11 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
-import {
-  setSelectedPoints,
-  SetSelectedPointsParams,
-  togglePoint,
-  TogglePointParams,
-} from "../actions/selectPointActions";
 
 interface OwnProps {
   pointId: string;
+  onClick: (e: React.MouseEvent) => void;
   readOnly: boolean;
-  isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -51,8 +45,6 @@ interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
   referenceAuthor?: AuthorI;
-  togglePoint: (params: TogglePointParams) => void;
-  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -68,17 +60,6 @@ const FocusPoint = (props: AllProps) => {
     });
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-    if (e.ctrlKey) {
-      props.togglePoint({ pointId });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
-  };
-
   const onClickShapeIcon = () => {
     if (!props.readOnly) {
       props.setMainPoint({ pointId });
@@ -91,7 +72,7 @@ const FocusPoint = (props: AllProps) => {
 
   return (
     <StyledSpan
-      onClick={handleClick}
+      onClick={props.onClick}
       ref={preview}
       isMainPoint={isMainPoint}
       isDragging={isDragging}
@@ -155,8 +136,6 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 const mapActionsToProps = {
   pointUpdate,
   setMainPoint,
-  togglePoint,
-  setSelectedPoints,
   pointsDelete,
 };
 
