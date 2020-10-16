@@ -33,16 +33,8 @@ const StyledSemanticScreen = styled.div<Props>`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-
-  @media (max-width: 799px) {
-    --expanded-size: 1fr;
-    --minimized-size: 0fr;
-  }
-
-  @media (min-width: 800px) {
-    --expanded-size: 4fr;
-    --minimized-size: 1fr;
-  }
+  --expanded-size: 4fr;
+  --minimized-size: 1fr;
 
   ${({ expandedRegion }) =>
     expandedRegion === "facts" &&
