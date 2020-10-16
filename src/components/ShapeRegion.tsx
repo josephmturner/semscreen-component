@@ -48,7 +48,7 @@ import {
 interface OwnProps {
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   darkMode?: boolean;
 }
 
@@ -128,7 +128,7 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   const onClickRemainingSpace = () => {
-    if (props.isExpanded !== "expanded" && !props.readOnly) {
+    if (props.isExpanded !== "expanded" && !props.readOnlyOverride) {
       createEmptyPoint();
     }
   };
@@ -159,12 +159,12 @@ const ShapeRegion = (props: AllProps) => {
             pointId={id}
             index={pointIds.findIndex((pId) => pId === id)}
             onClick={handlePointClick(id)}
-            readOnly={props.readOnly}
+            readOnlyOverride={props.readOnlyOverride}
             isSelected={props.selectedPoints.includes(id)}
             darkMode={props.darkMode}
           />
         ))}
-        {props.isExpanded === "expanded" && !props.readOnly && (
+        {props.isExpanded === "expanded" && !props.readOnlyOverride && (
           <NewPointButton
             shape={shape}
             onClick={createEmptyPoint}

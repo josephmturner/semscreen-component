@@ -33,7 +33,7 @@ import { AuthorI, RegionI } from "../dataModels/dataModels";
 
 interface Props {
   author: AuthorI;
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   darkMode: boolean;
   expandedRegion: string;
 }
@@ -79,7 +79,7 @@ const SemanticScreen = (props: Props) => {
       ref={semanticScreenRef}
       darkMode={props.darkMode}
     >
-      {props.readOnly && (
+      {props.readOnlyOverride && (
         <Banner
           authorId={author._id}
           placement={{ top: "0", right: "0" }}
@@ -102,7 +102,7 @@ const SemanticScreen = (props: Props) => {
             <FocusRegion
               region={region}
               isExpanded={isExpanded(region)}
-              readOnly={props.readOnly}
+              readOnlyOverride={props.readOnlyOverride}
               key={region}
               darkMode={props.darkMode}
             />
@@ -112,7 +112,7 @@ const SemanticScreen = (props: Props) => {
             <ShapeRegion
               shape={region}
               isExpanded={isExpanded(region)}
-              readOnly={props.readOnly}
+              readOnlyOverride={props.readOnlyOverride}
               key={region}
               darkMode={props.darkMode}
             />

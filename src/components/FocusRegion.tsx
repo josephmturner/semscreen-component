@@ -43,7 +43,7 @@ import {
 interface OwnProps {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   darkMode: boolean;
 }
 
@@ -116,7 +116,7 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            readOnly={props.readOnly}
+            readOnlyOverride={props.readOnlyOverride}
             onClick={handlePointClick(pointId)}
             isMainPoint={props.isMainPoint}
             isSelected={props.selectedPoints.includes(pointId)}

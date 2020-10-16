@@ -35,7 +35,7 @@ import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
 interface OwnProps {
   pointId: string;
   onClick: (e: React.MouseEvent) => void;
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -61,7 +61,7 @@ const FocusPoint = (props: AllProps) => {
   };
 
   const onClickShapeIcon = () => {
-    if (!props.readOnly) {
+    if (!props.readOnlyOverride) {
       props.setMainPoint({ pointId });
     }
   };
@@ -80,7 +80,7 @@ const FocusPoint = (props: AllProps) => {
       referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
-        ref={props.readOnly ? null : drag}
+        ref={props.readOnlyOverride ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
@@ -94,13 +94,13 @@ const FocusPoint = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
-        readOnly={!!props.referenceAuthor || props.readOnly}
+        readOnly={!!props.referenceAuthor || props.readOnlyOverride}
         isMainPoint={isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnly) {
+          if (props.readOnlyOverride) {
             return;
           } else {
             if (e.key === "Enter") {

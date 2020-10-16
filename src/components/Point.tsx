@@ -52,7 +52,7 @@ interface OwnProps {
   pointId: string;
   index: number;
   onClick: (e: React.MouseEvent) => void;
-  readOnly: boolean;
+  readOnlyOverride?: boolean;
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -190,7 +190,7 @@ const Point = (props: AllProps) => {
   const imageUrl = require(`../images/${shape}.svg`);
 
   const onClickShapeIcon = () => {
-    if (!props.readOnly) {
+    if (!props.readOnlyOverride) {
       props.setMainPoint({ pointId });
     }
   };
@@ -205,7 +205,7 @@ const Point = (props: AllProps) => {
       referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
-        ref={props.readOnly ? null : drag}
+        ref={props.readOnlyOverride ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
@@ -219,14 +219,14 @@ const Point = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [pointId] });
         }}
-        readOnly={!!props.referenceData || props.readOnly}
+        readOnly={!!props.referenceData || props.readOnlyOverride}
         isMainPoint={props.isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         ref={ref}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnly) {
+          if (props.readOnlyOverride) {
             return;
           } else {
             if (e.key === "Enter") {
