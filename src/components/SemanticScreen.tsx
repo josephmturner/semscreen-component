@@ -18,8 +18,6 @@
 */
 import React, { useEffect, useRef } from "react";
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { wrapGrid } from "animate-css-grid";
 
 import ShapeRegion from "./ShapeRegion";
@@ -76,54 +74,52 @@ const SemanticScreen = (props: Props) => {
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <StyledSemanticScreen
-        expandedRegion={expandedRegion}
-        ref={semanticScreenRef}
-        darkMode={props.darkMode}
-      >
-        {props.readOnly && (
-          <Banner
-            authorId={author._id}
-            placement={{ top: "0", right: "0" }}
-            darkMode={props.darkMode}
-          />
-        )}
-        {regions.map((region: RegionI) => {
-          //TODO: short-circuit evaluation instead of if statements?
-          if (region === "merits") {
-            return (
-              <MeritsRegion
-                region={region}
-                isExpanded={isExpanded(region)}
-                key={region}
-              />
-            );
-          }
-          if (region === "focus") {
-            return (
-              <FocusRegion
-                region={region}
-                isExpanded={isExpanded(region)}
-                readOnly={props.readOnly}
-                key={region}
-                darkMode={props.darkMode}
-              />
-            );
-          } else {
-            return (
-              <ShapeRegion
-                shape={region}
-                isExpanded={isExpanded(region)}
-                readOnly={props.readOnly}
-                key={region}
-                darkMode={props.darkMode}
-              />
-            );
-          }
-        })}
-      </StyledSemanticScreen>
-    </DndProvider>
+    <StyledSemanticScreen
+      expandedRegion={expandedRegion}
+      ref={semanticScreenRef}
+      darkMode={props.darkMode}
+    >
+      {props.readOnly && (
+        <Banner
+          authorId={author._id}
+          placement={{ top: "0", right: "0" }}
+          darkMode={props.darkMode}
+        />
+      )}
+      {regions.map((region: RegionI) => {
+        //TODO: short-circuit evaluation instead of if statements?
+        if (region === "merits") {
+          return (
+            <MeritsRegion
+              region={region}
+              isExpanded={isExpanded(region)}
+              key={region}
+            />
+          );
+        }
+        if (region === "focus") {
+          return (
+            <FocusRegion
+              region={region}
+              isExpanded={isExpanded(region)}
+              readOnly={props.readOnly}
+              key={region}
+              darkMode={props.darkMode}
+            />
+          );
+        } else {
+          return (
+            <ShapeRegion
+              shape={region}
+              isExpanded={isExpanded(region)}
+              readOnly={props.readOnly}
+              key={region}
+              darkMode={props.darkMode}
+            />
+          );
+        }
+      })}
+    </StyledSemanticScreen>
   );
 };
 
