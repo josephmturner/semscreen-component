@@ -57,11 +57,14 @@ interface BannerViewProps extends Placement {
 const BannerView = styled.div<BannerViewProps>`
   position: absolute;
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   font-size: medium;
   top: ${(props) => props.top};
   right: ${(props) => props.right};
-  padding: 0;
   z-index: 1;
   cursor: pointer;
   background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
