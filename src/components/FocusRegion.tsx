@@ -20,7 +20,7 @@ import React from "react";
 import FocusPoint from "./FocusPoint";
 import StyledRegion from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
-import { AuthorI, PointShape, RegionI } from "../dataModels";
+import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -33,11 +33,17 @@ import {
   setExpandedRegion,
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 interface OwnProps {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   darkMode: boolean;
 }
 
@@ -49,6 +55,8 @@ interface AllProps extends OwnProps {
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
+  togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
 }
 
 //TODO: don't pass region to FocusRegion, since its only ever the
@@ -75,6 +83,8 @@ const FocusRegion = (props: AllProps) => {
   });
 
   const createEmptyFocus = (shape: PointShape) => {
+    //TODO: the author used to create a point should instead be some
+    //global author (not the author of the current message)
     props.pointCreate({
       point: {
         author: props.author,
@@ -83,6 +93,17 @@ const FocusRegion = (props: AllProps) => {
       },
       focus: true,
     });
+  };
+
+  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+    if (e.ctrlKey || e.metaKey) {
+      props.togglePoint({ pointId });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
   };
 
   return (
@@ -95,8 +116,8 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            readOnly={props.readOnly}
-            isExpanded={props.isExpanded}
+            readOnlyOverride={props.readOnlyOverride}
+            onClick={handlePointClick(pointId)}
             isMainPoint={props.isMainPoint}
             isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}
@@ -124,7 +145,7 @@ const StyledDiv = styled.div`
 const mapStateToProps = (state: AppState) => {
   const isMainPoint = state.message.focus === state.message.main;
   return {
-    author: state.message.author,
+    author: state.authors.byId[state.message.author],
     pointId: state.message.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
@@ -135,6 +156,8 @@ const mapDispatchToProps = {
   setFocus,
   setExpandedRegion,
   pointCreate,
+  togglePoint,
+  setSelectedPoints,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

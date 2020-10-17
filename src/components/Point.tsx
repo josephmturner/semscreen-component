@@ -17,7 +17,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI } from "../dataModels";
+import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import { getPointById, getReferenceData } from "../dataModels/getters";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -46,28 +47,20 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
-import {
-  setExpandedRegion,
-  ExpandedRegionParams,
-} from "../actions/expandedRegionActions";
-import {
-  setSelectedPoints,
-  SetSelectedPointsParams,
-  togglePoint,
-  TogglePointParams,
-} from "../actions/selectPointActions";
 
 interface OwnProps {
   pointId: string;
   index: number;
-  readOnly: boolean;
-  isExpanded: "expanded" | "minimized" | "balanced";
+  onClick: (e: React.MouseEvent) => void;
+  readOnlyOverride?: boolean;
   isSelected: boolean;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
   point: PointI;
+  referenceData: PointReferenceI | null;
+  referenceAuthor?: AuthorI;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
@@ -77,15 +70,13 @@ interface AllProps extends OwnProps {
   pointMove: (params: PointMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
-  setExpandedRegion: (params: ExpandedRegionParams) => void;
-  togglePoint: (params: TogglePointParams) => void;
-  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
 }
 
 const Point = (props: AllProps) => {
   const {
     point,
+    referenceData,
     pointId,
     index,
     combinePoints,
@@ -98,11 +89,8 @@ const Point = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover(item: DraggablePointType, monitor: DropTargetMonitor) {
-      if (!ref.current || (item.quoted && item.shape !== shape)) {
+      if (!ref.current || (item.isReferencedPoint && item.shape !== shape)) {
         return;
-      }
-      if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion({ region: shape });
       }
 
       const hoverIndex = index;
@@ -157,7 +145,7 @@ const Point = (props: AllProps) => {
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const { isDragging, drag, preview } = useDragPoint(point, index);
+  const { isDragging, drag, preview } = useDragPoint(pointId, index);
 
   drop(preview(pointRef));
 
@@ -177,11 +165,10 @@ const Point = (props: AllProps) => {
   >(undefined);
   useEffect(() => {
     if (arrowPressed === "ArrowUp" && ref.current) {
-      (point.quotedAuthor ||
-        (ref.current && ref.current.selectionStart === 0)) &&
+      (referenceData || (ref.current && ref.current.selectionStart === 0)) &&
         setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
     } else if (arrowPressed === "ArrowDown" && ref.current) {
-      (point.quotedAuthor ||
+      (referenceData ||
         (ref.current && ref.current.selectionStart === point.content.length)) &&
         setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
     }
@@ -189,7 +176,7 @@ const Point = (props: AllProps) => {
   }, [
     arrowPressed,
     point.content.length,
-    point.quotedAuthor,
+    referenceData,
     setCursorPosition,
     pointId,
   ]);
@@ -202,38 +189,27 @@ const Point = (props: AllProps) => {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-    if (e.ctrlKey) {
-      props.togglePoint({ pointId });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
-  };
-
   const onClickShapeIcon = () => {
-    if (!props.readOnly) {
+    if (!props.readOnlyOverride) {
       props.setMainPoint({ pointId });
     }
   };
 
   return (
     <StyledSpan
-      onClick={handleClick}
+      onClick={props.onClick}
       ref={pointRef}
       isMainPoint={props.isMainPoint}
       isDragging={isDragging}
       isSelected={props.isSelected}
-      quotedAuthor={point.quotedAuthor}
+      referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
-        ref={props.readOnly ? null : drag}
+        ref={props.readOnlyOverride ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
-        quotedAuthor={point.quotedAuthor}
+        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         alt={shape}
       />
@@ -243,14 +219,14 @@ const Point = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [pointId] });
         }}
-        readOnly={!!point.quotedAuthor || props.readOnly}
+        readOnly={!!props.referenceData || props.readOnlyOverride}
         isMainPoint={props.isMainPoint}
-        quotedAuthor={point.quotedAuthor}
+        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         ref={ref}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnly) {
+          if (props.readOnlyOverride) {
             return;
           } else {
             if (e.key === "Enter") {
@@ -322,10 +298,9 @@ const Point = (props: AllProps) => {
           }
         }}
       />
-      {point.quotedAuthor && (
+      {referenceData && (
         <Banner
-          text={point.quotedAuthor.name}
-          color={point.quotedAuthor.color}
+          authorId={referenceData.referenceAuthorId}
           placement={{ top: "-0.15rem", right: "0.8rem" }}
           darkMode={props.darkMode}
         />
@@ -334,15 +309,27 @@ const Point = (props: AllProps) => {
   );
 };
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  point: state.points.byId[ownProps.pointId],
-  isMainPoint: ownProps.pointId === state.message.main,
-  cursorPositionIndex:
-    state.cursorPosition.details &&
-    state.cursorPosition.details.pointId === ownProps.pointId
-      ? state.cursorPosition.details.contentIndex
-      : undefined,
-});
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const referenceData = getReferenceData(ownProps.pointId, state.points);
+  //TODO: Would it be cleaner not to access referenceAuthor in Point,
+  //but instead pass referenceAuthorId to the StyledPoint components?
+  //(we would then have to connect those components to redux)
+  let referenceAuthor;
+  if (referenceData) {
+    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+  }
+  return {
+    point: getPointById(ownProps.pointId, state.points),
+    referenceData: getReferenceData(ownProps.pointId, state.points),
+    referenceAuthor,
+    isMainPoint: ownProps.pointId === state.message.main,
+    cursorPositionIndex:
+      state.cursorPosition.details &&
+      state.cursorPosition.details.pointId === ownProps.pointId
+        ? state.cursorPosition.details.contentIndex
+        : undefined,
+  };
+};
 
 const mapActionsToProps = {
   splitIntoTwoPoints,
@@ -352,9 +339,6 @@ const mapActionsToProps = {
   pointMove,
   pointUpdate,
   setMainPoint,
-  setExpandedRegion,
-  togglePoint,
-  setSelectedPoints,
   pointsDelete,
 };
 

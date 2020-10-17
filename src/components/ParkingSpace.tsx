@@ -19,9 +19,9 @@
 import React from "react";
 import styled from "styled-components";
 
-const ParkingSpace = (props: { darkMode: boolean }) => (
-  <StyledParkingSpace darkMode={props.darkMode}></StyledParkingSpace>
-);
+const ParkingSpace = (props: { darkMode: boolean }) => {
+  return <StyledParkingSpace darkMode={props.darkMode}></StyledParkingSpace>;
+};
 
 interface StyledProps {
   darkMode: boolean;

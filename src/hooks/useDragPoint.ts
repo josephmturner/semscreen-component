@@ -18,23 +18,33 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { PointI } from "../dataModels";
+import { getPointById, getReferencedPointId } from "../dataModels/getters";
+import { AppState } from "../reducers/store";
 
-export const useDragPoint = (point: PointI, index?: number) => {
+import { useSelector } from "react-redux";
+
+export const useDragPoint = (pointId: string, index?: number) => {
+  const point = useSelector((state: AppState) =>
+    getPointById(pointId, state.points)
+  );
+  const isReferencedPoint = useSelector(
+    (state: AppState) => !!getReferencedPointId(pointId, state.points)
+  );
+
   const [{ isDragging }, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
-      pointId: point._id,
+      pointId,
       shape: point.shape,
       index: index,
       originalShape: point.shape,
-      quoted: !!point.quotedAuthor,
+      isReferencedPoint,
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
     isDragging: (monitor) => {
-      return point._id === monitor.getItem().pointId;
+      return pointId === monitor.getItem().pointId;
     },
   });
   return { isDragging, drag, preview };

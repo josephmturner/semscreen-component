@@ -21,7 +21,7 @@ import { ExpandedRegionParams } from "../actions/expandedRegionActions";
 
 import { AppState } from "./store";
 
-import { RegionI } from "../dataModels";
+import { RegionI } from "../dataModels/dataModels";
 
 export interface ExpandedRegionState {
   region: RegionI | "";

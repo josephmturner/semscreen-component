@@ -25,6 +25,8 @@ export const Actions = {
   setCursorPosition: "setCursorPosition",
   clearCursorPosition: "clearCursorPosition",
 
+  setAuthors: "setAuthors",
+
   setMessage: "setMessage",
   pointCreate: "pointCreate",
   pointUpdate: "pointUpdate",

@@ -42,23 +42,31 @@ export type PointShapeWithEmpty = PointShape | "";
 export type RegionI = PointShape | "merits" | "focus";
 
 export interface AuthorI {
+  _id: string;
   name: string;
   color: string;
 }
 
+//make PointI extend PointNoIdI, if possible
+// TODO: move this inside PointCreateParams, and then delete
+export interface PointNoIdI {
+  author: AuthorI;
+  content: string;
+  shape: PointShape;
+}
+
 export interface PointI {
-  quotedAuthor?: AuthorI;
   content: string;
   _id: string;
   shape: PointShape;
   pointDate: Date;
 }
 
-//make PointI extend PointNoIdI, if possible
-export interface PointNoIdI {
-  author: AuthorI;
-  content: string;
-  shape: PointShape;
+export interface PointReferenceI {
+  _id: string;
+  referencePointId: string;
+  referenceMessageId: string;
+  referenceAuthorId: string;
 }
 
 export type ShapesI = {

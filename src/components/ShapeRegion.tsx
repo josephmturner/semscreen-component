@@ -21,7 +21,7 @@ import Point from "./Point";
 import NewPointButton from "./NewPointButton";
 import StyledRegion from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
-import { AuthorI, PointShape } from "../dataModels";
+import { AuthorI, PointShape } from "../dataModels/dataModels";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -38,11 +38,17 @@ import {
   setExpandedRegion,
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
 
 interface OwnProps {
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnly: boolean;
+  readOnlyOverride: boolean;
   darkMode?: boolean;
 }
 
@@ -53,6 +59,8 @@ interface AllProps extends OwnProps {
   pointMove: (params: PointMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
+  togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
 }
 
 const ShapeRegion = (props: AllProps) => {
@@ -61,7 +69,7 @@ const ShapeRegion = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (item.quoted && item.shape !== shape) return;
+      if (item.isReferencedPoint && item.shape !== shape) return;
       if (props.isExpanded !== "expanded") {
         props.setExpandedRegion({ region: shape });
       }
@@ -71,6 +79,7 @@ const ShapeRegion = (props: AllProps) => {
           ? pointIds.length - 1
           : pointIds.length;
 
+      // TODO: some redundant logic, don't need if-else
       //Point was the focus (lacks index)
       if (typeof item.index !== "number") {
         props.pointMove({
@@ -98,6 +107,15 @@ const ShapeRegion = (props: AllProps) => {
     },
   });
 
+  const [, expandRef] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: () => {
+      if (props.isExpanded !== "expanded") {
+        props.setExpandedRegion({ region: shape });
+      }
+    },
+  });
+
   const createEmptyPoint = () => {
     props.pointCreate({
       point: {
@@ -110,8 +128,20 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   const onClickRemainingSpace = () => {
-    if (props.isExpanded !== "expanded" && !props.readOnly) {
+    if (props.isExpanded !== "expanded" && !props.readOnlyOverride) {
       createEmptyPoint();
+    }
+  };
+
+  //TODO: this logic is duplicated in FocusPoint.tsx. Move into a hook?
+  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+    if (e.ctrlKey || e.metaKey) {
+      props.togglePoint({ pointId });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
     }
   };
 
@@ -119,6 +149,7 @@ const ShapeRegion = (props: AllProps) => {
     <StyledRegion
       borderColor={props.author.color}
       onClick={() => props.setExpandedRegion({ region: shape })}
+      ref={expandRef}
     >
       <div>
         <RegionHeader shape={shape} darkMode={props.darkMode} />
@@ -127,13 +158,13 @@ const ShapeRegion = (props: AllProps) => {
             key={id}
             pointId={id}
             index={pointIds.findIndex((pId) => pId === id)}
-            readOnly={props.readOnly}
-            isExpanded={props.isExpanded}
+            onClick={handlePointClick(id)}
+            readOnlyOverride={props.readOnlyOverride}
             isSelected={props.selectedPoints.includes(id)}
             darkMode={props.darkMode}
           />
         ))}
-        {props.isExpanded === "expanded" && !props.readOnly && (
+        {props.isExpanded === "expanded" && !props.readOnlyOverride && (
           <NewPointButton
             shape={shape}
             onClick={createEmptyPoint}
@@ -160,7 +191,7 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  author: state.message.author,
+  author: state.authors.byId[state.message.author],
   pointIds: state.message.shapes[ownProps.shape],
   selectedPoints: state.selectedPoints.pointIds,
 });
@@ -169,6 +200,8 @@ const mapDispatchToProps = {
   pointCreate,
   pointMove,
   setExpandedRegion,
+  togglePoint,
+  setSelectedPoints,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShapeRegion);

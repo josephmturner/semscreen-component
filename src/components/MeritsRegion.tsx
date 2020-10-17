@@ -19,7 +19,7 @@
 import React from "react";
 //import FocusPoint from "./FocusPoint";
 import StyledMeritsRegion from "./StyledMeritsRegion";
-import { RegionI } from "../dataModels";
+import { RegionI } from "../dataModels/dataModels";
 import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";

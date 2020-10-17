@@ -25,6 +25,7 @@ import {
   cursorPositionReducer,
   CursorPositionState,
 } from "./cursorPosition";
+import { initialAuthorsState, authorsReducer, AuthorsState } from "./authors";
 import { initialPointsState, pointsReducer, PointsState } from "./points";
 import { initialMessageState, messageReducer, MessageState } from "./message";
 import {
@@ -39,15 +40,17 @@ import {
 } from "./selectedPoints";
 import { initialPanelsState, panelsReducer, PanelsState } from "./panels";
 
-import { messages, points } from "../constants/initialState";
+import { authors, messages, points } from "../constants/initialState";
 
-// Set this to false if you don't want initial message data.
-const populate = true ? true : false;
+// Set this to false if you don't want test data.
+const populate = true;
+const populatedInitialAuthorsState = populate ? authors : null;
 const populatedInitialMessageState = populate ? messages[0] : null;
 const populatedInitialPointsState = populate ? points : null;
 
 export interface AppState {
   cursorPosition: CursorPositionState;
+  authors: AuthorsState;
   points: PointsState;
   message: MessageState;
   expandedRegion: ExpandedRegionState;
@@ -58,6 +61,7 @@ export interface AppState {
 function createAppStore() {
   const initialAppState: AppState = {
     cursorPosition: initialCursorPositionState,
+    authors: populatedInitialAuthorsState ?? initialAuthorsState,
     points: populatedInitialPointsState ?? initialPointsState,
     message: populatedInitialMessageState ?? initialMessageState,
     expandedRegion: initialExpandedRegionState,
@@ -72,6 +76,7 @@ function createAppStore() {
         action,
         state
       ),
+      authors: authorsReducer(state.authors, action, state),
       points: pointsReducer(state.points, action, state),
       message: messageReducer(state.message, action, state),
       expandedRegion: expandedRegionReducer(

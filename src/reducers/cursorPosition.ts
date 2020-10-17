@@ -16,6 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import { getPointById } from "../dataModels/getters";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
 import {
@@ -79,12 +80,11 @@ function handleSetCursorPosition(
   let newState = state;
 
   const pointId = action.params.pointId;
-  const point = appState.points.byId[pointId];
+  const point = getPointById(pointId, appState.points);
   const shape = point.shape;
   const pointIds = appState.message.shapes[shape];
   const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
-  const prevPoint = appState.points.byId[prevPointId];
   const nextPointId = pointIds[index + 1];
 
   if (action.params.moveTo === "beginningOfPriorPoint") {
@@ -98,7 +98,7 @@ function handleSetCursorPosition(
     newState = {
       details: {
         pointId: prevPointId,
-        contentIndex: prevPoint.content.length,
+        contentIndex: getPointById(prevPointId, appState.points).content.length,
       },
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
@@ -135,7 +135,7 @@ function handleCombinePoints(
 
   const prevPointId =
     appState.message.shapes[action.params.shape][smallerIndex];
-  const prevPoint = appState.points.byId[prevPointId];
+  const prevPoint = getPointById(prevPointId, appState.points);
 
   const newCursorPosition = {
     pointId:

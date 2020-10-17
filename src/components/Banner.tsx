@@ -18,27 +18,35 @@
 */
 import React from "react";
 import styled from "styled-components";
+import { AuthorI } from "../dataModels/dataModels";
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
 
 interface Placement {
   top: string;
   right: string;
 }
 
-const Banner = (props: {
-  text: string;
-  color: string;
+interface OwnProps {
+  authorId: string;
   placement: Placement;
   darkMode?: boolean;
-}) => (
+}
+
+interface AllProps extends OwnProps {
+  author: AuthorI;
+}
+
+const Banner = (props: AllProps) => (
   // \u00A0 adds extra spaces on either side of the text
   <BannerView
-    color={props.color}
+    color={props.author.color}
     onClick={console.log}
     top={props.placement.top}
     right={props.placement.right}
     darkMode={props.darkMode}
   >
-    {`\u00A0 ${props.text} \u00A0`}
+    {`\u00A0 ${props.author.name} \u00A0`}
   </BannerView>
 );
 
@@ -49,11 +57,14 @@ interface BannerViewProps extends Placement {
 const BannerView = styled.div<BannerViewProps>`
   position: absolute;
   color: ${(props) => (props.darkMode ? "#fff" : "#000")};
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   font-size: medium;
   top: ${(props) => props.top};
   right: ${(props) => props.right};
-  padding: 0;
   z-index: 1;
   cursor: pointer;
   background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
@@ -76,4 +87,10 @@ const BannerView = styled.div<BannerViewProps>`
   }
 `;
 
-export default Banner;
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
+  author: state.authors.byId[ownProps.authorId],
+});
+
+const mapActionsToProps = {};
+
+export default connect(mapStateToProps, mapActionsToProps)(Banner);

@@ -18,7 +18,8 @@
 */
 import { Action, Actions } from "../actions/constants";
 import produce from "immer";
-import { PointI } from "../dataModels";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import { getPointById, getReferencedPointId } from "../dataModels/getters";
 import { AppState } from "./store";
 import {
   _PointCreateParams,
@@ -32,7 +33,7 @@ import { SetFocusParams } from "../actions/messageActions";
 
 export interface PointsState {
   byId: {
-    [_id: string]: PointI;
+    [_id: string]: PointI | PointReferenceI;
   };
 }
 
@@ -106,7 +107,9 @@ function handlePointMove(
   state: PointsState,
   action: Action<PointMoveParams>
 ): PointsState {
-  if (state.byId[action.params.pointId].shape === action.params.newShape)
+  if (
+    getPointById(action.params.pointId, state).shape === action.params.newShape
+  )
     return state;
   return produce(state, (draft) => {
     draft.byId[action.params.pointId] = {
@@ -142,7 +145,7 @@ function handleCombinePoints(
 
   const isQuoted = (index: number): boolean => {
     const pointId = appState.message.shapes[action.params.shape][index];
-    return !!state.byId[pointId].quotedAuthor;
+    return !!getReferencedPointId(pointId, state);
   };
 
   // Don't attempt to combine a point with the point below it if no point
@@ -169,11 +172,13 @@ function handleCombinePoints(
 
   const newContent =
     action.params.keepIndex < action.params.deleteIndex
-      ? state.byId[pointIdToKeep].content + state.byId[pointIdToDelete].content
-      : state.byId[pointIdToDelete].content + state.byId[pointIdToKeep].content;
+      ? getPointById(pointIdToKeep, state).content +
+        getPointById(pointIdToDelete, state).content
+      : getPointById(pointIdToDelete, state).content +
+        getPointById(pointIdToKeep, state).content;
   return produce(state, (draft) => {
     delete draft.byId[pointIdToDelete];
-    draft.byId[pointIdToKeep].content = newContent;
+    getPointById(pointIdToKeep, draft).content = newContent;
   });
 }
 
@@ -181,20 +186,21 @@ function handleSplitIntoTwoPoints(
   state: PointsState,
   action: Action<_SplitIntoTwoPointsParams>
 ): PointsState {
-  const topContent = state.byId[action.params.pointId].content.slice(
+  const topContent = getPointById(action.params.pointId, state).content.slice(
     0,
     action.params.sliceIndex
   );
-  const bottomContent = state.byId[action.params.pointId].content.slice(
-    action.params.sliceIndex
-  );
+  const bottomContent = getPointById(
+    action.params.pointId,
+    state
+  ).content.slice(action.params.sliceIndex);
 
   return produce(state, (draft) => {
-    draft.byId[action.params.pointId].content = topContent;
+    getPointById(action.params.pointId, draft).content = topContent;
     draft.byId[action.params.newPointId] = {
       content: bottomContent,
       _id: action.params.newPointId,
-      shape: state.byId[action.params.pointId].shape,
+      shape: getPointById(action.params.pointId, draft).shape,
       pointDate: new Date(),
     };
   });
@@ -207,6 +213,7 @@ function handleSetFocus(
   return produce(state, (draft) => {
     //Ensures that points retain their original shape when set to
     //focus even if they've been dragged through another region
-    draft.byId[action.params.pointId].shape = action.params.originalShape;
+    getPointById(action.params.pointId, draft).shape =
+      action.params.originalShape;
   });
 }

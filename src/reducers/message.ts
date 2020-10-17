@@ -22,7 +22,8 @@ import produce from "immer";
 import randomColor from "randomcolor";
 import { v4 as uuidv4 } from "uuid";
 
-import { allPointShapes, AuthorI, ShapesI } from "../dataModels";
+import { allPointShapes, ShapesI } from "../dataModels/dataModels";
+import { getPointById, getReferencedPointId } from "../dataModels/getters";
 import {
   _PointCreateParams,
   PointMoveParams,
@@ -35,7 +36,7 @@ import { SetFocusParams, SetMainPointParams } from "../actions/messageActions";
 export interface MessageState {
   _id: string;
   revisionOf?: string;
-  author: AuthorI;
+  author: string;
   shapes: ShapesI;
   focus?: string;
   main?: string;
@@ -44,7 +45,7 @@ export interface MessageState {
 
 export const initialMessageState: MessageState = {
   _id: uuidv4(),
-  author: { name: "author0", color: randomColor() },
+  author: "author0",
   shapes: {
     facts: [],
     thoughts: [],
@@ -144,7 +145,7 @@ function handlePointMove(
 ): MessageState {
   //TODO: oldShape also gets defined later in handleSetFocus. Can we
   //reuse it?
-  const oldShape = appState.points.byId[action.params.pointId].shape;
+  const oldShape = getPointById(action.params.pointId, appState.points).shape;
 
   return produce(state, (draft) => {
     //If point was the focus (lacks index)...
@@ -200,14 +201,15 @@ function handleSetFocus(
 ): MessageState {
   //newFocusShape refers to the current shape of the point.
   //Note that this may be different from its originalShape.
-  const newFocusShape = appState.points.byId[action.params.pointId].shape;
+  const newFocusShape = getPointById(action.params.pointId, appState.points)
+    .shape;
 
   return produce(state, (draft) => {
     draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(
       (id) => id !== action.params.pointId
     );
     if (draft.focus) {
-      const oldFocusShape = appState.points.byId[draft.focus].shape;
+      const oldFocusShape = getPointById(draft.focus, appState.points).shape;
       draft.shapes[oldFocusShape].push(draft.focus);
     }
     draft.focus = action.params.pointId;
@@ -235,7 +237,7 @@ function handleCombinePoints(
 
   const isQuoted = (index: number): boolean => {
     const pointId = state.shapes[action.params.shape][index];
-    return !!appState.points.byId[pointId].quotedAuthor;
+    return !!getReferencedPointId(pointId, appState.points);
   };
 
   // Don't attempt to combine a point with the point below it if no point
@@ -271,7 +273,7 @@ function handleSplitIntoTwoPoints(
   appState: AppState
 ): MessageState {
   return produce(state, (draft) => {
-    const shape = appState.points.byId[action.params.pointId].shape;
+    const shape = getPointById(action.params.pointId, appState.points).shape;
     const splitPointIndex =
       draft.shapes[shape].findIndex((id) => id === action.params.pointId) + 1;
     draft.shapes[shape].splice(splitPointIndex, 0, action.params.newPointId);

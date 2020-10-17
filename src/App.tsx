@@ -34,14 +34,14 @@ const App = (props: {
   hidePanel: (params: PanelParams) => void;
   panels: PanelsState;
 }) => {
-  const readOnly = false;
+  const readOnlyOverride = false;
   const darkMode = true;
 
   return (
     <AppStyles darkMode={darkMode}>
       <SemscreenPanel right={props.panels.right} bottom={props.panels.bottom}>
         <SemanticScreen
-          readOnly={readOnly || false}
+          readOnlyOverride={readOnlyOverride || false}
           darkMode={darkMode || false}
         />
       </SemscreenPanel>

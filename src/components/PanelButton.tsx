@@ -61,7 +61,7 @@ interface StyledProps {
 }
 const StyledSvg = styled.svg<StyledProps>`
   position: absolute;
-border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+  border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
   ${(props) =>
     props.side === "right" &&
     props.openClose === "open" &&
