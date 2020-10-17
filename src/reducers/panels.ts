@@ -38,32 +38,19 @@ export const panelsReducer = (
 ): PanelsState => {
   let newState = state;
   switch (action.type) {
-    case Actions.showPanel:
-      newState = handleShowPanel(state, action as Action<PanelParams>);
-      break;
-    case Actions.hidePanel:
-      newState = handleHidePanel(state, action as Action<PanelParams>);
+    case Actions.togglePanel:
+      newState = handleTogglePanel(state, action as Action<PanelParams>);
       break;
   }
   return newState;
 };
 
-function handleShowPanel(
+function handleTogglePanel(
   state: PanelsState,
   action: Action<PanelParams>
 ): PanelsState {
   return {
     ...state,
-    [action.params.location]: true,
-  };
-}
-
-function handleHidePanel(
-  state: PanelsState,
-  action: Action<PanelParams>
-): PanelsState {
-  return {
-    ...state,
-    [action.params.location]: false,
+    [action.params.location]: !state[action.params.location],
   };
 }

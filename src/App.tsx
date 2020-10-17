@@ -23,15 +23,14 @@ import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
 import ParkingSpace from "./components/ParkingSpace";
 
-import { showPanel, hidePanel, PanelParams } from "./actions/panelsActions";
+import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
 import { AppState } from "./reducers/store";
 
 import styled from "styled-components";
 
 const App = (props: {
-  showPanel: (params: PanelParams) => void;
-  hidePanel: (params: PanelParams) => void;
+  togglePanel: (params: PanelParams) => void;
   panels: PanelsState;
 }) => {
   const readOnlyOverride = false;
@@ -39,59 +38,46 @@ const App = (props: {
 
   return (
     <AppStyles darkMode={darkMode}>
-      <SemscreenPanel right={props.panels.right} bottom={props.panels.bottom}>
-        <SemanticScreen
-          readOnlyOverride={readOnlyOverride || false}
-          darkMode={darkMode || false}
-        />
-      </SemscreenPanel>
-      {!props.panels.right && (
-        <PanelButton
-          side={"right"}
-          openClose={"open"}
-          onClick={() => {
-            props.showPanel({ location: "right" });
-          }}
-          darkMode={darkMode}
-        />
-      )}
+      <MainPanel>
+        <SemscreenPanel>
+          <SemanticScreen
+            readOnlyOverride={readOnlyOverride || false}
+            darkMode={darkMode || false}
+          />
+          <PanelButton
+            side={"bottom"}
+            openClose={"open"}
+            onClick={() => {
+              props.togglePanel({ location: "bottom" });
+            }}
+            darkMode={darkMode}
+          />
+          <PanelButton
+            side={"right"}
+            openClose={"open"}
+            onClick={() => {
+              props.togglePanel({ location: "right" });
+            }}
+            darkMode={darkMode}
+          />
+        </SemscreenPanel>
+        {props.panels.bottom && (
+          <BottomPanel>
+            <ParkingSpace darkMode={darkMode} />
+          </BottomPanel>
+        )}
+      </MainPanel>
       {props.panels.right && (
         <RightPanel>
           <ParkingSpace darkMode={darkMode} />
-          <PanelButton
-            side={"right"}
-            openClose={"close"}
-            onClick={() => props.hidePanel({ location: "right" })}
-            darkMode={darkMode}
-          />
         </RightPanel>
-      )}
-      {!props.panels.bottom && (
-        <PanelButton
-          side={"bottom"}
-          openClose={"open"}
-          onClick={() => {
-            props.showPanel({ location: "bottom" });
-          }}
-          darkMode={darkMode}
-        />
-      )}
-      {props.panels.bottom && (
-        <BottomPanel>
-          <ParkingSpace darkMode={darkMode} />
-          <PanelButton
-            side={"bottom"}
-            openClose={"close"}
-            onClick={() => props.hidePanel({ location: "bottom" })}
-            darkMode={darkMode}
-          />
-        </BottomPanel>
       )}
     </AppStyles>
   );
 };
 
 const AppStyles = styled.div<{ darkMode: boolean }>`
+  display: flex;
   height: 100%;
 
   ${(props) =>
@@ -118,23 +104,25 @@ const AppStyles = styled.div<{ darkMode: boolean }>`
   }
 `;
 
-const SemscreenPanel = styled.div<PanelsState>`
-  height: ${(props) => (props.bottom ? "calc(100% - 4rem)" : "100%")};
-  width: ${(props) => (props.right ? "calc(100% - 16rem)" : "100%")};
+const MainPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 `;
 
-const RightPanel = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
+const SemscreenPanel = styled.div`
+  position: relative;
   height: 100%;
-  width: 16rem;
+  overflow: hidden;
 `;
 
 const BottomPanel = styled.div`
-  position: absolute;
   height: 4rem;
-  width: 100%;
+`;
+
+const RightPanel = styled.div`
+  width: 16rem;
 `;
 
 const mapStateToProps = (state: AppState) => {
@@ -144,8 +132,7 @@ const mapStateToProps = (state: AppState) => {
 };
 
 const mapActionsToProps = {
-  showPanel,
-  hidePanel,
+  togglePanel,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(App);

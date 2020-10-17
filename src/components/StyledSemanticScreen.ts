@@ -28,6 +28,7 @@ const StyledSemanticScreen = styled.div<Props>`
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: hidden;
   background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
   box-sizing: border-box;
   display: grid;
