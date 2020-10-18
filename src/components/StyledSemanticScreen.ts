@@ -28,6 +28,7 @@ const StyledSemanticScreen = styled.div<Props>`
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: hidden;
   background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
   box-sizing: border-box;
   display: grid;
@@ -98,69 +99,6 @@ const StyledSemanticScreen = styled.div<Props>`
     grid-template-columns: var(--minimized-size) var(--minimized-size) var(--expanded-size);
     grid-template-rows: var(--minimized-size) var(--minimized-size) var(--expanded-size);
   `}
-
-  > .Shape {
-    opacity: 0.33;
-  }
-
-  > #FactsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-  }
-  > #MeritsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    top: 0%;
-    left: 50%;
-    transform: translate(-50%, 0%);
-  }
-  > #PeopleShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    top: 0%;
-    right: 0%;
-  }
-  > #ThoughtsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    top: 50%;
-    left: 0%;
-    transform: translate(0%, -50%);
-  }
-  > #ActionsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    top: 50%;
-    right: 0%;
-    transform: translate(0%, -50%);
-  }
-  > #FeelingsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    bottom: 0%;
-    left: 0%;
-  }
-  > #NeedsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    bottom: 0%;
-    left: 50%;
-    transform: translate(-50%, 0%);
-  }
-  > #TopicsShape {
-    position: absolute;
-    width: 2rem;
-    height: 2rem;
-    bottom: 0%;
-    right: 0%;
-  }
 `;
 
 export default StyledSemanticScreen;
