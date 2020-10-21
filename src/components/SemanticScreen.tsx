@@ -77,7 +77,6 @@ const SemanticScreen = (props: Props) => {
     <StyledSemanticScreen
       expandedRegion={expandedRegion}
       ref={semanticScreenRef}
-      darkMode={props.darkMode}
     >
       {props.readOnlyOverride && (
         <Banner

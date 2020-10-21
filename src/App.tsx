@@ -63,13 +63,13 @@ const App = (props: {
         </SemscreenPanel>
         {props.panels.bottom && (
           <BottomPanel>
-            <ParkingSpace darkMode={darkMode} />
+            <ParkingSpace />
           </BottomPanel>
         )}
       </MainPanel>
       {props.panels.right && (
         <RightPanel>
-          <ParkingSpace darkMode={darkMode} />
+          <ParkingSpace />
         </RightPanel>
       )}
     </AppStyles>
@@ -85,10 +85,14 @@ const AppStyles = styled.div<{ darkMode: boolean }>`
       ? `
     --thumbBG: #7e7e7e;
     --scrollbarBG: black;
+    background-color: black;
+    color: white;
   `
       : `
     --thumbBG: #696969;
     --scrollbarBG: white;
+    background-color: white;
+    color: black;
   `}
 
   *>div {
