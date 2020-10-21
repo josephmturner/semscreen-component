@@ -29,17 +29,17 @@ import StyledSemanticScreen from "./StyledSemanticScreen";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
-import { AuthorI, RegionI } from "../dataModels/dataModels";
+import { RegionI } from "../dataModels/dataModels";
 
 interface Props {
-  author: AuthorI;
+  authorId: string;
   readOnlyOverride: boolean;
   darkMode: boolean;
   expandedRegion: string;
 }
 
 const SemanticScreen = (props: Props) => {
-  const { author, expandedRegion } = props;
+  const { expandedRegion } = props;
 
   // TODO: move regions to constants and rename allRegions
   const regions: RegionI[] = [
@@ -77,11 +77,10 @@ const SemanticScreen = (props: Props) => {
     <StyledSemanticScreen
       expandedRegion={expandedRegion}
       ref={semanticScreenRef}
-      darkMode={props.darkMode}
     >
       {props.readOnlyOverride && (
         <Banner
-          authorId={author._id}
+          authorId={props.authorId}
           placement={{ top: "0", right: "0" }}
           darkMode={props.darkMode}
         />
@@ -124,7 +123,7 @@ const SemanticScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-  author: state.authors.byId[state.message.author],
+  authorId: state.message.author,
   expandedRegion: state.expandedRegion.region,
 });
 

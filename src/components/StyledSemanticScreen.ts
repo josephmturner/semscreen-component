@@ -21,7 +21,6 @@ import styled from "styled-components";
 interface Props {
   expandedRegion: string;
   ref: any;
-  darkMode: boolean;
 }
 
 const StyledSemanticScreen = styled.div<Props>`
@@ -29,7 +28,6 @@ const StyledSemanticScreen = styled.div<Props>`
   width: 100%;
   position: relative;
   overflow: hidden;
-  background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
   box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;

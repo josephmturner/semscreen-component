@@ -19,7 +19,6 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import produce from "immer";
-import randomColor from "randomcolor";
 import { v4 as uuidv4 } from "uuid";
 
 import { allPointShapes, ShapesI } from "../dataModels/dataModels";
