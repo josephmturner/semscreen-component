@@ -16,17 +16,17 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { PointI, PointShape } from "../dataModels/dataModels";
+import { RegionI } from "../dataModels/dataModels";
 
+//TODO: How do we remove EndDragParams in src/actions/dragActions.ts?
+
+//TODO: rename to POINTS?
 export const ItemTypes = {
   POINT: "point",
 };
 
 export interface DraggablePointType {
   type: "point";
-  pointId: PointI["_id"];
-  shape: PointShape;
-  index?: number;
-  originalShape: PointShape;
-  isReferencedPoint: boolean;
+  region: RegionI;
+  index: number;
 }

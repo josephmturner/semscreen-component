@@ -21,11 +21,19 @@ import { AppState } from "./store";
 import produce from "immer";
 import { v4 as uuidv4 } from "uuid";
 
-import { allPointShapes, ShapesI } from "../dataModels/dataModels";
-import { getPointById, getReferencedPointId } from "../dataModels/getters";
+import {
+  allPointShapes,
+  ShapesI,
+  isPointShape,
+} from "../dataModels/dataModels";
+import {
+  getPointById,
+  getReferenceData,
+  getReferencedPointId,
+} from "../dataModels/getters";
 import {
   _PointCreateParams,
-  PointMoveParams,
+  PointsMoveParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -67,10 +75,10 @@ export const messageReducer = (
     case Actions.pointCreate:
       newState = handlePointCreate(state, action as Action<_PointCreateParams>);
       break;
-    case Actions.pointMove:
-      newState = handlePointMove(
+    case Actions.pointsMove:
+      newState = handlePointsMove(
         state,
-        action as Action<PointMoveParams>,
+        action as Action<PointsMoveParams>,
         appState
       );
       break;
@@ -137,39 +145,53 @@ function handlePointCreate(
   });
 }
 
-function handlePointMove(
+function handlePointsMove(
   state: MessageState,
-  action: Action<PointMoveParams>,
+  action: Action<PointsMoveParams>,
   appState: AppState
 ): MessageState {
-  //TODO: oldShape also gets defined later in handleSetFocus. Can we
-  //reuse it?
-  const oldShape = getPointById(action.params.pointId, appState.points).shape;
+  if (appState.drag.context === null) return state;
+  const { region, index } = appState.drag.context;
+
+  if (!isPointShape(region)) return state;
+
+  const pointsToMove = appState.selectedPoints.pointIds.filter(
+    (p) =>
+      !getReferenceData(p, appState.points) ||
+      region === getPointById(p, appState.points).shape
+  );
+
+  const pointIds: string[] = state.shapes[region];
+  let newPointIds: string[] = [];
+
+  // Rebuild array of pointIds for state.shapes[region]
+  pointIds.forEach((pointId: string, i: number) => {
+    if (i === index) {
+      newPointIds = newPointIds.concat(pointsToMove);
+    }
+
+    if (!appState.selectedPoints.pointIds.includes(pointId)) {
+      newPointIds.push(pointId);
+    }
+  });
+
+  if (index === pointIds.length) {
+    newPointIds = newPointIds.concat(pointsToMove);
+  }
 
   return produce(state, (draft) => {
-    //If point was the focus (lacks index)...
-    if (typeof action.params.oldIndex !== "number") {
-      draft.shapes[action.params.newShape].splice(
-        action.params.newIndex,
-        0,
-        action.params.pointId
-      );
+    draft.shapes[region] = newPointIds;
+    // Remove pointIds from other shapes arrays when they're moved
+    allPointShapes.forEach((pointShape) => {
+      if (pointShape !== region) {
+        draft.shapes[pointShape] = draft.shapes[pointShape].filter(
+          (p) => !pointsToMove.includes(p)
+        );
+      }
+    });
+    // Remove focus if it was moved to a ShapeRegion
+    if (draft.focus && pointsToMove.includes(draft.focus)) {
       delete draft.focus;
-      //If point was already inside the region...
-    } else if (oldShape === action.params.newShape) {
-      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
-      draft.shapes[oldShape].splice(
-        action.params.newIndex,
-        0,
-        action.params.pointId
-      );
-    } else {
-      draft.shapes[oldShape].splice(action.params.oldIndex, 1);
-      draft.shapes[action.params.newShape].splice(
-        action.params.newIndex,
-        0,
-        action.params.pointId
-      );
     }
   });
 }
@@ -198,20 +220,20 @@ function handleSetFocus(
   action: Action<SetFocusParams>,
   appState: AppState
 ): MessageState {
-  //newFocusShape refers to the current shape of the point.
-  //Note that this may be different from its originalShape.
-  const newFocusShape = getPointById(action.params.pointId, appState.points)
-    .shape;
+  const newFocus = appState.selectedPoints.pointIds[0];
+  if (!newFocus) return state;
+
+  const newFocusShape = getPointById(newFocus, appState.points).shape;
 
   return produce(state, (draft) => {
     draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(
-      (id) => id !== action.params.pointId
+      (id) => id !== newFocus
     );
     if (draft.focus) {
       const oldFocusShape = getPointById(draft.focus, appState.points).shape;
       draft.shapes[oldFocusShape].push(draft.focus);
     }
-    draft.focus = action.params.pointId;
+    draft.focus = newFocus;
   });
 }
 

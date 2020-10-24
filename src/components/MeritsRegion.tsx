@@ -45,15 +45,6 @@ const MeritsRegion = (props: {
         props.setExpandedRegion({ region });
       }
     },
-    //    drop: (item: DraggablePointType) => {
-    //      appDispatch({
-    //        type: "setFocus",
-    //        pointId: item.pointId,
-    //        oldShape: item.shape,
-    //        oldIndex: item.index,
-    //        newShape: item.originalShape,
-    //      });
-    //    },
   });
 
   return (

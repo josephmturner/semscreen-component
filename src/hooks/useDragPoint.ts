@@ -18,34 +18,47 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { getPointById, getReferencedPointId } from "../dataModels/getters";
+import { getPointById } from "../dataModels/getters";
 import { AppState } from "../reducers/store";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { endDrag } from "../actions/dragActions";
+import { setSelectedPoints } from "../actions/selectPointActions";
 
-export const useDragPoint = (pointId: string, index?: number) => {
+export const useDragPoint = (pointId: string, index: number) => {
   const point = useSelector((state: AppState) =>
     getPointById(pointId, state.points)
   );
-  const isReferencedPoint = useSelector(
-    (state: AppState) => !!getReferencedPointId(pointId, state.points)
-  );
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  //Ensure that the dragged point is the first item in the array of
+  //selectedPoints. When dropping points in the FocusRegion, the first item in the array of
+  //selectedPoints is chosen as the new focus.
+  const newSelectedPointIds = useSelector((state: AppState) => {
+    const selected = state.selectedPoints.pointIds.filter(
+      (id) => id !== pointId
+    );
+    selected.unshift(pointId);
+    return selected;
+  });
+
+  const dispatch = useDispatch();
+
+  const [, drag, preview] = useDrag({
     item: {
       type: ItemTypes.POINT,
-      pointId,
       shape: point.shape,
       index: index,
-      originalShape: point.shape,
-      isReferencedPoint,
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    isDragging: (monitor) => {
-      return pointId === monitor.getItem().pointId;
+    begin: () => {
+      dispatch(
+        setSelectedPoints({
+          pointIds: newSelectedPointIds,
+        })
+      );
+    },
+    end: () => {
+      dispatch(endDrag({}));
     },
   });
-  return { isDragging, drag, preview };
+  return { drag, preview };
 };

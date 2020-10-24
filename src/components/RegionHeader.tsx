@@ -20,16 +20,19 @@ import React from "react";
 import { PointShape } from "../dataModels/dataModels";
 import styled from "styled-components";
 
-const RegionHeader = (props: { shape: PointShape; darkMode?: boolean }) => {
-  const imageUrl = require(`../images/${props.shape}.svg`);
+//TODO: Properly type ref
+const RegionHeader = React.forwardRef(
+  (props: { shape: PointShape; darkMode?: boolean }, ref: any) => {
+    const imageUrl = require(`../images/${props.shape}.svg`);
 
-  return (
-    <StyledSpan darkMode={props.darkMode}>
-      <img src={imageUrl} height={17} alt={props.shape} />
-      {props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1)}
-    </StyledSpan>
-  );
-};
+    return (
+      <StyledSpan ref={ref} darkMode={props.darkMode}>
+        <img src={imageUrl} height={17} alt={props.shape} />
+        {props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1)}
+      </StyledSpan>
+    );
+  }
+);
 
 interface StyledProps {
   darkMode?: boolean;

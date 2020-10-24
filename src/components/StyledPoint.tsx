@@ -22,7 +22,6 @@ import { AuthorI } from "../dataModels/dataModels";
 
 interface StyledPointProps {
   isMainPoint?: boolean;
-  isDragging?: boolean;
   isSelected?: boolean;
   referenceAuthor?: AuthorI;
   darkMode?: boolean;
@@ -30,7 +29,6 @@ interface StyledPointProps {
 
 export const StyledSpan = styled.span<StyledPointProps>`
   position: relative;
-  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
   ${(props) =>
     props.referenceAuthor &&
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
