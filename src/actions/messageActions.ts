@@ -34,11 +34,7 @@ import { PointI, PointShape } from "../dataModels/dataModels";
 //  };
 //};
 
-export interface SetFocusParams {
-  pointId: string;
-  oldIndex: number;
-  originalShape: PointShape;
-}
+export interface SetFocusParams {}
 
 export const setFocus = (params: SetFocusParams): Action<SetFocusParams> => {
   return {

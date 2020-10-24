@@ -18,18 +18,25 @@
 */
 import { Action, Actions } from "../actions/constants";
 import produce from "immer";
-import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { getPointById, getReferencedPointId } from "../dataModels/getters";
+import {
+  PointI,
+  PointReferenceI,
+  isPointShape,
+} from "../dataModels/dataModels";
+import {
+  getPointById,
+  getReferenceData,
+  getReferencedPointId,
+} from "../dataModels/getters";
 import { AppState } from "./store";
 import {
   _PointCreateParams,
   PointUpdateParams,
-  PointMoveParams,
+  PointsMoveParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
-import { SetFocusParams } from "../actions/messageActions";
 
 export interface PointsState {
   byId: {
@@ -52,8 +59,12 @@ export const pointsReducer = (
     case Actions.pointUpdate:
       newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
       break;
-    case Actions.pointMove:
-      newState = handlePointMove(state, action as Action<PointMoveParams>);
+    case Actions.pointsMove:
+      newState = handlePointsMove(
+        state,
+        action as Action<PointsMoveParams>,
+        appState
+      );
       break;
     case Actions.pointsDelete:
       newState = handlePointsDelete(
@@ -73,9 +84,6 @@ export const pointsReducer = (
         state,
         action as Action<_SplitIntoTwoPointsParams>
       );
-      break;
-    case Actions.setFocus:
-      newState = handleSetFocus(state, action as Action<SetFocusParams>);
       break;
   }
   return newState;
@@ -103,19 +111,26 @@ function handlePointUpdate(
   });
 }
 
-function handlePointMove(
+function handlePointsMove(
   state: PointsState,
-  action: Action<PointMoveParams>
+  action: Action<PointsMoveParams>,
+  appState: AppState
 ): PointsState {
-  if (
-    getPointById(action.params.pointId, state).shape === action.params.newShape
-  )
-    return state;
+  if (appState.drag.context === null) return state;
+  const { region } = appState.drag.context;
+
+  if (!isPointShape(region)) return state;
+  const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
+    (p) => !getReferenceData(p, state)
+  );
   return produce(state, (draft) => {
-    draft.byId[action.params.pointId] = {
-      ...state.byId[action.params.pointId],
-      shape: action.params.newShape,
-    };
+    pointIdsExcludingReferencePoints.forEach(
+      (id) =>
+        (draft.byId[id] = {
+          ...draft.byId[id],
+          shape: region,
+        })
+    );
   });
 }
 
@@ -203,17 +218,5 @@ function handleSplitIntoTwoPoints(
       shape: getPointById(action.params.pointId, draft).shape,
       pointDate: new Date(),
     };
-  });
-}
-
-function handleSetFocus(
-  state: PointsState,
-  action: Action<SetFocusParams>
-): PointsState {
-  return produce(state, (draft) => {
-    //Ensures that points retain their original shape when set to
-    //focus even if they've been dragged through another region
-    getPointById(action.params.pointId, draft).shape =
-      action.params.originalShape;
   });
 }

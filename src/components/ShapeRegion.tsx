@@ -31,8 +31,8 @@ import { AppState } from "../reducers/store";
 import {
   pointCreate,
   PointCreateParams,
-  pointMove,
-  PointMoveParams,
+  pointsMove,
+  PointsMoveParams,
 } from "../actions/pointsActions";
 import {
   setExpandedRegion,
@@ -44,6 +44,7 @@ import {
   togglePoint,
   TogglePointParams,
 } from "../actions/selectPointActions";
+import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   shape: PointShape;
@@ -56,54 +57,56 @@ interface AllProps extends OwnProps {
   author: AuthorI;
   pointIds: string[];
   pointCreate: (params: PointCreateParams) => void;
-  pointMove: (params: PointMoveParams) => void;
+  pointsMove: (params: PointsMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  hoverIndex?: number;
+  hoverOver: (params: HoverOverParams) => void;
 }
 
 const ShapeRegion = (props: AllProps) => {
   const { shape, pointIds } = props;
 
+  //TODO: Reuse logic between regionHeaderRef and expandRef
+  //definitions
+  const [, regionHeaderRef] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: (item: DraggablePointType) => {
+      if (item.region !== shape || item.index !== 0) {
+        props.hoverOver({
+          region: shape,
+          index: 0,
+        });
+      }
+
+      item.index = 0;
+      item.region = shape;
+    },
+    drop: () => {
+      props.pointsMove({});
+    },
+  });
+
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (item.isReferencedPoint && item.shape !== shape) return;
-      if (props.isExpanded !== "expanded") {
-        props.setExpandedRegion({ region: shape });
-      }
+      const newIndex = pointIds.length;
 
-      const newIndex =
-        item.shape === shape && typeof item.index === "number"
-          ? pointIds.length - 1
-          : pointIds.length;
-
-      // TODO: some redundant logic, don't need if-else
-      //Point was the focus (lacks index)
-      if (typeof item.index !== "number") {
-        props.pointMove({
-          pointId: item.pointId,
-          newShape: shape,
-          newIndex: pointIds.length,
+      //Point wasn't already at the bottom of this region
+      if (item.region !== shape || item.index !== pointIds.length) {
+        props.hoverOver({
+          region: shape,
+          index: newIndex,
         });
 
         item.index = newIndex;
-        item.shape = shape;
-      } else {
-        //Point wasn't already at the bottom of this region
-        if (item.shape !== shape || item.index !== pointIds.length - 1) {
-          props.pointMove({
-            pointId: item.pointId,
-            oldIndex: item.index,
-            newShape: shape,
-            newIndex: newIndex,
-          });
-
-          item.index = newIndex;
-          item.shape = shape;
-        }
+        item.region = shape;
       }
+    },
+    drop: () => {
+      props.pointsMove({});
     },
   });
 
@@ -145,6 +148,26 @@ const ShapeRegion = (props: AllProps) => {
     }
   };
 
+  const listItems = pointIds.map((id: string, i: number) => (
+    <Point
+      key={id}
+      pointId={id}
+      index={i}
+      onClick={handlePointClick(id)}
+      readOnlyOverride={props.readOnlyOverride}
+      isSelected={props.selectedPoints.includes(id)}
+      darkMode={props.darkMode}
+    />
+  ));
+
+  if (props.hoverIndex !== undefined) {
+    listItems.splice(
+      props.hoverIndex,
+      0,
+      <HoverLine darkMode={props.darkMode} />
+    );
+  }
+
   return (
     <StyledRegion
       borderColor={props.author.color}
@@ -152,25 +175,21 @@ const ShapeRegion = (props: AllProps) => {
       ref={expandRef}
     >
       <div>
-        <RegionHeader shape={shape} darkMode={props.darkMode} />
-        {pointIds.map((id: string) => (
-          <Point
-            key={id}
-            pointId={id}
-            index={pointIds.findIndex((pId) => pId === id)}
-            onClick={handlePointClick(id)}
-            readOnlyOverride={props.readOnlyOverride}
-            isSelected={props.selectedPoints.includes(id)}
-            darkMode={props.darkMode}
-          />
-        ))}
-        {props.isExpanded === "expanded" && !props.readOnlyOverride && (
-          <NewPointButton
-            shape={shape}
-            onClick={createEmptyPoint}
-            darkMode={props.darkMode}
-          />
-        )}
+        <RegionHeader
+          ref={regionHeaderRef}
+          shape={shape}
+          darkMode={props.darkMode}
+        />
+        {listItems}
+        {props.isExpanded === "expanded" &&
+          !props.readOnlyOverride &&
+          props.hoverIndex === undefined && (
+            <NewPointButton
+              shape={shape}
+              onClick={createEmptyPoint}
+              darkMode={props.darkMode}
+            />
+          )}
         <DropTargetDiv
           ref={drop}
           isExpanded={props.isExpanded}
@@ -190,18 +209,30 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  author: state.authors.byId[state.message.author],
-  pointIds: state.message.shapes[ownProps.shape],
-  selectedPoints: state.selectedPoints.pointIds,
-});
+const HoverLine = styled.div<{ darkMode?: boolean }>`
+  border-bottom: ${(props) =>
+    props.darkMode ? "2px solid white" : "2px solid black"};
+`;
+
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  let hoverIndex;
+  if (state.drag.context && state.drag.context.region === ownProps.shape)
+    hoverIndex = state.drag.context.index;
+  return {
+    author: state.authors.byId[state.message.author],
+    pointIds: state.message.shapes[ownProps.shape],
+    selectedPoints: state.selectedPoints.pointIds,
+    hoverIndex,
+  };
+};
 
 const mapDispatchToProps = {
   pointCreate,
-  pointMove,
+  pointsMove,
   setExpandedRegion,
   togglePoint,
   setSelectedPoints,
+  hoverOver,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShapeRegion);

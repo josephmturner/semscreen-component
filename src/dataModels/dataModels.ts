@@ -37,6 +37,10 @@ export const allPointShapes: PointShape[] = [
   "people",
 ];
 
+export function isPointShape(region: string): region is PointShape {
+  return (allPointShapes as string[]).includes(region);
+}
+
 export type PointShapeWithEmpty = PointShape | "";
 
 export type RegionI = PointShape | "merits" | "focus";

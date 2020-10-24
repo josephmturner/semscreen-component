@@ -56,16 +56,16 @@ export const pointUpdate = (
   };
 };
 
-export interface PointMoveParams {
-  pointId: string;
-  oldIndex?: number;
-  newShape: PointShape;
-  newIndex: number;
-}
+//TODO: Should we leave this as an empty interface? or remove it
+//entirely so that we don't have to pass an empty object when calling
+//pointsMove?
+export interface PointsMoveParams {}
 
-export const pointMove = (params: PointMoveParams): Action<PointMoveParams> => {
+export const pointsMove = (
+  params: PointsMoveParams
+): Action<PointsMoveParams> => {
   return {
-    type: Actions.pointMove,
+    type: Actions.pointsMove,
     params,
   };
 };

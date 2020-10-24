@@ -39,6 +39,7 @@ import {
   togglePoint,
   TogglePointParams,
 } from "../actions/selectPointActions";
+import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   region: RegionI;
@@ -57,6 +58,7 @@ interface AllProps extends OwnProps {
   pointCreate: (params: PointCreateParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  hoverOver: (params: HoverOverParams) => void;
 }
 
 //TODO: don't pass region to FocusRegion, since its only ever the
@@ -66,19 +68,22 @@ const FocusRegion = (props: AllProps) => {
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-    hover: () => {
+    hover: (item: DraggablePointType) => {
       if (isExpanded !== "expanded") {
         props.setExpandedRegion({ region });
       }
-    },
-    drop: (item: DraggablePointType) => {
-      if (typeof item.index === "number") {
-        props.setFocus({
-          pointId: item.pointId,
-          oldIndex: item.index,
-          originalShape: item.originalShape,
+      if (item.index !== 0 || item.region !== "focus") {
+        props.hoverOver({
+          index: 0,
+          region: "focus",
         });
+
+        item.index = 0;
+        item.region = "focus";
       }
+    },
+    drop: () => {
+      props.setFocus({});
     },
   });
 
@@ -158,6 +163,7 @@ const mapDispatchToProps = {
   pointCreate,
   togglePoint,
   setSelectedPoints,
+  hoverOver,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);

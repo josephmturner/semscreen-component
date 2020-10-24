@@ -39,14 +39,15 @@ import {
   SplitIntoTwoPointsParams,
   combinePoints,
   CombinePointsParams,
-  pointMove,
-  PointMoveParams,
+  pointsMove,
+  PointsMoveParams,
   pointUpdate,
   PointUpdateParams,
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
+import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   pointId: string;
@@ -67,10 +68,11 @@ interface AllProps extends OwnProps {
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
-  pointMove: (params: PointMoveParams) => void;
+  pointsMove: (params: PointsMoveParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
+  hoverOver: (params: HoverOverParams) => void;
 }
 
 const Point = (props: AllProps) => {
@@ -88,64 +90,46 @@ const Point = (props: AllProps) => {
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
-    hover(item: DraggablePointType, monitor: DropTargetMonitor) {
-      if (!ref.current || (item.isReferencedPoint && item.shape !== shape)) {
-        return;
-      }
+    hover: (item: DraggablePointType, monitor: DropTargetMonitor) => {
+      if (!ref.current) return;
 
       const hoverIndex = index;
+      const dragIndex = item.index;
 
-      //Point was the focus (lacks index)
-      if (typeof item.index !== "number") {
-        props.pointMove({
-          pointId: item.pointId,
-          newShape: shape,
-          newIndex: hoverIndex,
-        });
-        item.index = hoverIndex;
-        item.shape = shape;
-      } else {
-        const dragIndex = item.index as number;
-        if (dragIndex === hoverIndex) {
-          return;
-        }
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
-        const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
-        const hoverMiddleY =
-          (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
 
-        const clientOffset = monitor.getClientOffset();
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-        const hoverClientY =
-          (clientOffset as XYCoord).y - hoverBoundingRect.top;
+      let newIndex = hoverIndex;
 
-        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-          return;
-        }
+      if (dragIndex === hoverIndex && hoverClientY < hoverMiddleY) return;
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+      if (dragIndex === hoverIndex && hoverClientY > hoverMiddleY) newIndex++;
 
-        if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-          return;
-        }
+      item.index = newIndex;
+      item.region = shape;
 
-        props.pointMove({
-          pointId: item.pointId,
-          oldIndex: item.index,
-          newShape: shape,
-          newIndex: hoverIndex,
-        });
-
-        item.index = hoverIndex;
-        item.shape = shape;
-      }
+      props.hoverOver({
+        region: point.shape,
+        index: newIndex,
+      });
+    },
+    drop: () => {
+      props.pointsMove({});
     },
   });
 
+  //TODO: Rename refs
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const pointRef = useRef<HTMLSpanElement>(null);
 
-  const { isDragging, drag, preview } = useDragPoint(pointId, index);
+  const { drag, preview } = useDragPoint(pointId, index);
 
   drop(preview(pointRef));
 
@@ -200,7 +184,6 @@ const Point = (props: AllProps) => {
       onClick={props.onClick}
       ref={pointRef}
       isMainPoint={props.isMainPoint}
-      isDragging={isDragging}
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
     >
@@ -336,10 +319,11 @@ const mapActionsToProps = {
   combinePoints,
   setCursorPosition,
   clearCursorPosition,
-  pointMove,
+  pointsMove,
   pointUpdate,
   setMainPoint,
   pointsDelete,
+  hoverOver,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);
