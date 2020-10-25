@@ -137,6 +137,7 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   //TODO: this logic is duplicated in FocusPoint.tsx. Move into a hook?
+  //TODO: wrap in useCallback?
   const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
