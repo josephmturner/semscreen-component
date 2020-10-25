@@ -219,9 +219,13 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   let hoverIndex;
   if (state.drag.context && state.drag.context.region === ownProps.shape)
     hoverIndex = state.drag.context.index;
+
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
+
   return {
-    author: state.authors.byId[state.message.author],
-    pointIds: state.message.shapes[ownProps.shape],
+    author: state.authors.byId[currentMessage.author],
+    pointIds: currentMessage.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,
   };

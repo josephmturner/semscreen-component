@@ -27,7 +27,11 @@ import {
 } from "./cursorPosition";
 import { initialAuthorsState, authorsReducer, AuthorsState } from "./authors";
 import { initialPointsState, pointsReducer, PointsState } from "./points";
-import { initialMessageState, messageReducer, MessageState } from "./message";
+import {
+  initialMessagesState,
+  messagesReducer,
+  MessagesState,
+} from "./messages";
 import {
   initialExpandedRegionState,
   expandedRegionReducer,
@@ -40,24 +44,30 @@ import {
 } from "./selectedPoints";
 import { initialPanelsState, panelsReducer, PanelsState } from "./panels";
 import { initialDragState, dragReducer, DragState } from "./drag";
+import {
+  initialSemanticScreenState,
+  semanticScreenReducer,
+  SemanticScreenState,
+} from "./semanticScreen";
 
 import { authors, messages, points } from "../constants/initialState";
 
 // Set this to false if you don't want test data.
 const populate = true;
 const populatedInitialAuthorsState = populate ? authors : null;
-const populatedInitialMessageState = populate ? messages[0] : null;
+const populatedInitialMessagesState = populate ? messages : null;
 const populatedInitialPointsState = populate ? points : null;
 
 export interface AppState {
   cursorPosition: CursorPositionState;
   authors: AuthorsState;
   points: PointsState;
-  message: MessageState;
+  messages: MessagesState;
   expandedRegion: ExpandedRegionState;
   selectedPoints: SelectedPointsState;
   panels: PanelsState;
   drag: DragState;
+  semanticScreen: SemanticScreenState;
 }
 
 function createAppStore() {
@@ -65,11 +75,12 @@ function createAppStore() {
     cursorPosition: initialCursorPositionState,
     authors: populatedInitialAuthorsState ?? initialAuthorsState,
     points: populatedInitialPointsState ?? initialPointsState,
-    message: populatedInitialMessageState ?? initialMessageState,
+    messages: populatedInitialMessagesState ?? initialMessagesState,
     expandedRegion: initialExpandedRegionState,
     selectedPoints: initialSelectedPointsState,
     panels: initialPanelsState,
     drag: initialDragState,
+    semanticScreen: initialSemanticScreenState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
@@ -81,7 +92,7 @@ function createAppStore() {
       ),
       authors: authorsReducer(state.authors, action, state),
       points: pointsReducer(state.points, action, state),
-      message: messageReducer(state.message, action, state),
+      messages: messagesReducer(state.messages, action, state),
       expandedRegion: expandedRegionReducer(
         state.expandedRegion,
         action,
@@ -94,6 +105,11 @@ function createAppStore() {
       ),
       panels: panelsReducer(state.panels, action, state),
       drag: dragReducer(state.drag, action, state),
+      semanticScreen: semanticScreenReducer(
+        state.semanticScreen,
+        action,
+        state
+      ),
     };
     return newState;
   };

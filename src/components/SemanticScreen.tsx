@@ -123,7 +123,7 @@ const SemanticScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-  authorId: state.message.author,
+  authorId: state.messages.byId[state.semanticScreen.currentMessage].author,
   expandedRegion: state.expandedRegion.region,
 });
 

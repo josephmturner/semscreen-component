@@ -19,7 +19,7 @@
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
 import { AuthorsState } from "../reducers/authors";
-import { MessageState } from "../reducers/message";
+import { MessagesState } from "../reducers/messages";
 import { PointsState } from "../reducers/points";
 
 export const authors: AuthorsState = {
@@ -86,27 +86,31 @@ export const points: PointsState = {
   },
 };
 
-export const messages: MessageState[] = [
-  {
-    _id: "messageId1",
-    author: "author1",
-    shapes: {
-      facts: [],
-      thoughts: [],
-      feelings: [],
-      needs: [],
-      topics: ["pointId6"],
-      actions: [
-        "pointId2",
-        "REFERENCE_TO_pointId3",
-        "pointId4",
-        "pointId7",
-        "pointId5",
-      ],
-      people: [],
+export const messages: MessagesState = {
+  byId: {
+    message0: {
+      _id: "message0",
+      author: "author1",
+      shapes: {
+        facts: [],
+        thoughts: [],
+        feelings: [],
+        needs: [],
+        topics: ["pointId6"],
+        actions: [
+          "pointId2",
+          "REFERENCE_TO_pointId3",
+          "pointId4",
+          "pointId7",
+          "pointId5",
+        ],
+        people: [],
+      },
+      focus: "pointId1",
+      main: "pointId5",
+      createdAt: new Date(),
+      isPersisted: false,
     },
-    focus: "pointId1",
-    main: "pointId5",
-    createdAt: new Date(),
   },
-];
+  allMessages: ["message0"],
+};

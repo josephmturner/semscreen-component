@@ -25,6 +25,8 @@ export const Actions = {
   setCursorPosition: "setCursorPosition",
   clearCursorPosition: "clearCursorPosition",
 
+  setCurrentMessage: "setCurrentMessage",
+
   setAuthors: "setAuthors",
 
   setMessage: "setMessage",

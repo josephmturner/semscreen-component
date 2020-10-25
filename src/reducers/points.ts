@@ -152,14 +152,16 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): PointsState {
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
   const withinBounds = (index: number): boolean => {
     return (
-      index >= 0 && index < appState.message.shapes[action.params.shape].length
+      index >= 0 && index < currentMessage.shapes[action.params.shape].length
     );
   };
 
   const isQuoted = (index: number): boolean => {
-    const pointId = appState.message.shapes[action.params.shape][index];
+    const pointId = currentMessage.shapes[action.params.shape][index];
     return !!getReferencedPointId(pointId, state);
   };
 
@@ -181,9 +183,9 @@ function handleCombinePoints(
   }
 
   const pointIdToKeep =
-    appState.message.shapes[action.params.shape][action.params.keepIndex];
+    currentMessage.shapes[action.params.shape][action.params.keepIndex];
   const pointIdToDelete =
-    appState.message.shapes[action.params.shape][action.params.deleteIndex];
+    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
 
   const newContent =
     action.params.keepIndex < action.params.deleteIndex

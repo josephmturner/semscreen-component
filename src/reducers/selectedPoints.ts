@@ -109,8 +109,10 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): SelectedPointsState {
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
   const deletedPointId =
-    appState.message.shapes[action.params.shape][action.params.deleteIndex];
+    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
   return {
     pointIds: state.pointIds.filter((id) => id !== deletedPointId),
   };

@@ -77,6 +77,17 @@ export type ShapesI = {
   [shape in PointShape]: string[];
 };
 
+export interface MessageI {
+  _id: string;
+  revisionOf?: string;
+  author: string;
+  shapes: ShapesI;
+  focus?: string;
+  main?: string;
+  createdAt: Date;
+  isPersisted: boolean;
+}
+
 export interface CursorPositionI {
   pointId: string;
   index: number;

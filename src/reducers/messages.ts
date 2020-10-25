@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   allPointShapes,
-  ShapesI,
+  MessageI,
   isPointShape,
 } from "../dataModels/dataModels";
 import {
@@ -38,42 +38,49 @@ import {
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
-import { SetFocusParams, SetMainPointParams } from "../actions/messageActions";
+import { SetFocusParams, SetMainPointParams } from "../actions/messagesActions";
 
-export interface MessageState {
-  _id: string;
-  revisionOf?: string;
-  author: string;
-  shapes: ShapesI;
-  focus?: string;
-  main?: string;
-  createdAt: Date;
+export interface MessagesState {
+  byId: {
+    [_id: string]: MessageI;
+  };
+  allMessages: string[];
 }
 
-export const initialMessageState: MessageState = {
-  _id: uuidv4(),
-  author: "author0",
-  shapes: {
-    facts: [],
-    thoughts: [],
-    feelings: [],
-    needs: [],
-    topics: [],
-    actions: [],
-    people: [],
+export const initialMessagesState: MessagesState = {
+  byId: {
+    message0: {
+      _id: uuidv4(),
+      author: "author0",
+      shapes: {
+        facts: [],
+        thoughts: [],
+        feelings: [],
+        needs: [],
+        topics: [],
+        actions: [],
+        people: [],
+      },
+      createdAt: new Date(),
+      isPersisted: false,
+    },
   },
-  createdAt: new Date(),
+  allMessages: ["message0"],
 };
 
-export const messageReducer = (
-  state = initialMessageState,
+export const messagesReducer = (
+  state = initialMessagesState,
   action: Action,
   appState: AppState
-): MessageState => {
+): MessagesState => {
   let newState = state;
   switch (action.type) {
     case Actions.pointCreate:
-      newState = handlePointCreate(state, action as Action<_PointCreateParams>);
+      newState = handlePointCreate(
+        state,
+        action as Action<_PointCreateParams>,
+        appState
+      );
       break;
     case Actions.pointsMove:
       newState = handlePointsMove(
@@ -85,7 +92,8 @@ export const messageReducer = (
     case Actions.pointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>
+        action as Action<PointsDeleteParams>,
+        appState
       );
       break;
     case Actions.setFocus:
@@ -98,7 +106,8 @@ export const messageReducer = (
     case Actions.setMainPoint:
       newState = handleSetMainPoint(
         state,
-        action as Action<SetMainPointParams>
+        action as Action<SetMainPointParams>,
+        appState
       );
       break;
     case Actions.combinePoints:
@@ -120,23 +129,25 @@ export const messageReducer = (
 };
 
 //function setMessage(
-//  state: MessageState,
+//  state: MessagesState,
 //  action: Action<SetMessageParams>
-//): MessageState {
+//): MessagesState {
 //  return action.params.message;
 //}
 
 function handlePointCreate(
-  state: MessageState,
-  action: Action<_PointCreateParams>
-): MessageState {
+  state: MessagesState,
+  action: Action<_PointCreateParams>,
+  appState: AppState
+): MessagesState {
   const shape = action.params.point.shape;
 
   return produce(state, (draft) => {
+    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
     if (action.params.focus) {
-      draft.focus = action.params.newPointId;
+      currentMessage.focus = action.params.newPointId;
     } else if (typeof action.params.index === "number") {
-      draft.shapes[shape].splice(
+      currentMessage.shapes[shape].splice(
         action.params.index,
         0,
         action.params.newPointId
@@ -146,10 +157,10 @@ function handlePointCreate(
 }
 
 function handlePointsMove(
-  state: MessageState,
+  state: MessagesState,
   action: Action<PointsMoveParams>,
   appState: AppState
-): MessageState {
+): MessagesState {
   if (appState.drag.context === null) return state;
   const { region, index } = appState.drag.context;
 
@@ -161,7 +172,8 @@ function handlePointsMove(
       region === getPointById(p, appState.points).shape
   );
 
-  const pointIds: string[] = state.shapes[region];
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  const pointIds: string[] = state.byId[currentMessageId].shapes[region];
   let newPointIds: string[] = [];
 
   // Rebuild array of pointIds for state.shapes[region]
@@ -180,84 +192,104 @@ function handlePointsMove(
   }
 
   return produce(state, (draft) => {
-    draft.shapes[region] = newPointIds;
+    const currentMessage = draft.byId[currentMessageId];
+    currentMessage.shapes[region] = newPointIds;
     // Remove pointIds from other shapes arrays when they're moved
     allPointShapes.forEach((pointShape) => {
       if (pointShape !== region) {
-        draft.shapes[pointShape] = draft.shapes[pointShape].filter(
-          (p) => !pointsToMove.includes(p)
-        );
+        currentMessage.shapes[pointShape] = currentMessage.shapes[
+          pointShape
+        ].filter((p) => !pointsToMove.includes(p));
       }
     });
     // Remove focus if it was moved to a ShapeRegion
-    if (draft.focus && pointsToMove.includes(draft.focus)) {
-      delete draft.focus;
+    if (currentMessage.focus && pointsToMove.includes(currentMessage.focus)) {
+      delete draft.byId[currentMessageId].focus;
     }
   });
 }
 
 function handlePointsDelete(
-  state: MessageState,
-  action: Action<PointsDeleteParams>
-): MessageState {
+  state: MessagesState,
+  action: Action<PointsDeleteParams>,
+  appState: AppState
+): MessagesState {
   return produce(state, (draft) => {
+    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
     allPointShapes.forEach((shape) => {
-      draft.shapes[shape] = draft.shapes[shape].filter(
+      currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
         (id) => !action.params.pointIds.includes(id)
       );
     });
-    draft.focus &&
-      action.params.pointIds.includes(draft.focus) &&
-      delete draft.focus;
-    draft.main &&
-      action.params.pointIds.includes(draft.main) &&
-      delete draft.main;
+    currentMessage.focus &&
+      action.params.pointIds.includes(currentMessage.focus) &&
+      delete currentMessage.focus;
+    currentMessage.main &&
+      action.params.pointIds.includes(currentMessage.main) &&
+      delete currentMessage.main;
   });
 }
 
 function handleSetFocus(
-  state: MessageState,
+  state: MessagesState,
   action: Action<SetFocusParams>,
   appState: AppState
-): MessageState {
+): MessagesState {
   const newFocus = appState.selectedPoints.pointIds[0];
   if (!newFocus) return state;
 
   const newFocusShape = getPointById(newFocus, appState.points).shape;
 
   return produce(state, (draft) => {
-    draft.shapes[newFocusShape] = draft.shapes[newFocusShape].filter(
-      (id) => id !== newFocus
-    );
-    if (draft.focus) {
-      const oldFocusShape = getPointById(draft.focus, appState.points).shape;
-      draft.shapes[oldFocusShape].push(draft.focus);
+    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+    currentMessage.shapes[newFocusShape] = currentMessage.shapes[
+      newFocusShape
+    ].filter((id) => id !== newFocus);
+    if (currentMessage.focus) {
+      const oldFocusShape = getPointById(currentMessage.focus, appState.points)
+        .shape;
+      currentMessage.shapes[oldFocusShape].push(currentMessage.focus);
     }
-    draft.focus = newFocus;
+    currentMessage.focus = newFocus;
   });
 }
 
 function handleSetMainPoint(
-  state: MessageState,
-  action: Action<SetMainPointParams>
-): MessageState {
+  state: MessagesState,
+  action: Action<SetMainPointParams>,
+  appState: AppState
+): MessagesState {
+  const currentMessageId = appState.semanticScreen.currentMessage;
+
   return {
     ...state,
-    main: action.params.pointId,
+    byId: {
+      ...state.byId,
+      [currentMessageId]: {
+        ...state.byId[currentMessageId],
+        main: action.params.pointId,
+      },
+    },
   };
 }
 
 function handleCombinePoints(
-  state: MessageState,
+  state: MessagesState,
   action: Action<CombinePointsParams>,
   appState: AppState
-): MessageState {
+): MessagesState {
+  const currentMessageId = appState.semanticScreen.currentMessage;
+
   const withinBounds = (index: number): boolean => {
-    return index >= 0 && index < state.shapes[action.params.shape].length;
+    return (
+      index >= 0 &&
+      index < state.byId[currentMessageId].shapes[action.params.shape].length
+    );
   };
 
   const isQuoted = (index: number): boolean => {
-    const pointId = state.shapes[action.params.shape][index];
+    const pointId =
+      state.byId[currentMessageId].shapes[action.params.shape][index];
     return !!getReferencedPointId(pointId, appState.points);
   };
 
@@ -279,24 +311,35 @@ function handleCombinePoints(
   }
 
   const pointIdToDelete =
-    state.shapes[action.params.shape][action.params.deleteIndex];
+    state.byId[currentMessageId].shapes[action.params.shape][
+      action.params.deleteIndex
+    ];
   return produce(state, (draft) => {
-    draft.shapes[action.params.shape] = draft.shapes[
-      action.params.shape
-    ].filter((id) => id !== pointIdToDelete);
-    draft.main === pointIdToDelete && delete draft.main;
+    draft.byId[currentMessageId].shapes[action.params.shape] = draft.byId[
+      currentMessageId
+    ].shapes[action.params.shape].filter((id) => id !== pointIdToDelete);
+    draft.byId[currentMessageId].main === pointIdToDelete &&
+      delete draft.byId[currentMessageId].main;
   });
 }
 
 function handleSplitIntoTwoPoints(
-  state: MessageState,
+  state: MessagesState,
   action: Action<_SplitIntoTwoPointsParams>,
   appState: AppState
-): MessageState {
+): MessagesState {
   return produce(state, (draft) => {
+    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+
     const shape = getPointById(action.params.pointId, appState.points).shape;
     const splitPointIndex =
-      draft.shapes[shape].findIndex((id) => id === action.params.pointId) + 1;
-    draft.shapes[shape].splice(splitPointIndex, 0, action.params.newPointId);
+      currentMessage.shapes[shape].findIndex(
+        (id) => id === action.params.pointId
+      ) + 1;
+    currentMessage.shapes[shape].splice(
+      splitPointIndex,
+      0,
+      action.params.newPointId
+    );
   });
 }

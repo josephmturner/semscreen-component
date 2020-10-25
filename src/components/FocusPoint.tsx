@@ -30,7 +30,7 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
+import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 
 interface OwnProps {
   pointId: string;

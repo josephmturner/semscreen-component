@@ -47,7 +47,7 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
+import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
@@ -309,11 +309,13 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   if (referenceData) {
     referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
   }
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
   return {
     point: getPointById(ownProps.pointId, state.points),
     referenceData: getReferenceData(ownProps.pointId, state.points),
     referenceAuthor,
-    isMainPoint: ownProps.pointId === state.message.main,
+    isMainPoint: ownProps.pointId === currentMessage.main,
     cursorPositionIndex:
       state.cursorPosition.details &&
       state.cursorPosition.details.pointId === ownProps.pointId

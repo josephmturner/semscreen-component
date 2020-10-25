@@ -82,7 +82,9 @@ function handleSetCursorPosition(
   const pointId = action.params.pointId;
   const point = getPointById(pointId, appState.points);
   const shape = point.shape;
-  const pointIds = appState.message.shapes[shape];
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
+  const pointIds = currentMessage.shapes[shape];
   const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
   const nextPointId = pointIds[index + 1];
@@ -133,13 +135,14 @@ function handleCombinePoints(
     action.params.deleteIndex
   );
 
-  const prevPointId =
-    appState.message.shapes[action.params.shape][smallerIndex];
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
+  const prevPointId = currentMessage.shapes[action.params.shape][smallerIndex];
   const prevPoint = getPointById(prevPointId, appState.points);
 
   const newCursorPosition = {
     pointId:
-      appState.message.shapes[action.params.shape][action.params.keepIndex],
+      currentMessage.shapes[action.params.shape][action.params.keepIndex],
     contentIndex: prevPoint.content.length,
   };
 

@@ -28,7 +28,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { pointCreate, PointCreateParams } from "../actions/pointsActions";
-import { setFocus, SetFocusParams } from "../actions/messageActions";
+import { setFocus, SetFocusParams } from "../actions/messagesActions";
 import {
   setExpandedRegion,
   ExpandedRegionParams,
@@ -148,10 +148,12 @@ const StyledDiv = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => {
-  const isMainPoint = state.message.focus === state.message.main;
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
+  const isMainPoint = currentMessage.focus === currentMessage.main;
   return {
-    author: state.authors.byId[state.message.author],
-    pointId: state.message.focus,
+    author: state.authors.byId[currentMessage.author],
+    pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
   };
