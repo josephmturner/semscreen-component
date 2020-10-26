@@ -146,7 +146,7 @@ function handlePointCreate(
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
     if (action.params.focus) {
       currentMessage.focus = action.params.newPointId;
-    } else if (typeof action.params.index === "number") {
+    } else {
       currentMessage.shapes[shape].splice(
         action.params.index,
         0,

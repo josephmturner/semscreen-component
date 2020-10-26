@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export interface PointCreateParams {
   point: PointNoIdI;
-  index?: number;
+  index: number;
   focus?: boolean;
 }
 

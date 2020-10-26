@@ -96,6 +96,7 @@ const FocusRegion = (props: AllProps) => {
         content: "",
         shape,
       },
+      index: 0,
       focus: true,
     });
   };
