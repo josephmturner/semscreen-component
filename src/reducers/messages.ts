@@ -153,6 +153,10 @@ function handlePointCreate(
         action.params.newPointId
       );
     }
+    //Message.main should only be undefined if message has no points
+    if (!currentMessage.main) {
+      currentMessage.main = action.params.newPointId;
+    }
   });
 }
 
@@ -224,9 +228,18 @@ function handlePointsDelete(
     currentMessage.focus &&
       action.params.pointIds.includes(currentMessage.focus) &&
       delete currentMessage.focus;
-    currentMessage.main &&
-      action.params.pointIds.includes(currentMessage.main) &&
-      delete currentMessage.main;
+    //Message.main should only be undefined if message has no points
+    if (
+      currentMessage.main &&
+      action.params.pointIds.includes(currentMessage.main)
+    ) {
+      const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
+      if (pointInShapes) {
+        currentMessage.main = pointInShapes;
+      } else {
+        currentMessage.main = currentMessage.focus;
+      }
+    }
   });
 }
 
