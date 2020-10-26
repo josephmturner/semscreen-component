@@ -29,6 +29,7 @@ interface StyledPointProps {
 
 export const StyledSpan = styled.span<StyledPointProps>`
   position: relative;
+  margin: 1px 0;
   ${(props) =>
     props.referenceAuthor &&
     `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
@@ -53,6 +54,7 @@ export const StyledImg = styled.img<StyledPointProps>`
 export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   width: 100%;
   border: 0;
+  overflow: hidden;
   color: ${(props) => (props.darkMode ? "white" : "black")};
   background-color: transparent;
   font-family: Arial;

@@ -22,6 +22,7 @@ import { getPointById, getReferenceData } from "../dataModels/getters";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
+import PointHoverOptions from "./PointHoverOptions";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -165,6 +166,8 @@ const Point = (props: AllProps) => {
     pointId,
   ]);
 
+  const [isHovered, setIsHovered] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
@@ -182,6 +185,8 @@ const Point = (props: AllProps) => {
   return (
     <StyledSpan
       onClick={props.onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       ref={pointRef}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
@@ -287,6 +292,9 @@ const Point = (props: AllProps) => {
           placement={{ top: "-0.15rem", right: "0.8rem" }}
           darkMode={props.darkMode}
         />
+      )}
+      {isHovered && (
+        <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
     </StyledSpan>
   );
