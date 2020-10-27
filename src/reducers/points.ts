@@ -27,6 +27,7 @@ import {
   getPointById,
   getReferenceData,
   getReferencedPointId,
+  isReference,
 } from "../dataModels/getters";
 import { AppState } from "./store";
 import {
@@ -203,21 +204,20 @@ function handleSplitIntoTwoPoints(
   state: PointsState,
   action: Action<_SplitIntoTwoPointsParams>
 ): PointsState {
-  const topContent = getPointById(action.params.pointId, state).content.slice(
-    0,
-    action.params.sliceIndex
-  );
-  const bottomContent = getPointById(
-    action.params.pointId,
-    state
-  ).content.slice(action.params.sliceIndex);
+  const topPoint = state.byId[action.params.pointId];
+  if (isReference(topPoint)) {
+    return state;
+  }
+
+  const topContent = topPoint.content.slice(0, action.params.sliceIndex);
+  const bottomContent = topPoint.content.slice(action.params.sliceIndex);
 
   return produce(state, (draft) => {
     getPointById(action.params.pointId, draft).content = topContent;
     draft.byId[action.params.newPointId] = {
       content: bottomContent,
       _id: action.params.newPointId,
-      shape: getPointById(action.params.pointId, draft).shape,
+      shape: topPoint.shape,
       pointDate: new Date(),
     };
   });

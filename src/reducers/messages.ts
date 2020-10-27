@@ -30,6 +30,7 @@ import {
   getPointById,
   getReferenceData,
   getReferencedPointId,
+  isReference,
 } from "../dataModels/getters";
 import {
   _PointCreateParams,
@@ -341,6 +342,11 @@ function handleSplitIntoTwoPoints(
   action: Action<_SplitIntoTwoPointsParams>,
   appState: AppState
 ): MessagesState {
+  const point = appState.points.byId[action.params.pointId];
+  if (isReference(point)) {
+    return state;
+  }
+
   return produce(state, (draft) => {
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
 
