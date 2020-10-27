@@ -92,12 +92,12 @@ const Point = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType, monitor: DropTargetMonitor) => {
-      if (!ref.current) return;
+      if (!spanRef.current) return;
 
       const hoverIndex = index;
       const dragIndex = item.index;
 
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverBoundingRect = spanRef.current?.getBoundingClientRect();
 
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -125,19 +125,17 @@ const Point = (props: AllProps) => {
     },
   });
 
-  //TODO: Rename refs
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  const pointRef = useRef<HTMLSpanElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   const { drag, preview } = useDragPoint(pointId, index);
 
-  drop(preview(pointRef));
+  drop(preview(spanRef));
 
   useEffect(() => {
-    if (typeof cursorPositionIndex === "number" && ref.current) {
-      ref.current.focus();
-      ref.current.setSelectionRange(
+    if (typeof cursorPositionIndex === "number" && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(
         cursorPositionIndex as number,
         cursorPositionIndex as number
       );
@@ -149,12 +147,14 @@ const Point = (props: AllProps) => {
     "ArrowUp" | "ArrowDown" | undefined
   >(undefined);
   useEffect(() => {
-    if (arrowPressed === "ArrowUp" && ref.current) {
-      (referenceData || (ref.current && ref.current.selectionStart === 0)) &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
-    } else if (arrowPressed === "ArrowDown" && ref.current) {
+    if (arrowPressed === "ArrowUp" && textareaRef.current) {
       (referenceData ||
-        (ref.current && ref.current.selectionStart === point.content.length)) &&
+        (textareaRef.current && textareaRef.current.selectionStart === 0)) &&
+        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
+    } else if (arrowPressed === "ArrowDown" && textareaRef.current) {
+      (referenceData ||
+        (textareaRef.current &&
+          textareaRef.current.selectionStart === point.content.length)) &&
         setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
     }
     setArrowPressed(undefined);
@@ -187,7 +187,7 @@ const Point = (props: AllProps) => {
       onClick={props.onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      ref={pointRef}
+      ref={spanRef}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
@@ -211,25 +211,24 @@ const Point = (props: AllProps) => {
         isMainPoint={props.isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
-        ref={ref}
+        ref={textareaRef}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.isPersisted) {
+          if (props.isPersisted || !textareaRef.current) {
             return;
           } else {
             if (e.key === "Enter") {
               e.preventDefault();
-              ref.current &&
-                ref.current.selectionStart !== 0 &&
+              textareaRef.current.selectionStart !== 0 &&
                 props.splitIntoTwoPoints({
                   pointId,
-                  sliceIndex: ref.current.selectionStart,
+                  sliceIndex: textareaRef.current.selectionStart,
                 });
             } else if (
               e.key === "Backspace" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === 0 &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               if (index !== 0) {
                 e.preventDefault();
@@ -248,9 +247,9 @@ const Point = (props: AllProps) => {
               }
             } else if (
               e.key === "Delete" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === point.content.length &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               e.preventDefault();
               combinePoints({
@@ -260,18 +259,18 @@ const Point = (props: AllProps) => {
               });
             } else if (
               e.key === "ArrowLeft" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd &&
+              textareaRef.current.selectionStart === 0 &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd &&
               index !== 0
             ) {
               e.preventDefault();
               setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
             } else if (
               e.key === "ArrowRight" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === point.content.length &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               e.preventDefault();
               setCursorPosition({
