@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
-import ParkingSpace from "./components/ParkingSpace";
+import ParkingRegion from "./components/ParkingRegion";
 
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
@@ -59,7 +59,7 @@ const App = (props: {
         </SemscreenPanel>
         {props.panels.bottom && (
           <BottomPanel>
-            <ParkingSpace />
+            <ParkingRegion darkMode={darkMode} />
           </BottomPanel>
         )}
       </MainPanel>
