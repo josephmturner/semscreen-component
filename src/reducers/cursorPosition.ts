@@ -19,10 +19,7 @@
 import { getPointById } from "../dataModels/getters";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
-import {
-  CombinePointsParams,
-  _SplitIntoTwoPointsParams,
-} from "../actions/pointsActions";
+import { CombinePointsParams } from "../actions/pointsActions";
 
 import { AppState } from "./store";
 
@@ -58,13 +55,6 @@ export const cursorPositionReducer = (
       newState = handleCombinePoints(
         state,
         action as Action<CombinePointsParams>,
-        appState
-      );
-      break;
-    case Actions.splitIntoTwoPoints:
-      newState = handleSplitIntoTwoPoints(
-        state,
-        action as Action<_SplitIntoTwoPointsParams>,
         appState
       );
       break;
@@ -148,18 +138,5 @@ function handleCombinePoints(
 
   return {
     details: newCursorPosition,
-  };
-}
-
-function handleSplitIntoTwoPoints(
-  state: CursorPositionState,
-  action: Action<_SplitIntoTwoPointsParams>,
-  appState: AppState
-): CursorPositionState {
-  return {
-    details: {
-      pointId: action.params.newPointId,
-      contentIndex: 0,
-    },
   };
 }
