@@ -49,13 +49,13 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 interface OwnProps {
   shape: PointShape;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnlyOverride: boolean;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
   author: AuthorI;
   pointIds: string[];
+  isPersisted: boolean;
   pointCreate: (params: PointCreateParams) => void;
   pointsMove: (params: PointsMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
@@ -131,7 +131,7 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   const onClickRemainingSpace = () => {
-    if (props.isExpanded !== "expanded" && !props.readOnlyOverride) {
+    if (props.isExpanded !== "expanded" && !props.isPersisted) {
       createEmptyPoint();
     }
   };
@@ -155,7 +155,6 @@ const ShapeRegion = (props: AllProps) => {
       pointId={id}
       index={i}
       onClick={handlePointClick(id)}
-      readOnlyOverride={props.readOnlyOverride}
       isSelected={props.selectedPoints.includes(id)}
       darkMode={props.darkMode}
     />
@@ -183,7 +182,7 @@ const ShapeRegion = (props: AllProps) => {
         />
         {listItems}
         {props.isExpanded === "expanded" &&
-          !props.readOnlyOverride &&
+          !props.isPersisted &&
           props.hoverIndex === undefined && (
             <NewPointButton
               shape={shape}
@@ -228,6 +227,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     pointIds: currentMessage.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,
+    isPersisted:
+      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
   };
 };
 

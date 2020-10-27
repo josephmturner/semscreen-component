@@ -44,7 +44,6 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 interface OwnProps {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnlyOverride: boolean;
   darkMode: boolean;
 }
 
@@ -122,7 +121,6 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            readOnlyOverride={props.readOnlyOverride}
             onClick={handlePointClick(pointId)}
             isMainPoint={props.isMainPoint}
             isSelected={props.selectedPoints.includes(pointId)}

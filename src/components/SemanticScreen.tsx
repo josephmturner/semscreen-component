@@ -33,9 +33,9 @@ import { RegionI } from "../dataModels/dataModels";
 
 interface Props {
   authorId: string;
-  readOnlyOverride: boolean;
   darkMode: boolean;
   expandedRegion: string;
+  isPersisted: boolean;
 }
 
 const SemanticScreen = (props: Props) => {
@@ -78,7 +78,7 @@ const SemanticScreen = (props: Props) => {
       expandedRegion={expandedRegion}
       ref={semanticScreenRef}
     >
-      {props.readOnlyOverride && (
+      {props.isPersisted && (
         <Banner
           authorId={props.authorId}
           placement={{ top: "0", right: "0" }}
@@ -101,7 +101,6 @@ const SemanticScreen = (props: Props) => {
             <FocusRegion
               region={region}
               isExpanded={isExpanded(region)}
-              readOnlyOverride={props.readOnlyOverride}
               key={region}
               darkMode={props.darkMode}
             />
@@ -111,7 +110,6 @@ const SemanticScreen = (props: Props) => {
             <ShapeRegion
               shape={region}
               isExpanded={isExpanded(region)}
-              readOnlyOverride={props.readOnlyOverride}
               key={region}
               darkMode={props.darkMode}
             />
@@ -125,6 +123,8 @@ const SemanticScreen = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
   authorId: state.messages.byId[state.semanticScreen.currentMessage].author,
   expandedRegion: state.expandedRegion.region,
+  isPersisted:
+    state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
 });
 
 const mapDispatchToProps = {};

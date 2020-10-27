@@ -35,7 +35,6 @@ import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 interface OwnProps {
   pointId: string;
   onClick: (e: React.MouseEvent) => void;
-  readOnlyOverride: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -45,6 +44,7 @@ interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
   referenceAuthor?: AuthorI;
+  isPersisted: boolean;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -61,7 +61,7 @@ const FocusPoint = (props: AllProps) => {
   };
 
   const onClickShapeIcon = () => {
-    if (!props.readOnlyOverride) {
+    if (!props.isPersisted) {
       props.setMainPoint({ pointId });
     }
   };
@@ -79,7 +79,7 @@ const FocusPoint = (props: AllProps) => {
       referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
-        ref={props.readOnlyOverride ? null : drag}
+        ref={props.isPersisted ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
@@ -93,13 +93,13 @@ const FocusPoint = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
-        readOnly={!!props.referenceAuthor || props.readOnlyOverride}
+        readOnly={!!props.referenceAuthor || props.isPersisted}
         isMainPoint={isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnlyOverride) {
+          if (props.isPersisted) {
             return;
           } else {
             if (e.key === "Enter") {
@@ -129,6 +129,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     point: getPointById(ownProps.pointId, state.points),
     referenceData,
     referenceAuthor,
+    isPersisted:
+      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
   };
 };
 

@@ -54,7 +54,6 @@ interface OwnProps {
   pointId: string;
   index: number;
   onClick: (e: React.MouseEvent) => void;
-  readOnlyOverride?: boolean;
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -65,6 +64,7 @@ interface AllProps extends OwnProps {
   referenceAuthor?: AuthorI;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
+  isPersisted: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
@@ -177,7 +177,7 @@ const Point = (props: AllProps) => {
   const imageUrl = require(`../images/${shape}.svg`);
 
   const onClickShapeIcon = () => {
-    if (!props.readOnlyOverride) {
+    if (!props.isPersisted) {
       props.setMainPoint({ pointId });
     }
   };
@@ -193,7 +193,7 @@ const Point = (props: AllProps) => {
       referenceAuthor={props.referenceAuthor}
     >
       <StyledImg
-        ref={props.readOnlyOverride ? null : drag}
+        ref={props.isPersisted ? null : drag}
         src={imageUrl}
         onClick={onClickShapeIcon}
         isMainPoint={props.isMainPoint}
@@ -207,14 +207,14 @@ const Point = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [pointId] });
         }}
-        readOnly={!!props.referenceData || props.readOnlyOverride}
+        readOnly={!!props.referenceData || props.isPersisted}
         isMainPoint={props.isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         ref={ref}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnlyOverride) {
+          if (props.isPersisted) {
             return;
           } else {
             if (e.key === "Enter") {
@@ -293,7 +293,7 @@ const Point = (props: AllProps) => {
           darkMode={props.darkMode}
         />
       )}
-      {isHovered && (
+      {isHovered && !props.isPersisted && (
         <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
     </StyledSpan>
@@ -321,6 +321,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
+    isPersisted:
+      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
   };
 };
 

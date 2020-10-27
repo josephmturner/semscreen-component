@@ -33,17 +33,13 @@ const App = (props: {
   togglePanel: (params: PanelParams) => void;
   panels: PanelsState;
 }) => {
-  const readOnlyOverride = false;
   const darkMode = true;
 
   return (
     <AppStyles darkMode={darkMode}>
       <MainPanel>
         <SemscreenPanel>
-          <SemanticScreen
-            readOnlyOverride={readOnlyOverride || false}
-            darkMode={darkMode || false}
-          />
+          <SemanticScreen darkMode={darkMode || false} />
           <PanelButton
             side={"bottom"}
             openClose={"open"}
