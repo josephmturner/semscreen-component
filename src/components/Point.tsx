@@ -220,7 +220,7 @@ const Point = (props: AllProps) => {
             if (e.key === "Enter") {
               e.preventDefault();
               ref.current &&
-                !!point.content &&
+                ref.current.selectionStart !== 0 &&
                 props.splitIntoTwoPoints({
                   pointId,
                   sliceIndex: ref.current.selectionStart,
