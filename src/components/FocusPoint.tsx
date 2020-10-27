@@ -15,12 +15,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useState } from "react";
 import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/getters";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
+import PointHoverOptions from "./PointHoverOptions";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -54,6 +55,8 @@ const FocusPoint = (props: AllProps) => {
   const { point, pointId, isMainPoint } = props;
   const shape = point.shape;
 
+  const [isHovered, setIsHovered] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
       point: { ...point, content: e.target.value },
@@ -73,6 +76,8 @@ const FocusPoint = (props: AllProps) => {
   return (
     <StyledSpan
       onClick={props.onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       ref={preview}
       isMainPoint={isMainPoint}
       isSelected={props.isSelected}
@@ -114,6 +119,9 @@ const FocusPoint = (props: AllProps) => {
           placement={{ top: "-0.5rem", right: "0.4rem" }}
           darkMode={props.darkMode}
         />
+      )}
+      {isHovered && !props.isPersisted && (
+        <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
     </StyledSpan>
   );
