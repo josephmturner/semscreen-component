@@ -45,6 +45,8 @@ export type PointShapeWithEmpty = PointShape | "";
 
 export type RegionI = PointShape | "merits" | "focus";
 
+export type RegionWithParkingI = RegionI | "parking";
+
 export interface AuthorI {
   _id: string;
   name: string;
