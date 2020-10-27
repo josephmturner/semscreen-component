@@ -65,7 +65,7 @@ const App = (props: {
       </MainPanel>
       {props.panels.right && (
         <RightPanel>
-          <ParkingSpace />
+          <div />
         </RightPanel>
       )}
     </AppStyles>
@@ -118,7 +118,8 @@ const SemscreenPanel = styled.div`
 `;
 
 const BottomPanel = styled.div`
-  height: 4rem;
+  height: 12rem;
+  overflow: auto;
 `;
 
 const RightPanel = styled.div`
