@@ -42,7 +42,6 @@ const App = (props: {
           <SemanticScreen darkMode={darkMode || false} />
           <PanelButton
             side={"bottom"}
-            openClose={"open"}
             onClick={() => {
               props.togglePanel({ location: "bottom" });
             }}
@@ -50,7 +49,6 @@ const App = (props: {
           />
           <PanelButton
             side={"right"}
-            openClose={"open"}
             onClick={() => {
               props.togglePanel({ location: "right" });
             }}
