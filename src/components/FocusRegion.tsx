@@ -28,7 +28,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { pointCreate, PointCreateParams } from "../actions/pointsActions";
-import { setFocus, SetFocusParams } from "../actions/messageActions";
+import { setFocus, SetFocusParams } from "../actions/messagesActions";
 import {
   setExpandedRegion,
   ExpandedRegionParams,
@@ -44,7 +44,6 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 interface OwnProps {
   region: RegionI;
   isExpanded: "expanded" | "minimized" | "balanced";
-  readOnlyOverride: boolean;
   darkMode: boolean;
 }
 
@@ -96,19 +95,9 @@ const FocusRegion = (props: AllProps) => {
         content: "",
         shape,
       },
+      index: 0,
       focus: true,
     });
-  };
-
-  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-    if (e.ctrlKey || e.metaKey) {
-      props.togglePoint({ pointId });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
   };
 
   return (
@@ -121,9 +110,8 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            readOnlyOverride={props.readOnlyOverride}
-            onClick={handlePointClick(pointId)}
             isMainPoint={props.isMainPoint}
+            isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}
           />
@@ -148,10 +136,12 @@ const StyledDiv = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => {
-  const isMainPoint = state.message.focus === state.message.main;
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
+  const isMainPoint = currentMessage.focus === currentMessage.main;
   return {
-    author: state.authors.byId[state.message.author],
-    pointId: state.message.focus,
+    author: state.authors.byId[currentMessage.author],
+    pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
   };

@@ -16,17 +16,17 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
-import styled from "styled-components";
+import { Action, Actions } from "./constants";
 
-const ParkingSpace = () => {
-  return <StyledParkingSpace />;
+export interface SetCurrentMessageParams {
+  messageId: string;
+}
+
+export const setCurrentMessage = (
+  params: SetCurrentMessageParams
+): Action<SetCurrentMessageParams> => {
+  return {
+    type: Actions.setCurrentMessage,
+    params,
+  };
 };
-
-const StyledParkingSpace = styled.div`
-  position: relative;
-  height: 100%;
-  width: 100%;
-`;
-
-export default ParkingSpace;

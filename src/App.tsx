@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
-import ParkingSpace from "./components/ParkingSpace";
+import ParkingRegion from "./components/ParkingRegion";
 
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
@@ -33,20 +33,15 @@ const App = (props: {
   togglePanel: (params: PanelParams) => void;
   panels: PanelsState;
 }) => {
-  const readOnlyOverride = false;
   const darkMode = true;
 
   return (
     <AppStyles darkMode={darkMode}>
       <MainPanel>
         <SemscreenPanel>
-          <SemanticScreen
-            readOnlyOverride={readOnlyOverride || false}
-            darkMode={darkMode || false}
-          />
+          <SemanticScreen darkMode={darkMode || false} />
           <PanelButton
             side={"bottom"}
-            openClose={"open"}
             onClick={() => {
               props.togglePanel({ location: "bottom" });
             }}
@@ -54,7 +49,6 @@ const App = (props: {
           />
           <PanelButton
             side={"right"}
-            openClose={"open"}
             onClick={() => {
               props.togglePanel({ location: "right" });
             }}
@@ -63,13 +57,13 @@ const App = (props: {
         </SemscreenPanel>
         {props.panels.bottom && (
           <BottomPanel>
-            <ParkingSpace />
+            <ParkingRegion darkMode={darkMode} />
           </BottomPanel>
         )}
       </MainPanel>
       {props.panels.right && (
         <RightPanel>
-          <ParkingSpace />
+          <div />
         </RightPanel>
       )}
     </AppStyles>
@@ -122,7 +116,8 @@ const SemscreenPanel = styled.div`
 `;
 
 const BottomPanel = styled.div`
-  height: 4rem;
+  height: 12rem;
+  overflow: auto;
 `;
 
 const RightPanel = styled.div`

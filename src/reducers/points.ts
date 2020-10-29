@@ -27,6 +27,7 @@ import {
   getPointById,
   getReferenceData,
   getReferencedPointId,
+  isReference,
 } from "../dataModels/getters";
 import { AppState } from "./store";
 import {
@@ -152,14 +153,16 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): PointsState {
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
   const withinBounds = (index: number): boolean => {
     return (
-      index >= 0 && index < appState.message.shapes[action.params.shape].length
+      index >= 0 && index < currentMessage.shapes[action.params.shape].length
     );
   };
 
   const isQuoted = (index: number): boolean => {
-    const pointId = appState.message.shapes[action.params.shape][index];
+    const pointId = currentMessage.shapes[action.params.shape][index];
     return !!getReferencedPointId(pointId, state);
   };
 
@@ -181,9 +184,9 @@ function handleCombinePoints(
   }
 
   const pointIdToKeep =
-    appState.message.shapes[action.params.shape][action.params.keepIndex];
+    currentMessage.shapes[action.params.shape][action.params.keepIndex];
   const pointIdToDelete =
-    appState.message.shapes[action.params.shape][action.params.deleteIndex];
+    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
 
   const newContent =
     action.params.keepIndex < action.params.deleteIndex
@@ -201,21 +204,20 @@ function handleSplitIntoTwoPoints(
   state: PointsState,
   action: Action<_SplitIntoTwoPointsParams>
 ): PointsState {
-  const topContent = getPointById(action.params.pointId, state).content.slice(
-    0,
-    action.params.sliceIndex
-  );
-  const bottomContent = getPointById(
-    action.params.pointId,
-    state
-  ).content.slice(action.params.sliceIndex);
+  const topPoint = state.byId[action.params.pointId];
+  if (isReference(topPoint)) {
+    return state;
+  }
+
+  const topContent = topPoint.content.slice(0, action.params.sliceIndex);
+  const bottomContent = topPoint.content.slice(action.params.sliceIndex);
 
   return produce(state, (draft) => {
     getPointById(action.params.pointId, draft).content = topContent;
     draft.byId[action.params.newPointId] = {
       content: bottomContent,
       _id: action.params.newPointId,
-      shape: getPointById(action.params.pointId, draft).shape,
+      shape: topPoint.shape,
       pointDate: new Date(),
     };
   });

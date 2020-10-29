@@ -25,6 +25,7 @@ import {
   CombinePointsParams,
   PointsDeleteParams,
 } from "../actions/pointsActions";
+import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { AppState } from "./store";
 
 export interface SelectedPointsState {
@@ -62,6 +63,12 @@ export const selectedPointsReducer = (
         state,
         action as Action<CombinePointsParams>,
         appState
+      );
+      break;
+    case Actions.setCurrentMessage:
+      newState = handleSetCurrentMessage(
+        state,
+        action as Action<SetCurrentMessageParams>
       );
       break;
   }
@@ -109,9 +116,20 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): SelectedPointsState {
+  const currentMessage =
+    appState.messages.byId[appState.semanticScreen.currentMessage];
   const deletedPointId =
-    appState.message.shapes[action.params.shape][action.params.deleteIndex];
+    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
   return {
     pointIds: state.pointIds.filter((id) => id !== deletedPointId),
+  };
+}
+
+function handleSetCurrentMessage(
+  state: SelectedPointsState,
+  action: Action<SetCurrentMessageParams>
+): SelectedPointsState {
+  return {
+    pointIds: [],
   };
 }

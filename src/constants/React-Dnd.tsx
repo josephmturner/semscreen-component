@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { RegionI } from "../dataModels/dataModels";
+import { RegionWithParkingI } from "../dataModels/dataModels";
 
 //TODO: How do we remove EndDragParams in src/actions/dragActions.ts?
 
@@ -27,6 +27,6 @@ export const ItemTypes = {
 
 export interface DraggablePointType {
   type: "point";
-  region: RegionI;
+  region: RegionWithParkingI;
   index: number;
 }

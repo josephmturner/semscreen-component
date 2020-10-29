@@ -23,6 +23,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
+import { MainPointShape } from "./MainPointShape";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -47,14 +48,23 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messageActions";
+import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
+import {
+  setCurrentMessage,
+  SetCurrentMessageParams,
+} from "../actions/semanticScreenActions";
 
 interface OwnProps {
   pointId: string;
   index: number;
-  onClick: (e: React.MouseEvent) => void;
-  readOnlyOverride?: boolean;
+  isExpanded: "expanded" | "minimized" | "balanced";
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -65,6 +75,7 @@ interface AllProps extends OwnProps {
   referenceAuthor?: AuthorI;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
+  isPersisted: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
@@ -74,6 +85,9 @@ interface AllProps extends OwnProps {
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  togglePoint: (params: TogglePointParams) => void;
+  setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
 const Point = (props: AllProps) => {
@@ -92,12 +106,12 @@ const Point = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType, monitor: DropTargetMonitor) => {
-      if (!ref.current) return;
+      if (!spanRef.current) return;
 
       const hoverIndex = index;
       const dragIndex = item.index;
 
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverBoundingRect = spanRef.current?.getBoundingClientRect();
 
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -125,19 +139,17 @@ const Point = (props: AllProps) => {
     },
   });
 
-  //TODO: Rename refs
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  const pointRef = useRef<HTMLSpanElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   const { drag, preview } = useDragPoint(pointId, index);
 
-  drop(preview(pointRef));
+  drop(preview(spanRef));
 
   useEffect(() => {
-    if (typeof cursorPositionIndex === "number" && ref.current) {
-      ref.current.focus();
-      ref.current.setSelectionRange(
+    if (typeof cursorPositionIndex === "number" && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(
         cursorPositionIndex as number,
         cursorPositionIndex as number
       );
@@ -149,12 +161,14 @@ const Point = (props: AllProps) => {
     "ArrowUp" | "ArrowDown" | undefined
   >(undefined);
   useEffect(() => {
-    if (arrowPressed === "ArrowUp" && ref.current) {
-      (referenceData || (ref.current && ref.current.selectionStart === 0)) &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
-    } else if (arrowPressed === "ArrowDown" && ref.current) {
+    if (arrowPressed === "ArrowUp" && textareaRef.current) {
       (referenceData ||
-        (ref.current && ref.current.selectionStart === point.content.length)) &&
+        (textareaRef.current && textareaRef.current.selectionStart === 0)) &&
+        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
+    } else if (arrowPressed === "ArrowDown" && textareaRef.current) {
+      (referenceData ||
+        (textareaRef.current &&
+          textareaRef.current.selectionStart === point.content.length)) &&
         setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
     }
     setArrowPressed(undefined);
@@ -176,60 +190,94 @@ const Point = (props: AllProps) => {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const onClickShapeIcon = () => {
-    if (!props.readOnlyOverride) {
-      props.setMainPoint({ pointId });
+  //TODO: reuse this function in Point and FocusPoint, it's defined
+  //twice
+  const handleShapeIconClick = (e: React.MouseEvent) => {
+    props.togglePoint({ pointId });
+    e.stopPropagation();
+  };
+
+  const handlePointSpanClick = (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+
+    //TODO: Is there a more correct way to do this? I want to switch
+    //to the referenced message and then select the point whose
+    //reference I clicked.
+    //Perhaps we should pass an optional referencePointId to the
+    //setCurrentMessage dispatch, which selects that point if it's
+    //passed in?
+    if (props.referenceData) {
+      props.setCurrentMessage({
+        messageId: props.referenceData.referenceMessageId,
+      });
+      props.setSelectedPoints({
+        pointIds: [props.referenceData.referencePointId],
+      });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
     }
   };
 
+  //TODO: Replace StyledImg with Shape svg component, which should
+  //also be imported by MainPointShape component.
   return (
     <StyledSpan
-      onClick={props.onClick}
+      onClick={handlePointSpanClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      ref={pointRef}
+      ref={spanRef}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
     >
-      <StyledImg
-        ref={props.readOnlyOverride ? null : drag}
-        src={imageUrl}
-        onClick={onClickShapeIcon}
-        isMainPoint={props.isMainPoint}
-        referenceAuthor={props.referenceAuthor}
-        darkMode={props.darkMode}
-        alt={shape}
-      />
+      {props.isMainPoint ? (
+        <MainPointShape
+          onClick={handleShapeIconClick}
+          shape={shape}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+        />
+      ) : (
+        <StyledImg
+          ref={props.isPersisted ? null : drag}
+          src={imageUrl}
+          onClick={handleShapeIconClick}
+          isMainPoint={props.isMainPoint}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+          alt={shape}
+        />
+      )}
       <StyledTextArea
         value={point.content}
         onChange={handleChange}
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [pointId] });
         }}
-        readOnly={!!props.referenceData || props.readOnlyOverride}
+        readOnly={!!props.referenceData || props.isPersisted}
         isMainPoint={props.isMainPoint}
         referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
-        ref={ref}
+        ref={textareaRef}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.readOnlyOverride) {
+          if (props.isPersisted || !textareaRef.current) {
             return;
           } else {
             if (e.key === "Enter") {
               e.preventDefault();
-              ref.current &&
-                !!point.content &&
+              textareaRef.current.selectionStart !== 0 &&
                 props.splitIntoTwoPoints({
                   pointId,
-                  sliceIndex: ref.current.selectionStart,
+                  sliceIndex: textareaRef.current.selectionStart,
                 });
             } else if (
               e.key === "Backspace" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === 0 &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               if (index !== 0) {
                 e.preventDefault();
@@ -248,9 +296,9 @@ const Point = (props: AllProps) => {
               }
             } else if (
               e.key === "Delete" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === point.content.length &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               e.preventDefault();
               combinePoints({
@@ -260,18 +308,18 @@ const Point = (props: AllProps) => {
               });
             } else if (
               e.key === "ArrowLeft" &&
-              ref.current &&
-              ref.current.selectionStart === 0 &&
-              ref.current.selectionStart === ref.current.selectionEnd &&
+              textareaRef.current.selectionStart === 0 &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd &&
               index !== 0
             ) {
               e.preventDefault();
               setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
             } else if (
               e.key === "ArrowRight" &&
-              ref.current &&
-              ref.current.selectionStart === point.content.length &&
-              ref.current.selectionStart === ref.current.selectionEnd
+              textareaRef.current.selectionStart === point.content.length &&
+              textareaRef.current.selectionStart ===
+                textareaRef.current.selectionEnd
             ) {
               e.preventDefault();
               setCursorPosition({
@@ -293,7 +341,7 @@ const Point = (props: AllProps) => {
           darkMode={props.darkMode}
         />
       )}
-      {isHovered && (
+      {isHovered && !props.isPersisted && (
         <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
     </StyledSpan>
@@ -309,16 +357,20 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   if (referenceData) {
     referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
   }
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
   return {
     point: getPointById(ownProps.pointId, state.points),
     referenceData: getReferenceData(ownProps.pointId, state.points),
     referenceAuthor,
-    isMainPoint: ownProps.pointId === state.message.main,
+    isMainPoint: ownProps.pointId === currentMessage.main,
     cursorPositionIndex:
       state.cursorPosition.details &&
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
+    isPersisted:
+      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
   };
 };
 
@@ -332,6 +384,9 @@ const mapActionsToProps = {
   setMainPoint,
   pointsDelete,
   hoverOver,
+  togglePoint,
+  setSelectedPoints,
+  setCurrentMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

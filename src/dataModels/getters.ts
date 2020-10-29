@@ -1,7 +1,7 @@
 import { PointI, PointReferenceI } from "./dataModels";
 import { PointsState } from "../reducers/points";
 
-function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
+export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referencePointId !== undefined;
 }
 

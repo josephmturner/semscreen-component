@@ -45,6 +45,8 @@ export type PointShapeWithEmpty = PointShape | "";
 
 export type RegionI = PointShape | "merits" | "focus";
 
+export type RegionWithParkingI = RegionI | "parking";
+
 export interface AuthorI {
   _id: string;
   name: string;
@@ -76,6 +78,17 @@ export interface PointReferenceI {
 export type ShapesI = {
   [shape in PointShape]: string[];
 };
+
+export interface MessageI {
+  _id: string;
+  revisionOf?: string;
+  author: string;
+  shapes: ShapesI;
+  focus?: string;
+  main?: string;
+  createdAt: Date;
+  isPersisted: boolean;
+}
 
 export interface CursorPositionI {
   pointId: string;
