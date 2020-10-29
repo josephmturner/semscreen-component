@@ -33,11 +33,20 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
-import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
+import {
+  setCurrentMessage,
+  SetCurrentMessageParams,
+} from "../actions/semanticScreenActions";
 
 interface OwnProps {
   pointId: string;
-  onClick: (e: React.MouseEvent) => void;
+  isExpanded: "expanded" | "minimized" | "balanced";
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -52,6 +61,8 @@ interface AllProps extends OwnProps {
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
 const FocusPoint = (props: AllProps) => {
@@ -71,13 +82,36 @@ const FocusPoint = (props: AllProps) => {
     e.stopPropagation();
   };
 
+  const handlePointSpanClick = (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+
+    //TODO: Is there a more correct way to do this? I want to switch
+    //to the referenced message and then select the point whose
+    //reference I clicked.
+    //Perhaps we should pass an optional referencePointId to the
+    //setCurrentMessage dispatch, which selects that point if it's
+    //passed in?
+    if (props.referenceData) {
+      props.setCurrentMessage({
+        messageId: props.referenceData.referenceMessageId,
+      });
+      props.setSelectedPoints({
+        pointIds: [props.referenceData.referencePointId],
+      });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
+  };
+
   const imageUrl = require(`../images/${shape}.svg`);
 
   const { drag, preview } = useDragPoint(pointId, 0);
 
   return (
     <StyledSpan
-      onClick={props.onClick}
+      onClick={handlePointSpanClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       ref={preview}
@@ -158,6 +192,8 @@ const mapActionsToProps = {
   setMainPoint,
   pointsDelete,
   togglePoint,
+  setSelectedPoints,
+  setCurrentMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);

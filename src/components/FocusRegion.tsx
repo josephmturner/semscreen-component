@@ -100,14 +100,6 @@ const FocusRegion = (props: AllProps) => {
     });
   };
 
-  const handlePointClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-
-    props.setSelectedPoints({ pointIds: [] });
-  };
-
   return (
     <StyledRegion
       borderColor={props.author.color}
@@ -118,8 +110,8 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            onClick={(e) => handlePointClick(e)}
             isMainPoint={props.isMainPoint}
+            isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}
           />

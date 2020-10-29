@@ -50,12 +50,21 @@ import {
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
-import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  togglePoint,
+  TogglePointParams,
+} from "../actions/selectPointActions";
+import {
+  setCurrentMessage,
+  SetCurrentMessageParams,
+} from "../actions/semanticScreenActions";
 
 interface OwnProps {
   pointId: string;
   index: number;
-  onClick: (e: React.MouseEvent) => void;
+  isExpanded: "expanded" | "minimized" | "balanced";
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -76,7 +85,9 @@ interface AllProps extends OwnProps {
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   togglePoint: (params: TogglePointParams) => void;
+  setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
 const Point = (props: AllProps) => {
@@ -186,11 +197,34 @@ const Point = (props: AllProps) => {
     e.stopPropagation();
   };
 
+  const handlePointSpanClick = (e: React.MouseEvent) => {
+    if (props.isExpanded === "expanded") {
+      e.stopPropagation();
+    }
+
+    //TODO: Is there a more correct way to do this? I want to switch
+    //to the referenced message and then select the point whose
+    //reference I clicked.
+    //Perhaps we should pass an optional referencePointId to the
+    //setCurrentMessage dispatch, which selects that point if it's
+    //passed in?
+    if (props.referenceData) {
+      props.setCurrentMessage({
+        messageId: props.referenceData.referenceMessageId,
+      });
+      props.setSelectedPoints({
+        pointIds: [props.referenceData.referencePointId],
+      });
+    } else {
+      props.setSelectedPoints({ pointIds: [] });
+    }
+  };
+
   //TODO: Replace StyledImg with Shape svg component, which should
   //also be imported by MainPointShape component.
   return (
     <StyledSpan
-      onClick={props.onClick}
+      onClick={handlePointSpanClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       ref={spanRef}
@@ -351,6 +385,8 @@ const mapActionsToProps = {
   pointsDelete,
   hoverOver,
   togglePoint,
+  setSelectedPoints,
+  setCurrentMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

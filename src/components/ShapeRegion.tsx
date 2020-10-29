@@ -136,22 +136,12 @@ const ShapeRegion = (props: AllProps) => {
     }
   };
 
-  //TODO: this logic is duplicated in FocusPoint.tsx. Move into a hook?
-  //TODO: wrap in useCallback?
-  const handlePointClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-
-    props.setSelectedPoints({ pointIds: [] });
-  };
-
   const listItems = pointIds.map((id: string, i: number) => (
     <Point
       key={id}
       pointId={id}
       index={i}
-      onClick={(e) => handlePointClick(e)}
+      isExpanded={props.isExpanded}
       isSelected={props.selectedPoints.includes(id)}
       darkMode={props.darkMode}
     />
