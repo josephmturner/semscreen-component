@@ -66,6 +66,7 @@ const MessageListItem = (props: AllProps) => {
           shape={shape}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
+          onClick={console.log}
         />
       )}
       {mainPoint ? (

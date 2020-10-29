@@ -100,15 +100,12 @@ const FocusRegion = (props: AllProps) => {
     });
   };
 
-  const handlePointClick = (pointId: string) => (e: React.MouseEvent) => {
+  const handlePointClick = (e: React.MouseEvent) => {
     if (props.isExpanded === "expanded") {
       e.stopPropagation();
     }
-    if (e.ctrlKey || e.metaKey) {
-      props.togglePoint({ pointId });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
+
+    props.setSelectedPoints({ pointIds: [] });
   };
 
   return (
@@ -121,7 +118,7 @@ const FocusRegion = (props: AllProps) => {
         {pointId && (
           <FocusPoint
             pointId={pointId}
-            onClick={handlePointClick(pointId)}
+            onClick={(e) => handlePointClick(e)}
             isMainPoint={props.isMainPoint}
             isSelected={props.selectedPoints.includes(pointId)}
             darkMode={props.darkMode}

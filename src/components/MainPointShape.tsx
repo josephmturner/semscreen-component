@@ -6,6 +6,7 @@ interface Props {
   shape: PointShape;
   referenceAuthor?: AuthorI;
   darkMode?: boolean;
+  onClick: (e: React.MouseEvent) => void;
 }
 
 export const MainPointShape = (props: Props) => {
@@ -17,6 +18,7 @@ export const MainPointShape = (props: Props) => {
       viewBox="0 0 16 16"
       fill={props.darkMode ? "white" : "black"}
       referenceAuthor={props.referenceAuthor}
+      onClick={props.onClick}
     >
       <path
         fillRule="evenodd"

@@ -50,6 +50,7 @@ import {
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
+import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 
 interface OwnProps {
   pointId: string;
@@ -75,6 +76,7 @@ interface AllProps extends OwnProps {
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
+  togglePoint: (params: TogglePointParams) => void;
 }
 
 const Point = (props: AllProps) => {
@@ -177,10 +179,11 @@ const Point = (props: AllProps) => {
 
   const imageUrl = require(`../images/${shape}.svg`);
 
-  const onClickShapeIcon = () => {
-    if (!props.isPersisted) {
-      props.setMainPoint({ pointId });
-    }
+  //TODO: reuse this function in Point and FocusPoint, it's defined
+  //twice
+  const handleShapeIconClick = (e: React.MouseEvent) => {
+    props.togglePoint({ pointId });
+    e.stopPropagation();
   };
 
   //TODO: Replace StyledImg with Shape svg component, which should
@@ -197,6 +200,7 @@ const Point = (props: AllProps) => {
     >
       {props.isMainPoint ? (
         <MainPointShape
+          onClick={handleShapeIconClick}
           shape={shape}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
@@ -205,7 +209,7 @@ const Point = (props: AllProps) => {
         <StyledImg
           ref={props.isPersisted ? null : drag}
           src={imageUrl}
-          onClick={onClickShapeIcon}
+          onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
@@ -346,6 +350,7 @@ const mapActionsToProps = {
   setMainPoint,
   pointsDelete,
   hoverOver,
+  togglePoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(Point);

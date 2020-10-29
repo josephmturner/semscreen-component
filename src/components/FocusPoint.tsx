@@ -33,6 +33,7 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
+import { togglePoint, TogglePointParams } from "../actions/selectPointActions";
 
 interface OwnProps {
   pointId: string;
@@ -50,6 +51,7 @@ interface AllProps extends OwnProps {
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
+  togglePoint: (params: TogglePointParams) => void;
 }
 
 const FocusPoint = (props: AllProps) => {
@@ -64,10 +66,9 @@ const FocusPoint = (props: AllProps) => {
     });
   };
 
-  const onClickShapeIcon = () => {
-    if (!props.isPersisted) {
-      props.setMainPoint({ pointId });
-    }
+  const handleShapeIconClick = (e: React.MouseEvent) => {
+    props.togglePoint({ pointId });
+    e.stopPropagation();
   };
 
   const imageUrl = require(`../images/${shape}.svg`);
@@ -89,12 +90,13 @@ const FocusPoint = (props: AllProps) => {
           shape={shape}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
+          onClick={handleShapeIconClick}
         />
       ) : (
         <StyledImg
           ref={props.isPersisted ? null : drag}
           src={imageUrl}
-          onClick={onClickShapeIcon}
+          onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
@@ -155,6 +157,7 @@ const mapActionsToProps = {
   pointUpdate,
   setMainPoint,
   pointsDelete,
+  togglePoint,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);
