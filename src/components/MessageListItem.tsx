@@ -24,8 +24,9 @@ import {
   PointShape,
 } from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/getters";
-import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
+import { StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
+import { MainPointShape } from "./MainPointShape";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -61,12 +62,10 @@ const MessageListItem = (props: AllProps) => {
       referenceAuthor={props.referenceAuthor}
     >
       {shape && (
-        <StyledImg
-          src={require(`../images/${shape}.svg`)}
-          isMainPoint={true}
+        <MainPointShape
+          shape={shape}
           referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
-          alt={shape}
         />
       )}
       {mainPoint ? (

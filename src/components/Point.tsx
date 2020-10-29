@@ -23,6 +23,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
+import { MainPointShape } from "./MainPointShape";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -182,6 +183,8 @@ const Point = (props: AllProps) => {
     }
   };
 
+  //TODO: Replace StyledImg with Shape svg component, which should
+  //also be imported by MainPointShape component.
   return (
     <StyledSpan
       onClick={props.onClick}
@@ -192,15 +195,23 @@ const Point = (props: AllProps) => {
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
     >
-      <StyledImg
-        ref={props.isPersisted ? null : drag}
-        src={imageUrl}
-        onClick={onClickShapeIcon}
-        isMainPoint={props.isMainPoint}
-        referenceAuthor={props.referenceAuthor}
-        darkMode={props.darkMode}
-        alt={shape}
-      />
+      {props.isMainPoint ? (
+        <MainPointShape
+          shape={shape}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+        />
+      ) : (
+        <StyledImg
+          ref={props.isPersisted ? null : drag}
+          src={imageUrl}
+          onClick={onClickShapeIcon}
+          isMainPoint={props.isMainPoint}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+          alt={shape}
+        />
+      )}
       <StyledTextArea
         value={point.content}
         onChange={handleChange}

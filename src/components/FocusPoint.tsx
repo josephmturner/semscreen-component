@@ -22,6 +22,7 @@ import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
+import { MainPointShape } from "./MainPointShape";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -83,15 +84,23 @@ const FocusPoint = (props: AllProps) => {
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
     >
-      <StyledImg
-        ref={props.isPersisted ? null : drag}
-        src={imageUrl}
-        onClick={onClickShapeIcon}
-        isMainPoint={props.isMainPoint}
-        referenceAuthor={props.referenceAuthor}
-        darkMode={props.darkMode}
-        alt={shape}
-      />
+      {props.isMainPoint ? (
+        <MainPointShape
+          shape={shape}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+        />
+      ) : (
+        <StyledImg
+          ref={props.isPersisted ? null : drag}
+          src={imageUrl}
+          onClick={onClickShapeIcon}
+          isMainPoint={props.isMainPoint}
+          referenceAuthor={props.referenceAuthor}
+          darkMode={props.darkMode}
+          alt={shape}
+        />
+      )}
       <StyledTextArea
         value={point.content}
         onChange={handleChange}

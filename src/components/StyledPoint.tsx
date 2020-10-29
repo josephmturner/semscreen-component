@@ -48,7 +48,6 @@ export const StyledImg = styled.img<StyledPointProps>`
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
   margin-top: ${(props) => (props.referenceAuthor ? "0.8rem" : 0)};
   left: ${(props) => (props.referenceAuthor ? "7px" : 0)};
-  opacity: 0.7;
 `;
 
 export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
