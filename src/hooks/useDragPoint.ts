@@ -18,7 +18,7 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { getPointById } from "../dataModels/getters";
+import { getPointById } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 
 import { useDispatch, useSelector } from "react-redux";

@@ -25,16 +25,19 @@ import {
   allPointShapes,
   MessageI,
   isPointShape,
+  PointI,
+  PointReferenceI,
 } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
   getReferencedPointId,
   isReference,
-} from "../dataModels/getters";
+  getOriginalShape,
+} from "../dataModels/pointUtils";
 import {
   _PointCreateParams,
-  PointsMoveParams,
+  _PointsMoveParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -86,7 +89,7 @@ export const messagesReducer = (
     case Actions.pointsMove:
       newState = handlePointsMove(
         state,
-        action as Action<PointsMoveParams>,
+        action as Action<_PointsMoveParams>,
         appState
       );
       break;
@@ -163,10 +166,50 @@ function handlePointCreate(
 
 function handlePointsMove(
   state: MessagesState,
-  action: Action<PointsMoveParams>,
+  action: Action<_PointsMoveParams>,
   appState: AppState
 ): MessagesState {
   if (appState.drag.context === null) return state;
+
+  const { messageId } = action.params;
+  if (messageId !== undefined) {
+    // We are moving points into a new message.
+
+    const points: (PointI | PointReferenceI)[] = action.params.newPoints ??
+        appState.selectedPoints.pointIds.map(pointId => {
+          return appState.points.byId[pointId];
+        });
+
+    const isCutAndPaste = action.params.newPoints === undefined;
+
+    return produce(state, draft => {
+      const targetMessage = draft.byId[messageId];
+      points.forEach(point => {
+        const shape = isReference(point) ? getOriginalShape(point, appState.points) : point.shape;
+        targetMessage.shapes[shape].push(point._id);
+      });
+
+
+      if (isCutAndPaste) {
+        // Remove the points from the original (current) message.
+        const currentMessageId = appState.semanticScreen.currentMessage;
+        const currentMessage = draft.byId[currentMessageId];
+
+        points.forEach(point => {
+          const shape = isReference(point) ? getOriginalShape(point, appState.points) : point.shape;
+          currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(pointId => {
+            return pointId !== point._id;
+          });
+        });
+
+        // Remove focus if it was moved to a ShapeRegion
+        if (currentMessage.focus && points.map(p => p._id).includes(currentMessage.focus)) {
+          delete draft.byId[currentMessageId].focus;
+        };
+      }
+    });
+  }
+
   const { region, index } = appState.drag.context;
 
   if (!isPointShape(region)) return state;

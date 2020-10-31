@@ -16,14 +16,14 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useState } from "react";
 import {
   AuthorI,
   PointI,
   PointReferenceI,
   PointShape,
 } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/getters";
+import { getPointById, getReferenceData, getOriginalAuthorId } from "../dataModels/pointUtils";
 import { StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import { MainPointShape } from "./MainPointShape";
@@ -34,6 +34,14 @@ import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
+import {
+  pointsMove,
+  PointsMoveParams,
+} from "../actions/pointsActions";
+
+
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
   messageId: string;
@@ -45,6 +53,7 @@ interface AllProps extends OwnProps {
   referenceData: PointReferenceI | null;
   referenceAuthor?: AuthorI;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
+  pointsMove: (params: PointsMoveParams) => void;
 }
 
 const MessageListItem = (props: AllProps) => {
@@ -54,8 +63,16 @@ const MessageListItem = (props: AllProps) => {
     shape = mainPoint.shape;
   }
 
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    drop: () => {
+      props.pointsMove({ messageId: props.messageId });
+    },
+  });
+
   return (
     <StyledSpan
+      ref={drop}
       onClick={() => props.setCurrentMessage({ messageId: props.messageId })}
       isMainPoint={true}
       isSelected={false}
@@ -82,7 +99,7 @@ const MessageListItem = (props: AllProps) => {
       )}
       {referenceData && (
         <Banner
-          authorId={referenceData.referenceAuthorId}
+          authorId={getOriginalAuthorId(referenceData)}
           placement={{ top: "-0.15rem", right: "0.8rem" }}
           darkMode={props.darkMode}
         />
@@ -101,7 +118,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   }
   let referenceAuthor;
   if (referenceData) {
-    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
   }
 
   return {
@@ -113,6 +130,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
 const mapActionsToProps = {
   setCurrentMessage,
+  pointsMove,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(MessageListItem);

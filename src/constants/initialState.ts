@@ -39,15 +39,19 @@ export const points: PointsState = {
     },
     REFERENCE_TO_pointId1_0: {
       _id: "REFERENCE_TO_pointId1_0",
-      referencePointId: "pointId1",
-      referenceMessageId: "message0",
-      referenceAuthorId: "author0",
+      referenceHistory: [{
+        pointId: "pointId1",
+        messageId: "message0",
+        authorId: "author0",
+      }],
     },
     REFERENCE_TO_pointId1_1: {
       _id: "REFERENCE_TO_pointId1_1",
-      referencePointId: "pointId1",
-      referenceMessageId: "message0",
-      referenceAuthorId: "author0",
+      referenceHistory: [{
+        pointId: "pointId1",
+        messageId: "message0",
+        authorId: "author0",
+      }],
     },
     pointId2: {
       content:
@@ -65,9 +69,11 @@ export const points: PointsState = {
     },
     REFERENCE_TO_pointId3: {
       _id: "REFERENCE_TO_pointId3",
-      referencePointId: "pointId3",
-      referenceMessageId: "message0",
-      referenceAuthorId: "author0",
+      referenceHistory: [{
+        pointId: "pointId3",
+        messageId: "message0",
+        authorId: "author0",
+      }],
     },
     pointId4: {
       content: "Get plenty of sleep :)",

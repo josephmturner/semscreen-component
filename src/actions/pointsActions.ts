@@ -17,8 +17,12 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "./constants";
-import { PointI, PointShape, PointNoIdI } from "../dataModels/dataModels";
 import { v4 as uuidv4 } from "uuid";
+import { ThunkAction } from "redux-thunk";
+
+import { AppState } from "../reducers/store";
+import { PointI, PointReferenceI, PointShape, PointNoIdI } from "../dataModels/dataModels";
+import { createReferenceTo } from "../dataModels/pointUtils";
 
 export interface PointCreateParams {
   point: PointNoIdI;
@@ -56,14 +60,54 @@ export const pointUpdate = (
   };
 };
 
-//TODO: Should we leave this as an empty interface? or remove it
-//entirely so that we don't have to pass an empty object when calling
-//pointsMove?
-export interface PointsMoveParams {}
+function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
+  if (params.messageId === undefined) {
+    return false;
+  }
+
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  const message = appState.messages.byId[currentMessageId];
+  if (!message.isPersisted) {
+    return false;
+  }
+
+  return true;
+}
+
+export interface PointsMoveParams {
+  // If messageId is undefined, then we move the points around in the current message.
+  // Otherwise, we move the points into the specified message.
+  messageId?: string;
+}
 
 export const pointsMove = (
   params: PointsMoveParams
-): Action<PointsMoveParams> => {
+): ThunkAction<void, AppState, unknown, Action<_PointsMoveParams>> => {
+
+  return (dispatch, getState) => {
+    const appState: AppState = getState();
+
+    let referencePoints: PointReferenceI[] | undefined;
+
+    if (_shouldCopy(params, appState)) {
+      referencePoints = appState.selectedPoints.pointIds.map(pointId => {
+        return createReferenceTo(pointId, appState);
+      });
+    }
+
+    dispatch(_pointsMove({
+      messageId: params.messageId,
+      newPoints: referencePoints,
+    }));
+  }
+};
+
+export interface _PointsMoveParams {
+  messageId?: string;
+  newPoints?: PointReferenceI[];
+}
+
+export const _pointsMove = (params: _PointsMoveParams): Action<_PointsMoveParams> => {
   return {
     type: Actions.pointsMove,
     params,

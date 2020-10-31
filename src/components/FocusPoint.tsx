@@ -17,7 +17,13 @@
 */
 import React, { useState } from "react";
 import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/getters";
+import {
+  getPointById,
+  getReferenceData,
+  getOriginalMessageId,
+  getOriginalPointId,
+  getOriginalAuthorId,
+} from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -95,10 +101,10 @@ const FocusPoint = (props: AllProps) => {
     //passed in?
     if (props.referenceData) {
       props.setCurrentMessage({
-        messageId: props.referenceData.referenceMessageId,
+        messageId: getOriginalMessageId(props.referenceData),
       });
       props.setSelectedPoints({
-        pointIds: [props.referenceData.referencePointId],
+        pointIds: [getOriginalPointId(props.referenceData)],
       });
     } else {
       props.setSelectedPoints({ pointIds: [] });
@@ -160,7 +166,7 @@ const FocusPoint = (props: AllProps) => {
       />
       {props.referenceData && (
         <Banner
-          authorId={props.referenceData.referenceAuthorId}
+          authorId={getOriginalAuthorId(props.referenceData)}
           placement={{ top: "-0.2rem", right: "0.4rem" }}
           darkMode={props.darkMode}
         />
@@ -176,7 +182,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state.points);
   let referenceAuthor;
   if (referenceData) {
-    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
   }
   return {
     point: getPointById(ownProps.pointId, state.points),
