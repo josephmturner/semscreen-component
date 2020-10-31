@@ -47,7 +47,7 @@ export const StyledImg = styled.img<StyledPointProps>`
   height: ${(props) => (props.isMainPoint ? "23px" : "17px")};
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
   margin-top: ${(props) => (props.referenceAuthor ? "0.8rem" : 0)};
-  left: ${(props) => (props.referenceAuthor ? "7px" : 0)};
+  left: ${(props) => (props.referenceAuthor ? "7px" : "0.2rem")};
 `;
 
 export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
@@ -60,7 +60,7 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   resize: none;
-  text-indent: ${(props) => (props.isMainPoint ? "2em" : "1.8em")};
+  text-indent: 1.8em;
   ${(props) =>
     props.referenceAuthor &&
     ` border: 1.5px solid ${props.referenceAuthor.color}; border-top: 0.5rem solid ${props.referenceAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}

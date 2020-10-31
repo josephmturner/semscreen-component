@@ -124,6 +124,7 @@ const SemscreenPanel = styled.div`
 
 const BottomPanel = styled.div`
   height: 12rem;
+  margin-top: 3px;
   overflow: auto;
 `;
 

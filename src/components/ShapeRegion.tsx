@@ -85,7 +85,9 @@ const ShapeRegion = (props: AllProps) => {
       item.region = shape;
     },
     drop: () => {
-      props.pointsMove({});
+      if (!props.isPersisted) {
+        props.pointsMove({});
+      }
     },
   });
 
@@ -106,7 +108,9 @@ const ShapeRegion = (props: AllProps) => {
       }
     },
     drop: () => {
-      props.pointsMove({});
+      if (!props.isPersisted) {
+        props.pointsMove({});
+      }
     },
   });
 

@@ -135,7 +135,9 @@ const Point = (props: AllProps) => {
       });
     },
     drop: () => {
-      props.pointsMove({});
+      if (!props.isPersisted) {
+        props.pointsMove({});
+      }
     },
   });
 
@@ -241,7 +243,7 @@ const Point = (props: AllProps) => {
         />
       ) : (
         <StyledImg
-          ref={props.isPersisted ? null : drag}
+          ref={drag}
           src={imageUrl}
           onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
@@ -337,7 +339,7 @@ const Point = (props: AllProps) => {
       {referenceData && (
         <Banner
           authorId={referenceData.referenceAuthorId}
-          placement={{ top: "-0.15rem", right: "0.8rem" }}
+          placement={{ top: "-0.2rem", right: "0.8rem" }}
           darkMode={props.darkMode}
         />
       )}

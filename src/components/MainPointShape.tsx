@@ -89,5 +89,5 @@ export const StyledSvg = styled.svg<{ referenceAuthor?: AuthorI }>`
   position: absolute;
   height: 20px;
   top: ${(props) => (props.referenceAuthor ? "1rem" : 0)};
-  left: ${(props) => (props.referenceAuthor ? "0.75rem" : "0.5rem")};
+  left: ${(props) => (props.referenceAuthor ? "0.7rem" : "0.3rem")};
 `;
