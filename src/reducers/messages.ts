@@ -175,6 +175,10 @@ function handlePointsMove(
   if (messageId !== undefined) {
     // We are moving points into a new message.
 
+    if (messageId === appState.semanticScreen.currentMessage) {
+      return state;
+    }
+
     const points: (PointI | PointReferenceI)[] = action.params.newPoints ??
         appState.selectedPoints.pointIds.map(pointId => {
           return appState.points.byId[pointId];
