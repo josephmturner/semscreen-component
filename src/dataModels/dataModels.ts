@@ -68,11 +68,15 @@ export interface PointI {
   pointDate: Date;
 }
 
+export interface ReferenceLog {
+  pointId: string;
+  messageId: string;
+  authorId: string;
+}
+
 export interface PointReferenceI {
   _id: string;
-  referencePointId: string;
-  referenceMessageId: string;
-  referenceAuthorId: string;
+  referenceHistory: ReferenceLog[];
 }
 
 export type ShapesI = {

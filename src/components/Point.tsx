@@ -18,7 +18,13 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/getters";
+import {
+  getPointById,
+  getReferenceData,
+  getOriginalMessageId,
+  getOriginalAuthorId,
+  getOriginalPointId,
+} from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
@@ -212,10 +218,10 @@ const Point = (props: AllProps) => {
     //passed in?
     if (props.referenceData) {
       props.setCurrentMessage({
-        messageId: props.referenceData.referenceMessageId,
+        messageId: getOriginalMessageId(props.referenceData),
       });
       props.setSelectedPoints({
-        pointIds: [props.referenceData.referencePointId],
+        pointIds: [getOriginalPointId(props.referenceData)],
       });
     } else {
       props.setSelectedPoints({ pointIds: [] });
@@ -338,7 +344,7 @@ const Point = (props: AllProps) => {
       />
       {referenceData && (
         <Banner
-          authorId={referenceData.referenceAuthorId}
+          authorId={getOriginalAuthorId(referenceData)}
           placement={{ top: "-0.2rem", right: "0.8rem" }}
           darkMode={props.darkMode}
         />
@@ -357,7 +363,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   //(we would then have to connect those components to redux)
   let referenceAuthor;
   if (referenceData) {
-    referenceAuthor = state.authors.byId[referenceData.referenceAuthorId];
+    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
   }
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];

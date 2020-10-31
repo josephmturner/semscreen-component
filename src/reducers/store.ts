@@ -17,7 +17,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action } from "../actions/constants";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
 
 import {
@@ -113,7 +114,8 @@ function createAppStore() {
     };
     return newState;
   };
-  return createStore(appReducer, composeWithDevTools());
+
+  return createStore(appReducer, composeWithDevTools(applyMiddleware(thunk)));
 }
 
 export const store = createAppStore();

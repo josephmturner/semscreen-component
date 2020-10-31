@@ -28,12 +28,12 @@ import {
   getReferenceData,
   getReferencedPointId,
   isReference,
-} from "../dataModels/getters";
+} from "../dataModels/pointUtils";
 import { AppState } from "./store";
 import {
   _PointCreateParams,
   PointUpdateParams,
-  PointsMoveParams,
+  _PointsMoveParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -63,7 +63,7 @@ export const pointsReducer = (
     case Actions.pointsMove:
       newState = handlePointsMove(
         state,
-        action as Action<PointsMoveParams>,
+        action as Action<_PointsMoveParams>,
         appState
       );
       break;
@@ -114,25 +114,40 @@ function handlePointUpdate(
 
 function handlePointsMove(
   state: PointsState,
-  action: Action<PointsMoveParams>,
+  action: Action<_PointsMoveParams>,
   appState: AppState
 ): PointsState {
   if (appState.drag.context === null) return state;
-  const { region } = appState.drag.context;
 
-  if (!isPointShape(region)) return state;
-  const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
-    (p) => !getReferenceData(p, state)
-  );
-  return produce(state, (draft) => {
-    pointIdsExcludingReferencePoints.forEach(
-      (id) =>
-        (draft.byId[id] = {
-          ...draft.byId[id],
-          shape: region,
-        })
+  if (action.params.messageId !== undefined) {
+    const { newPoints } = action.params;
+
+    if (newPoints === undefined) {
+      return state;
+    }
+
+    return produce(state, (draft) => {
+      newPoints.forEach(point => {
+        draft.byId[point._id] = point;
+      });
+    });
+  } else {
+    const { region } = appState.drag.context;
+
+    if (!isPointShape(region)) return state;
+    const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
+      (p) => !getReferenceData(p, state)
     );
-  });
+    return produce(state, (draft) => {
+      pointIdsExcludingReferencePoints.forEach(
+        (id) =>
+          (draft.byId[id] = {
+            ...draft.byId[id],
+            shape: region,
+          })
+      );
+    });
+  }
 }
 
 function handlePointsDelete(
