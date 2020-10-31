@@ -19,16 +19,28 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "../constants/React-Dnd";
+
+
 export interface PanelButtonProps {
   side: "right" | "bottom";
   onClick: () => void;
   darkMode: boolean;
+  onDragOver?: () => void;
 }
 
 const PanelButton = (props: PanelButtonProps) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    hover: props.onDragOver,
+  });
+
   return (
     <StyledSvg
+      ref={drop}
       width={props.side === "right" ? "1em" : "2em"}
       height={props.side === "bottom" ? "1em" : "2em"}
       viewBox="0 0 16 16"

@@ -35,6 +35,12 @@ const App = (props: {
 }) => {
   const darkMode = true;
 
+  const onDragOverBottomPanel = () => {
+    if (!props.panels.bottom) {
+      props.togglePanel({ location: "bottom" });
+    }
+  };
+
   return (
     <AppStyles darkMode={darkMode}>
       <MainPanel>
@@ -45,6 +51,7 @@ const App = (props: {
             onClick={() => {
               props.togglePanel({ location: "bottom" });
             }}
+            onDragOver={onDragOverBottomPanel}
             darkMode={darkMode}
           />
           <PanelButton
