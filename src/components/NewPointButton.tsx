@@ -55,7 +55,7 @@ const StyledSpan = styled.span`
 
 const StyledImg = styled.img`
   height: 17px;
-  margin: 0px 4px 0 2px;
+  margin: 0px 4px 0 3px;
   opacity: 0.4;
 `;
 

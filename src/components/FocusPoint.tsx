@@ -128,7 +128,7 @@ const FocusPoint = (props: AllProps) => {
         />
       ) : (
         <StyledImg
-          ref={props.isPersisted ? null : drag}
+          ref={drag}
           src={imageUrl}
           onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
@@ -161,7 +161,7 @@ const FocusPoint = (props: AllProps) => {
       {props.referenceData && (
         <Banner
           authorId={props.referenceData.referenceAuthorId}
-          placement={{ top: "-0.5rem", right: "0.4rem" }}
+          placement={{ top: "-0.2rem", right: "0.4rem" }}
           darkMode={props.darkMode}
         />
       )}

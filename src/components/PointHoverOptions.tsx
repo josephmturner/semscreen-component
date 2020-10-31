@@ -29,8 +29,6 @@ const PointHoverOptions = (props: { pointId: string; darkMode?: boolean }) => {
   return (
     <StyledPointHoverOptions darkMode={props.darkMode}>
       <MainPointIcon
-        width="0.9rem"
-        height="0.9rem"
         viewBox="0 0 512 512"
         darkMode={props.darkMode}
         onClick={(e: React.MouseEvent) => {
@@ -45,8 +43,6 @@ const PointHoverOptions = (props: { pointId: string; darkMode?: boolean }) => {
           dispatch(pointsDelete({ pointIds: [props.pointId] }));
           e.stopPropagation();
         }}
-        width="0.9rem"
-        height="0.9rem"
         viewBox="0 0 16 16"
         fill={props.darkMode ? "white" : "black"}
         xmlns="http://www.w3.org/2000/svg"
@@ -77,6 +73,8 @@ const StyledPointHoverOptions = styled.div<{ darkMode?: boolean }>`
 
 const MainPointIcon = styled.svg<{ darkMode?: boolean }>`
   padding: 0 3px;
+  width:0.9rem;
+  height:0.9rem;
   fill: ${(props) => (props.darkMode ? "white" : "black")};
 
   :hover {
@@ -87,6 +85,8 @@ const MainPointIcon = styled.svg<{ darkMode?: boolean }>`
 `;
 
 const TrashIcon = styled.svg`
+  width:0.9rem;
+  height:0.9rem;
   padding: 0 3px;
 
   :hover {

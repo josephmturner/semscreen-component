@@ -22,7 +22,6 @@ import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
-
 export interface PanelButtonProps {
   side: "right" | "bottom";
   onClick: () => void;

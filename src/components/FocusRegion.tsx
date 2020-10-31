@@ -52,6 +52,7 @@ interface AllProps extends OwnProps {
   pointId: string | undefined;
   selectedPoints: string[];
   isMainPoint: boolean;
+  isPersisted: boolean;
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
@@ -82,7 +83,9 @@ const FocusRegion = (props: AllProps) => {
       }
     },
     drop: () => {
-      props.setFocus({});
+      if (!props.isPersisted) {
+        props.setFocus({});
+      }
     },
   });
 
@@ -144,6 +147,8 @@ const mapStateToProps = (state: AppState) => {
     pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
+    isPersisted:
+      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
   };
 };
 
