@@ -124,6 +124,7 @@ const FocusPoint = (props: AllProps) => {
       isMainPoint={isMainPoint}
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
+      darkMode={props.darkMode}
     >
       {props.isMainPoint ? (
         <MainPointShape

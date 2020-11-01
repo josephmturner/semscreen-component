@@ -40,6 +40,10 @@ export const StyledSpan = styled.span<StyledPointProps>`
   background-color: #777;
   border-radius: 5px;
 `}
+  :hover {
+    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+    border-radius: 7px;
+  }
 `;
 
 export const StyledImg = styled.img<StyledPointProps>`

@@ -21,7 +21,12 @@ import { v4 as uuidv4 } from "uuid";
 import { ThunkAction } from "redux-thunk";
 
 import { AppState } from "../reducers/store";
-import { PointI, PointReferenceI, PointShape, PointNoIdI } from "../dataModels/dataModels";
+import {
+  PointI,
+  PointReferenceI,
+  PointShape,
+  PointNoIdI,
+} from "../dataModels/dataModels";
 import { createReferenceTo } from "../dataModels/pointUtils";
 
 export interface PointCreateParams {
@@ -83,23 +88,24 @@ export interface PointsMoveParams {
 export const pointsMove = (
   params: PointsMoveParams
 ): ThunkAction<void, AppState, unknown, Action<_PointsMoveParams>> => {
-
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
     let referencePoints: PointReferenceI[] | undefined;
 
     if (_shouldCopy(params, appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map(pointId => {
+      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
 
-    dispatch(_pointsMove({
-      messageId: params.messageId,
-      newPoints: referencePoints,
-    }));
-  }
+    dispatch(
+      _pointsMove({
+        messageId: params.messageId,
+        newPoints: referencePoints,
+      })
+    );
+  };
 };
 
 export interface _PointsMoveParams {
@@ -107,7 +113,9 @@ export interface _PointsMoveParams {
   newPoints?: PointReferenceI[];
 }
 
-export const _pointsMove = (params: _PointsMoveParams): Action<_PointsMoveParams> => {
+export const _pointsMove = (
+  params: _PointsMoveParams
+): Action<_PointsMoveParams> => {
   return {
     type: Actions.pointsMove,
     params,

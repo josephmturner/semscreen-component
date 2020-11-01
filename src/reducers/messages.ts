@@ -34,6 +34,7 @@ import {
   getReferencedPointId,
   isReference,
   getOriginalShape,
+  containsPoints,
 } from "../dataModels/pointUtils";
 import {
   _PointCreateParams,
@@ -42,7 +43,12 @@ import {
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
-import { SetFocusParams, SetMainPointParams } from "../actions/messagesActions";
+import {
+  _MessageCreateParams,
+  SetFocusParams,
+  SetMainPointParams,
+} from "../actions/messagesActions";
+import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 
 export interface MessagesState {
   byId: {
@@ -55,6 +61,7 @@ export const initialMessagesState: MessagesState = {
   byId: {
     message0: {
       _id: uuidv4(),
+      //TODO: Replace "author0" with user's id
       author: "author0",
       shapes: {
         facts: [],
@@ -79,6 +86,14 @@ export const messagesReducer = (
 ): MessagesState => {
   let newState = state;
   switch (action.type) {
+    case Actions.messageCreate:
+      newState = handleMessageCreate(
+        state,
+        action as Action<_MessageCreateParams>,
+        appState
+      );
+      break;
+
     case Actions.pointCreate:
       newState = handlePointCreate(
         state,
@@ -128,6 +143,13 @@ export const messagesReducer = (
         appState
       );
       break;
+    case Actions.setCurrentMessage:
+      newState = handleSetCurrentMessage(
+        state,
+        action as Action<SetCurrentMessageParams>,
+        appState
+      );
+      break;
   }
   return newState;
 };
@@ -138,6 +160,34 @@ export const messagesReducer = (
 //): MessagesState {
 //  return action.params.message;
 //}
+
+function handleMessageCreate(
+  state: MessagesState,
+  action: Action<_MessageCreateParams>,
+  appState: AppState
+): MessagesState {
+  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+    return state;
+  return produce(state, (draft) => {
+    draft.byId[action.params.newMessageId] = {
+      _id: action.params.newMessageId,
+      //TODO: Replace "author1" with user's id
+      author: "author1",
+      shapes: {
+        facts: [],
+        thoughts: [],
+        feelings: [],
+        needs: [],
+        topics: [],
+        actions: [],
+        people: [],
+      },
+      createdAt: new Date(),
+      isPersisted: false,
+    };
+    draft.allMessages.push(action.params.newMessageId);
+  });
+}
 
 function handlePointCreate(
   state: MessagesState,
@@ -179,37 +229,59 @@ function handlePointsMove(
       return state;
     }
 
-    const points: (PointI | PointReferenceI)[] = action.params.newPoints ??
-        appState.selectedPoints.pointIds.map(pointId => {
-          return appState.points.byId[pointId];
-        });
+    const points: (PointI | PointReferenceI)[] =
+      action.params.newPoints ??
+      appState.selectedPoints.pointIds.map((pointId) => {
+        return appState.points.byId[pointId];
+      });
 
     const isCutAndPaste = action.params.newPoints === undefined;
 
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       const targetMessage = draft.byId[messageId];
-      points.forEach(point => {
-        const shape = isReference(point) ? getOriginalShape(point, appState.points) : point.shape;
+      points.forEach((point) => {
+        const shape = isReference(point)
+          ? getOriginalShape(point, appState.points)
+          : point.shape;
         targetMessage.shapes[shape].push(point._id);
       });
-
 
       if (isCutAndPaste) {
         // Remove the points from the original (current) message.
         const currentMessageId = appState.semanticScreen.currentMessage;
         const currentMessage = draft.byId[currentMessageId];
 
-        points.forEach(point => {
-          const shape = isReference(point) ? getOriginalShape(point, appState.points) : point.shape;
-          currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(pointId => {
-            return pointId !== point._id;
-          });
+        points.forEach((point) => {
+          const shape = isReference(point)
+            ? getOriginalShape(point, appState.points)
+            : point.shape;
+          currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
+            (pointId) => {
+              return pointId !== point._id;
+            }
+          );
         });
 
-        // Remove focus if it was moved to a ShapeRegion
-        if (currentMessage.focus && points.map(p => p._id).includes(currentMessage.focus)) {
+        // Remove focus and reset main if moved to a different message
+        if (
+          currentMessage.focus &&
+          points.map((p) => p._id).includes(currentMessage.focus)
+        ) {
           delete draft.byId[currentMessageId].focus;
-        };
+        }
+        //TODO: this code will not be necessary if we decide to set the
+        //currentMessage to action.params.messageId.
+        if (
+          currentMessage.main &&
+          points.map((p) => p._id).includes(currentMessage.main)
+        ) {
+          const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
+          if (pointInShapes) {
+            currentMessage.main = pointInShapes;
+          } else {
+            currentMessage.main = currentMessage.focus;
+          }
+        }
       }
     });
   }
@@ -409,3 +481,19 @@ function handleSplitIntoTwoPoints(
     );
   });
 }
+
+const handleSetCurrentMessage = (
+  state: MessagesState,
+  action: Action<SetCurrentMessageParams>,
+  appState: AppState
+) => {
+  //Delete an empty message when the SemanticScreen no longer displays it
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  if (containsPoints(currentMessageId, appState)) return state;
+  return produce(state, (draft) => {
+    delete draft.byId[currentMessageId];
+    draft.allMessages = draft.allMessages.filter(
+      (id) => id !== currentMessageId
+    );
+  });
+};

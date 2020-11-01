@@ -16,14 +16,18 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
 import {
   AuthorI,
   PointI,
   PointReferenceI,
   PointShape,
 } from "../dataModels/dataModels";
-import { getPointById, getReferenceData, getOriginalAuthorId } from "../dataModels/pointUtils";
+import {
+  getPointById,
+  getReferenceData,
+  getOriginalAuthorId,
+} from "../dataModels/pointUtils";
 import { StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import { MainPointShape } from "./MainPointShape";
@@ -34,11 +38,7 @@ import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
-import {
-  pointsMove,
-  PointsMoveParams,
-} from "../actions/pointsActions";
-
+import { pointsMove, PointsMoveParams } from "../actions/pointsActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
@@ -77,6 +77,7 @@ const MessageListItem = (props: AllProps) => {
       isMainPoint={true}
       isSelected={false}
       referenceAuthor={props.referenceAuthor}
+      darkMode={props.darkMode}
     >
       {shape && (
         <MainPointShape
@@ -95,7 +96,7 @@ const MessageListItem = (props: AllProps) => {
           darkMode={props.darkMode}
         />
       ) : (
-        <div>This message doesn't have any points!</div>
+        <div>This message doesn't have any points yet!</div>
       )}
       {referenceData && (
         <Banner

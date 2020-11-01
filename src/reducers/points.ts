@@ -127,7 +127,7 @@ function handlePointsMove(
     }
 
     return produce(state, (draft) => {
-      newPoints.forEach(point => {
+      newPoints.forEach((point) => {
         draft.byId[point._id] = point;
       });
     });
