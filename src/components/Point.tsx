@@ -239,6 +239,7 @@ const Point = (props: AllProps) => {
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
       referenceAuthor={props.referenceAuthor}
+      darkMode={props.darkMode}
     >
       {props.isMainPoint ? (
         <MainPointShape

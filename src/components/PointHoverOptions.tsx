@@ -73,8 +73,8 @@ const StyledPointHoverOptions = styled.div<{ darkMode?: boolean }>`
 
 const MainPointIcon = styled.svg<{ darkMode?: boolean }>`
   padding: 0 3px;
-  width:0.9rem;
-  height:0.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
   fill: ${(props) => (props.darkMode ? "white" : "black")};
 
   :hover {
@@ -85,8 +85,8 @@ const MainPointIcon = styled.svg<{ darkMode?: boolean }>`
 `;
 
 const TrashIcon = styled.svg`
-  width:0.9rem;
-  height:0.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
   padding: 0 3px;
 
   :hover {

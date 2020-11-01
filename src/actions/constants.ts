@@ -30,6 +30,7 @@ export const Actions = {
   setAuthors: "setAuthors",
 
   setMessage: "setMessage",
+  messageCreate: "messageCreate",
   pointCreate: "pointCreate",
   pointUpdate: "pointUpdate",
   pointsMove: "pointsMove",

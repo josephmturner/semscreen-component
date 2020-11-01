@@ -18,6 +18,7 @@
 */
 import { Action, Actions } from "./constants";
 import { PointI, PointShape } from "../dataModels/dataModels";
+import { v4 as uuidv4 } from "uuid";
 
 //import { MessageState } from "../reducers/message";
 
@@ -33,6 +34,25 @@ import { PointI, PointShape } from "../dataModels/dataModels";
 //    params: params,
 //  };
 //};
+
+export interface MessageCreateParams {}
+
+export interface _MessageCreateParams extends MessageCreateParams {
+  newMessageId: string;
+}
+
+export const messageCreate = (
+  params: MessageCreateParams
+): Action<_MessageCreateParams> => {
+  const newMessageId = uuidv4();
+  return {
+    type: Actions.messageCreate,
+    params: {
+      ...params,
+      newMessageId,
+    },
+  };
+};
 
 export interface SetFocusParams {}
 

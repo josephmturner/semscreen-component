@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { PointShape, PointI, PointReferenceI, ReferenceLog } from "./dataModels";
+import {
+  PointShape,
+  PointI,
+  PointReferenceI,
+  ReferenceLog,
+} from "./dataModels";
 import { PointsState } from "../reducers/points";
 import { AppState } from "../reducers/store";
-
 
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
@@ -35,13 +39,18 @@ export function getReferenceData(
   return isReference(point) ? point : null;
 }
 
-export function createReferenceTo(pointId: string, appState: AppState): PointReferenceI {
+export function createReferenceTo(
+  pointId: string,
+  appState: AppState
+): PointReferenceI {
   const point = appState.points.byId[pointId];
   const messageId = appState.semanticScreen.currentMessage;
   const authorId = appState.messages.byId[messageId].author;
   const newPointId = uuidv4();
 
-  const referenceHistory = isReference(point) ? [...point.referenceHistory] : [];
+  const referenceHistory = isReference(point)
+    ? [...point.referenceHistory]
+    : [];
   referenceHistory.push({
     pointId,
     messageId,
@@ -70,7 +79,23 @@ export function getOriginalAuthorId(point: PointReferenceI): string {
   return getOriginalReferenceLog(point).authorId;
 }
 
-export function getOriginalShape(point: PointReferenceI, pointsState: PointsState): PointShape {
+export function getOriginalShape(
+  point: PointReferenceI,
+  pointsState: PointsState
+): PointShape {
   const pointId = getOriginalPointId(point);
   return (pointsState.byId[pointId] as PointI).shape;
 }
+
+export const containsPoints = (
+  messageId: string,
+  appState: AppState
+): boolean => {
+  const message = appState.messages.byId[messageId];
+  if (
+    Object.values(message.shapes).flat().length === 0 &&
+    message.focus === undefined
+  ) {
+    return false;
+  } else return true;
+};

@@ -22,6 +22,7 @@ import { AppState } from "../reducers/store";
 
 import MessageListItem from "./MessageListItem";
 import StyledRegion from "./StyledRegion";
+import NewMessageButton from "./NewMessageButton";
 
 const ParkingSpace = (props: {
   nonPersistedMessages: string[];
@@ -31,6 +32,7 @@ const ParkingSpace = (props: {
   return (
     <StyledRegion borderColor={props.userColor}>
       <div>
+        <NewMessageButton darkMode={props.darkMode} />
         {props.nonPersistedMessages.map((m) => (
           <MessageListItem messageId={m} darkMode={props.darkMode} />
         ))}
