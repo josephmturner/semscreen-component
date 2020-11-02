@@ -93,18 +93,10 @@ const FocusPoint = (props: AllProps) => {
       e.stopPropagation();
     }
 
-    //TODO: Is there a more correct way to do this? I want to switch
-    //to the referenced message and then select the point whose
-    //reference I clicked.
-    //Perhaps we should pass an optional referencePointId to the
-    //setCurrentMessage dispatch, which selects that point if it's
-    //passed in?
     if (props.referenceData) {
       props.setCurrentMessage({
         messageId: getOriginalMessageId(props.referenceData),
-      });
-      props.setSelectedPoints({
-        pointIds: [getOriginalPointId(props.referenceData)],
+        selectedPointIds: [getOriginalPointId(props.referenceData)],
       });
     } else {
       props.setSelectedPoints({ pointIds: [] });
