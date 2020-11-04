@@ -187,8 +187,17 @@ function handleMessageCreate(
       },
       createdAt: new Date(),
     };
+
+    const { pointIds } = action.params;
+    if (pointIds) {
+      pointIds.forEach(pointId => {
+        const { shape } = getPointById(pointId, appState.points);
+        draft.byId[action.params.newMessageId].shapes[shape].push(pointId);
+      });
+    }
+
     draft.allMessages.push(action.params.newMessageId);
-    draft.draftIds.push(action.params.newMessageId);
+    draft.draftIds.unshift(action.params.newMessageId);
   });
 }
 

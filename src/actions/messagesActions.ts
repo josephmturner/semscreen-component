@@ -35,7 +35,9 @@ import { v4 as uuidv4 } from "uuid";
 //  };
 //};
 
-export interface MessageCreateParams {}
+export interface MessageCreateParams {
+  pointIds?: string[];
+}
 
 export interface _MessageCreateParams extends MessageCreateParams {
   newMessageId: string;

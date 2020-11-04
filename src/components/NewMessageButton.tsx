@@ -20,25 +20,41 @@ import React from "react";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
 import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
 import { messageCreate, MessageCreateParams } from "../actions/messagesActions";
 
-interface Props {
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "../constants/React-Dnd";
+
+
+interface OwnProps {
   darkMode?: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   messageCreate: (params: MessageCreateParams) => void;
 }
 
-const NewMessageButton = (props: Props) => {
+interface AllProps extends OwnProps {
+  selectedPointIds: string[];
+}
+
+const NewMessageButton = (props: AllProps) => {
   const handleClick = () => {
     props.messageCreate({});
   };
 
+  const [, drop] = useDrop({
+    accept: ItemTypes.POINT,
+    drop: () => {
+      props.messageCreate({ pointIds: props.selectedPointIds });
+    },
+  });
+
   return (
-    <StyledButton onClick={handleClick} darkMode={props.darkMode}>
+    <StyledButton ref={drop} onClick={handleClick} darkMode={props.darkMode}>
       +
     </StyledButton>
   );
@@ -63,7 +79,11 @@ const StyledButton = styled.button<StyledProps>`
   }
 `;
 
-const mapStateToProps = () => {};
+const mapStateToProps = (state: AppState) => {
+  return {
+    selectedPointIds: state.selectedPoints.pointIds,
+  };
+};
 
 const mapActionsToProps = {
   setCurrentMessage,
