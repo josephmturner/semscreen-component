@@ -55,6 +55,7 @@ export interface MessagesState {
     [_id: string]: MessageI;
   };
   allMessages: string[];
+  draftIds: string[];
 }
 
 export const initialMessagesState: MessagesState = {
@@ -73,10 +74,10 @@ export const initialMessagesState: MessagesState = {
         people: [],
       },
       createdAt: new Date(),
-      isPersisted: false,
     },
   },
   allMessages: ["message0"],
+  draftIds: ["message0"],
 };
 
 export const messagesReducer = (
@@ -166,8 +167,10 @@ function handleMessageCreate(
   action: Action<_MessageCreateParams>,
   appState: AppState
 ): MessagesState {
-  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+  if (!containsPoints(appState.semanticScreen.currentMessage, appState)) {
     return state;
+  }
+
   return produce(state, (draft) => {
     draft.byId[action.params.newMessageId] = {
       _id: action.params.newMessageId,
@@ -183,9 +186,9 @@ function handleMessageCreate(
         people: [],
       },
       createdAt: new Date(),
-      isPersisted: false,
     };
     draft.allMessages.push(action.params.newMessageId);
+    draft.draftIds.push(action.params.newMessageId);
   });
 }
 

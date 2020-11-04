@@ -72,7 +72,8 @@ function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
 
   const currentMessageId = appState.semanticScreen.currentMessage;
   const message = appState.messages.byId[currentMessageId];
-  if (!message.isPersisted) {
+
+  if (appState.messages.draftIds.includes(message._id)) {
     return false;
   }
 
