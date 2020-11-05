@@ -38,6 +38,7 @@ import {
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
+import { _MessageCreateParams } from "../actions/messagesActions";
 
 export interface PointsState {
   byId: {
@@ -84,6 +85,12 @@ export const pointsReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>
+      );
+      break;
+    case Actions.messageCreate:
+      newState = handleMessageCreate(
+        state,
+        action as Action<_MessageCreateParams>
       );
       break;
   }
@@ -235,5 +242,23 @@ function handleSplitIntoTwoPoints(
       shape: topPoint.shape,
       pointDate: new Date(),
     };
+  });
+}
+
+function handleMessageCreate(
+  state: PointsState,
+  action: Action<_MessageCreateParams>
+): PointsState {
+
+  const { newPoints } = action.params;
+
+  if (newPoints === undefined) {
+    return state;
+  }
+
+  return produce(state, draft => {
+    newPoints.forEach(point => {
+      draft.byId[point._id] = point;
+    });
   });
 }

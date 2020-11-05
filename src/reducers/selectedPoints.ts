@@ -145,7 +145,7 @@ function handleMessageCreate(
   state: SelectedPointsState,
   action: Action<_MessageCreateParams>,
 ): SelectedPointsState {
-  const pointIds = action.params.pointIds ? [] : state.pointIds;
+  const pointIds = action.params.moveSelectedPoints ? state.pointIds : [];
   return {
     pointIds,
   };
