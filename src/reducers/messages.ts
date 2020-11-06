@@ -167,12 +167,16 @@ function handleMessageCreate(
   action: Action<_MessageCreateParams>,
   appState: AppState
 ): MessagesState {
+  //Prevent creation of many empty messages
+
+  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+    return state;
 
   // First we create the new message.
   // Second, if we are dragging points into the NewMessageButton, then we use handlePointsMove()
   // to move the points into the new message.
 
-  let newState: MessagesState = produce(state, draft => {
+  let newState: MessagesState = produce(state, (draft) => {
     draft.byId[action.params.newMessageId] = {
       _id: action.params.newMessageId,
       //TODO: Replace "author1" with user's id
@@ -207,7 +211,7 @@ function handleMessageCreate(
     });
   }
 
-  return produce(newState, draft => {
+  return produce(newState, (draft) => {
     if (newState.byId[action.params.newMessageId].main === undefined) {
       // If main point is still undefined, we need to pick a main point.
       const newMainPointId = action.params.newPoints
@@ -522,6 +526,7 @@ const handleSetCurrentMessage = (
   if (containsPoints(currentMessageId, appState)) return state;
   return produce(state, (draft) => {
     delete draft.byId[currentMessageId];
+    draft.draftIds = draft.draftIds.filter((id) => id !== currentMessageId);
     draft.allMessages = draft.allMessages.filter(
       (id) => id !== currentMessageId
     );

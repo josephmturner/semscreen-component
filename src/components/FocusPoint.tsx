@@ -189,7 +189,9 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     point: getPointById(ownProps.pointId, state.points),
     referenceData,
     referenceAuthor,
-    isPersisted: !state.messages.draftIds.includes(state.semanticScreen.currentMessage),
+    isPersisted: !state.messages.draftIds.includes(
+      state.semanticScreen.currentMessage
+    ),
   };
 };
 

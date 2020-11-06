@@ -50,22 +50,22 @@ export interface _MessageCreateParams extends MessageCreateParams {
 }
 
 function _shouldCopy(appState: AppState): boolean {
-  return !appState.messages.draftIds.includes(appState.semanticScreen.currentMessage);
+  return !appState.messages.draftIds.includes(
+    appState.semanticScreen.currentMessage
+  );
 }
 
 export const messageCreate = (
   params: MessageCreateParams
 ): ThunkAction<void, AppState, unknown, Action<_MessageCreateParams>> => {
-
   return (dispatch, getState) => {
-
     const appState: AppState = getState();
 
     let referencePoints: PointReferenceI[] | undefined;
 
     const moveSelectedPoints = params.moveSelectedPoints ?? false;
     if (moveSelectedPoints && _shouldCopy(appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map(pointId => {
+      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
@@ -82,7 +82,9 @@ export const messageCreate = (
   };
 };
 
-const _messageCreate = (params: _MessageCreateParams): Action<_MessageCreateParams> => {
+const _messageCreate = (
+  params: _MessageCreateParams
+): Action<_MessageCreateParams> => {
   return {
     type: Actions.messageCreate,
     params,

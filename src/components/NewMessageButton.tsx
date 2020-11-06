@@ -30,7 +30,6 @@ import { messageCreate, MessageCreateParams } from "../actions/messagesActions";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
-
 interface OwnProps {
   darkMode?: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
