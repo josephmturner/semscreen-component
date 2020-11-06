@@ -129,7 +129,8 @@ function handleSetCurrentMessage(
   state: SelectedPointsState,
   action: Action<SetCurrentMessageParams>
 ): SelectedPointsState {
+  const pointIds = action.params.selectedPointIds ?? [];
   return {
-    pointIds: [],
+    pointIds,
   };
 }

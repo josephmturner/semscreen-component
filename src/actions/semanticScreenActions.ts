@@ -20,6 +20,7 @@ import { Action, Actions } from "./constants";
 
 export interface SetCurrentMessageParams {
   messageId: string;
+  selectedPointIds?: string[];
 }
 
 export const setCurrentMessage = (
