@@ -55,6 +55,7 @@ export interface MessagesState {
     [_id: string]: MessageI;
   };
   allMessages: string[];
+  draftIds: string[];
 }
 
 export const initialMessagesState: MessagesState = {
@@ -73,10 +74,10 @@ export const initialMessagesState: MessagesState = {
         people: [],
       },
       createdAt: new Date(),
-      isPersisted: false,
     },
   },
   allMessages: ["message0"],
+  draftIds: ["message0"],
 };
 
 export const messagesReducer = (
@@ -166,9 +167,12 @@ function handleMessageCreate(
   action: Action<_MessageCreateParams>,
   appState: AppState
 ): MessagesState {
-  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
-    return state;
-  return produce(state, (draft) => {
+
+  // First we create the new message.
+  // Second, if we are dragging points into the NewMessageButton, then we use handlePointsMove()
+  // to move the points into the new message.
+
+  let newState: MessagesState = produce(state, draft => {
     draft.byId[action.params.newMessageId] = {
       _id: action.params.newMessageId,
       //TODO: Replace "author1" with user's id
@@ -183,9 +187,35 @@ function handleMessageCreate(
         people: [],
       },
       createdAt: new Date(),
-      isPersisted: false,
     };
     draft.allMessages.push(action.params.newMessageId);
+    draft.draftIds.unshift(action.params.newMessageId);
+  });
+
+  if (action.params.moveSelectedPoints) {
+    const intermediateAction: Action<_PointsMoveParams> = {
+      type: Actions.pointsMove,
+      params: {
+        messageId: action.params.newMessageId,
+        newPoints: action.params.newPoints,
+      },
+    };
+
+    newState = handlePointsMove(newState, intermediateAction, {
+      ...appState,
+      messages: newState,
+    });
+  }
+
+  return produce(newState, draft => {
+    if (newState.byId[action.params.newMessageId].main === undefined) {
+      // If main point is still undefined, we need to pick a main point.
+      const newMainPointId = action.params.newPoints
+        ? action.params.newPoints[0]._id
+        : appState.selectedPoints.pointIds[0];
+
+      draft.byId[action.params.newMessageId].main = newMainPointId;
+    }
   });
 }
 

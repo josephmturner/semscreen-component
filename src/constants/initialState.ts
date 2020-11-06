@@ -151,7 +151,6 @@ export const messages: MessagesState = {
       focus: "pointId1",
       main: "pointId3",
       createdAt: new Date(),
-      isPersisted: true,
     },
     message1: {
       _id: "message1",
@@ -168,7 +167,6 @@ export const messages: MessagesState = {
       focus: "REFERENCE_TO_pointId1_0",
       main: "pointId9",
       createdAt: new Date(),
-      isPersisted: false,
     },
     message2: {
       _id: "message2",
@@ -191,8 +189,8 @@ export const messages: MessagesState = {
       focus: "REFERENCE_TO_pointId1_1",
       main: "REFERENCE_TO_pointId3",
       createdAt: new Date(),
-      isPersisted: false,
     },
   },
   allMessages: ["message0", "message1", "message2"],
+  draftIds: ["message1", "message2"],
 };

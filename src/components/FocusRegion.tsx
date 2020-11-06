@@ -147,8 +147,7 @@ const mapStateToProps = (state: AppState) => {
     pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
-    isPersisted:
-      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
+    isPersisted: !state.messages.draftIds.includes(state.semanticScreen.currentMessage),
   };
 };
 

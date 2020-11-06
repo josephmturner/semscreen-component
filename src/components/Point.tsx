@@ -370,8 +370,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
-    isPersisted:
-      state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
+    isPersisted: !state.messages.draftIds.includes(state.semanticScreen.currentMessage),
   };
 };
 

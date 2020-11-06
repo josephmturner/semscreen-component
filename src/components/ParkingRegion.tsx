@@ -42,13 +42,8 @@ const ParkingSpace = (props: {
 };
 
 const mapStateToProps = (state: AppState) => {
-  const allMessages = state.messages.allMessages;
-  const nonPersistedMessages = allMessages.filter(
-    (m) => !state.messages.byId[m].isPersisted
-  );
-
   return {
-    nonPersistedMessages,
+    nonPersistedMessages: state.messages.draftIds,
     //Replace "author1" with redux state for userId
     userColor: state.authors.byId["author1"].color,
   };

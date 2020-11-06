@@ -26,6 +26,7 @@ import {
   PointsDeleteParams,
 } from "../actions/pointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
+import { _MessageCreateParams } from "../actions/messagesActions";
 import { AppState } from "./store";
 
 export interface SelectedPointsState {
@@ -69,6 +70,12 @@ export const selectedPointsReducer = (
       newState = handleSetCurrentMessage(
         state,
         action as Action<SetCurrentMessageParams>
+      );
+      break;
+    case Actions.messageCreate:
+      newState = handleMessageCreate(
+        state,
+        action as Action<_MessageCreateParams>
       );
       break;
   }
@@ -130,6 +137,16 @@ function handleSetCurrentMessage(
   action: Action<SetCurrentMessageParams>
 ): SelectedPointsState {
   const pointIds = action.params.selectedPointIds ?? [];
+  return {
+    pointIds,
+  };
+}
+
+function handleMessageCreate(
+  state: SelectedPointsState,
+  action: Action<_MessageCreateParams>,
+): SelectedPointsState {
+  const pointIds = action.params.moveSelectedPoints ? state.pointIds : [];
   return {
     pointIds,
   };

@@ -123,8 +123,7 @@ const SemanticScreen = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
   authorId: state.messages.byId[state.semanticScreen.currentMessage].author,
   expandedRegion: state.expandedRegion.region,
-  isPersisted:
-    state.messages.byId[state.semanticScreen.currentMessage].isPersisted,
+  isPersisted: !state.messages.draftIds.includes(state.semanticScreen.currentMessage),
 });
 
 const mapDispatchToProps = {};

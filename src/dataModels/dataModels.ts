@@ -91,7 +91,6 @@ export interface MessageI {
   focus?: string;
   main?: string;
   createdAt: Date;
-  isPersisted: boolean;
 }
 
 export interface CursorPositionI {

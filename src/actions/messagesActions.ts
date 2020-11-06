@@ -16,9 +16,14 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Action, Actions } from "./constants";
-import { PointI, PointShape } from "../dataModels/dataModels";
+
+import { ThunkAction } from "redux-thunk";
 import { v4 as uuidv4 } from "uuid";
+
+import { Action, Actions } from "./constants";
+import { PointI, PointShape, PointReferenceI } from "../dataModels/dataModels";
+import { createReferenceTo } from "../dataModels/pointUtils";
+import { AppState } from "../reducers/store";
 
 //import { MessageState } from "../reducers/message";
 
@@ -35,22 +40,52 @@ import { v4 as uuidv4 } from "uuid";
 //  };
 //};
 
-export interface MessageCreateParams {}
+export interface MessageCreateParams {
+  moveSelectedPoints?: boolean;
+}
 
 export interface _MessageCreateParams extends MessageCreateParams {
   newMessageId: string;
+  newPoints?: PointReferenceI[];
+}
+
+function _shouldCopy(appState: AppState): boolean {
+  return !appState.messages.draftIds.includes(appState.semanticScreen.currentMessage);
 }
 
 export const messageCreate = (
   params: MessageCreateParams
-): Action<_MessageCreateParams> => {
-  const newMessageId = uuidv4();
+): ThunkAction<void, AppState, unknown, Action<_MessageCreateParams>> => {
+
+  return (dispatch, getState) => {
+
+    const appState: AppState = getState();
+
+    let referencePoints: PointReferenceI[] | undefined;
+
+    const moveSelectedPoints = params.moveSelectedPoints ?? false;
+    if (moveSelectedPoints && _shouldCopy(appState)) {
+      referencePoints = appState.selectedPoints.pointIds.map(pointId => {
+        return createReferenceTo(pointId, appState);
+      });
+    }
+
+    const newMessageId = uuidv4();
+
+    dispatch(
+      _messageCreate({
+        moveSelectedPoints,
+        newMessageId,
+        newPoints: referencePoints,
+      })
+    );
+  };
+};
+
+const _messageCreate = (params: _MessageCreateParams): Action<_MessageCreateParams> => {
   return {
     type: Actions.messageCreate,
-    params: {
-      ...params,
-      newMessageId,
-    },
+    params,
   };
 };
 
