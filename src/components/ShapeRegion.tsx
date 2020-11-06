@@ -218,7 +218,9 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     pointIds: currentMessage.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,
-    isPersisted: !state.messages.draftIds.includes(state.semanticScreen.currentMessage),
+    isPersisted: !state.messages.draftIds.includes(
+      state.semanticScreen.currentMessage
+    ),
   };
 };
 

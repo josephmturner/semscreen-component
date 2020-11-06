@@ -249,15 +249,14 @@ function handleMessageCreate(
   state: PointsState,
   action: Action<_MessageCreateParams>
 ): PointsState {
-
   const { newPoints } = action.params;
 
   if (newPoints === undefined) {
     return state;
   }
 
-  return produce(state, draft => {
-    newPoints.forEach(point => {
+  return produce(state, (draft) => {
+    newPoints.forEach((point) => {
       draft.byId[point._id] = point;
     });
   });
