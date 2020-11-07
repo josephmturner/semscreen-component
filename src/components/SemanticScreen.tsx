@@ -82,6 +82,7 @@ const SemanticScreen = (props: Props) => {
         <Banner
           authorId={props.authorId}
           placement={{ top: "0", right: "0" }}
+          fontSize={"medium"}
           darkMode={props.darkMode}
         />
       )}

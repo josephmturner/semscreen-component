@@ -30,6 +30,7 @@ interface Placement {
 interface OwnProps {
   authorId: string;
   placement: Placement;
+  fontSize?: string;
   darkMode?: boolean;
 }
 
@@ -44,6 +45,7 @@ const Banner = (props: AllProps) => (
     onClick={console.log}
     top={props.placement.top}
     right={props.placement.right}
+    fontSize={props.fontSize}
     darkMode={props.darkMode}
   >
     {`\u00A0 ${props.author.name} \u00A0`}
@@ -51,6 +53,7 @@ const Banner = (props: AllProps) => (
 );
 
 interface BannerViewProps extends Placement {
+  fontSize?: string;
   darkMode?: boolean;
 }
 
@@ -62,7 +65,7 @@ const BannerView = styled.div<BannerViewProps>`
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  font-size: medium;
+  font-size: ${(props) => (props.fontSize ? props.fontSize : "small")};
   top: ${(props) => props.top};
   right: ${(props) => props.right};
   z-index: 1;

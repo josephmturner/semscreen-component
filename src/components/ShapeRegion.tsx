@@ -19,7 +19,7 @@
 import React from "react";
 import Point from "./Point";
 import NewPointButton from "./NewPointButton";
-import StyledRegion from "./StyledRegion";
+import { StyledRegion, InnerContainer } from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
 import { AuthorI, PointShape } from "../dataModels/dataModels";
 import { useDrop } from "react-dnd";
@@ -165,7 +165,7 @@ const ShapeRegion = (props: AllProps) => {
       onClick={() => props.setExpandedRegion({ region: shape })}
       ref={expandRef}
     >
-      <div>
+      <InnerContainer>
         <RegionHeader
           ref={regionHeaderRef}
           shape={shape}
@@ -186,7 +186,7 @@ const ShapeRegion = (props: AllProps) => {
           isExpanded={props.isExpanded}
           onClick={onClickRemainingSpace}
         />
-      </div>
+      </InnerContainer>
     </StyledRegion>
   );
 };

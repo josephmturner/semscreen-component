@@ -38,11 +38,12 @@ export const StyledSpan = styled.span<StyledPointProps>`
     props.isSelected &&
     `
   background-color: #777;
-  border-radius: 5px;
+  border-radius: 3px;
 `}
+
   :hover {
     border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
-    border-radius: 7px;
+    border-radius: 3px;
   }
 `;
 
