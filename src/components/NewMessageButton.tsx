@@ -32,12 +32,12 @@ import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
   darkMode?: boolean;
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  messageCreate: (params: MessageCreateParams) => void;
 }
 
 interface AllProps extends OwnProps {
   selectedPointIds: string[];
+  setCurrentMessage: (params: SetCurrentMessageParams) => void;
+  messageCreate: (params: MessageCreateParams) => void;
 }
 
 const NewMessageButton = (props: AllProps) => {
