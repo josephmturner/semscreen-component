@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
@@ -30,6 +30,7 @@ import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
 import { MainPointShape } from "./MainPointShape";
+import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -78,7 +79,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
-  referenceAuthor?: AuthorI;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
   isPersisted: boolean;
@@ -220,6 +220,13 @@ const Point = (props: AllProps) => {
     }
   };
 
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const { textareaIndent, textareaNewline } = useTextareaIndent(
+    spanRef,
+    bannerRef
+  );
+
   //TODO: Replace StyledImg with Shape svg component, which should
   //also be imported by MainPointShape component.
   return (
@@ -230,15 +237,13 @@ const Point = (props: AllProps) => {
       ref={spanRef}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
-      referenceAuthor={props.referenceAuthor}
       darkMode={props.darkMode}
     >
       {props.isMainPoint ? (
         <MainPointShape
-          onClick={handleShapeIconClick}
           shape={shape}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
+          onClick={handleShapeIconClick}
         />
       ) : (
         <StyledImg
@@ -246,9 +251,16 @@ const Point = (props: AllProps) => {
           src={imageUrl}
           onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
           alt={shape}
+        />
+      )}
+      {referenceData && (
+        <Banner
+          authorId={getOriginalAuthorId(referenceData)}
+          placement={{ top: "0.1rem", left: "2.2em" }}
+          darkMode={props.darkMode}
+          ref={bannerRef}
         />
       )}
       <StyledTextArea
@@ -259,9 +271,10 @@ const Point = (props: AllProps) => {
         }}
         readOnly={!!props.referenceData || props.isPersisted}
         isMainPoint={props.isMainPoint}
-        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         ref={textareaRef}
+        indent={textareaIndent}
+        newLine={textareaNewline}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.isPersisted || !textareaRef.current) {
@@ -335,13 +348,6 @@ const Point = (props: AllProps) => {
           }
         }}
       />
-      {referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(referenceData)}
-          placement={{ top: "-0.2rem", right: "0.8rem" }}
-          darkMode={props.darkMode}
-        />
-      )}
       {isHovered && !props.isPersisted && (
         <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
@@ -351,19 +357,11 @@ const Point = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state.points);
-  //TODO: Would it be cleaner not to access referenceAuthor in Point,
-  //but instead pass referenceAuthorId to the StyledPoint components?
-  //(we would then have to connect those components to redux)
-  let referenceAuthor;
-  if (referenceData) {
-    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
-  }
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];
   return {
     point: getPointById(ownProps.pointId, state.points),
-    referenceData: getReferenceData(ownProps.pointId, state.points),
-    referenceAuthor,
+    referenceData,
     isMainPoint: ownProps.pointId === currentMessage.main,
     cursorPositionIndex:
       state.cursorPosition.details &&

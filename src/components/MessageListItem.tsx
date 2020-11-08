@@ -16,13 +16,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
-import {
-  AuthorI,
-  PointI,
-  PointReferenceI,
-  PointShape,
-} from "../dataModels/dataModels";
+import React, { useEffect, useRef, useState } from "react";
+import { PointI, PointReferenceI, PointShape } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
@@ -31,6 +26,7 @@ import {
 import { StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import { MainPointShape } from "./MainPointShape";
+import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -51,7 +47,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   mainPoint: PointI | null;
   referenceData: PointReferenceI | null;
-  referenceAuthor?: AuthorI;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   pointsMove: (params: PointsMoveParams) => void;
 }
@@ -70,21 +65,45 @@ const MessageListItem = (props: AllProps) => {
     },
   });
 
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  drop(spanRef);
+
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const { textareaIndent, textareaNewline } = useTextareaIndent(
+    spanRef,
+    bannerRef
+  );
+
+  //The useState and useEffect are purely to cause the component to
+  //re-render after it first mounts. A better solution must exist.
+  const [, setCounter] = useState(0);
+  useEffect(() => {
+    setCounter((c) => c + 1);
+  }, [referenceData]);
+
   return (
     <StyledSpan
-      ref={drop}
+      ref={spanRef}
       onClick={() => props.setCurrentMessage({ messageId: props.messageId })}
       isMainPoint={true}
       isSelected={false}
-      referenceAuthor={props.referenceAuthor}
       darkMode={props.darkMode}
     >
       {shape && (
         <MainPointShape
           shape={shape}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
           onClick={console.log}
+        />
+      )}
+      {referenceData && (
+        <Banner
+          authorId={getOriginalAuthorId(referenceData)}
+          placement={{ top: "0.1rem", left: "2.2em" }}
+          darkMode={props.darkMode}
+          ref={bannerRef}
         />
       )}
       {mainPoint ? (
@@ -92,18 +111,12 @@ const MessageListItem = (props: AllProps) => {
           value={mainPoint.content}
           readOnly={true}
           isMainPoint={true}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
+          indent={textareaIndent}
+          newLine={textareaNewline}
         />
       ) : (
         <div>This message doesn't have any points yet!</div>
-      )}
-      {referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(referenceData)}
-          placement={{ top: "-0.15rem", right: "0.8rem" }}
-          darkMode={props.darkMode}
-        />
       )}
     </StyledSpan>
   );
@@ -117,15 +130,10 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     mainPoint = getPointById(mainPointId, state.points);
     referenceData = getReferenceData(mainPointId, state.points);
   }
-  let referenceAuthor;
-  if (referenceData) {
-    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
-  }
 
   return {
     mainPoint,
     referenceData,
-    referenceAuthor,
   };
 };
 

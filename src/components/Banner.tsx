@@ -24,7 +24,8 @@ import { AppState } from "../reducers/store";
 
 interface Placement {
   top: string;
-  right: string;
+  right?: string;
+  left?: string;
 }
 
 interface OwnProps {
@@ -38,19 +39,21 @@ interface AllProps extends OwnProps {
   author: AuthorI;
 }
 
-const Banner = (props: AllProps) => (
-  // \u00A0 adds extra spaces on either side of the text
+const Banner = React.forwardRef<HTMLDivElement, AllProps>((props, ref) => (
   <BannerView
     color={props.author.color}
     onClick={console.log}
     top={props.placement.top}
-    right={props.placement.right}
+    right={props.placement ? props.placement.right : undefined}
+    left={props.placement ? props.placement.left : undefined}
     fontSize={props.fontSize}
     darkMode={props.darkMode}
+    ref={ref}
   >
+    {/* \u00A0 adds extra spaces on either side of the text */}
     {`\u00A0 ${props.author.name} \u00A0`}
   </BannerView>
-);
+));
 
 interface BannerViewProps extends Placement {
   fontSize?: string;
@@ -68,6 +71,7 @@ const BannerView = styled.div<BannerViewProps>`
   font-size: ${(props) => (props.fontSize ? props.fontSize : "small")};
   top: ${(props) => props.top};
   right: ${(props) => props.right};
+  left: ${(props) => props.left};
   z-index: 1;
   cursor: pointer;
   background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
@@ -96,4 +100,6 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
 
 const mapActionsToProps = {};
 
-export default connect(mapStateToProps, mapActionsToProps)(Banner);
+export default connect(mapStateToProps, mapActionsToProps, null, {
+  forwardRef: true,
+})(Banner);

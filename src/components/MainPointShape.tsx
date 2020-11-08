@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { AuthorI, PointShape } from "../dataModels/dataModels";
+import { PointShape } from "../dataModels/dataModels";
 
 interface Props {
   shape: PointShape;
-  referenceAuthor?: AuthorI;
   darkMode?: boolean;
   onClick: (e: React.MouseEvent) => void;
 }
@@ -17,7 +16,6 @@ export const MainPointShape = (props: Props) => {
     <StyledSvg
       viewBox="0 0 16 16"
       fill={props.darkMode ? "white" : "black"}
-      referenceAuthor={props.referenceAuthor}
       onClick={props.onClick}
     >
       <path
@@ -85,9 +83,8 @@ export const MainPointShape = (props: Props) => {
   );
 };
 
-export const StyledSvg = styled.svg<{ referenceAuthor?: AuthorI }>`
+export const StyledSvg = styled.svg`
   position: absolute;
   height: 20px;
-  top: ${(props) => (props.referenceAuthor ? "1rem" : 0)};
-  left: ${(props) => (props.referenceAuthor ? "0.7rem" : "0.3rem")};
+  left: 0.3rem;
 `;

@@ -15,8 +15,8 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
-import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import React, { useRef, useState } from "react";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
@@ -29,6 +29,7 @@ import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
 import { MainPointShape } from "./MainPointShape";
+import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -61,7 +62,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
-  referenceAuthor?: AuthorI;
   isPersisted: boolean;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
@@ -107,21 +107,30 @@ const FocusPoint = (props: AllProps) => {
 
   const { drag, preview } = useDragPoint(pointId, 0);
 
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  preview(spanRef);
+
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const { textareaIndent, textareaNewline } = useTextareaIndent(
+    spanRef,
+    bannerRef
+  );
+
   return (
     <StyledSpan
       onClick={handlePointSpanClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      ref={preview}
+      ref={spanRef}
       isMainPoint={isMainPoint}
       isSelected={props.isSelected}
-      referenceAuthor={props.referenceAuthor}
       darkMode={props.darkMode}
     >
       {props.isMainPoint ? (
         <MainPointShape
           shape={shape}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
           onClick={handleShapeIconClick}
         />
@@ -131,9 +140,16 @@ const FocusPoint = (props: AllProps) => {
           src={imageUrl}
           onClick={handleShapeIconClick}
           isMainPoint={props.isMainPoint}
-          referenceAuthor={props.referenceAuthor}
           darkMode={props.darkMode}
           alt={shape}
+        />
+      )}
+      {props.referenceData && (
+        <Banner
+          authorId={getOriginalAuthorId(props.referenceData)}
+          placement={{ top: "0.1rem", left: "2.2em" }}
+          darkMode={props.darkMode}
+          ref={bannerRef}
         />
       )}
       <StyledTextArea
@@ -142,10 +158,11 @@ const FocusPoint = (props: AllProps) => {
         onBlur={() => {
           if (!point.content) props.pointsDelete({ pointIds: [point._id] });
         }}
-        readOnly={!!props.referenceAuthor || props.isPersisted}
+        readOnly={!!props.referenceData || props.isPersisted}
         isMainPoint={isMainPoint}
-        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
+        indent={textareaIndent}
+        newLine={textareaNewline}
         autoFocus
         onKeyDown={(e: React.KeyboardEvent) => {
           if (props.isPersisted) {
@@ -157,13 +174,6 @@ const FocusPoint = (props: AllProps) => {
           }
         }}
       />
-      {props.referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(props.referenceData)}
-          placement={{ top: "-0.2rem", right: "0.4rem" }}
-          darkMode={props.darkMode}
-        />
-      )}
       {isHovered && !props.isPersisted && (
         <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
       )}
@@ -173,14 +183,10 @@ const FocusPoint = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state.points);
-  let referenceAuthor;
-  if (referenceData) {
-    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
-  }
+
   return {
     point: getPointById(ownProps.pointId, state.points),
     referenceData,
-    referenceAuthor,
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),
