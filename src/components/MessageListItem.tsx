@@ -72,7 +72,7 @@ const MessageListItem = (props: AllProps) => {
 
   return (
     <>
-      {props.mainPoint ? (
+      {props.mainPoint && (
         <Point
           point={props.mainPoint}
           referenceData={props.referenceData}
@@ -83,8 +83,6 @@ const MessageListItem = (props: AllProps) => {
           handlePointSpanClick={handlePointSpanClick}
           ref={pointRef}
         />
-      ) : (
-        <div>This message doesn't have any points yet!</div>
       )}
     </>
   );

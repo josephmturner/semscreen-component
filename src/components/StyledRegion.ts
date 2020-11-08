@@ -26,7 +26,6 @@ export const StyledRegion = styled.div<StyledRegionProps>`
   overflow: hidden;
   border: 2px solid ${(props) => props.borderColor};
   border-radius: 3px;
-  margin: 0.5px;
 `;
 
 //This container ensures that StyledRegion only ever has one child,

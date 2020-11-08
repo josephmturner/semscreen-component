@@ -104,6 +104,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
         />
       )}
       {props.referenceData && (
+        //TODO: Place Banner inside a container which handles placement
         <Banner
           authorId={getOriginalAuthorId(props.referenceData)}
           placement={{ top: "0.1rem", left: "2.2em" }}
