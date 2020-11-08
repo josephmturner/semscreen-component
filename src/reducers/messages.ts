@@ -523,7 +523,11 @@ const handleSetCurrentMessage = (
 ) => {
   //Delete an empty message when the SemanticScreen no longer displays it
   const currentMessageId = appState.semanticScreen.currentMessage;
-  if (containsPoints(currentMessageId, appState)) return state;
+  if (
+    containsPoints(currentMessageId, appState) ||
+    action.params.messageId === currentMessageId
+  )
+    return state;
   return produce(state, (draft) => {
     delete draft.byId[currentMessageId];
     draft.draftIds = draft.draftIds.filter((id) => id !== currentMessageId);
