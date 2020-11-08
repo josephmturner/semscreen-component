@@ -64,10 +64,9 @@ interface StyledProps {
 }
 
 const StyledButton = styled.button<StyledProps>`
-  line-height: 0;
+  line-height: 1;
   border: 0;
   background-color: transparent;
-  box-sizing: border-box;
   margin-top: 2px;
   height: 1rem;
   width: 100%;
