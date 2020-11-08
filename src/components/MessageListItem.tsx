@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
-import { PointI, PointReferenceI, PointShape } from "../dataModels/dataModels";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
@@ -53,10 +53,6 @@ interface AllProps extends OwnProps {
 
 const MessageListItem = (props: AllProps) => {
   const { mainPoint, referenceData } = props;
-  let shape: PointShape | null = null;
-  if (mainPoint) {
-    shape = mainPoint.shape;
-  }
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -84,41 +80,43 @@ const MessageListItem = (props: AllProps) => {
   }, [referenceData]);
 
   return (
-    <StyledSpan
-      ref={spanRef}
-      onClick={() => props.setCurrentMessage({ messageId: props.messageId })}
-      isMainPoint={true}
-      isSelected={false}
-      darkMode={props.darkMode}
-    >
-      {shape && (
-        <MainPointShape
-          shape={shape}
-          darkMode={props.darkMode}
-          onClick={console.log}
-        />
-      )}
-      {referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(referenceData)}
-          placement={{ top: "0.1rem", left: "2.2em" }}
-          darkMode={props.darkMode}
-          ref={bannerRef}
-        />
-      )}
+    <>
       {mainPoint ? (
-        <StyledTextArea
-          value={mainPoint.content}
-          readOnly={true}
+        <StyledSpan
+          ref={spanRef}
+          onClick={() =>
+            props.setCurrentMessage({ messageId: props.messageId })
+          }
           isMainPoint={true}
+          isSelected={false}
           darkMode={props.darkMode}
-          indent={textareaIndent}
-          newLine={textareaNewline}
-        />
+        >
+          <MainPointShape
+            shape={mainPoint.shape}
+            darkMode={props.darkMode}
+            onClick={console.log}
+          />
+          {referenceData && (
+            <Banner
+              authorId={getOriginalAuthorId(referenceData)}
+              placement={{ top: "0.1rem", left: "2.2em" }}
+              darkMode={props.darkMode}
+              ref={bannerRef}
+            />
+          )}
+          <StyledTextArea
+            value={mainPoint.content}
+            readOnly={true}
+            isMainPoint={true}
+            darkMode={props.darkMode}
+            indent={textareaIndent}
+            newLine={textareaNewline}
+          />
+        </StyledSpan>
       ) : (
         <div>This message doesn't have any points yet!</div>
       )}
-    </StyledSpan>
+    </>
   );
 };
 
