@@ -71,7 +71,7 @@ import {
 interface OwnProps {
   pointId: string;
   index: number;
-  isExpanded: "expanded" | "minimized" | "balanced";
+  isExpanded: boolean;
   isSelected: boolean;
   darkMode?: boolean;
 }
@@ -206,7 +206,7 @@ const Point = (props: AllProps) => {
   };
 
   const handlePointSpanClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
+    if (props.isExpanded) {
       e.stopPropagation();
     }
 

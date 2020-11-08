@@ -42,7 +42,6 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   region: RegionI;
-  isExpanded: "expanded" | "minimized" | "balanced";
   darkMode: boolean;
 }
 
@@ -52,6 +51,7 @@ interface AllProps extends OwnProps {
   selectedPoints: string[];
   isMainPoint: boolean;
   isPersisted: boolean;
+  isExpanded: boolean;
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
@@ -68,7 +68,7 @@ const FocusRegion = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (isExpanded !== "expanded") {
+      if (!isExpanded) {
         props.setExpandedRegion({ region });
       }
       if (item.index !== 0 || item.region !== "focus") {
@@ -127,7 +127,7 @@ const FocusRegion = (props: AllProps) => {
             darkMode={props.darkMode}
           />
         )}
-        {!pointId && isExpanded === "expanded" && (
+        {!pointId && isExpanded && (
           <SevenShapes
             onShapeClick={createEmptyFocus}
             darkMode={props.darkMode}
@@ -142,6 +142,9 @@ const mapStateToProps = (state: AppState) => {
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];
   const isMainPoint = currentMessage.focus === currentMessage.main;
+
+  const isExpanded = state.expandedRegion.region === "focus";
+
   return {
     author: state.authors.byId[currentMessage.author],
     pointId: currentMessage.focus,
@@ -150,6 +153,7 @@ const mapStateToProps = (state: AppState) => {
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),
+    isExpanded,
   };
 };
 

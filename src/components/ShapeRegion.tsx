@@ -48,7 +48,6 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   shape: PointShape;
-  isExpanded: "expanded" | "minimized" | "balanced";
   darkMode?: boolean;
 }
 
@@ -56,6 +55,7 @@ interface AllProps extends OwnProps {
   author: AuthorI;
   pointIds: string[];
   isPersisted: boolean;
+  isExpanded: boolean;
   pointCreate: (params: PointCreateParams) => void;
   pointsMove: (params: PointsMoveParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
@@ -117,7 +117,7 @@ const ShapeRegion = (props: AllProps) => {
   const [, expandRef] = useDrop({
     accept: ItemTypes.POINT,
     hover: () => {
-      if (props.isExpanded !== "expanded") {
+      if (!props.isExpanded) {
         props.setExpandedRegion({ region: shape });
       }
     },
@@ -135,7 +135,7 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   const onClickRemainingSpace = () => {
-    if (props.isExpanded !== "expanded" && !props.isPersisted) {
+    if (!props.isExpanded && !props.isPersisted) {
       createEmptyPoint();
     }
   };
@@ -172,7 +172,7 @@ const ShapeRegion = (props: AllProps) => {
           darkMode={props.darkMode}
         />
         {listItems}
-        {props.isExpanded === "expanded" &&
+        {props.isExpanded &&
           !props.isPersisted &&
           props.hoverIndex === undefined && (
             <NewPointButton
@@ -192,7 +192,7 @@ const ShapeRegion = (props: AllProps) => {
 };
 
 interface DropTargetDivProps {
-  isExpanded: "expanded" | "minimized" | "balanced";
+  isExpanded: boolean;
 }
 
 const DropTargetDiv = styled.div<DropTargetDivProps>`
@@ -213,6 +213,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];
 
+  const isExpanded = state.expandedRegion.region === ownProps.shape;
+
   return {
     author: state.authors.byId[currentMessage.author],
     pointIds: currentMessage.shapes[ownProps.shape],
@@ -221,6 +223,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),
+    isExpanded,
   };
 };
 

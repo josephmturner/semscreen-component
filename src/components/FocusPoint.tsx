@@ -53,7 +53,7 @@ import {
 
 interface OwnProps {
   pointId: string;
-  isExpanded: "expanded" | "minimized" | "balanced";
+  isExpanded: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -89,7 +89,7 @@ const FocusPoint = (props: AllProps) => {
   };
 
   const handlePointSpanClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
+    if (props.isExpanded) {
       e.stopPropagation();
     }
 
