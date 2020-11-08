@@ -15,21 +15,16 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
   getOriginalMessageId,
   getOriginalPointId,
-  getOriginalAuthorId,
 } from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
-import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
-import Banner from "./Banner";
-import PointHoverOptions from "./PointHoverOptions";
-import { MainPointShape } from "./MainPointShape";
-import { useTextareaIndent } from "../hooks/useTextareaIndent";
+import Point from "./Point";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -72,19 +67,24 @@ interface AllProps extends OwnProps {
 }
 
 const FocusPoint = (props: AllProps) => {
-  const { point, pointId, isMainPoint } = props;
-  const shape = point.shape;
-
-  const [isHovered, setIsHovered] = useState(false);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (props.isPersisted) {
+      return;
+    } else {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
-      point: { ...point, content: e.target.value },
+      point: { ...props.point, content: e.target.value },
     });
   };
 
   const handleShapeIconClick = (e: React.MouseEvent) => {
-    props.togglePoint({ pointId });
+    props.togglePoint({ pointId: props.pointId });
     e.stopPropagation();
   };
 
@@ -103,81 +103,33 @@ const FocusPoint = (props: AllProps) => {
     }
   };
 
-  const imageUrl = require(`../images/${shape}.svg`);
+  const handleBlur = () => {
+    if (!props.point.content) props.pointsDelete({ pointIds: [props.pointId] });
+  };
 
-  const { drag, preview } = useDragPoint(pointId, 0);
+  const { drag, preview } = useDragPoint(props.pointId, 0);
 
-  const spanRef = useRef<HTMLSpanElement>(null);
+  //TODO: fix ref type
+  const pointRef = useRef<any>(null);
 
-  preview(spanRef);
-
-  const bannerRef = useRef<HTMLDivElement>(null);
-
-  const { textareaIndent, textareaNewline } = useTextareaIndent(
-    spanRef,
-    bannerRef
-  );
+  drag(pointRef.current?.img);
+  preview(pointRef.current?.span);
 
   return (
-    <StyledSpan
-      onClick={handlePointSpanClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      ref={spanRef}
-      isMainPoint={isMainPoint}
+    <Point
+      point={props.point}
+      referenceData={props.referenceData}
+      isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
+      readOnlyOverride={props.isPersisted}
       darkMode={props.darkMode}
-    >
-      {props.isMainPoint ? (
-        <MainPointShape
-          shape={shape}
-          darkMode={props.darkMode}
-          onClick={handleShapeIconClick}
-        />
-      ) : (
-        <StyledImg
-          ref={drag}
-          src={imageUrl}
-          onClick={handleShapeIconClick}
-          isMainPoint={props.isMainPoint}
-          darkMode={props.darkMode}
-          alt={shape}
-        />
-      )}
-      {props.referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(props.referenceData)}
-          placement={{ top: "0.1rem", left: "2.2em" }}
-          darkMode={props.darkMode}
-          ref={bannerRef}
-        />
-      )}
-      <StyledTextArea
-        value={point.content}
-        onChange={handleChange}
-        onBlur={() => {
-          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
-        }}
-        readOnly={!!props.referenceData || props.isPersisted}
-        isMainPoint={isMainPoint}
-        darkMode={props.darkMode}
-        indent={textareaIndent}
-        newLine={textareaNewline}
-        autoFocus
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.isPersisted) {
-            return;
-          } else {
-            if (e.key === "Enter") {
-              e.preventDefault();
-            }
-          }
-        }}
-      />
-      {isHovered && !props.isPersisted && (
-        <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
-      )}
-    </StyledSpan>
+      handleChange={handleChange}
+      handleKeyDown={handleKeyDown}
+      handleBlur={handleBlur}
+      handlePointSpanClick={handlePointSpanClick}
+      handleShapeIconClick={handleShapeIconClick}
+      ref={pointRef}
+    />
   );
 };
 

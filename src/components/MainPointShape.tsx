@@ -5,7 +5,7 @@ import { PointShape } from "../dataModels/dataModels";
 interface Props {
   shape: PointShape;
   darkMode?: boolean;
-  onClick: (e: React.MouseEvent) => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 export const MainPointShape = (props: Props) => {

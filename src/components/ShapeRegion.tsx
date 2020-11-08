@@ -17,7 +17,7 @@
 */
 
 import React from "react";
-import Point from "./Point";
+import RegionPoint from "./RegionPoint";
 import NewPointButton from "./NewPointButton";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
@@ -141,7 +141,7 @@ const ShapeRegion = (props: AllProps) => {
   };
 
   const listItems = pointIds.map((id: string, i: number) => (
-    <Point
+    <RegionPoint
       key={id}
       pointId={id}
       index={i}

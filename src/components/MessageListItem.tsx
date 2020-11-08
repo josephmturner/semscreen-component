@@ -18,15 +18,8 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import {
-  getPointById,
-  getReferenceData,
-  getOriginalAuthorId,
-} from "../dataModels/pointUtils";
-import { StyledSpan, StyledTextArea } from "./StyledPoint";
-import Banner from "./Banner";
-import { MainPointShape } from "./MainPointShape";
-import { useTextareaIndent } from "../hooks/useTextareaIndent";
+import { getPointById, getReferenceData } from "../dataModels/pointUtils";
+import Point from "./Point";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -45,14 +38,17 @@ interface OwnProps {
 }
 
 interface AllProps extends OwnProps {
-  mainPoint: PointI | null;
+  mainPoint?: PointI;
   referenceData: PointReferenceI | null;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   pointsMove: (params: PointsMoveParams) => void;
 }
 
 const MessageListItem = (props: AllProps) => {
-  const { mainPoint, referenceData } = props;
+  const { referenceData } = props;
+
+  //TODO: fix type of ref
+  const pointRef = useRef<any>(null);
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -61,16 +57,11 @@ const MessageListItem = (props: AllProps) => {
     },
   });
 
-  const spanRef = useRef<HTMLSpanElement>(null);
+  drop(pointRef.current?.span);
 
-  drop(spanRef);
-
-  const bannerRef = useRef<HTMLDivElement>(null);
-
-  const { textareaIndent, textareaNewline } = useTextareaIndent(
-    spanRef,
-    bannerRef
-  );
+  const handlePointSpanClick = () => {
+    props.setCurrentMessage({ messageId: props.messageId });
+  };
 
   //The useState and useEffect are purely to cause the component to
   //re-render after it first mounts. A better solution must exist.
@@ -81,38 +72,17 @@ const MessageListItem = (props: AllProps) => {
 
   return (
     <>
-      {mainPoint ? (
-        <StyledSpan
-          ref={spanRef}
-          onClick={() =>
-            props.setCurrentMessage({ messageId: props.messageId })
-          }
+      {props.mainPoint ? (
+        <Point
+          point={props.mainPoint}
+          referenceData={props.referenceData}
           isMainPoint={true}
           isSelected={false}
+          readOnlyOverride={true}
           darkMode={props.darkMode}
-        >
-          <MainPointShape
-            shape={mainPoint.shape}
-            darkMode={props.darkMode}
-            onClick={console.log}
-          />
-          {referenceData && (
-            <Banner
-              authorId={getOriginalAuthorId(referenceData)}
-              placement={{ top: "0.1rem", left: "2.2em" }}
-              darkMode={props.darkMode}
-              ref={bannerRef}
-            />
-          )}
-          <StyledTextArea
-            value={mainPoint.content}
-            readOnly={true}
-            isMainPoint={true}
-            darkMode={props.darkMode}
-            indent={textareaIndent}
-            newLine={textareaNewline}
-          />
-        </StyledSpan>
+          handlePointSpanClick={handlePointSpanClick}
+          ref={pointRef}
+        />
       ) : (
         <div>This message doesn't have any points yet!</div>
       )}
@@ -122,8 +92,9 @@ const MessageListItem = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const mainPointId = state.messages.byId[ownProps.messageId].main;
-  let mainPoint = null;
+  let mainPoint;
   let referenceData = null;
+
   if (mainPointId) {
     mainPoint = getPointById(mainPointId, state.points);
     referenceData = getReferenceData(mainPointId, state.points);

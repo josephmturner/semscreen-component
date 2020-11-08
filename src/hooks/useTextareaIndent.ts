@@ -18,6 +18,7 @@
 */
 //TODO: Fix types of ref props
 export const useTextareaIndent = (parentRef: any, bannerRef?: any) => {
+  //TODO: Add a callback inside useTextarea to improve performance
   let textareaIndent, textareaNewline;
 
   if (bannerRef.current) {
