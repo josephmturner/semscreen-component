@@ -124,21 +124,20 @@ function handlePointsMove(
   action: Action<_PointsMoveParams>,
   appState: AppState
 ): PointsState {
-  if (appState.drag.context === null) return state;
-
   if (action.params.messageId !== undefined) {
-    const { newPoints } = action.params;
+    const { newReferencePoints } = action.params;
 
-    if (newPoints === undefined) {
+    if (newReferencePoints === undefined) {
       return state;
     }
 
     return produce(state, (draft) => {
-      newPoints.forEach((point) => {
+      newReferencePoints.forEach((point) => {
         draft.byId[point._id] = point;
       });
     });
   } else {
+    if (appState.drag.context === null) return state;
     const { region } = appState.drag.context;
 
     if (!isPointShape(region)) return state;
@@ -249,14 +248,14 @@ function handleMessageCreate(
   state: PointsState,
   action: Action<_MessageCreateParams>
 ): PointsState {
-  const { newPoints } = action.params;
+  const { newReferencePoints } = action.params;
 
-  if (newPoints === undefined) {
+  if (newReferencePoints === undefined) {
     return state;
   }
 
   return produce(state, (draft) => {
-    newPoints.forEach((point) => {
+    newReferencePoints.forEach((point) => {
       draft.byId[point._id] = point;
     });
   });

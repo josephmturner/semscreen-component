@@ -40,13 +40,11 @@ import { AppState } from "../reducers/store";
 //  };
 //};
 
-export interface MessageCreateParams {
-  moveSelectedPoints?: boolean;
-}
+export interface MessageCreateParams {}
 
 export interface _MessageCreateParams extends MessageCreateParams {
   newMessageId: string;
-  newPoints?: PointReferenceI[];
+  newReferencePoints?: PointReferenceI[];
 }
 
 function _shouldCopy(appState: AppState): boolean {
@@ -61,11 +59,11 @@ export const messageCreate = (
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    let referencePoints: PointReferenceI[] | undefined;
-
-    const moveSelectedPoints = params.moveSelectedPoints ?? false;
-    if (moveSelectedPoints && _shouldCopy(appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
+    //Create newReferencePoints if the current message is a persisted message
+    //Cut and paste draft points by leaving newReferencePoints undefined
+    let newReferencePoints: PointReferenceI[] | undefined;
+    if (_shouldCopy(appState) && appState.selectedPoints.pointIds[0]) {
+      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
@@ -74,9 +72,8 @@ export const messageCreate = (
 
     dispatch(
       _messageCreate({
-        moveSelectedPoints,
         newMessageId,
-        newPoints: referencePoints,
+        newReferencePoints,
       })
     );
   };

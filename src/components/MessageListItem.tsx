@@ -60,7 +60,7 @@ const MessageListItem = (props: AllProps) => {
   drop(pointRef.current?.span);
 
   const handlePointSpanClick = () => {
-    props.setCurrentMessage({ messageId: props.messageId });
+    props.pointsMove({ messageId: props.messageId });
   };
 
   //The useState and useEffect are purely to cause the component to

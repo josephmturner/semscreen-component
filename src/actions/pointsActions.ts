@@ -92,10 +92,10 @@ export const pointsMove = (
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    let referencePoints: PointReferenceI[] | undefined;
+    let newReferencePoints: PointReferenceI[] | undefined;
 
     if (_shouldCopy(params, appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
+      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
@@ -103,7 +103,7 @@ export const pointsMove = (
     dispatch(
       _pointsMove({
         messageId: params.messageId,
-        newPoints: referencePoints,
+        newReferencePoints,
       })
     );
   };
@@ -111,7 +111,7 @@ export const pointsMove = (
 
 export interface _PointsMoveParams {
   messageId?: string;
-  newPoints?: PointReferenceI[];
+  newReferencePoints?: PointReferenceI[];
 }
 
 export const _pointsMove = (

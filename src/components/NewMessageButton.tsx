@@ -48,7 +48,7 @@ const NewMessageButton = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.messageCreate({ moveSelectedPoints: true });
+      props.messageCreate({});
     },
   });
 

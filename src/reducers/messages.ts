@@ -196,26 +196,24 @@ function handleMessageCreate(
     draft.draftIds.unshift(action.params.newMessageId);
   });
 
-  if (action.params.moveSelectedPoints) {
-    const intermediateAction: Action<_PointsMoveParams> = {
-      type: Actions.pointsMove,
-      params: {
-        messageId: action.params.newMessageId,
-        newPoints: action.params.newPoints,
-      },
-    };
+  const intermediateAction: Action<_PointsMoveParams> = {
+    type: Actions.pointsMove,
+    params: {
+      messageId: action.params.newMessageId,
+      newReferencePoints: action.params.newReferencePoints,
+    },
+  };
 
-    newState = handlePointsMove(newState, intermediateAction, {
-      ...appState,
-      messages: newState,
-    });
-  }
+  newState = handlePointsMove(newState, intermediateAction, {
+    ...appState,
+    messages: newState,
+  });
 
   return produce(newState, (draft) => {
     if (newState.byId[action.params.newMessageId].main === undefined) {
       // If main point is still undefined, we need to pick a main point.
-      const newMainPointId = action.params.newPoints
-        ? action.params.newPoints[0]._id
+      const newMainPointId = action.params.newReferencePoints
+        ? action.params.newReferencePoints[0]._id
         : appState.selectedPoints.pointIds[0];
 
       draft.byId[action.params.newMessageId].main = newMainPointId;
@@ -253,8 +251,6 @@ function handlePointsMove(
   action: Action<_PointsMoveParams>,
   appState: AppState
 ): MessagesState {
-  if (appState.drag.context === null) return state;
-
   const { messageId } = action.params;
   if (messageId !== undefined) {
     // We are moving points into a new message.
@@ -264,12 +260,12 @@ function handlePointsMove(
     }
 
     const points: (PointI | PointReferenceI)[] =
-      action.params.newPoints ??
+      action.params.newReferencePoints ??
       appState.selectedPoints.pointIds.map((pointId) => {
         return appState.points.byId[pointId];
       });
 
-    const isCutAndPaste = action.params.newPoints === undefined;
+    const isCutAndPaste = action.params.newReferencePoints === undefined;
 
     return produce(state, (draft) => {
       const targetMessage = draft.byId[messageId];
@@ -319,6 +315,8 @@ function handlePointsMove(
       }
     });
   }
+
+  if (appState.drag.context === null) return state;
 
   const { region, index } = appState.drag.context;
 
