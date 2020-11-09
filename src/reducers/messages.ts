@@ -246,12 +246,40 @@ function handlePointCreate(
   });
 }
 
+function _deletePoints(
+  message: MessageI,
+  pointIds: string[],
+  keepMain?: boolean
+) {
+  //Delete pointIds from shapes arrays
+  allPointShapes.forEach((shape) => {
+    message.shapes[shape] = message.shapes[shape].filter(
+      (id) => !pointIds.includes(id)
+    );
+  });
+
+  // Delete focus point if included in list of pointIds
+  message.focus && pointIds.includes(message.focus) && delete message.focus;
+
+  // Reset main if possible (unless keepMain === true)
+  if (message.main && pointIds.includes(message.main) && !keepMain) {
+    const pointInShapes = Object.values(message.shapes).flat()[0];
+    if (pointInShapes) {
+      message.main = pointInShapes;
+    } else {
+      message.main = message.focus;
+    }
+  }
+}
+
 function handlePointsMove(
   state: MessagesState,
   action: Action<_PointsMoveParams>,
   appState: AppState
 ): MessagesState {
   const { messageId } = action.params;
+  const currentMessageId = appState.semanticScreen.currentMessage;
+
   if (messageId !== undefined) {
     // We are moving points into a new message.
 
@@ -277,41 +305,10 @@ function handlePointsMove(
       });
 
       if (isCutAndPaste) {
-        // Remove the points from the original (current) message.
-        const currentMessageId = appState.semanticScreen.currentMessage;
-        const currentMessage = draft.byId[currentMessageId];
-
-        points.forEach((point) => {
-          const shape = isReference(point)
-            ? getOriginalShape(point, appState.points)
-            : point.shape;
-          currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
-            (pointId) => {
-              return pointId !== point._id;
-            }
-          );
-        });
-
-        // Remove focus and reset main if moved to a different message
-        if (
-          currentMessage.focus &&
-          points.map((p) => p._id).includes(currentMessage.focus)
-        ) {
-          delete draft.byId[currentMessageId].focus;
-        }
-        //TODO: this code will not be necessary if we decide to set the
-        //currentMessage to action.params.messageId.
-        if (
-          currentMessage.main &&
-          points.map((p) => p._id).includes(currentMessage.main)
-        ) {
-          const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
-          if (pointInShapes) {
-            currentMessage.main = pointInShapes;
-          } else {
-            currentMessage.main = currentMessage.focus;
-          }
-        }
+        _deletePoints(
+          draft.byId[currentMessageId],
+          appState.selectedPoints.pointIds
+        );
       }
     });
   }
@@ -328,7 +325,6 @@ function handlePointsMove(
       region === getPointById(p, appState.points).shape
   );
 
-  const currentMessageId = appState.semanticScreen.currentMessage;
   const pointIds: string[] = state.byId[currentMessageId].shapes[region];
   let newPointIds: string[] = [];
 
@@ -349,19 +345,12 @@ function handlePointsMove(
 
   return produce(state, (draft) => {
     const currentMessage = draft.byId[currentMessageId];
+
+    // Delete points from original locations...
+    _deletePoints(currentMessage, pointsToMove, true);
+
+    // then set the pointIds for the destination region
     currentMessage.shapes[region] = newPointIds;
-    // Remove pointIds from other shapes arrays when they're moved
-    allPointShapes.forEach((pointShape) => {
-      if (pointShape !== region) {
-        currentMessage.shapes[pointShape] = currentMessage.shapes[
-          pointShape
-        ].filter((p) => !pointsToMove.includes(p));
-      }
-    });
-    // Remove focus if it was moved to a ShapeRegion
-    if (currentMessage.focus && pointsToMove.includes(currentMessage.focus)) {
-      delete draft.byId[currentMessageId].focus;
-    }
   });
 }
 
@@ -372,26 +361,7 @@ function handlePointsDelete(
 ): MessagesState {
   return produce(state, (draft) => {
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
-    allPointShapes.forEach((shape) => {
-      currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
-        (id) => !action.params.pointIds.includes(id)
-      );
-    });
-    currentMessage.focus &&
-      action.params.pointIds.includes(currentMessage.focus) &&
-      delete currentMessage.focus;
-    //Message.main should only be undefined if message has no points
-    if (
-      currentMessage.main &&
-      action.params.pointIds.includes(currentMessage.main)
-    ) {
-      const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
-      if (pointInShapes) {
-        currentMessage.main = pointInShapes;
-      } else {
-        currentMessage.main = currentMessage.focus;
-      }
-    }
+    _deletePoints(currentMessage, action.params.pointIds);
   });
 }
 
