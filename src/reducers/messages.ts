@@ -305,10 +305,20 @@ function handlePointsMove(
       });
 
       if (isCutAndPaste) {
-        _deletePoints(
-          draft.byId[currentMessageId],
-          appState.selectedPoints.pointIds
-        );
+        const currentMessage = draft.byId[currentMessageId];
+        _deletePoints(currentMessage, appState.selectedPoints.pointIds);
+
+        // If currentMessage is now empty, delete it
+        if (
+          Object.values(currentMessage.shapes).flat()[0] === undefined &&
+          currentMessage.focus === undefined
+        ) {
+          delete draft.byId[currentMessageId];
+          draft.draftIds = draft.draftIds.filter((m) => m !== currentMessageId);
+          draft.allMessages = draft.allMessages.filter(
+            (m) => m !== currentMessageId
+          );
+        }
       }
     });
   }
