@@ -32,7 +32,8 @@ import { MainPointShape } from "./MainPointShape";
 import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 interface Props {
-  point: PointI;
+  id: string;
+  displayPoint: PointI;
   referenceData: PointReferenceI | null;
   isMainPoint: boolean;
   isSelected: boolean;
@@ -70,7 +71,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
 
   const [isHovered, setIsHovered] = useState(false);
 
-  const imageUrl = require(`../images/${props.point.shape}.svg`);
+  const imageUrl = require(`../images/${props.displayPoint.shape}.svg`);
 
   const { textareaIndent, textareaNewline } = useTextareaIndent(
     spanRef,
@@ -90,7 +91,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
     >
       {props.isMainPoint ? (
         <MainPointShape
-          shape={props.point.shape}
+          shape={props.displayPoint.shape}
           darkMode={props.darkMode}
           onClick={props.handleShapeIconClick}
         />
@@ -101,7 +102,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
           onClick={props.handleShapeIconClick}
           isMainPoint={props.isMainPoint}
           darkMode={props.darkMode}
-          alt={props.point.shape}
+          alt={props.displayPoint.shape}
         />
       )}
       {props.referenceData && (
@@ -114,7 +115,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
         />
       )}
       <StyledTextArea
-        value={props.point.content}
+        value={props.displayPoint.content}
         onChange={props.handleChange}
         onBlur={props.handleBlur}
         readOnly={!!props.referenceData || props.readOnlyOverride}
@@ -127,10 +128,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
         onKeyDown={props.handleKeyDown}
       />
       {isHovered && !props.readOnlyOverride && (
-        <PointHoverOptions
-          pointId={props.point._id}
-          darkMode={props.darkMode}
-        />
+        <PointHoverOptions pointId={props.id} darkMode={props.darkMode} />
       )}
     </StyledSpan>
   );

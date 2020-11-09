@@ -74,7 +74,8 @@ const MessageListItem = (props: AllProps) => {
     <>
       {props.mainPoint && (
         <Point
-          point={props.mainPoint}
+          id={props.messageId}
+          displayPoint={props.mainPoint}
           referenceData={props.referenceData}
           isMainPoint={true}
           isSelected={false}

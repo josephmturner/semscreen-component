@@ -286,7 +286,8 @@ const RegionPoint = (props: AllProps) => {
 
   return (
     <Point
-      point={props.point}
+      id={props.pointId}
+      displayPoint={props.point}
       referenceData={props.referenceData}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
