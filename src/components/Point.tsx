@@ -37,6 +37,7 @@ interface Props {
   isMainPoint: boolean;
   isSelected: boolean;
   readOnlyOverride: boolean;
+  suppressAutoFocus?: boolean;
   darkMode?: boolean;
   handleChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleKeyDown?: (e: React.KeyboardEvent) => void;
@@ -122,7 +123,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
         ref={textareaRef}
         indent={textareaIndent}
         newLine={textareaNewline}
-        autoFocus
+        autoFocus={!props.suppressAutoFocus}
         onKeyDown={props.handleKeyDown}
       />
       {isHovered && !props.readOnlyOverride && (

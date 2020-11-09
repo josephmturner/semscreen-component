@@ -80,6 +80,7 @@ const MessageListItem = (props: AllProps) => {
           isSelected={false}
           readOnlyOverride={true}
           darkMode={props.darkMode}
+          suppressAutoFocus={true}
           handlePointSpanClick={handlePointSpanClick}
           ref={pointRef}
         />
