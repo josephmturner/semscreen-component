@@ -53,6 +53,8 @@ const MessageListItem = (props: AllProps) => {
   //TODO: fix type of ref
   const pointRef = useRef<any>(null);
 
+  const [isHovered, setIsHovered] = useState(false);
+
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
@@ -60,9 +62,9 @@ const MessageListItem = (props: AllProps) => {
     },
   });
 
-  drop(pointRef.current?.span);
+  drop(pointRef.current?.div);
 
-  const handlePointSpanClick = () => {
+  const handlePointDivClick = () => {
     props.pointsMoveToMessage({ messageId: props.messageId });
   };
 
@@ -82,10 +84,12 @@ const MessageListItem = (props: AllProps) => {
           referenceData={props.referenceData}
           isMainPoint={true}
           isSelected={false}
+          isHovered={isHovered}
+          setIsHovered={setIsHovered}
           readOnlyOverride={true}
           darkMode={props.darkMode}
           suppressAutoFocus={true}
-          handlePointSpanClick={handlePointSpanClick}
+          handlePointDivClick={handlePointDivClick}
           ref={pointRef}
         />
       )}

@@ -16,18 +16,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useState,
-  useRef,
-} from "react";
-import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
+
+import { StyledImg, StyledDiv, StyledTextArea } from "./StyledPoint";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getOriginalAuthorId } from "../dataModels/pointUtils";
 
 import Banner from "./Banner";
-import PointHoverOptions from "./PointHoverOptions";
 import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 interface Props {
@@ -36,26 +31,30 @@ interface Props {
   referenceData: PointReferenceI | null;
   isMainPoint: boolean;
   isSelected: boolean;
+  isHovered: boolean;
+  setIsHovered: (isHovered: boolean) => void;
   readOnlyOverride: boolean;
   suppressAutoFocus?: boolean;
   darkMode?: boolean;
   handleChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleKeyDown?: (e: React.KeyboardEvent) => void;
   handleBlur?: () => void;
-  handlePointSpanClick: (e: React.MouseEvent) => void;
+  handlePointDivClick: (e: React.MouseEvent) => void;
   handleShapeIconClick?: (e: React.MouseEvent) => void;
+  //TODO: What is the correct type of children?
+  children?: React.ReactNode;
 }
 
 //TODO: fix ref type below
 const Point = forwardRef<any, Props>((props, ref) => {
-  const spanRef = useRef<HTMLSpanElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useImperativeHandle(ref, () => ({
-    get span() {
-      return spanRef.current;
+    get div() {
+      return divRef.current;
     },
     get img() {
       return imgRef.current;
@@ -68,24 +67,21 @@ const Point = forwardRef<any, Props>((props, ref) => {
     },
   }));
 
-  const [isHovered, setIsHovered] = useState(false);
-
   const imageUrl = require(`../images/${props.displayPoint.shape}.svg`);
 
   const { textareaIndent, textareaNewline } = useTextareaIndent(
-    spanRef,
+    divRef,
     bannerRef
   );
 
   return (
-    <StyledSpan
-      onClick={props.handlePointSpanClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      ref={spanRef}
-      //TODO: consider removing isMainPoint from StyledPoint props
-      isMainPoint={props.isMainPoint}
+    <StyledDiv
+      onClick={props.handlePointDivClick}
+      onMouseEnter={() => props.setIsHovered(true)}
+      onMouseLeave={() => props.setIsHovered(false)}
+      ref={divRef}
       isSelected={props.isSelected}
+      isHovered={props.isHovered}
       darkMode={props.darkMode}
     >
       <StyledImg
@@ -118,10 +114,8 @@ const Point = forwardRef<any, Props>((props, ref) => {
         autoFocus={!props.suppressAutoFocus}
         onKeyDown={props.handleKeyDown}
       />
-      {isHovered && !props.readOnlyOverride && (
-        <PointHoverOptions pointId={props.id} darkMode={props.darkMode} />
-      )}
-    </StyledSpan>
+      {props.children}
+    </StyledDiv>
   );
 });
 

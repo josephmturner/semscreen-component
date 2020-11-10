@@ -17,6 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useRef, useState } from "react";
+
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
@@ -26,6 +27,7 @@ import {
 } from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Point from "./Point";
+import PointHoverOptions from "./PointHoverOptions";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
 import { useDragPoint } from "../hooks/useDragPoint";
@@ -108,7 +110,7 @@ const RegionPoint = (props: AllProps) => {
       const hoverIndex = index;
       const dragIndex = item.index;
 
-      const hoverBoundingRect = pointRef.current?.span.getBoundingClientRect();
+      const hoverBoundingRect = pointRef.current?.div.getBoundingClientRect();
 
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -144,7 +146,7 @@ const RegionPoint = (props: AllProps) => {
   const pointRef = useRef<any>(null);
 
   drag(pointRef.current?.img);
-  drop(preview(pointRef.current?.span));
+  drop(preview(pointRef.current?.div));
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
@@ -157,7 +159,7 @@ const RegionPoint = (props: AllProps) => {
     e.stopPropagation();
   };
 
-  const handlePointSpanClick = (e: React.MouseEvent) => {
+  const handlePointDivClick = (e: React.MouseEvent) => {
     if (props.isExpanded) {
       e.stopPropagation();
     }
@@ -284,6 +286,8 @@ const RegionPoint = (props: AllProps) => {
     pointId,
   ]);
 
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <Point
       id={props.pointId}
@@ -291,15 +295,21 @@ const RegionPoint = (props: AllProps) => {
       referenceData={props.referenceData}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
+      isHovered={isHovered}
+      setIsHovered={setIsHovered}
       readOnlyOverride={props.isPersisted}
       darkMode={props.darkMode}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
       handleBlur={handleBlur}
-      handlePointSpanClick={handlePointSpanClick}
+      handlePointDivClick={handlePointDivClick}
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
-    />
+    >
+      {isHovered && !props.isPersisted && (
+        <PointHoverOptions pointId={props.pointId} darkMode={props.darkMode} />
+      )}
+    </Point>
   );
 };
 

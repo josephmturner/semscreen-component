@@ -15,7 +15,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
@@ -25,6 +25,7 @@ import {
 } from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
 import Point from "./Point";
+import PointHoverOptions from "./PointHoverOptions";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -88,7 +89,7 @@ const FocusPoint = (props: AllProps) => {
     e.stopPropagation();
   };
 
-  const handlePointSpanClick = (e: React.MouseEvent) => {
+  const handlePointDivClick = (e: React.MouseEvent) => {
     if (props.isExpanded) {
       e.stopPropagation();
     }
@@ -113,7 +114,9 @@ const FocusPoint = (props: AllProps) => {
   const pointRef = useRef<any>(null);
 
   drag(pointRef.current?.img);
-  preview(pointRef.current?.span);
+  preview(pointRef.current?.div);
+
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Point
@@ -122,15 +125,21 @@ const FocusPoint = (props: AllProps) => {
       referenceData={props.referenceData}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
+      isHovered={isHovered}
+      setIsHovered={setIsHovered}
       readOnlyOverride={props.isPersisted}
       darkMode={props.darkMode}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
       handleBlur={handleBlur}
-      handlePointSpanClick={handlePointSpanClick}
+      handlePointDivClick={handlePointDivClick}
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
-    />
+    >
+      {isHovered && !props.isPersisted && (
+        <PointHoverOptions pointId={props.pointId} darkMode={props.darkMode} />
+      )}
+    </Point>
   );
 };
 

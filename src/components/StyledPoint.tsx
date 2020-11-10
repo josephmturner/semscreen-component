@@ -22,12 +22,13 @@ import TextareaAutosize from "react-textarea-autosize";
 interface StyledPointProps {
   isMainPoint?: boolean;
   isSelected?: boolean;
+  isHovered?: boolean;
   darkMode?: boolean;
   indent?: string;
   newLine?: boolean;
 }
 
-export const StyledSpan = styled.span<StyledPointProps>`
+export const StyledDiv = styled.div<StyledPointProps>`
   position: relative;
   //TODO: perhaps this width: 100% should be replaced with textarea
   //styles which allow it to grow along with its content?
@@ -42,10 +43,12 @@ export const StyledSpan = styled.span<StyledPointProps>`
   border-radius: 3px;
 `}
 
-  :hover {
-    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+  ${(props) =>
+    props.isHovered &&
+    `
+    border: 1px solid ${props.darkMode ? "white" : "black"};
     border-radius: 3px;
-  }
+  `}
 `;
 
 export const StyledImg = styled.img<StyledPointProps>`

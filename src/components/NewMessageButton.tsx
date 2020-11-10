@@ -64,7 +64,9 @@ interface StyledProps {
 }
 
 const StyledButton = styled.button<StyledProps>`
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   background-color: transparent;
   margin-top: 2px;
@@ -73,7 +75,7 @@ const StyledButton = styled.button<StyledProps>`
   color: ${(props) => (props.darkMode ? "white" : "black")};
   :hover {
     border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
-    border-radius: 7px;
+    border-radius: 3px;
   }
 `;
 
