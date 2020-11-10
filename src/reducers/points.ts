@@ -33,7 +33,8 @@ import { AppState } from "./store";
 import {
   _PointCreateParams,
   PointUpdateParams,
-  _PointsMoveParams,
+  _PointsMoveToMessageParams,
+  PointsMoveWithinMessageParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -61,10 +62,17 @@ export const pointsReducer = (
     case Actions.pointUpdate:
       newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
       break;
-    case Actions.pointsMove:
-      newState = handlePointsMove(
+    case Actions.pointsMoveWithinMessage:
+      newState = handlePointsMoveWithinMessage(
         state,
-        action as Action<_PointsMoveParams>,
+        action as Action<PointsMoveWithinMessageParams>,
+        appState
+      );
+      break;
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMoveToMessage(
+        state,
+        action as Action<_PointsMoveToMessageParams>,
         appState
       );
       break;
@@ -119,41 +127,45 @@ function handlePointUpdate(
   });
 }
 
-function handlePointsMove(
+function handlePointsMoveWithinMessage(
   state: PointsState,
-  action: Action<_PointsMoveParams>,
+  action: Action<PointsMoveWithinMessageParams>,
   appState: AppState
 ): PointsState {
-  if (action.params.messageId !== undefined) {
-    const { newReferencePoints } = action.params;
+  if (appState.drag.context === null) return state;
+  const { region } = appState.drag.context;
 
-    if (newReferencePoints === undefined) {
-      return state;
-    }
-
-    return produce(state, (draft) => {
-      newReferencePoints.forEach((point) => {
-        draft.byId[point._id] = point;
-      });
-    });
-  } else {
-    if (appState.drag.context === null) return state;
-    const { region } = appState.drag.context;
-
-    if (!isPointShape(region)) return state;
-    const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
-      (p) => !getReferenceData(p, state)
+  if (!isPointShape(region)) return state;
+  const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
+    (p) => !getReferenceData(p, state)
+  );
+  return produce(state, (draft) => {
+    pointIdsExcludingReferencePoints.forEach(
+      (id) =>
+        (draft.byId[id] = {
+          ...draft.byId[id],
+          shape: region,
+        })
     );
-    return produce(state, (draft) => {
-      pointIdsExcludingReferencePoints.forEach(
-        (id) =>
-          (draft.byId[id] = {
-            ...draft.byId[id],
-            shape: region,
-          })
-      );
-    });
+  });
+}
+
+function handlePointsMoveToMessage(
+  state: PointsState,
+  action: Action<_PointsMoveToMessageParams>,
+  appState: AppState
+): PointsState {
+  const { newReferencePoints } = action.params;
+
+  if (newReferencePoints === undefined) {
+    return state;
   }
+
+  return produce(state, (draft) => {
+    newReferencePoints.forEach((point) => {
+      draft.byId[point._id] = point;
+    });
+  });
 }
 
 function handlePointsDelete(

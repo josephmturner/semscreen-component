@@ -31,8 +31,8 @@ import { AppState } from "../reducers/store";
 import {
   pointCreate,
   PointCreateParams,
-  pointsMove,
-  PointsMoveParams,
+  pointsMoveWithinMessage,
+  PointsMoveWithinMessageParams,
 } from "../actions/pointsActions";
 import {
   setExpandedRegion,
@@ -57,7 +57,7 @@ interface AllProps extends OwnProps {
   isPersisted: boolean;
   isExpanded: boolean;
   pointCreate: (params: PointCreateParams) => void;
-  pointsMove: (params: PointsMoveParams) => void;
+  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
   togglePoint: (params: TogglePointParams) => void;
@@ -86,7 +86,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (!props.isPersisted) {
-        props.pointsMove({});
+        props.pointsMoveWithinMessage({});
       }
     },
   });
@@ -109,7 +109,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (!props.isPersisted) {
-        props.pointsMove({});
+        props.pointsMoveWithinMessage({});
       }
     },
   });
@@ -229,7 +229,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
 const mapDispatchToProps = {
   pointCreate,
-  pointsMove,
+  pointsMoveWithinMessage,
   setExpandedRegion,
   togglePoint,
   setSelectedPoints,

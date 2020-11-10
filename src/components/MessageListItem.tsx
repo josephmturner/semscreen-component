@@ -27,7 +27,10 @@ import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
-import { pointsMove, PointsMoveParams } from "../actions/pointsActions";
+import {
+  pointsMoveToMessage,
+  PointsMoveToMessageParams,
+} from "../actions/pointsActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
@@ -41,7 +44,7 @@ interface AllProps extends OwnProps {
   mainPoint?: PointI;
   referenceData: PointReferenceI | null;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  pointsMove: (params: PointsMoveParams) => void;
+  pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
 }
 
 const MessageListItem = (props: AllProps) => {
@@ -53,14 +56,14 @@ const MessageListItem = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.pointsMove({ messageId: props.messageId });
+      props.pointsMoveToMessage({ messageId: props.messageId });
     },
   });
 
   drop(pointRef.current?.span);
 
   const handlePointSpanClick = () => {
-    props.pointsMove({ messageId: props.messageId });
+    props.pointsMoveToMessage({ messageId: props.messageId });
   };
 
   //The useState and useEffect are purely to cause the component to
@@ -108,7 +111,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
 const mapActionsToProps = {
   setCurrentMessage,
-  pointsMove,
+  pointsMoveToMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(MessageListItem);

@@ -43,8 +43,8 @@ import {
   SplitIntoTwoPointsParams,
   combinePoints,
   CombinePointsParams,
-  pointsMove,
-  PointsMoveParams,
+  pointsMoveWithinMessage,
+  PointsMoveWithinMessageParams,
   pointUpdate,
   PointUpdateParams,
   pointsDelete,
@@ -81,7 +81,7 @@ interface AllProps extends OwnProps {
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
-  pointsMove: (params: PointsMoveParams) => void;
+  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -133,7 +133,7 @@ const RegionPoint = (props: AllProps) => {
     },
     drop: () => {
       if (!props.isPersisted) {
-        props.pointsMove({});
+        props.pointsMoveWithinMessage({});
       }
     },
   });
@@ -327,7 +327,7 @@ const mapActionsToProps = {
   combinePoints,
   setCursorPosition,
   clearCursorPosition,
-  pointsMove,
+  pointsMoveWithinMessage,
   pointUpdate,
   setMainPoint,
   pointsDelete,

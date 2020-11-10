@@ -24,7 +24,7 @@ import {
 import {
   CombinePointsParams,
   PointsDeleteParams,
-  _PointsMoveParams,
+  _PointsMoveToMessageParams,
 } from "../actions/pointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _MessageCreateParams } from "../actions/messagesActions";
@@ -79,8 +79,11 @@ export const selectedPointsReducer = (
         action as Action<_MessageCreateParams>
       );
       break;
-    case Actions.pointsMove:
-      newState = handlePointsMove(state, action as Action<_PointsMoveParams>);
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMove(
+        state,
+        action as Action<_PointsMoveToMessageParams>
+      );
       break;
   }
   return newState;
@@ -160,7 +163,7 @@ function handleMessageCreate(
 
 function handlePointsMove(
   state: SelectedPointsState,
-  action: Action<_PointsMoveParams>
+  action: Action<_PointsMoveToMessageParams>
 ): SelectedPointsState {
   const pointIds = action.params.newReferencePoints
     ? action.params.newReferencePoints.map((p) => p._id)

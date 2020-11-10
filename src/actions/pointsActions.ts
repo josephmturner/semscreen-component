@@ -65,7 +65,21 @@ export const pointUpdate = (
   };
 };
 
-function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
+export interface PointsMoveWithinMessageParams {}
+
+export const pointsMoveWithinMessage = (
+  params: PointsMoveWithinMessageParams
+): Action<PointsMoveWithinMessageParams> => {
+  return {
+    type: Actions.pointsMoveWithinMessage,
+    params,
+  };
+};
+
+function _shouldCopy(
+  params: PointsMoveToMessageParams,
+  appState: AppState
+): boolean {
   if (params.messageId === undefined) {
     return false;
   }
@@ -80,15 +94,13 @@ function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
   return true;
 }
 
-export interface PointsMoveParams {
-  // If messageId is undefined, then we move the points around in the current message.
-  // Otherwise, we move the points into the specified message.
-  messageId?: string;
+export interface PointsMoveToMessageParams {
+  messageId: string;
 }
 
-export const pointsMove = (
-  params: PointsMoveParams
-): ThunkAction<void, AppState, unknown, Action<_PointsMoveParams>> => {
+export const pointsMoveToMessage = (
+  params: PointsMoveToMessageParams
+): ThunkAction<void, AppState, unknown, Action<_PointsMoveToMessageParams>> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
@@ -101,7 +113,7 @@ export const pointsMove = (
     }
 
     dispatch(
-      _pointsMove({
+      _pointsMoveToMessage({
         messageId: params.messageId,
         newReferencePoints,
       })
@@ -109,16 +121,16 @@ export const pointsMove = (
   };
 };
 
-export interface _PointsMoveParams {
-  messageId?: string;
+export interface _PointsMoveToMessageParams {
+  messageId: string;
   newReferencePoints?: PointReferenceI[];
 }
 
-export const _pointsMove = (
-  params: _PointsMoveParams
-): Action<_PointsMoveParams> => {
+export const _pointsMoveToMessage = (
+  params: _PointsMoveToMessageParams
+): Action<_PointsMoveToMessageParams> => {
   return {
-    type: Actions.pointsMove,
+    type: Actions.pointsMoveToMessage,
     params,
   };
 };
