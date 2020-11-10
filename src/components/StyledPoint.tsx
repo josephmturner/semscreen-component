@@ -31,7 +31,9 @@ export const StyledSpan = styled.span<StyledPointProps>`
   position: relative;
   //TODO: perhaps this width: 100% should be replaced with textarea
   //styles which allow it to grow along with its content?
-  width: 100%;
+  //The issue is that if we omit width: 100%, banner names can get cut
+  //off without expanding when the focus region expands
+  //width: 100%;
   margin: 1px 0;
   ${(props) =>
     props.isSelected &&

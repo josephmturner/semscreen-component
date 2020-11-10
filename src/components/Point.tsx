@@ -28,7 +28,6 @@ import { getOriginalAuthorId } from "../dataModels/pointUtils";
 
 import Banner from "./Banner";
 import PointHoverOptions from "./PointHoverOptions";
-import { MainPointShape } from "./MainPointShape";
 import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 interface Props {
@@ -89,22 +88,14 @@ const Point = forwardRef<any, Props>((props, ref) => {
       isSelected={props.isSelected}
       darkMode={props.darkMode}
     >
-      {props.isMainPoint ? (
-        <MainPointShape
-          shape={props.displayPoint.shape}
-          darkMode={props.darkMode}
-          onClick={props.handleShapeIconClick}
-        />
-      ) : (
-        <StyledImg
-          ref={imgRef}
-          src={imageUrl}
-          onClick={props.handleShapeIconClick}
-          isMainPoint={props.isMainPoint}
-          darkMode={props.darkMode}
-          alt={props.displayPoint.shape}
-        />
-      )}
+      <StyledImg
+        ref={imgRef}
+        src={imageUrl}
+        onClick={props.handleShapeIconClick}
+        isMainPoint={props.isMainPoint}
+        darkMode={props.darkMode}
+        alt={props.displayPoint.shape}
+      />
       {props.referenceData && (
         //TODO: Place Banner inside a container which handles placement
         <Banner
