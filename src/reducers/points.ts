@@ -79,7 +79,8 @@ export const pointsReducer = (
     case Actions.pointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>
+        action as Action<PointsDeleteParams>,
+        appState
       );
       break;
     case Actions.combinePoints:
@@ -170,10 +171,14 @@ function handlePointsMoveToMessage(
 
 function handlePointsDelete(
   state: PointsState,
-  action: Action<PointsDeleteParams>
+  action: Action<PointsDeleteParams>,
+  appState: AppState
 ): PointsState {
+  let pointIds = action.params.pointIds;
+  pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+
   return produce(state, (draft) => {
-    action.params.pointIds.forEach((id) => delete draft.byId[id]);
+    pointIds.forEach((id) => delete draft.byId[id]);
   });
 }
 

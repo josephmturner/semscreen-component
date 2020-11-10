@@ -117,11 +117,8 @@ function handlePointsDelete(
   state: SelectedPointsState,
   action: Action<PointsDeleteParams>
 ): SelectedPointsState {
-  const newPointIds = state.pointIds.filter((pointId) => {
-    return !action.params.pointIds.includes(pointId);
-  });
   return {
-    pointIds: newPointIds,
+    pointIds: [],
   };
 }
 
