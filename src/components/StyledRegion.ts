@@ -22,18 +22,18 @@ interface StyledRegionProps {
   borderColor: string;
 }
 
-const StyledRegion = styled.div<StyledRegionProps>`
-  overflow-x: hidden;
-  overflow-y: auto;
+export const StyledRegion = styled.div<StyledRegionProps>`
+  overflow: hidden;
   border: 2px solid ${(props) => props.borderColor};
-  border-radius: 7px;
-  margin: 0.5px;
-
-  & > div {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-  }
+  border-radius: 3px;
 `;
 
-export default StyledRegion;
+//This container ensures that StyledRegion only ever has one child,
+//which is a requirement of animate-css-grid
+export const InnerContainer = styled.div`
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+`;

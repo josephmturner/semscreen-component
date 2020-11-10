@@ -21,40 +21,36 @@ import styled from "styled-components";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import {
-  setCurrentMessage,
-  SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
-import { messageCreate, MessageCreateParams } from "../actions/messagesActions";
-
-import { useDrop } from "react-dnd";
-import { ItemTypes } from "../constants/React-Dnd";
+import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
 
 interface OwnProps {
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
-  selectedPointIds: string[];
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  messageCreate: (params: MessageCreateParams) => void;
+  currentMessage: MessageI;
+  currentPoints: (PointI | PointReferenceI)[];
 }
 
-const NewMessageButton = (props: AllProps) => {
+const PublishButton = (props: AllProps) => {
   const handleClick = () => {
-    props.messageCreate({});
+    if (!props.currentMessage.main) {
+      window.alert(
+        "Before publishing, please add a main point to your message"
+      );
+    } else if (!props.currentMessage.focus) {
+      window.alert(
+        "Before publishing, please add a focus point to your message"
+      );
+    } else {
+      console.log(props.currentMessage);
+      console.log(props.currentPoints);
+    }
   };
 
-  const [, drop] = useDrop({
-    accept: ItemTypes.POINT,
-    drop: () => {
-      props.messageCreate({});
-    },
-  });
-
   return (
-    <StyledButton ref={drop} onClick={handleClick} darkMode={props.darkMode}>
-      +
+    <StyledButton onClick={handleClick} darkMode={props.darkMode}>
+      Publish!
     </StyledButton>
   );
 };
@@ -64,30 +60,32 @@ interface StyledProps {
 }
 
 const StyledButton = styled.button<StyledProps>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 0;
   border: 0;
   background-color: transparent;
+  box-sizing: border-box;
   margin-top: 2px;
   height: 1rem;
   width: 100%;
   color: ${(props) => (props.darkMode ? "white" : "black")};
   :hover {
     border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
-    border-radius: 3px;
+    border-radius: 7px;
   }
 `;
 
 const mapStateToProps = (state: AppState) => {
+  const currentMessage =
+    state.messages.byId[state.semanticScreen.currentMessage];
+  const currentPointIds = Object.values(currentMessage.shapes).flat();
+  if (currentMessage.focus) currentPointIds.push(currentMessage.focus);
+  const currentPoints = currentPointIds.map((id) => state.points.byId[id]);
   return {
-    selectedPointIds: state.selectedPoints.pointIds,
+    currentMessage,
+    currentPoints,
   };
 };
 
-const mapActionsToProps = {
-  setCurrentMessage,
-  messageCreate,
-};
+const mapActionsToProps = {};
 
-export default connect(mapStateToProps, mapActionsToProps)(NewMessageButton);
+export default connect(mapStateToProps, mapActionsToProps)(PublishButton);

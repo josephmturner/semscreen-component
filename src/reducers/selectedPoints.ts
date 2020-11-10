@@ -16,7 +16,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import produce from "immer";
+
 import { Action, Actions } from "../actions/constants";
+import { AppState } from "./store";
 import {
   SetSelectedPointsParams,
   TogglePointParams,
@@ -24,10 +27,13 @@ import {
 import {
   CombinePointsParams,
   PointsDeleteParams,
+  _PointsMoveToMessageParams,
 } from "../actions/pointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
-import { _MessageCreateParams } from "../actions/messagesActions";
-import { AppState } from "./store";
+import {
+  _MessageCreateParams,
+  _MessageDeleteParams,
+} from "../actions/messagesActions";
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -78,6 +84,19 @@ export const selectedPointsReducer = (
         action as Action<_MessageCreateParams>
       );
       break;
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<_MessageDeleteParams>,
+        appState
+      );
+      break;
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMove(
+        state,
+        action as Action<_PointsMoveToMessageParams>
+      );
+      break;
   }
   return newState;
 };
@@ -110,11 +129,8 @@ function handlePointsDelete(
   state: SelectedPointsState,
   action: Action<PointsDeleteParams>
 ): SelectedPointsState {
-  const newPointIds = state.pointIds.filter((pointId) => {
-    return !action.params.pointIds.includes(pointId);
-  });
   return {
-    pointIds: newPointIds,
+    pointIds: [],
   };
 }
 
@@ -146,7 +162,33 @@ function handleMessageCreate(
   state: SelectedPointsState,
   action: Action<_MessageCreateParams>
 ): SelectedPointsState {
-  const pointIds = action.params.moveSelectedPoints ? state.pointIds : [];
+  const pointIds = action.params.newReferencePoints
+    ? action.params.newReferencePoints.map((p) => p._id)
+    : state.pointIds;
+  return {
+    pointIds,
+  };
+}
+
+function handleMessageDelete(
+  state: SelectedPointsState,
+  action: Action<_MessageDeleteParams>,
+  appState: AppState
+) {
+  return produce(state, (draft) => {
+    if (appState.semanticScreen.currentMessage === action.params.messageId) {
+      draft.pointIds = [];
+    }
+  });
+}
+
+function handlePointsMove(
+  state: SelectedPointsState,
+  action: Action<_PointsMoveToMessageParams>
+): SelectedPointsState {
+  const pointIds = action.params.newReferencePoints
+    ? action.params.newReferencePoints.map((p) => p._id)
+    : state.pointIds;
   return {
     pointIds,
   };

@@ -16,379 +16,107 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
-import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
-import {
-  getPointById,
-  getReferenceData,
-  getOriginalMessageId,
-  getOriginalAuthorId,
-  getOriginalPointId,
-} from "../dataModels/pointUtils";
-import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
-import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
+
+import { StyledImg, StyledDiv, StyledTextArea } from "./StyledPoint";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import { getOriginalAuthorId } from "../dataModels/pointUtils";
+
 import Banner from "./Banner";
-import PointHoverOptions from "./PointHoverOptions";
-import { MainPointShape } from "./MainPointShape";
+import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
-import { useDrop, DropTargetMonitor } from "react-dnd";
-import { useDragPoint } from "../hooks/useDragPoint";
-import { XYCoord } from "dnd-core";
-
-import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
-import {
-  setCursorPosition,
-  clearCursorPosition,
-  CursorPositionParams,
-} from "../actions/cursorPositionActions";
-import {
-  splitIntoTwoPoints,
-  SplitIntoTwoPointsParams,
-  combinePoints,
-  CombinePointsParams,
-  pointsMove,
-  PointsMoveParams,
-  pointUpdate,
-  PointUpdateParams,
-  pointsDelete,
-  PointsDeleteParams,
-} from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
-import { hoverOver, HoverOverParams } from "../actions/dragActions";
-import {
-  setSelectedPoints,
-  SetSelectedPointsParams,
-  togglePoint,
-  TogglePointParams,
-} from "../actions/selectPointActions";
-import {
-  setCurrentMessage,
-  SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
-
-interface OwnProps {
-  pointId: string;
-  index: number;
-  isExpanded: "expanded" | "minimized" | "balanced";
-  isSelected: boolean;
-  darkMode?: boolean;
-}
-
-interface AllProps extends OwnProps {
-  point: PointI;
+interface Props {
+  id: string;
+  displayPoint: PointI;
   referenceData: PointReferenceI | null;
-  referenceAuthor?: AuthorI;
   isMainPoint: boolean;
-  cursorPositionIndex?: number;
-  isPersisted: boolean;
-  splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
-  combinePoints: (params: CombinePointsParams) => void;
-  setCursorPosition: (params: CursorPositionParams) => void;
-  clearCursorPosition: () => void;
-  pointsMove: (params: PointsMoveParams) => void;
-  pointUpdate: (params: PointUpdateParams) => void;
-  setMainPoint: (params: SetMainPointParams) => void;
-  pointsDelete: (params: PointsDeleteParams) => void;
-  hoverOver: (params: HoverOverParams) => void;
-  setSelectedPoints: (params: SetSelectedPointsParams) => void;
-  togglePoint: (params: TogglePointParams) => void;
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
+  isSelected: boolean;
+  isHovered: boolean;
+  setIsHovered: (isHovered: boolean) => void;
+  readOnlyOverride: boolean;
+  suppressAutoFocus?: boolean;
+  darkMode?: boolean;
+  handleChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleKeyDown?: (e: React.KeyboardEvent) => void;
+  handleBlur?: () => void;
+  handlePointDivClick: (e: React.MouseEvent) => void;
+  handleShapeIconClick?: (e: React.MouseEvent) => void;
+  //TODO: What is the correct type of children?
+  children?: React.ReactNode;
 }
 
-const Point = (props: AllProps) => {
-  const {
-    point,
-    referenceData,
-    pointId,
-    index,
-    combinePoints,
-    cursorPositionIndex,
-    clearCursorPosition,
-    setCursorPosition,
-  } = props;
-  const shape = point.shape;
-
-  const [, drop] = useDrop({
-    accept: ItemTypes.POINT,
-    hover: (item: DraggablePointType, monitor: DropTargetMonitor) => {
-      if (!spanRef.current) return;
-
-      const hoverIndex = index;
-      const dragIndex = item.index;
-
-      const hoverBoundingRect = spanRef.current?.getBoundingClientRect();
-
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-      const clientOffset = monitor.getClientOffset();
-
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-      let newIndex = hoverIndex;
-
-      if (dragIndex === hoverIndex && hoverClientY < hoverMiddleY) return;
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
-      if (dragIndex === hoverIndex && hoverClientY > hoverMiddleY) newIndex++;
-
-      item.index = newIndex;
-      item.region = shape;
-
-      props.hoverOver({
-        region: point.shape,
-        index: newIndex,
-      });
-    },
-    drop: () => {
-      if (!props.isPersisted) {
-        props.pointsMove({});
-      }
-    },
-  });
-
+//TODO: fix ref type below
+const Point = forwardRef<any, Props>((props, ref) => {
+  const divRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const spanRef = useRef<HTMLSpanElement>(null);
 
-  const { drag, preview } = useDragPoint(pointId, index);
+  useImperativeHandle(ref, () => ({
+    get div() {
+      return divRef.current;
+    },
+    get img() {
+      return imgRef.current;
+    },
+    get banner() {
+      return bannerRef.current;
+    },
+    get textarea() {
+      return textareaRef.current;
+    },
+  }));
 
-  drop(preview(spanRef));
+  const imageUrl = require(`../images/${props.displayPoint.shape}.svg`);
 
-  useEffect(() => {
-    if (typeof cursorPositionIndex === "number" && textareaRef.current) {
-      textareaRef.current.focus();
-      textareaRef.current.setSelectionRange(
-        cursorPositionIndex as number,
-        cursorPositionIndex as number
-      );
-      clearCursorPosition();
-    }
-  }, [cursorPositionIndex, clearCursorPosition]);
+  const { textareaIndent, textareaNewline } = useTextareaIndent(
+    divRef,
+    bannerRef
+  );
 
-  const [arrowPressed, setArrowPressed] = useState<
-    "ArrowUp" | "ArrowDown" | undefined
-  >(undefined);
-  useEffect(() => {
-    if (arrowPressed === "ArrowUp" && textareaRef.current) {
-      (referenceData ||
-        (textareaRef.current && textareaRef.current.selectionStart === 0)) &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
-    } else if (arrowPressed === "ArrowDown" && textareaRef.current) {
-      (referenceData ||
-        (textareaRef.current &&
-          textareaRef.current.selectionStart === point.content.length)) &&
-        setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
-    }
-    setArrowPressed(undefined);
-  }, [
-    arrowPressed,
-    point.content.length,
-    referenceData,
-    setCursorPosition,
-    pointId,
-  ]);
-
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    props.pointUpdate({
-      point: { ...point, content: e.target.value },
-    });
-  };
-
-  const imageUrl = require(`../images/${shape}.svg`);
-
-  //TODO: reuse this function in Point and FocusPoint, it's defined
-  //twice
-  const handleShapeIconClick = (e: React.MouseEvent) => {
-    props.togglePoint({ pointId });
-    e.stopPropagation();
-  };
-
-  const handlePointSpanClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
-      e.stopPropagation();
-    }
-
-    if (props.referenceData) {
-      props.setCurrentMessage({
-        messageId: getOriginalMessageId(props.referenceData),
-        selectedPointIds: [getOriginalPointId(props.referenceData)],
-      });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
-  };
-
-  //TODO: Replace StyledImg with Shape svg component, which should
-  //also be imported by MainPointShape component.
   return (
-    <StyledSpan
-      onClick={handlePointSpanClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      ref={spanRef}
-      isMainPoint={props.isMainPoint}
+    <StyledDiv
+      onClick={props.handlePointDivClick}
+      onMouseEnter={() => props.setIsHovered(true)}
+      onMouseLeave={() => props.setIsHovered(false)}
+      ref={divRef}
       isSelected={props.isSelected}
-      referenceAuthor={props.referenceAuthor}
+      isHovered={props.isHovered}
       darkMode={props.darkMode}
     >
-      {props.isMainPoint ? (
-        <MainPointShape
-          onClick={handleShapeIconClick}
-          shape={shape}
-          referenceAuthor={props.referenceAuthor}
+      <StyledImg
+        ref={imgRef}
+        src={imageUrl}
+        onClick={props.handleShapeIconClick}
+        isMainPoint={props.isMainPoint}
+        darkMode={props.darkMode}
+        alt={props.displayPoint.shape}
+      />
+      {props.referenceData && (
+        //TODO: Place Banner inside a container which handles placement
+        <Banner
+          authorId={getOriginalAuthorId(props.referenceData)}
+          placement={{ top: "0.1rem", left: "2.2em" }}
           darkMode={props.darkMode}
-        />
-      ) : (
-        <StyledImg
-          ref={drag}
-          src={imageUrl}
-          onClick={handleShapeIconClick}
-          isMainPoint={props.isMainPoint}
-          referenceAuthor={props.referenceAuthor}
-          darkMode={props.darkMode}
-          alt={shape}
+          ref={bannerRef}
         />
       )}
       <StyledTextArea
-        value={point.content}
-        onChange={handleChange}
-        onBlur={() => {
-          if (!point.content) props.pointsDelete({ pointIds: [pointId] });
-        }}
-        readOnly={!!props.referenceData || props.isPersisted}
+        value={props.displayPoint.content}
+        onChange={props.handleChange}
+        onBlur={props.handleBlur}
+        readOnly={!!props.referenceData || props.readOnlyOverride}
         isMainPoint={props.isMainPoint}
-        referenceAuthor={props.referenceAuthor}
         darkMode={props.darkMode}
         ref={textareaRef}
-        autoFocus
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.isPersisted || !textareaRef.current) {
-            return;
-          } else {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              textareaRef.current.selectionStart !== 0 &&
-                props.splitIntoTwoPoints({
-                  pointId,
-                  sliceIndex: textareaRef.current.selectionStart,
-                });
-            } else if (
-              e.key === "Backspace" &&
-              textareaRef.current.selectionStart === 0 &&
-              textareaRef.current.selectionStart ===
-                textareaRef.current.selectionEnd
-            ) {
-              if (index !== 0) {
-                e.preventDefault();
-                combinePoints({
-                  shape,
-                  keepIndex: index - 1,
-                  deleteIndex: index,
-                });
-              } else if (index === 0 && !point.content) {
-                e.preventDefault();
-                combinePoints({
-                  shape,
-                  keepIndex: index,
-                  deleteIndex: index + 1,
-                });
-              }
-            } else if (
-              e.key === "Delete" &&
-              textareaRef.current.selectionStart === point.content.length &&
-              textareaRef.current.selectionStart ===
-                textareaRef.current.selectionEnd
-            ) {
-              e.preventDefault();
-              combinePoints({
-                shape,
-                keepIndex: index,
-                deleteIndex: index + 1,
-              });
-            } else if (
-              e.key === "ArrowLeft" &&
-              textareaRef.current.selectionStart === 0 &&
-              textareaRef.current.selectionStart ===
-                textareaRef.current.selectionEnd &&
-              index !== 0
-            ) {
-              e.preventDefault();
-              setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
-            } else if (
-              e.key === "ArrowRight" &&
-              textareaRef.current.selectionStart === point.content.length &&
-              textareaRef.current.selectionStart ===
-                textareaRef.current.selectionEnd
-            ) {
-              e.preventDefault();
-              setCursorPosition({
-                moveTo: "beginningOfNextPoint",
-                pointId,
-              });
-            } else if (e.key === "ArrowUp" && index !== 0) {
-              setArrowPressed("ArrowUp");
-            } else if (e.key === "ArrowDown") {
-              setArrowPressed("ArrowDown");
-            }
-          }
-        }}
+        indent={textareaIndent}
+        newLine={textareaNewline}
+        autoFocus={!props.suppressAutoFocus}
+        onKeyDown={props.handleKeyDown}
       />
-      {referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(referenceData)}
-          placement={{ top: "-0.2rem", right: "0.8rem" }}
-          darkMode={props.darkMode}
-        />
-      )}
-      {isHovered && !props.isPersisted && (
-        <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
-      )}
-    </StyledSpan>
+      {props.children}
+    </StyledDiv>
   );
-};
+});
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const referenceData = getReferenceData(ownProps.pointId, state.points);
-  //TODO: Would it be cleaner not to access referenceAuthor in Point,
-  //but instead pass referenceAuthorId to the StyledPoint components?
-  //(we would then have to connect those components to redux)
-  let referenceAuthor;
-  if (referenceData) {
-    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
-  }
-  const currentMessage =
-    state.messages.byId[state.semanticScreen.currentMessage];
-  return {
-    point: getPointById(ownProps.pointId, state.points),
-    referenceData: getReferenceData(ownProps.pointId, state.points),
-    referenceAuthor,
-    isMainPoint: ownProps.pointId === currentMessage.main,
-    cursorPositionIndex:
-      state.cursorPosition.details &&
-      state.cursorPosition.details.pointId === ownProps.pointId
-        ? state.cursorPosition.details.contentIndex
-        : undefined,
-    isPersisted: !state.messages.draftIds.includes(
-      state.semanticScreen.currentMessage
-    ),
-  };
-};
-
-const mapActionsToProps = {
-  splitIntoTwoPoints,
-  combinePoints,
-  setCursorPosition,
-  clearCursorPosition,
-  pointsMove,
-  pointUpdate,
-  setMainPoint,
-  pointsDelete,
-  hoverOver,
-  togglePoint,
-  setSelectedPoints,
-  setCurrentMessage,
-};
-
-export default connect(mapStateToProps, mapActionsToProps)(Point);
+export default Point;

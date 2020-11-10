@@ -65,7 +65,21 @@ export const pointUpdate = (
   };
 };
 
-function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
+export interface PointsMoveWithinMessageParams {}
+
+export const pointsMoveWithinMessage = (
+  params: PointsMoveWithinMessageParams
+): Action<PointsMoveWithinMessageParams> => {
+  return {
+    type: Actions.pointsMoveWithinMessage,
+    params,
+  };
+};
+
+function _shouldCopy(
+  params: PointsMoveToMessageParams,
+  appState: AppState
+): boolean {
   if (params.messageId === undefined) {
     return false;
   }
@@ -80,45 +94,43 @@ function _shouldCopy(params: PointsMoveParams, appState: AppState): boolean {
   return true;
 }
 
-export interface PointsMoveParams {
-  // If messageId is undefined, then we move the points around in the current message.
-  // Otherwise, we move the points into the specified message.
-  messageId?: string;
+export interface PointsMoveToMessageParams {
+  messageId: string;
 }
 
-export const pointsMove = (
-  params: PointsMoveParams
-): ThunkAction<void, AppState, unknown, Action<_PointsMoveParams>> => {
+export const pointsMoveToMessage = (
+  params: PointsMoveToMessageParams
+): ThunkAction<void, AppState, unknown, Action<_PointsMoveToMessageParams>> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    let referencePoints: PointReferenceI[] | undefined;
+    let newReferencePoints: PointReferenceI[] | undefined;
 
     if (_shouldCopy(params, appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
+      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
 
     dispatch(
-      _pointsMove({
+      _pointsMoveToMessage({
         messageId: params.messageId,
-        newPoints: referencePoints,
+        newReferencePoints,
       })
     );
   };
 };
 
-export interface _PointsMoveParams {
-  messageId?: string;
-  newPoints?: PointReferenceI[];
+export interface _PointsMoveToMessageParams {
+  messageId: string;
+  newReferencePoints?: PointReferenceI[];
 }
 
-export const _pointsMove = (
-  params: _PointsMoveParams
-): Action<_PointsMoveParams> => {
+export const _pointsMoveToMessage = (
+  params: _PointsMoveToMessageParams
+): Action<_PointsMoveToMessageParams> => {
   return {
-    type: Actions.pointsMove,
+    type: Actions.pointsMoveToMessage,
     params,
   };
 };

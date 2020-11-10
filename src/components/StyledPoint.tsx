@@ -18,43 +18,49 @@
 */
 import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
-import { AuthorI } from "../dataModels/dataModels";
 
 interface StyledPointProps {
   isMainPoint?: boolean;
   isSelected?: boolean;
-  referenceAuthor?: AuthorI;
+  isHovered?: boolean;
   darkMode?: boolean;
+  indent?: string;
+  newLine?: boolean;
 }
 
-export const StyledSpan = styled.span<StyledPointProps>`
+export const StyledDiv = styled.div<StyledPointProps>`
   position: relative;
+  //TODO: perhaps this width: 100% should be replaced with textarea
+  //styles which allow it to grow along with its content?
+  //The issue is that if we omit width: 100%, banner names can get cut
+  //off without expanding when the focus region expands
+  //width: 100%;
   margin: 1px 0;
-  ${(props) =>
-    props.referenceAuthor &&
-    `padding: 0.3rem 0.8rem 0.2rem 0.2rem;
-   `}
   ${(props) =>
     props.isSelected &&
     `
   background-color: #777;
-  border-radius: 5px;
+  border-radius: 3px;
 `}
-  :hover {
-    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
-    border-radius: 7px;
-  }
+
+  ${(props) =>
+    props.isHovered &&
+    `
+    border: 1px solid ${props.darkMode ? "white" : "black"};
+    border-radius: 3px;
+  `}
 `;
 
 export const StyledImg = styled.img<StyledPointProps>`
   position: absolute;
   height: ${(props) => (props.isMainPoint ? "23px" : "17px")};
   top: ${(props) => (props.isMainPoint ? 0 : "2px")};
-  margin-top: ${(props) => (props.referenceAuthor ? "0.8rem" : 0)};
-  left: ${(props) => (props.referenceAuthor ? "7px" : "0.2rem")};
+  left: 0.2rem;
+  z-index: 4;
 `;
 
 export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
+  position: relative;
   width: 100%;
   border: 0;
   overflow: hidden;
@@ -64,8 +70,10 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
   font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
   resize: none;
-  text-indent: 1.8em;
+  text-indent: ${(props) => (props.indent ? props.indent : "1.8em")};
   ${(props) =>
-    props.referenceAuthor &&
-    ` border: 1.5px solid ${props.referenceAuthor.color}; border-top: 0.5rem solid ${props.referenceAuthor.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
+    props.newLine &&
+    ` top: 1rem;
+      margin-bottom: 1rem;
+    `};
 `;

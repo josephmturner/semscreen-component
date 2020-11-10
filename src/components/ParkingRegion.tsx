@@ -17,11 +17,14 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
+
+import styled from "styled-components";
+
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import MessageListItem from "./MessageListItem";
-import StyledRegion from "./StyledRegion";
+import { StyledRegion } from "./StyledRegion";
 import NewMessageButton from "./NewMessageButton";
 
 const ParkingSpace = (props: {
@@ -31,15 +34,23 @@ const ParkingSpace = (props: {
 }) => {
   return (
     <StyledRegion borderColor={props.userColor}>
-      <div>
+      <InnerContainer>
         <NewMessageButton darkMode={props.darkMode} />
         {props.nonPersistedMessages.map((m) => (
           <MessageListItem messageId={m} darkMode={props.darkMode} />
         ))}
-      </div>
+      </InnerContainer>
     </StyledRegion>
   );
 };
+
+const InnerContainer = styled.div`
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  max-height: 8rem;
+  flex-direction: column;
+`;
 
 const mapStateToProps = (state: AppState) => {
   return {

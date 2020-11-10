@@ -33,12 +33,18 @@ import { AppState } from "./store";
 import {
   _PointCreateParams,
   PointUpdateParams,
-  _PointsMoveParams,
+  _PointsMoveToMessageParams,
+  PointsMoveWithinMessageParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
-import { _MessageCreateParams } from "../actions/messagesActions";
+import {
+  _MessageCreateParams,
+  //TODO: Does it matter if I pass MessageDeleteParams to the points reducer,
+  //which should never make use of the optional newMessageId prop?
+  MessageDeleteParams,
+} from "../actions/messagesActions";
 
 export interface PointsState {
   byId: {
@@ -61,17 +67,25 @@ export const pointsReducer = (
     case Actions.pointUpdate:
       newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
       break;
-    case Actions.pointsMove:
-      newState = handlePointsMove(
+    case Actions.pointsMoveWithinMessage:
+      newState = handlePointsMoveWithinMessage(
         state,
-        action as Action<_PointsMoveParams>,
+        action as Action<PointsMoveWithinMessageParams>,
+        appState
+      );
+      break;
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMoveToMessage(
+        state,
+        action as Action<_PointsMoveToMessageParams>,
         appState
       );
       break;
     case Actions.pointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>
+        action as Action<PointsDeleteParams>,
+        appState
       );
       break;
     case Actions.combinePoints:
@@ -91,6 +105,13 @@ export const pointsReducer = (
       newState = handleMessageCreate(
         state,
         action as Action<_MessageCreateParams>
+      );
+      break;
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<MessageDeleteParams>,
+        appState
       );
       break;
   }
@@ -119,50 +140,57 @@ function handlePointUpdate(
   });
 }
 
-function handlePointsMove(
+function handlePointsMoveWithinMessage(
   state: PointsState,
-  action: Action<_PointsMoveParams>,
+  action: Action<PointsMoveWithinMessageParams>,
   appState: AppState
 ): PointsState {
   if (appState.drag.context === null) return state;
+  const { region } = appState.drag.context;
 
-  if (action.params.messageId !== undefined) {
-    const { newPoints } = action.params;
-
-    if (newPoints === undefined) {
-      return state;
-    }
-
-    return produce(state, (draft) => {
-      newPoints.forEach((point) => {
-        draft.byId[point._id] = point;
-      });
-    });
-  } else {
-    const { region } = appState.drag.context;
-
-    if (!isPointShape(region)) return state;
-    const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
-      (p) => !getReferenceData(p, state)
+  if (!isPointShape(region)) return state;
+  const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
+    (p) => !getReferenceData(p, state)
+  );
+  return produce(state, (draft) => {
+    pointIdsExcludingReferencePoints.forEach(
+      (id) =>
+        (draft.byId[id] = {
+          ...draft.byId[id],
+          shape: region,
+        })
     );
-    return produce(state, (draft) => {
-      pointIdsExcludingReferencePoints.forEach(
-        (id) =>
-          (draft.byId[id] = {
-            ...draft.byId[id],
-            shape: region,
-          })
-      );
-    });
+  });
+}
+
+function handlePointsMoveToMessage(
+  state: PointsState,
+  action: Action<_PointsMoveToMessageParams>,
+  appState: AppState
+): PointsState {
+  const { newReferencePoints } = action.params;
+
+  if (newReferencePoints === undefined) {
+    return state;
   }
+
+  return produce(state, (draft) => {
+    newReferencePoints.forEach((point) => {
+      draft.byId[point._id] = point;
+    });
+  });
 }
 
 function handlePointsDelete(
   state: PointsState,
-  action: Action<PointsDeleteParams>
+  action: Action<PointsDeleteParams>,
+  appState: AppState
 ): PointsState {
+  let pointIds = action.params.pointIds;
+  pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+
   return produce(state, (draft) => {
-    action.params.pointIds.forEach((id) => delete draft.byId[id]);
+    pointIds.forEach((id) => delete draft.byId[id]);
   });
 }
 
@@ -249,15 +277,34 @@ function handleMessageCreate(
   state: PointsState,
   action: Action<_MessageCreateParams>
 ): PointsState {
-  const { newPoints } = action.params;
+  const { newReferencePoints } = action.params;
 
-  if (newPoints === undefined) {
+  if (newReferencePoints === undefined) {
     return state;
   }
 
   return produce(state, (draft) => {
-    newPoints.forEach((point) => {
+    newReferencePoints.forEach((point) => {
       draft.byId[point._id] = point;
+    });
+  });
+}
+
+function handleMessageDelete(
+  state: PointsState,
+  action: Action<MessageDeleteParams>,
+  appState: AppState
+): PointsState {
+  const messageToDelete = appState.messages.byId[action.params.messageId];
+  let pointIdsToDelete = Object.values(messageToDelete.shapes).flat();
+
+  if (messageToDelete.focus !== undefined) {
+    pointIdsToDelete.push(messageToDelete.focus);
+  }
+
+  return produce(state, (draft) => {
+    pointIdsToDelete.forEach((id) => {
+      delete draft.byId[id];
     });
   });
 }

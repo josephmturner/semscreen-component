@@ -25,28 +25,11 @@ import { PointI, PointShape, PointReferenceI } from "../dataModels/dataModels";
 import { createReferenceTo } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 
-//import { MessageState } from "../reducers/message";
-
-//export interface SetMessageParams {
-//  message: MessageState;
-//}
-//
-//export const setMessage = (
-//  params: SetMessageParams
-//): Action<SetMessageParams> => {
-//  return {
-//    type: Actions.setMessage,
-//    params: params,
-//  };
-//};
-
-export interface MessageCreateParams {
-  moveSelectedPoints?: boolean;
-}
+export interface MessageCreateParams {}
 
 export interface _MessageCreateParams extends MessageCreateParams {
   newMessageId: string;
-  newPoints?: PointReferenceI[];
+  newReferencePoints?: PointReferenceI[];
 }
 
 function _shouldCopy(appState: AppState): boolean {
@@ -61,11 +44,11 @@ export const messageCreate = (
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    let referencePoints: PointReferenceI[] | undefined;
-
-    const moveSelectedPoints = params.moveSelectedPoints ?? false;
-    if (moveSelectedPoints && _shouldCopy(appState)) {
-      referencePoints = appState.selectedPoints.pointIds.map((pointId) => {
+    //Create newReferencePoints if the current message is a persisted message
+    //Cut and paste draft points by leaving newReferencePoints undefined
+    let newReferencePoints: PointReferenceI[] | undefined;
+    if (_shouldCopy(appState) && appState.selectedPoints.pointIds[0]) {
+      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
     }
@@ -74,9 +57,8 @@ export const messageCreate = (
 
     dispatch(
       _messageCreate({
-        moveSelectedPoints,
         newMessageId,
-        newPoints: referencePoints,
+        newReferencePoints,
       })
     );
   };
@@ -87,6 +69,50 @@ const _messageCreate = (
 ): Action<_MessageCreateParams> => {
   return {
     type: Actions.messageCreate,
+    params,
+  };
+};
+
+export interface MessageDeleteParams {
+  messageId: string;
+}
+
+export interface _MessageDeleteParams extends MessageDeleteParams {
+  newMessageId?: string;
+}
+
+export const messageDelete = (
+  params: MessageDeleteParams
+): ThunkAction<void, AppState, unknown, Action<_MessageDeleteParams>> => {
+  return (dispatch, getState) => {
+    const appState: AppState = getState();
+    const remainingDraftMessages = appState.messages.draftIds.filter(
+      (id) => id !== params.messageId
+    );
+
+    // Pass newMessageId if the message to be deleted is both the current message AND the last draft message
+    let newMessageId;
+    if (
+      remainingDraftMessages[0] === undefined &&
+      appState.semanticScreen.currentMessage === params.messageId
+    ) {
+      newMessageId = uuidv4();
+    }
+
+    dispatch(
+      _messageDelete({
+        newMessageId,
+        ...params,
+      })
+    );
+  };
+};
+
+export const _messageDelete = (
+  params: _MessageDeleteParams
+): Action<_MessageDeleteParams> => {
+  return {
+    type: Actions.messageDelete,
     params,
   };
 };

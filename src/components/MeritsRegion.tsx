@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-//import FocusPoint from "./FocusPoint";
 import StyledMeritsRegion from "./StyledMeritsRegion";
 import { RegionI } from "../dataModels/dataModels";
 import styled from "styled-components";
@@ -31,17 +30,22 @@ import {
   ExpandedRegionParams,
 } from "../actions/expandedRegionActions";
 
-const MeritsRegion = (props: {
+interface OwnProps {
   region: RegionI;
-  isExpanded: "expanded" | "minimized" | "balanced";
+}
+
+interface AllProps extends OwnProps {
+  isExpanded: boolean;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
-}) => {
+}
+
+const MeritsRegion = (props: AllProps) => {
   const { region, isExpanded } = props;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: () => {
-      if (isExpanded !== "expanded") {
+      if (!isExpanded) {
         props.setExpandedRegion({ region });
       }
     },
@@ -63,7 +67,13 @@ const StyledDiv = styled.div`
   flex-direction: column;
 `;
 
-const mapStateToProps = (state: AppState) => ({});
+const mapStateToProps = (state: AppState) => {
+  const isExpanded = state.expandedRegion.region === "merits";
+
+  return {
+    isExpanded,
+  };
+};
 
 const mapDispatchToProps = {
   setExpandedRegion,

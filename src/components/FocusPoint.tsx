@@ -15,20 +15,17 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
-import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import React, { useRef, useState } from "react";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
   getReferenceData,
   getOriginalMessageId,
   getOriginalPointId,
-  getOriginalAuthorId,
 } from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
-import { StyledImg, StyledSpan, StyledTextArea } from "./StyledPoint";
-import Banner from "./Banner";
+import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
-import { MainPointShape } from "./MainPointShape";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -52,7 +49,7 @@ import {
 
 interface OwnProps {
   pointId: string;
-  isExpanded: "expanded" | "minimized" | "balanced";
+  isExpanded: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
   darkMode: boolean;
@@ -61,7 +58,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
-  referenceAuthor?: AuthorI;
   isPersisted: boolean;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
@@ -72,123 +68,91 @@ interface AllProps extends OwnProps {
 }
 
 const FocusPoint = (props: AllProps) => {
-  const { point, pointId, isMainPoint } = props;
-  const shape = point.shape;
-
-  const [isHovered, setIsHovered] = useState(false);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (props.isPersisted) {
+      return;
+    } else {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.pointUpdate({
-      point: { ...point, content: e.target.value },
+      point: { ...props.point, content: e.target.value },
     });
   };
 
   const handleShapeIconClick = (e: React.MouseEvent) => {
-    props.togglePoint({ pointId });
+    props.togglePoint({ pointId: props.pointId });
     e.stopPropagation();
   };
 
-  const handlePointSpanClick = (e: React.MouseEvent) => {
-    if (props.isExpanded === "expanded") {
+  const handlePointDivClick = (e: React.MouseEvent) => {
+    if (props.isExpanded) {
       e.stopPropagation();
     }
 
-    //TODO: Is there a more correct way to do this? I want to switch
-    //to the referenced message and then select the point whose
-    //reference I clicked.
-    //Perhaps we should pass an optional referencePointId to the
-    //setCurrentMessage dispatch, which selects that point if it's
-    //passed in?
     if (props.referenceData) {
       props.setCurrentMessage({
         messageId: getOriginalMessageId(props.referenceData),
-      });
-      props.setSelectedPoints({
-        pointIds: [getOriginalPointId(props.referenceData)],
+        selectedPointIds: [getOriginalPointId(props.referenceData)],
       });
     } else {
       props.setSelectedPoints({ pointIds: [] });
     }
   };
 
-  const imageUrl = require(`../images/${shape}.svg`);
+  const handleBlur = () => {
+    if (!props.point.content) props.pointsDelete({ pointIds: [props.pointId] });
+  };
 
-  const { drag, preview } = useDragPoint(pointId, 0);
+  const { drag, preview } = useDragPoint(props.pointId, 0);
+
+  //TODO: fix ref type
+  const pointRef = useRef<any>(null);
+
+  drag(pointRef.current?.img);
+  preview(pointRef.current?.div);
+
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <StyledSpan
-      onClick={handlePointSpanClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      ref={preview}
-      isMainPoint={isMainPoint}
+    <Point
+      id={props.pointId}
+      displayPoint={props.point}
+      referenceData={props.referenceData}
+      isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
-      referenceAuthor={props.referenceAuthor}
+      isHovered={isHovered}
+      setIsHovered={setIsHovered}
+      readOnlyOverride={props.isPersisted}
       darkMode={props.darkMode}
+      handleChange={handleChange}
+      handleKeyDown={handleKeyDown}
+      handleBlur={handleBlur}
+      handlePointDivClick={handlePointDivClick}
+      handleShapeIconClick={handleShapeIconClick}
+      ref={pointRef}
     >
-      {props.isMainPoint ? (
-        <MainPointShape
-          shape={shape}
-          referenceAuthor={props.referenceAuthor}
-          darkMode={props.darkMode}
-          onClick={handleShapeIconClick}
-        />
-      ) : (
-        <StyledImg
-          ref={drag}
-          src={imageUrl}
-          onClick={handleShapeIconClick}
-          isMainPoint={props.isMainPoint}
-          referenceAuthor={props.referenceAuthor}
-          darkMode={props.darkMode}
-          alt={shape}
-        />
-      )}
-      <StyledTextArea
-        value={point.content}
-        onChange={handleChange}
-        onBlur={() => {
-          if (!point.content) props.pointsDelete({ pointIds: [point._id] });
-        }}
-        readOnly={!!props.referenceAuthor || props.isPersisted}
-        isMainPoint={isMainPoint}
-        referenceAuthor={props.referenceAuthor}
-        darkMode={props.darkMode}
-        autoFocus
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (props.isPersisted) {
-            return;
-          } else {
-            if (e.key === "Enter") {
-              e.preventDefault();
-            }
-          }
-        }}
-      />
-      {props.referenceData && (
-        <Banner
-          authorId={getOriginalAuthorId(props.referenceData)}
-          placement={{ top: "-0.2rem", right: "0.4rem" }}
-          darkMode={props.darkMode}
-        />
-      )}
       {isHovered && !props.isPersisted && (
-        <PointHoverOptions pointId={pointId} darkMode={props.darkMode} />
+        <PointHoverOptions
+          parent={"Point"}
+          id={props.pointId}
+          darkMode={props.darkMode}
+        />
       )}
-    </StyledSpan>
+    </Point>
   );
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state.points);
-  let referenceAuthor;
-  if (referenceData) {
-    referenceAuthor = state.authors.byId[getOriginalAuthorId(referenceData)];
-  }
+
   return {
     point: getPointById(ownProps.pointId, state.points),
     referenceData,
-    referenceAuthor,
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),

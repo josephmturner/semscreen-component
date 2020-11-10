@@ -38,13 +38,15 @@ import {
 } from "../dataModels/pointUtils";
 import {
   _PointCreateParams,
-  _PointsMoveParams,
+  _PointsMoveToMessageParams,
+  PointsMoveWithinMessageParams,
   PointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
 import {
   _MessageCreateParams,
+  _MessageDeleteParams,
   SetFocusParams,
   SetMainPointParams,
 } from "../actions/messagesActions";
@@ -94,7 +96,13 @@ export const messagesReducer = (
         appState
       );
       break;
-
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<_MessageDeleteParams>,
+        appState
+      );
+      break;
     case Actions.pointCreate:
       newState = handlePointCreate(
         state,
@@ -102,10 +110,17 @@ export const messagesReducer = (
         appState
       );
       break;
-    case Actions.pointsMove:
-      newState = handlePointsMove(
+    case Actions.pointsMoveWithinMessage:
+      newState = handlePointsMoveWithinMessage(
         state,
-        action as Action<_PointsMoveParams>,
+        action as Action<PointsMoveWithinMessageParams>,
+        appState
+      );
+      break;
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMoveToMessage(
+        state,
+        action as Action<_PointsMoveToMessageParams>,
         appState
       );
       break;
@@ -155,30 +170,11 @@ export const messagesReducer = (
   return newState;
 };
 
-//function setMessage(
-//  state: MessagesState,
-//  action: Action<SetMessageParams>
-//): MessagesState {
-//  return action.params.message;
-//}
-
-function handleMessageCreate(
-  state: MessagesState,
-  action: Action<_MessageCreateParams>,
-  appState: AppState
-): MessagesState {
-  //Prevent creation of many empty messages
-
-  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
-    return state;
-
-  // First we create the new message.
-  // Second, if we are dragging points into the NewMessageButton, then we use handlePointsMove()
-  // to move the points into the new message.
-
-  let newState: MessagesState = produce(state, (draft) => {
-    draft.byId[action.params.newMessageId] = {
-      _id: action.params.newMessageId,
+//TODO: Fix type of draft
+const _createEmptyMessage = (state: MessagesState, newMessageId: string) =>
+  produce(state, (draft: any) => {
+    draft.byId[newMessageId] = {
+      _id: newMessageId,
       //TODO: Replace "author1" with user's id
       author: "author1",
       shapes: {
@@ -192,35 +188,73 @@ function handleMessageCreate(
       },
       createdAt: new Date(),
     };
-    draft.allMessages.push(action.params.newMessageId);
-    draft.draftIds.unshift(action.params.newMessageId);
+    draft.allMessages.push(newMessageId);
+    draft.draftIds.unshift(newMessageId);
   });
 
-  if (action.params.moveSelectedPoints) {
-    const intermediateAction: Action<_PointsMoveParams> = {
-      type: Actions.pointsMove,
-      params: {
-        messageId: action.params.newMessageId,
-        newPoints: action.params.newPoints,
-      },
-    };
+function handleMessageCreate(
+  state: MessagesState,
+  action: Action<_MessageCreateParams>,
+  appState: AppState
+): MessagesState {
+  //Prevent creation of many empty messages...
 
-    newState = handlePointsMove(newState, intermediateAction, {
-      ...appState,
-      messages: newState,
-    });
-  }
+  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+    return state;
+
+  // Create a new message...
+
+  let newState: MessagesState = _createEmptyMessage(
+    state,
+    action.params.newMessageId
+  );
+
+  // Then use handlePointsMoveToMessage() to move the points into the new message
+
+  const intermediateAction: Action<_PointsMoveToMessageParams> = {
+    type: Actions.pointsMoveToMessage,
+    params: {
+      messageId: action.params.newMessageId,
+      newReferencePoints: action.params.newReferencePoints,
+    },
+  };
+
+  newState = handlePointsMoveToMessage(newState, intermediateAction, {
+    ...appState,
+    messages: newState,
+  });
 
   return produce(newState, (draft) => {
     if (newState.byId[action.params.newMessageId].main === undefined) {
       // If main point is still undefined, we need to pick a main point.
-      const newMainPointId = action.params.newPoints
-        ? action.params.newPoints[0]._id
+      const newMainPointId = action.params.newReferencePoints
+        ? action.params.newReferencePoints[0]._id
         : appState.selectedPoints.pointIds[0];
 
       draft.byId[action.params.newMessageId].main = newMainPointId;
     }
   });
+}
+
+function handleMessageDelete(
+  state: MessagesState,
+  action: Action<_MessageDeleteParams>,
+  appState: AppState
+): MessagesState {
+  const messageId = action.params.messageId;
+
+  let newState = produce(state, (draft) => {
+    delete draft.byId[messageId];
+    draft.draftIds = draft.draftIds.filter((id) => id !== messageId);
+    draft.allMessages = draft.allMessages.filter((id) => id !== messageId);
+  });
+
+  // Create a new message if the current message was deleted and no drafts are left
+  if (action.params.newMessageId !== undefined) {
+    newState = _createEmptyMessage(newState, action.params.newMessageId);
+  }
+
+  return newState;
 }
 
 function handlePointCreate(
@@ -248,77 +282,86 @@ function handlePointCreate(
   });
 }
 
-function handlePointsMove(
+function _deletePoints(
+  message: MessageI,
+  pointIds: string[],
+  keepMain?: boolean
+) {
+  //Delete pointIds from shapes arrays
+  allPointShapes.forEach((shape) => {
+    message.shapes[shape] = message.shapes[shape].filter(
+      (id) => !pointIds.includes(id)
+    );
+  });
+
+  // Delete focus point if included in list of pointIds
+  message.focus && pointIds.includes(message.focus) && delete message.focus;
+
+  // Reset main if possible (unless keepMain === true)
+  if (message.main && pointIds.includes(message.main) && !keepMain) {
+    const pointInShapes = Object.values(message.shapes).flat()[0];
+    if (pointInShapes) {
+      message.main = pointInShapes;
+    } else {
+      message.main = message.focus;
+    }
+  }
+}
+
+function handlePointsMoveToMessage(
   state: MessagesState,
-  action: Action<_PointsMoveParams>,
+  action: Action<_PointsMoveToMessageParams>,
+  appState: AppState
+): MessagesState {
+  const { messageId } = action.params;
+  const currentMessageId = appState.semanticScreen.currentMessage;
+
+  if (messageId === appState.semanticScreen.currentMessage) {
+    return state;
+  }
+
+  const points: (PointI | PointReferenceI)[] =
+    action.params.newReferencePoints ??
+    appState.selectedPoints.pointIds.map((pointId) => {
+      return appState.points.byId[pointId];
+    });
+
+  const isCutAndPaste = action.params.newReferencePoints === undefined;
+
+  return produce(state, (draft) => {
+    const targetMessage = draft.byId[messageId];
+    points.forEach((point) => {
+      const shape = isReference(point)
+        ? getOriginalShape(point, appState.points)
+        : point.shape;
+      targetMessage.shapes[shape].push(point._id);
+    });
+
+    if (isCutAndPaste) {
+      const currentMessage = draft.byId[currentMessageId];
+      _deletePoints(currentMessage, appState.selectedPoints.pointIds);
+
+      // If currentMessage is now empty, delete it
+      if (
+        Object.values(currentMessage.shapes).flat()[0] === undefined &&
+        currentMessage.focus === undefined
+      ) {
+        delete draft.byId[currentMessageId];
+        draft.draftIds = draft.draftIds.filter((m) => m !== currentMessageId);
+        draft.allMessages = draft.allMessages.filter(
+          (m) => m !== currentMessageId
+        );
+      }
+    }
+  });
+}
+
+function handlePointsMoveWithinMessage(
+  state: MessagesState,
+  action: Action<PointsMoveWithinMessageParams>,
   appState: AppState
 ): MessagesState {
   if (appState.drag.context === null) return state;
-
-  const { messageId } = action.params;
-  if (messageId !== undefined) {
-    // We are moving points into a new message.
-
-    if (messageId === appState.semanticScreen.currentMessage) {
-      return state;
-    }
-
-    const points: (PointI | PointReferenceI)[] =
-      action.params.newPoints ??
-      appState.selectedPoints.pointIds.map((pointId) => {
-        return appState.points.byId[pointId];
-      });
-
-    const isCutAndPaste = action.params.newPoints === undefined;
-
-    return produce(state, (draft) => {
-      const targetMessage = draft.byId[messageId];
-      points.forEach((point) => {
-        const shape = isReference(point)
-          ? getOriginalShape(point, appState.points)
-          : point.shape;
-        targetMessage.shapes[shape].push(point._id);
-      });
-
-      if (isCutAndPaste) {
-        // Remove the points from the original (current) message.
-        const currentMessageId = appState.semanticScreen.currentMessage;
-        const currentMessage = draft.byId[currentMessageId];
-
-        points.forEach((point) => {
-          const shape = isReference(point)
-            ? getOriginalShape(point, appState.points)
-            : point.shape;
-          currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
-            (pointId) => {
-              return pointId !== point._id;
-            }
-          );
-        });
-
-        // Remove focus and reset main if moved to a different message
-        if (
-          currentMessage.focus &&
-          points.map((p) => p._id).includes(currentMessage.focus)
-        ) {
-          delete draft.byId[currentMessageId].focus;
-        }
-        //TODO: this code will not be necessary if we decide to set the
-        //currentMessage to action.params.messageId.
-        if (
-          currentMessage.main &&
-          points.map((p) => p._id).includes(currentMessage.main)
-        ) {
-          const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
-          if (pointInShapes) {
-            currentMessage.main = pointInShapes;
-          } else {
-            currentMessage.main = currentMessage.focus;
-          }
-        }
-      }
-    });
-  }
 
   const { region, index } = appState.drag.context;
 
@@ -351,19 +394,12 @@ function handlePointsMove(
 
   return produce(state, (draft) => {
     const currentMessage = draft.byId[currentMessageId];
+
+    // Delete points from original locations...
+    _deletePoints(currentMessage, pointsToMove, true);
+
+    // then set the pointIds for the destination region
     currentMessage.shapes[region] = newPointIds;
-    // Remove pointIds from other shapes arrays when they're moved
-    allPointShapes.forEach((pointShape) => {
-      if (pointShape !== region) {
-        currentMessage.shapes[pointShape] = currentMessage.shapes[
-          pointShape
-        ].filter((p) => !pointsToMove.includes(p));
-      }
-    });
-    // Remove focus if it was moved to a ShapeRegion
-    if (currentMessage.focus && pointsToMove.includes(currentMessage.focus)) {
-      delete draft.byId[currentMessageId].focus;
-    }
   });
 }
 
@@ -374,26 +410,11 @@ function handlePointsDelete(
 ): MessagesState {
   return produce(state, (draft) => {
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
-    allPointShapes.forEach((shape) => {
-      currentMessage.shapes[shape] = currentMessage.shapes[shape].filter(
-        (id) => !action.params.pointIds.includes(id)
-      );
-    });
-    currentMessage.focus &&
-      action.params.pointIds.includes(currentMessage.focus) &&
-      delete currentMessage.focus;
-    //Message.main should only be undefined if message has no points
-    if (
-      currentMessage.main &&
-      action.params.pointIds.includes(currentMessage.main)
-    ) {
-      const pointInShapes = Object.values(currentMessage.shapes).flat()[0];
-      if (pointInShapes) {
-        currentMessage.main = pointInShapes;
-      } else {
-        currentMessage.main = currentMessage.focus;
-      }
-    }
+
+    let pointIds = action.params.pointIds;
+    pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+
+    _deletePoints(currentMessage, pointIds);
   });
 }
 
@@ -523,7 +544,11 @@ const handleSetCurrentMessage = (
 ) => {
   //Delete an empty message when the SemanticScreen no longer displays it
   const currentMessageId = appState.semanticScreen.currentMessage;
-  if (containsPoints(currentMessageId, appState)) return state;
+  if (
+    containsPoints(currentMessageId, appState) ||
+    action.params.messageId === currentMessageId
+  )
+    return state;
   return produce(state, (draft) => {
     delete draft.byId[currentMessageId];
     draft.draftIds = draft.draftIds.filter((id) => id !== currentMessageId);

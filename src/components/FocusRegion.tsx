@@ -18,10 +18,9 @@
 */
 import React from "react";
 import FocusPoint from "./FocusPoint";
-import StyledRegion from "./StyledRegion";
+import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
-import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
@@ -43,7 +42,6 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
   region: RegionI;
-  isExpanded: "expanded" | "minimized" | "balanced";
   darkMode: boolean;
 }
 
@@ -53,6 +51,7 @@ interface AllProps extends OwnProps {
   selectedPoints: string[];
   isMainPoint: boolean;
   isPersisted: boolean;
+  isExpanded: boolean;
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
@@ -69,7 +68,7 @@ const FocusRegion = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      if (isExpanded !== "expanded") {
+      if (!isExpanded) {
         props.setExpandedRegion({ region });
       }
       if (item.index !== 0 || item.region !== "focus") {
@@ -109,7 +108,16 @@ const FocusRegion = (props: AllProps) => {
       onClick={() => props.setExpandedRegion({ region })}
       ref={drop}
     >
-      <StyledDiv>
+      <InnerContainer
+        style={{
+          //TODO: What styles should go here (and/or in StyledPoint
+          //such that the textarea expands as its content grows,
+          //always remaining centered and eventually filling the
+          //width of the parent container - see comment in StyledPoint
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {pointId && (
           <FocusPoint
             pointId={pointId}
@@ -119,29 +127,24 @@ const FocusRegion = (props: AllProps) => {
             darkMode={props.darkMode}
           />
         )}
-        {!pointId && isExpanded === "expanded" && (
+        {!pointId && isExpanded && (
           <SevenShapes
             onShapeClick={createEmptyFocus}
             darkMode={props.darkMode}
           />
         )}
-      </StyledDiv>
+      </InnerContainer>
     </StyledRegion>
   );
 };
-
-const StyledDiv = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 
 const mapStateToProps = (state: AppState) => {
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];
   const isMainPoint = currentMessage.focus === currentMessage.main;
+
+  const isExpanded = state.expandedRegion.region === "focus";
+
   return {
     author: state.authors.byId[currentMessage.author],
     pointId: currentMessage.focus,
@@ -150,6 +153,7 @@ const mapStateToProps = (state: AppState) => {
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),
+    isExpanded,
   };
 };
 

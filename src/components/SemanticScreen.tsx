@@ -41,7 +41,6 @@ interface Props {
 const SemanticScreen = (props: Props) => {
   const { expandedRegion } = props;
 
-  // TODO: move regions to constants and rename allRegions
   const regions: RegionI[] = [
     "facts",
     "merits",
@@ -64,15 +63,6 @@ const SemanticScreen = (props: Props) => {
       });
   }, []);
 
-  //TODO: move isExpanded logic inside mapStateToProps in each region?
-  const isExpanded = (region: RegionI) => {
-    return region === expandedRegion
-      ? "expanded"
-      : expandedRegion === ""
-      ? "balanced"
-      : "minimized";
-  };
-
   return (
     <StyledSemanticScreen
       expandedRegion={expandedRegion}
@@ -82,25 +72,18 @@ const SemanticScreen = (props: Props) => {
         <Banner
           authorId={props.authorId}
           placement={{ top: "0", right: "0" }}
+          fontSize={"medium"}
           darkMode={props.darkMode}
         />
       )}
       {regions.map((region: RegionI) => {
-        //TODO: short-circuit evaluation instead of if statements?
         if (region === "merits") {
-          return (
-            <MeritsRegion
-              region={region}
-              isExpanded={isExpanded(region)}
-              key={region}
-            />
-          );
+          return <MeritsRegion region={region} key={region} />;
         }
         if (region === "focus") {
           return (
             <FocusRegion
               region={region}
-              isExpanded={isExpanded(region)}
               key={region}
               darkMode={props.darkMode}
             />
@@ -109,7 +92,6 @@ const SemanticScreen = (props: Props) => {
           return (
             <ShapeRegion
               shape={region}
-              isExpanded={isExpanded(region)}
               key={region}
               darkMode={props.darkMode}
             />

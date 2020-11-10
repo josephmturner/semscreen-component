@@ -22,6 +22,7 @@ import { connect } from "react-redux";
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
 import ParkingRegion from "./components/ParkingRegion";
+import RightPanelContents from "./components/RightPanelContents";
 
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
@@ -70,7 +71,7 @@ const App = (props: {
       </MainPanel>
       {props.panels.right && (
         <RightPanel>
-          <div />
+          <RightPanelContents darkMode={darkMode} />
         </RightPanel>
       )}
     </AppStyles>
@@ -123,9 +124,7 @@ const SemscreenPanel = styled.div`
 `;
 
 const BottomPanel = styled.div`
-  height: 12rem;
-  margin-top: 3px;
-  overflow: auto;
+  margin: 3px 0;
 `;
 
 const RightPanel = styled.div`
