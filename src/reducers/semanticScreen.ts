@@ -16,11 +16,16 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import produce from "immer";
+
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _PointsMoveToMessageParams } from "../actions/pointsActions";
-import { _MessageCreateParams } from "../actions/messagesActions";
+import {
+  _MessageCreateParams,
+  _MessageDeleteParams,
+} from "../actions/messagesActions";
 import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
@@ -51,6 +56,13 @@ export const semanticScreenReducer = (
         appState
       );
       break;
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<_MessageDeleteParams>,
+        appState
+      );
+      break;
     case Actions.pointsMoveToMessage:
       newState = handlePointsMove(
         state,
@@ -61,25 +73,49 @@ export const semanticScreenReducer = (
   return newState;
 };
 
-const handleSetCurrentMessage = (
+function handleSetCurrentMessage(
   state: SemanticScreenState,
   action: Action<SetCurrentMessageParams>
-) => {
+) {
   return {
     currentMessage: action.params.messageId,
   };
-};
+}
 
-const handleMessageCreate = (
+function handleMessageCreate(
   state: SemanticScreenState,
   action: Action<_MessageCreateParams>,
   appState: AppState
-) => {
+) {
   if (!containsPoints(state.currentMessage, appState)) return state;
   return {
     currentMessage: action.params.newMessageId,
   };
-};
+}
+
+function handleMessageDelete(
+  state: SemanticScreenState,
+  action: Action<_MessageDeleteParams>,
+  appState: AppState
+) {
+  // Only switch messages if the current message is deleted
+  if (state.currentMessage !== action.params.messageId) {
+    return state;
+  }
+
+  return produce(state, (draft) => {
+    const remainingDraftMessages = appState.messages.draftIds.filter(
+      (id) => id !== action.params.messageId
+    );
+    // Switch to the next message in the list of drafts...
+    if (action.params.newMessageId === undefined) {
+      draft.currentMessage = remainingDraftMessages[0];
+    } else {
+      // If none exist, switch to the newly created message
+      draft.currentMessage = action.params.newMessageId;
+    }
+  });
+}
 
 function handlePointsMove(
   state: SemanticScreenState,

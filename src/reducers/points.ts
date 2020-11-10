@@ -39,7 +39,12 @@ import {
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/pointsActions";
-import { _MessageCreateParams } from "../actions/messagesActions";
+import {
+  _MessageCreateParams,
+  //TODO: Does it matter if I pass MessageDeleteParams to the points reducer,
+  //which should never make use of the optional newMessageId prop?
+  MessageDeleteParams,
+} from "../actions/messagesActions";
 
 export interface PointsState {
   byId: {
@@ -100,6 +105,13 @@ export const pointsReducer = (
       newState = handleMessageCreate(
         state,
         action as Action<_MessageCreateParams>
+      );
+      break;
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<MessageDeleteParams>,
+        appState
       );
       break;
   }
@@ -274,6 +286,25 @@ function handleMessageCreate(
   return produce(state, (draft) => {
     newReferencePoints.forEach((point) => {
       draft.byId[point._id] = point;
+    });
+  });
+}
+
+function handleMessageDelete(
+  state: PointsState,
+  action: Action<MessageDeleteParams>,
+  appState: AppState
+): PointsState {
+  const messageToDelete = appState.messages.byId[action.params.messageId];
+  let pointIdsToDelete = Object.values(messageToDelete.shapes).flat();
+
+  if (messageToDelete.focus !== undefined) {
+    pointIdsToDelete.push(messageToDelete.focus);
+  }
+
+  return produce(state, (draft) => {
+    pointIdsToDelete.forEach((id) => {
+      delete draft.byId[id];
     });
   });
 }

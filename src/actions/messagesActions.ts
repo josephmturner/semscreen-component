@@ -25,21 +25,6 @@ import { PointI, PointShape, PointReferenceI } from "../dataModels/dataModels";
 import { createReferenceTo } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 
-//import { MessageState } from "../reducers/message";
-
-//export interface SetMessageParams {
-//  message: MessageState;
-//}
-//
-//export const setMessage = (
-//  params: SetMessageParams
-//): Action<SetMessageParams> => {
-//  return {
-//    type: Actions.setMessage,
-//    params: params,
-//  };
-//};
-
 export interface MessageCreateParams {}
 
 export interface _MessageCreateParams extends MessageCreateParams {
@@ -84,6 +69,50 @@ const _messageCreate = (
 ): Action<_MessageCreateParams> => {
   return {
     type: Actions.messageCreate,
+    params,
+  };
+};
+
+export interface MessageDeleteParams {
+  messageId: string;
+}
+
+export interface _MessageDeleteParams extends MessageDeleteParams {
+  newMessageId?: string;
+}
+
+export const messageDelete = (
+  params: MessageDeleteParams
+): ThunkAction<void, AppState, unknown, Action<_MessageDeleteParams>> => {
+  return (dispatch, getState) => {
+    const appState: AppState = getState();
+    const remainingDraftMessages = appState.messages.draftIds.filter(
+      (id) => id !== params.messageId
+    );
+
+    // Pass newMessageId if the message to be deleted is both the current message AND the last draft message
+    let newMessageId;
+    if (
+      remainingDraftMessages[0] === undefined &&
+      appState.semanticScreen.currentMessage === params.messageId
+    ) {
+      newMessageId = uuidv4();
+    }
+
+    dispatch(
+      _messageDelete({
+        newMessageId,
+        ...params,
+      })
+    );
+  };
+};
+
+export const _messageDelete = (
+  params: _MessageDeleteParams
+): Action<_MessageDeleteParams> => {
+  return {
+    type: Actions.messageDelete,
     params,
   };
 };

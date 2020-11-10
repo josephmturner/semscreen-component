@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/pointUtils";
 import Point from "./Point";
+import PointHoverOptions from "./PointHoverOptions";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -91,7 +92,17 @@ const MessageListItem = (props: AllProps) => {
           suppressAutoFocus={true}
           handlePointDivClick={handlePointDivClick}
           ref={pointRef}
-        />
+        >
+          {isHovered && (
+            <PointHoverOptions
+              //TODO: consider a better way to tell PointHoverOptions
+              //what its parent is
+              parent={"MessageListItem"}
+              id={props.messageId}
+              darkMode={props.darkMode}
+            />
+          )}
+        </Point>
       )}
     </>
   );

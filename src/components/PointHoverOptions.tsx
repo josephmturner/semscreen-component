@@ -21,25 +21,43 @@ import styled from "styled-components";
 
 import { useDispatch } from "react-redux";
 import { pointsDelete } from "../actions/pointsActions";
-import { setMainPoint } from "../actions/messagesActions";
+import { messageDelete, setMainPoint } from "../actions/messagesActions";
 
-const PointHoverOptions = (props: { pointId: string; darkMode?: boolean }) => {
+interface Props {
+  parent: "MessageListItem" | "Point";
+  id: string;
+  darkMode?: boolean;
+}
+
+const PointHoverOptions = (props: Props) => {
   const dispatch = useDispatch();
+
+  let trashDispatch: any;
+  switch (props.parent) {
+    case "Point":
+      trashDispatch = () => dispatch(pointsDelete({ pointIds: [props.id] }));
+      break;
+    case "MessageListItem":
+      trashDispatch = () => dispatch(messageDelete({ messageId: props.id }));
+      break;
+  }
 
   return (
     <StyledPointHoverOptions darkMode={props.darkMode}>
-      <MainPointIcon
-        darkMode={props.darkMode}
-        onClick={(e: React.MouseEvent) => {
-          dispatch(setMainPoint({ pointId: props.pointId }));
-          e.stopPropagation();
-        }}
-      >
-        !
-      </MainPointIcon>
+      {props.parent === "Point" && (
+        <MainPointIcon
+          darkMode={props.darkMode}
+          onClick={(e: React.MouseEvent) => {
+            dispatch(setMainPoint({ pointId: props.id }));
+            e.stopPropagation();
+          }}
+        >
+          !
+        </MainPointIcon>
+      )}
       <TrashIcon
         onClick={(e: React.MouseEvent) => {
-          dispatch(pointsDelete({ pointIds: [props.pointId] }));
+          trashDispatch();
           e.stopPropagation();
         }}
         darkMode={props.darkMode}

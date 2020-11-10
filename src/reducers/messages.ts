@@ -46,6 +46,7 @@ import {
 } from "../actions/pointsActions";
 import {
   _MessageCreateParams,
+  _MessageDeleteParams,
   SetFocusParams,
   SetMainPointParams,
 } from "../actions/messagesActions";
@@ -95,7 +96,13 @@ export const messagesReducer = (
         appState
       );
       break;
-
+    case Actions.messageDelete:
+      newState = handleMessageDelete(
+        state,
+        action as Action<_MessageDeleteParams>,
+        appState
+      );
+      break;
     case Actions.pointCreate:
       newState = handlePointCreate(
         state,
@@ -163,28 +170,11 @@ export const messagesReducer = (
   return newState;
 };
 
-//function setMessage(
-//  state: MessagesState,
-//  action: Action<SetMessageParams>
-//): MessagesState {
-//  return action.params.message;
-//}
-
-function handleMessageCreate(
-  state: MessagesState,
-  action: Action<_MessageCreateParams>,
-  appState: AppState
-): MessagesState {
-  //Prevent creation of many empty messages
-
-  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
-    return state;
-
-  // Create a new message...
-
-  let newState: MessagesState = produce(state, (draft) => {
-    draft.byId[action.params.newMessageId] = {
-      _id: action.params.newMessageId,
+//TODO: Fix type of draft
+const _createEmptyMessage = (state: MessagesState, newMessageId: string) =>
+  produce(state, (draft: any) => {
+    draft.byId[newMessageId] = {
+      _id: newMessageId,
       //TODO: Replace "author1" with user's id
       author: "author1",
       shapes: {
@@ -198,9 +188,26 @@ function handleMessageCreate(
       },
       createdAt: new Date(),
     };
-    draft.allMessages.push(action.params.newMessageId);
-    draft.draftIds.unshift(action.params.newMessageId);
+    draft.allMessages.push(newMessageId);
+    draft.draftIds.unshift(newMessageId);
   });
+
+function handleMessageCreate(
+  state: MessagesState,
+  action: Action<_MessageCreateParams>,
+  appState: AppState
+): MessagesState {
+  //Prevent creation of many empty messages...
+
+  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+    return state;
+
+  // Create a new message...
+
+  let newState: MessagesState = _createEmptyMessage(
+    state,
+    action.params.newMessageId
+  );
 
   // Then use handlePointsMoveToMessage() to move the points into the new message
 
@@ -227,6 +234,27 @@ function handleMessageCreate(
       draft.byId[action.params.newMessageId].main = newMainPointId;
     }
   });
+}
+
+function handleMessageDelete(
+  state: MessagesState,
+  action: Action<_MessageDeleteParams>,
+  appState: AppState
+): MessagesState {
+  const messageId = action.params.messageId;
+
+  let newState = produce(state, (draft) => {
+    delete draft.byId[messageId];
+    draft.draftIds = draft.draftIds.filter((id) => id !== messageId);
+    draft.allMessages = draft.allMessages.filter((id) => id !== messageId);
+  });
+
+  // Create a new message if the current message was deleted and no drafts are left
+  if (action.params.newMessageId !== undefined) {
+    newState = _createEmptyMessage(newState, action.params.newMessageId);
+  }
+
+  return newState;
 }
 
 function handlePointCreate(

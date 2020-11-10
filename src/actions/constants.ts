@@ -26,11 +26,11 @@ export const Actions = {
   clearCursorPosition: "clearCursorPosition",
 
   setCurrentMessage: "setCurrentMessage",
+  messageCreate: "messageCreate",
+  messageDelete: "messageDelete",
 
   setAuthors: "setAuthors",
 
-  setMessage: "setMessage",
-  messageCreate: "messageCreate",
   pointCreate: "pointCreate",
   pointUpdate: "pointUpdate",
   pointsMoveWithinMessage: "pointsMoveWithinMessage",
