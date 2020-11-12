@@ -20,6 +20,7 @@ import React from "react";
 import styled from "styled-components";
 
 import PublishButton from "./PublishButton";
+import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
 
 import { useDispatch } from "react-redux";
 import { pointsDelete } from "../actions/pointsActions";
@@ -29,6 +30,7 @@ interface Props {
   parent: "MessageListItem" | "Point";
   id: string;
   darkMode?: boolean;
+  isSelected?: boolean;
 }
 
 const PointHoverOptions = (props: Props) => {
@@ -45,10 +47,11 @@ const PointHoverOptions = (props: Props) => {
   }
 
   return (
-    <StyledPointHoverOptions darkMode={props.darkMode}>
+    <StyledPointHoverOptions>
       {props.parent === "Point" && (
         <MainPointIcon
           darkMode={props.darkMode}
+          isSelected={props.isSelected}
           onClick={(e: React.MouseEvent) => {
             dispatch(setMainPoint({ pointId: props.id }));
             e.stopPropagation();
@@ -66,6 +69,7 @@ const PointHoverOptions = (props: Props) => {
           e.stopPropagation();
         }}
         darkMode={props.darkMode}
+        isSelected={props.isSelected}
         viewBox="0 0 16 16"
       >
         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
@@ -78,7 +82,12 @@ const PointHoverOptions = (props: Props) => {
   );
 };
 
-const StyledPointHoverOptions = styled.div<{ darkMode?: boolean }>`
+interface StyledProps {
+  darkMode?: boolean;
+  isSelected?: boolean;
+}
+
+const StyledPointHoverOptions = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
@@ -88,11 +97,10 @@ const StyledPointHoverOptions = styled.div<{ darkMode?: boolean }>`
   right: 20px;
   height: 1rem;
   z-index: 10;
-  background-color: ${(props) => (props.darkMode ? "black" : "white")};
-  border-radius: 5px;
+  border-radius: 3px;
 `;
 
-const MainPointIcon = styled.div<{ darkMode?: boolean }>`
+const MainPointIcon = styled.div<StyledProps>`
   height: 0.8rem;
   width: 0.8rem;
   padding: 0 3px;
@@ -102,52 +110,33 @@ const MainPointIcon = styled.div<{ darkMode?: boolean }>`
   align-items: center;
   justify-content: center;
 
-  ${(props) =>
-    props.darkMode
-      ? `
-    color: white;
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 3px;
+  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
 
-    :hover {
-      color: black;
-      background-color: white;
-    }
-  `
-      : `
-    color: black;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 3px;
+  color: var(--colorFG);
+  background-color: var(--colorBG);
+  border: 1px solid var(--colorFG);
+  border-radius: 3px;
 
-    :hover {
-      color: white;
-      background-color: black;
-    }
-  `};
+  :hover {
+    color: var(--colorBG);
+    background-color: var(--colorFG);
+  }
 `;
 
-const TrashIcon = styled.svg<{ darkMode?: boolean }>`
+const TrashIcon = styled.svg<StyledProps>`
   height: 0.8rem;
   width: 0.8rem;
   padding: 0 3px;
   margin: 0 1px;
 
-  ${(props) =>
-    props.darkMode
-      ? `
-    fill: white;
-    background-color: black;
-    border: 1px solid white;
-    border-radius: 3px;
-  `
-      : `
-    fill: black;
-    background-color: white;
-    border: 1px solid black;
-    border-radius: 3px;
-  `};
+  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+
+  fill: var(--colorFG);
+  background-color: var(--colorBG);
+  border: 1px solid var(--colorFG);
+  border-radius: 3px;
 
   :hover {
     background-color: red;

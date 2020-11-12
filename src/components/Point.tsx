@@ -98,6 +98,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
           authorId={getOriginalAuthorId(props.referenceData)}
           placement={{ top: "0.1rem", left: "2.2em" }}
           darkMode={props.darkMode}
+          isSelected={props.isSelected}
           ref={bannerRef}
         />
       )}
@@ -107,6 +108,7 @@ const Point = forwardRef<any, Props>((props, ref) => {
         onBlur={props.handleBlur}
         readOnly={!!props.referenceData || props.readOnlyOverride}
         isMainPoint={props.isMainPoint}
+        isSelected={props.isSelected}
         darkMode={props.darkMode}
         ref={textareaRef}
         indent={textareaIndent}
