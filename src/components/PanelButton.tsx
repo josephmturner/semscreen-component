@@ -77,7 +77,7 @@ const StyledSvg = styled.svg<StyledProps>`
   bottom: 0;
   margin: auto 0;
     border-right: none;
-    border-radius: 10px 0 0 10px;
+    border-radius: 3px 0 0 3px;
 `}
   ${(props) =>
     props.side === "bottom" &&
@@ -87,7 +87,7 @@ const StyledSvg = styled.svg<StyledProps>`
   bottom: 0;
   margin: 0 auto;
     border-bottom: none;
-    border-radius: 10px 10px 0 0;
+    border-radius: 3px 3px 0 0;
 `}
 `;
 

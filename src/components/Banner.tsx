@@ -18,7 +18,10 @@
 */
 import React from "react";
 import styled from "styled-components";
+
+import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
 import { AuthorI } from "../dataModels/dataModels";
+
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
@@ -33,6 +36,7 @@ interface OwnProps {
   placement: Placement;
   fontSize?: string;
   darkMode?: boolean;
+  isSelected?: boolean;
 }
 
 interface AllProps extends OwnProps {
@@ -48,6 +52,7 @@ const Banner = React.forwardRef<HTMLDivElement, AllProps>((props, ref) => (
     left={props.placement ? props.placement.left : undefined}
     fontSize={props.fontSize}
     darkMode={props.darkMode}
+    isSelected={props.isSelected}
     ref={ref}
   >
     {/* \u00A0 adds extra spaces on either side of the text */}
@@ -58,11 +63,17 @@ const Banner = React.forwardRef<HTMLDivElement, AllProps>((props, ref) => (
 interface BannerViewProps extends Placement {
   fontSize?: string;
   darkMode?: boolean;
+  isSelected?: boolean;
 }
 
 const BannerView = styled.div<BannerViewProps>`
   position: absolute;
-  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
+
+  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+
+  color: var(--colorFG);
+  background-color: var(--colorBG);
   max-width: 80%;
   white-space: nowrap;
   overflow: hidden;
@@ -74,7 +85,6 @@ const BannerView = styled.div<BannerViewProps>`
   left: ${(props) => props.left};
   z-index: 1;
   cursor: pointer;
-  background-color: ${(props) => (props.darkMode ? "#000" : "#fff")};
 
   &:before {
     content: "";

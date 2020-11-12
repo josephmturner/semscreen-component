@@ -79,6 +79,7 @@ interface AllProps extends OwnProps {
   isMainPoint: boolean;
   cursorPositionIndex?: number;
   isPersisted: boolean;
+  isDragHovered: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
@@ -311,6 +312,7 @@ const RegionPoint = (props: AllProps) => {
           parent={"Point"}
           id={props.pointId}
           darkMode={props.darkMode}
+          isSelected={props.isSelected}
         />
       )}
     </Point>
@@ -321,8 +323,19 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state.points);
   const currentMessage =
     state.messages.byId[state.semanticScreen.currentMessage];
+
+  const point = getPointById(ownProps.pointId, state.points);
+
+  let isDragHovered = false;
+  if (
+    state.drag.context &&
+    state.drag.context.region === point.shape &&
+    state.drag.context.index === ownProps.index
+  )
+    isDragHovered = true;
+
   return {
-    point: getPointById(ownProps.pointId, state.points),
+    point,
     referenceData,
     isMainPoint: ownProps.pointId === currentMessage.main,
     cursorPositionIndex:
@@ -333,6 +346,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     isPersisted: !state.messages.draftIds.includes(
       state.semanticScreen.currentMessage
     ),
+    isDragHovered,
   };
 };
 

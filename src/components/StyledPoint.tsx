@@ -19,6 +19,8 @@
 import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
 
+import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
+
 interface StyledPointProps {
   isMainPoint?: boolean;
   isSelected?: boolean;
@@ -36,17 +38,20 @@ export const StyledDiv = styled.div<StyledPointProps>`
   //off without expanding when the focus region expands
   //width: 100%;
   margin: 1px 0;
-  ${(props) =>
-    props.isSelected &&
-    `
-  background-color: #777;
+
+  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+
+  background-color: var(--colorBG);
+  border: 1px solid var(--colorBG);
   border-radius: 3px;
-`}
 
   ${(props) =>
     props.isHovered &&
     `
-    border: 1px solid ${props.darkMode ? "white" : "black"};
+    //TODO: add style so that the whole point doesn't move when hovered
+    //border-box: something?
+    border: 1px solid var(--colorFG);
     border-radius: 3px;
   `}
 `;
@@ -64,7 +69,11 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   width: 100%;
   border: 0;
   overflow: hidden;
-  color: ${(props) => (props.darkMode ? "white" : "black")};
+
+  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+
+  color: var(--colorFG);
   background-color: transparent;
   font-family: Arial;
   font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};

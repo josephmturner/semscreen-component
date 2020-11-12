@@ -36,8 +36,13 @@ const ParkingSpace = (props: {
     <StyledRegion borderColor={props.userColor}>
       <InnerContainer>
         <NewMessageButton darkMode={props.darkMode} />
-        {props.nonPersistedMessages.map((m) => (
-          <MessageListItem messageId={m} darkMode={props.darkMode} />
+        {props.nonPersistedMessages.map((id: string, i: number) => (
+          <MessageListItem
+            key={id}
+            messageId={id}
+            index={i}
+            darkMode={props.darkMode}
+          />
         ))}
       </InnerContainer>
     </StyledRegion>

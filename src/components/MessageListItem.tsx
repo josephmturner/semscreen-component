@@ -32,20 +32,24 @@ import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
 } from "../actions/pointsActions";
+import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
   messageId: string;
+  index: number;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
   mainPoint?: PointI;
   referenceData: PointReferenceI | null;
+  isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
+  hoverOver: (params: HoverOverParams) => void;
 }
 
 const MessageListItem = (props: AllProps) => {
@@ -54,12 +58,19 @@ const MessageListItem = (props: AllProps) => {
   //TODO: fix type of ref
   const pointRef = useRef<any>(null);
 
-  const [isHovered, setIsHovered] = useState(false);
-
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
       props.pointsMoveToMessage({ messageId: props.messageId });
+    },
+    hover: () => {
+      if (!props.isDragHovered) {
+        props.hoverOver({
+          region: "parking",
+          index: props.index,
+        });
+        console.log("hover");
+      }
     },
   });
 
@@ -76,6 +87,8 @@ const MessageListItem = (props: AllProps) => {
     setCounter((c) => c + 1);
   }, [referenceData]);
 
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <>
       {props.mainPoint && (
@@ -85,7 +98,7 @@ const MessageListItem = (props: AllProps) => {
           referenceData={props.referenceData}
           isMainPoint={true}
           isSelected={false}
-          isHovered={isHovered}
+          isHovered={isHovered || props.isDragHovered}
           setIsHovered={setIsHovered}
           readOnlyOverride={true}
           darkMode={props.darkMode}
@@ -118,15 +131,25 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     referenceData = getReferenceData(mainPointId, state.points);
   }
 
+  let isDragHovered = false;
+  if (
+    state.drag.context &&
+    state.drag.context.region === "parking" &&
+    state.drag.context.index === ownProps.index
+  )
+    isDragHovered = true;
+
   return {
     mainPoint,
     referenceData,
+    isDragHovered,
   };
 };
 
 const mapActionsToProps = {
   setCurrentMessage,
   pointsMoveToMessage,
+  hoverOver,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(MessageListItem);

@@ -141,6 +141,7 @@ const FocusPoint = (props: AllProps) => {
           parent={"Point"}
           id={props.pointId}
           darkMode={props.darkMode}
+          isSelected={props.isSelected}
         />
       )}
     </Point>

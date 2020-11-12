@@ -24,34 +24,42 @@ import { AppState } from "../reducers/store";
 import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
 
 interface OwnProps {
+  messageId: string;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
-  currentMessage: MessageI;
+  message: MessageI;
   currentPoints: (PointI | PointReferenceI)[];
 }
 
 const PublishButton = (props: AllProps) => {
   const handleClick = () => {
-    if (!props.currentMessage.main) {
+    if (!props.message.main) {
       window.alert(
         "Before publishing, please add a main point to your message"
       );
-    } else if (!props.currentMessage.focus) {
+    } else if (!props.message.focus) {
       window.alert(
         "Before publishing, please add a focus point to your message"
       );
     } else {
-      console.log(props.currentMessage);
+      console.log(props.message);
       console.log(props.currentPoints);
     }
   };
 
   return (
-    <StyledButton onClick={handleClick} darkMode={props.darkMode}>
-      Publish!
-    </StyledButton>
+    <StyledSvg
+      onClick={handleClick}
+      darkMode={props.darkMode}
+      viewBox="0 0 16 16"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+      />
+    </StyledSvg>
   );
 };
 
@@ -59,29 +67,45 @@ interface StyledProps {
   darkMode?: boolean;
 }
 
-const StyledButton = styled.button<StyledProps>`
-  line-height: 0;
-  border: 0;
-  background-color: transparent;
-  box-sizing: border-box;
-  margin-top: 2px;
-  height: 1rem;
-  width: 100%;
-  color: ${(props) => (props.darkMode ? "white" : "black")};
+const StyledSvg = styled.svg<StyledProps>`
+  height: 0.8rem;
+  width: 0.8rem;
+  padding: 0 3px;
+  margin: 0 1px;
+
+  ${(props) =>
+    props.darkMode
+      ? `
+  fill: white;
+  background-color: black;
+  border: 1px solid white;
+  border-radius: 3px;
+
   :hover {
-    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
-    border-radius: 7px;
+    fill: black;
+    background-color: white;
   }
+  `
+      : `
+  fill: black;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 3px;
+
+  :hover {
+    fill: white;
+    background-color: black;
+  }
+ `};
 `;
 
-const mapStateToProps = (state: AppState) => {
-  const currentMessage =
-    state.messages.byId[state.semanticScreen.currentMessage];
-  const currentPointIds = Object.values(currentMessage.shapes).flat();
-  if (currentMessage.focus) currentPointIds.push(currentMessage.focus);
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const message = state.messages.byId[ownProps.messageId];
+  const currentPointIds = Object.values(message.shapes).flat();
+  if (message.focus) currentPointIds.push(message.focus);
   const currentPoints = currentPointIds.map((id) => state.points.byId[id]);
   return {
-    currentMessage,
+    message,
     currentPoints,
   };
 };
