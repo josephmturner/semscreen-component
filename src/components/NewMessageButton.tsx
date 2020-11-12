@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 import { connect } from "react-redux";
@@ -26,6 +26,7 @@ import {
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
 import { messageCreate, MessageCreateParams } from "../actions/messagesActions";
+import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
@@ -36,8 +37,10 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   selectedPointIds: string[];
+  isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   messageCreate: (params: MessageCreateParams) => void;
+  hoverOver: (params: HoverOverParams) => void;
 }
 
 const NewMessageButton = (props: AllProps) => {
@@ -50,10 +53,29 @@ const NewMessageButton = (props: AllProps) => {
     drop: () => {
       props.messageCreate({});
     },
+    hover: () => {
+      //When hovering over the NewMessageButton, drag.context will be set
+      //to { region: "parking", index: -1 }
+      if (!props.isDragHovered) {
+        props.hoverOver({
+          region: "parking",
+          index: -1,
+        });
+      }
+    },
   });
 
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <StyledButton ref={drop} onClick={handleClick} darkMode={props.darkMode}>
+    <StyledButton
+      ref={drop}
+      onClick={handleClick}
+      darkMode={props.darkMode}
+      isHovered={isHovered || props.isDragHovered}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       +
     </StyledButton>
   );
@@ -61,6 +83,7 @@ const NewMessageButton = (props: AllProps) => {
 
 interface StyledProps {
   darkMode?: boolean;
+  isHovered: boolean;
 }
 
 const StyledButton = styled.button<StyledProps>`
@@ -73,21 +96,34 @@ const StyledButton = styled.button<StyledProps>`
   height: 1rem;
   width: 100%;
   color: ${(props) => (props.darkMode ? "white" : "black")};
-  :hover {
-    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+
+  ${(props) =>
+    props.isHovered &&
+    `
+    border: 1px solid ${props.darkMode ? "white" : "black"};
     border-radius: 3px;
-  }
+  `}
 `;
 
 const mapStateToProps = (state: AppState) => {
+  let isDragHovered = false;
+  if (
+    state.drag.context &&
+    state.drag.context.region === "parking" &&
+    state.drag.context.index === -1
+  )
+    isDragHovered = true;
+
   return {
     selectedPointIds: state.selectedPoints.pointIds,
+    isDragHovered,
   };
 };
 
 const mapActionsToProps = {
   setCurrentMessage,
   messageCreate,
+  hoverOver,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(NewMessageButton);

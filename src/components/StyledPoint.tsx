@@ -49,9 +49,9 @@ export const StyledDiv = styled.div<StyledPointProps>`
   ${(props) =>
     props.isHovered &&
     `
-    border: 1px solid ${props.darkMode ? "white" : "black"};
     //TODO: add style so that the whole point doesn't move when hovered
     //border-box: something?
+    border: 1px solid var(--colorFG);
     border-radius: 3px;
   `}
 `;
