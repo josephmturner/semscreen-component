@@ -32,14 +32,15 @@ interface Props {
   isMainPoint: boolean;
   isSelected: boolean;
   isHovered: boolean;
-  setIsHovered: (isHovered: boolean) => void;
+  setIsHovered?: (isHovered: boolean) => void;
   readOnlyOverride: boolean;
   suppressAutoFocus?: boolean;
+  suppressBorder?: boolean;
   darkMode?: boolean;
   handleChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleKeyDown?: (e: React.KeyboardEvent) => void;
   handleBlur?: () => void;
-  handlePointDivClick: (e: React.MouseEvent) => void;
+  handlePointDivClick?: (e: React.MouseEvent) => void;
   handleShapeIconClick?: (e: React.MouseEvent) => void;
   //TODO: What is the correct type of children?
   children?: React.ReactNode;
@@ -77,11 +78,16 @@ const Point = forwardRef<any, Props>((props, ref) => {
   return (
     <StyledDiv
       onClick={props.handlePointDivClick}
-      onMouseEnter={() => props.setIsHovered(true)}
-      onMouseLeave={() => props.setIsHovered(false)}
+      onMouseEnter={() => {
+        props.setIsHovered && props.setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        props.setIsHovered && props.setIsHovered(false);
+      }}
       ref={divRef}
       isSelected={props.isSelected}
       isHovered={props.isHovered}
+      suppressBorder={props.suppressBorder}
       darkMode={props.darkMode}
     >
       <StyledImg

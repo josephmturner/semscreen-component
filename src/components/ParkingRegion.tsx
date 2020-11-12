@@ -28,15 +28,15 @@ import { StyledRegion } from "./StyledRegion";
 import NewMessageButton from "./NewMessageButton";
 
 const ParkingSpace = (props: {
-  nonPersistedMessages: string[];
+  displayMessages: string[];
   userColor: string;
   darkMode?: boolean;
 }) => {
   return (
-    <StyledRegion borderColor={props.userColor}>
+    <StyledRegion>
       <InnerContainer>
         <NewMessageButton darkMode={props.darkMode} />
-        {props.nonPersistedMessages.map((id: string, i: number) => (
+        {props.displayMessages.map((id: string, i: number) => (
           <MessageListItem
             key={id}
             messageId={id}
@@ -58,8 +58,12 @@ const InnerContainer = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => {
+  // Only display messages which have main points
+  const displayMessages = state.messages.draftIds.filter(
+    (id) => state.messages.byId[id].main
+  );
   return {
-    nonPersistedMessages: state.messages.draftIds,
+    displayMessages,
     //Replace "author1" with redux state for userId
     userColor: state.authors.byId["author1"].color,
   };

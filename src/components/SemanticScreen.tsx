@@ -68,14 +68,12 @@ const SemanticScreen = (props: Props) => {
       expandedRegion={expandedRegion}
       ref={semanticScreenRef}
     >
-      {props.isPersisted && (
-        <Banner
-          authorId={props.authorId}
-          placement={{ top: "0", right: "0" }}
-          fontSize={"medium"}
-          darkMode={props.darkMode}
-        />
-      )}
+      <Banner
+        authorId={props.authorId}
+        placement={{ top: "0", right: "0" }}
+        fontSize={"medium"}
+        darkMode={props.darkMode}
+      />
       {regions.map((region: RegionI) => {
         if (region === "merits") {
           return <MeritsRegion region={region} key={region} />;
