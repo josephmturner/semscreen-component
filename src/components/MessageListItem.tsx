@@ -83,7 +83,9 @@ const MessageListItem = (props: AllProps) => {
   });
 
   const handleClick = () => {
-    props.pointsMoveToMessage({ messageId: props.messageId });
+    if (props.type === "draftMessage") {
+      props.pointsMoveToMessage({ messageId: props.messageId });
+    }
   };
 
   //The useState and useEffect are purely to cause the component to
