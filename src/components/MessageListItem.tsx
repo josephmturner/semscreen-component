@@ -16,11 +16,19 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef, useState } from "react";
-import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+
+import {
+  AuthorI,
+  PointI,
+  PointHoverOptionsType,
+  PointReferenceI,
+} from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/pointUtils";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
+import Banner from "./Banner";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
@@ -39,12 +47,14 @@ import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
   messageId: string;
+  type: PointHoverOptionsType;
   index: number;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
-  mainPoint?: PointI;
+  author: AuthorI;
+  mainPoint: PointI;
   referenceData: PointReferenceI | null;
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
@@ -55,28 +65,24 @@ interface AllProps extends OwnProps {
 const MessageListItem = (props: AllProps) => {
   const { referenceData } = props;
 
-  //TODO: fix type of ref
-  const pointRef = useRef<any>(null);
-
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.pointsMoveToMessage({ messageId: props.messageId });
+      if (props.type === "draftMessage") {
+        props.pointsMoveToMessage({ messageId: props.messageId });
+      }
     },
     hover: () => {
-      if (!props.isDragHovered) {
+      if (!props.isDragHovered && props.type === "draftMessage") {
         props.hoverOver({
           region: "parking",
           index: props.index,
         });
-        console.log("hover");
       }
     },
   });
 
-  drop(pointRef.current?.div);
-
-  const handlePointDivClick = () => {
+  const handleClick = () => {
     props.pointsMoveToMessage({ messageId: props.messageId });
   };
 
@@ -90,56 +96,89 @@ const MessageListItem = (props: AllProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <>
-      {props.mainPoint && (
-        <Point
-          id={props.messageId}
-          displayPoint={props.mainPoint}
-          referenceData={props.referenceData}
-          isMainPoint={true}
-          isSelected={false}
-          isHovered={isHovered || props.isDragHovered}
-          setIsHovered={setIsHovered}
-          readOnlyOverride={true}
-          darkMode={props.darkMode}
-          suppressAutoFocus={true}
-          handlePointDivClick={handlePointDivClick}
-          ref={pointRef}
-        >
-          {isHovered && (
-            <PointHoverOptions
-              //TODO: consider a better way to tell PointHoverOptions
-              //what its parent is
-              parent={"MessageListItem"}
-              id={props.messageId}
-              darkMode={props.darkMode}
-            />
-          )}
-        </Point>
-      )}
-    </>
+    <MessageWrapper
+      author={props.author}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+      onClick={handleClick}
+      isHovered={isHovered || props.isDragHovered}
+      darkMode={props.darkMode}
+      ref={drop}
+    >
+      <Point
+        id={props.messageId}
+        displayPoint={props.mainPoint}
+        referenceData={props.referenceData}
+        isMainPoint={true}
+        isSelected={false}
+        isHovered={isHovered || props.isDragHovered}
+        readOnlyOverride={true}
+        darkMode={props.darkMode}
+        suppressAutoFocus={true}
+        suppressBorder={true}
+      >
+        {isHovered && (
+          <PointHoverOptions
+            //TODO: consider a better way to tell PointHoverOptions
+            //what its parent is
+            type={props.type}
+            id={props.messageId}
+            darkMode={props.darkMode}
+          />
+        )}
+      </Point>
+      <Banner
+        authorId={props.author._id}
+        placement={{ top: "-1rem", right: "0.5rem" }}
+        fontSize="medium"
+        isHovered={isHovered || props.isDragHovered}
+        darkMode={props.darkMode}
+      />
+    </MessageWrapper>
   );
 };
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const mainPointId = state.messages.byId[ownProps.messageId].main;
-  let mainPoint;
-  let referenceData = null;
+const MessageWrapper = styled.div<{
+  author: AuthorI;
+  isHovered: boolean;
+  darkMode?: boolean;
+}>`
+  position: relative;
+  ${(props) =>
+    ` border: 1.5px solid ${props.author.color}; border-top: 0.5rem solid ${props.author.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
 
-  if (mainPointId) {
-    mainPoint = getPointById(mainPointId, state.points);
-    referenceData = getReferenceData(mainPointId, state.points);
-  }
+  ${(props) =>
+    props.isHovered &&
+    `
+    border-color: ${props.darkMode ? "white" : "black"};
+  `}
+`;
+
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const author =
+    state.authors.byId[state.messages.byId[ownProps.messageId].author];
+  const mainPointId = state.messages.byId[ownProps.messageId].main;
+
+  // Type assertion is okay since we only render MessageListItem
+  // if the message has a main point
+  const mainPoint = getPointById(mainPointId as string, state.points);
+  const referenceData = getReferenceData(mainPointId as string, state.points);
 
   let isDragHovered = false;
   if (
     state.drag.context &&
     state.drag.context.region === "parking" &&
-    state.drag.context.index === ownProps.index
+    state.drag.context.index === ownProps.index &&
+    ownProps.type === "draftMessage"
   )
     isDragHovered = true;
 
   return {
+    author,
     mainPoint,
     referenceData,
     isDragHovered,

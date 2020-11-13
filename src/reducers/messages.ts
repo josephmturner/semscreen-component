@@ -64,7 +64,8 @@ export const initialMessagesState: MessagesState = {
   byId: {
     message0: {
       _id: uuidv4(),
-      //TODO: Replace "author0" with user's id
+      //TODO: Initial state has authorId "author0"
+      //Is this appropriate? Would uuid be better?
       author: "author0",
       shapes: {
         facts: [],
@@ -424,15 +425,21 @@ function handleSetFocus(
   appState: AppState
 ): MessagesState {
   const newFocus = appState.selectedPoints.pointIds[0];
-  if (!newFocus) return state;
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentFocus = state.byId[currentMessageId].focus;
+  if (newFocus === currentFocus) return state;
 
   const newFocusShape = getPointById(newFocus, appState.points).shape;
 
   return produce(state, (draft) => {
-    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+    const currentMessage = draft.byId[currentMessageId];
+
+    // Remove the point from the region it came from...
     currentMessage.shapes[newFocusShape] = currentMessage.shapes[
       newFocusShape
     ].filter((id) => id !== newFocus);
+
+    // then move the current focus point to the appropriate region
     if (currentMessage.focus) {
       const oldFocusShape = getPointById(currentMessage.focus, appState.points)
         .shape;

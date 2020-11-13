@@ -108,6 +108,8 @@ const RegionPoint = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType, monitor: DropTargetMonitor) => {
+      setIsHovered(false); // Don't display PointHoverOptions
+
       const hoverIndex = index;
       const dragIndex = item.index;
 
@@ -309,7 +311,7 @@ const RegionPoint = (props: AllProps) => {
     >
       {isHovered && !props.isPersisted && (
         <PointHoverOptions
-          parent={"Point"}
+          type="point"
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}

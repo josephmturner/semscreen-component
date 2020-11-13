@@ -92,7 +92,6 @@ const StyledButton = styled.button<StyledProps>`
   justify-content: center;
   border: 0;
   background-color: transparent;
-  margin-top: 2px;
   height: 1rem;
   width: 100%;
   color: ${(props) => (props.darkMode ? "white" : "black")};

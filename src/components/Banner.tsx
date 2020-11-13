@@ -36,6 +36,7 @@ interface OwnProps {
   placement: Placement;
   fontSize?: string;
   darkMode?: boolean;
+  isHovered?: boolean;
   isSelected?: boolean;
 }
 
@@ -52,6 +53,7 @@ const Banner = React.forwardRef<HTMLDivElement, AllProps>((props, ref) => (
     left={props.placement ? props.placement.left : undefined}
     fontSize={props.fontSize}
     darkMode={props.darkMode}
+    isHovered={props.isHovered}
     isSelected={props.isSelected}
     ref={ref}
   >
@@ -63,6 +65,7 @@ const Banner = React.forwardRef<HTMLDivElement, AllProps>((props, ref) => (
 interface BannerViewProps extends Placement {
   fontSize?: string;
   darkMode?: boolean;
+  isHovered?: boolean;
   isSelected?: boolean;
 }
 
@@ -93,7 +96,11 @@ const BannerView = styled.div<BannerViewProps>`
       `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='450' width='450' preserveAspectRatio='none'> <path d='M391.908 347.474c-2.816 9.508-9.271 16.797-23.376 21.095 0 0-73.876 28.625-143.069 0-69.194-28.627-143.066 0-143.066 0-12.913 0-23.378-9.44-23.378-21.095V89.287c5.229-11.555 12.51-17.483 23.469-21.826 0 0 64.284-31.412 142.975.73 78.504 32.068 143.069 0 143.069 0 12.911 0 23.376 9.446 23.376 21.096z' fill='${
         props.color && props.color.replace("#", "%23")
       }' fill-opacity='0.1' stroke='${
-        props.color && props.color.replace("#", "%23")
+        props.isHovered
+          ? props.darkMode
+            ? "white"
+            : "black"
+          : props.color && props.color.replace("#", "%23")
       }' stroke-width='1.5' vector-effect='non-scaling-stroke'/></svg>")`};
     background-repeat: no-repeat;
     background-size: 133% 120%;

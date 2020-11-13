@@ -15,7 +15,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointById,
@@ -52,6 +52,8 @@ interface OwnProps {
   isExpanded: boolean;
   isMainPoint: boolean;
   isSelected: boolean;
+  isHovered: boolean;
+  setIsHovered: (isHovered: boolean) => void;
   darkMode: boolean;
 }
 
@@ -116,8 +118,6 @@ const FocusPoint = (props: AllProps) => {
   drag(pointRef.current?.img);
   preview(pointRef.current?.div);
 
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <Point
       id={props.pointId}
@@ -125,8 +125,8 @@ const FocusPoint = (props: AllProps) => {
       referenceData={props.referenceData}
       isMainPoint={props.isMainPoint}
       isSelected={props.isSelected}
-      isHovered={isHovered}
-      setIsHovered={setIsHovered}
+      isHovered={props.isHovered}
+      setIsHovered={props.setIsHovered}
       readOnlyOverride={props.isPersisted}
       darkMode={props.darkMode}
       handleChange={handleChange}
@@ -136,9 +136,9 @@ const FocusPoint = (props: AllProps) => {
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
     >
-      {isHovered && !props.isPersisted && (
+      {props.isHovered && !props.isPersisted && (
         <PointHoverOptions
-          parent={"Point"}
+          type={"point"}
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}

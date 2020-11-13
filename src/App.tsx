@@ -17,17 +17,17 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
+import styled from "styled-components";
 import { connect } from "react-redux";
+
+import { AppState } from "./reducers/store";
+import { togglePanel, PanelParams } from "./actions/panelsActions";
+import { PanelsState } from "./reducers/panels";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
 import ParkingRegion from "./components/ParkingRegion";
-
-import { togglePanel, PanelParams } from "./actions/panelsActions";
-import { PanelsState } from "./reducers/panels";
-import { AppState } from "./reducers/store";
-
-import styled from "styled-components";
+import RightPanelContents from "./components/RightPanelContents";
 
 const App = (props: {
   togglePanel: (params: PanelParams) => void;
@@ -68,7 +68,11 @@ const App = (props: {
           </BottomPanel>
         )}
       </MainPanel>
-      {props.panels.right && <RightPanel />}
+      {props.panels.right && (
+        <RightPanel>
+          <RightPanelContents darkMode={darkMode} />
+        </RightPanel>
+      )}
     </AppStyles>
   );
 };
@@ -123,7 +127,11 @@ const BottomPanel = styled.div`
 `;
 
 const RightPanel = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 16rem;
+  overflow: hidden;
 `;
 
 const mapStateToProps = (state: AppState) => {

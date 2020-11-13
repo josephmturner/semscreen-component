@@ -24,28 +24,25 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import MessageListItem from "./MessageListItem";
-import { StyledRegion } from "./StyledRegion";
 import NewMessageButton from "./NewMessageButton";
 
 const ParkingSpace = (props: {
-  nonPersistedMessages: string[];
-  userColor: string;
+  displayMessages: string[];
   darkMode?: boolean;
 }) => {
   return (
-    <StyledRegion borderColor={props.userColor}>
-      <InnerContainer>
-        <NewMessageButton darkMode={props.darkMode} />
-        {props.nonPersistedMessages.map((id: string, i: number) => (
-          <MessageListItem
-            key={id}
-            messageId={id}
-            index={i}
-            darkMode={props.darkMode}
-          />
-        ))}
-      </InnerContainer>
-    </StyledRegion>
+    <InnerContainer>
+      <NewMessageButton darkMode={props.darkMode} />
+      {props.displayMessages.map((id: string, i: number) => (
+        <MessageListItem
+          key={id}
+          type="draftMessage"
+          messageId={id}
+          index={i}
+          darkMode={props.darkMode}
+        />
+      ))}
+    </InnerContainer>
   );
 };
 
@@ -58,10 +55,12 @@ const InnerContainer = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => {
+  // Only display messages which have main points
+  const displayMessages = state.messages.draftIds.filter(
+    (id) => state.messages.byId[id].main
+  );
   return {
-    nonPersistedMessages: state.messages.draftIds,
-    //Replace "author1" with redux state for userId
-    userColor: state.authors.byId["author1"].color,
+    displayMessages,
   };
 };
 

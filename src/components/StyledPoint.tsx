@@ -28,6 +28,7 @@ interface StyledPointProps {
   darkMode?: boolean;
   indent?: string;
   newLine?: boolean;
+  suppressBorder?: boolean;
 }
 
 export const StyledDiv = styled.div<StyledPointProps>`
@@ -43,16 +44,15 @@ export const StyledDiv = styled.div<StyledPointProps>`
   --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
 
   background-color: var(--colorBG);
-  border: 1px solid var(--colorBG);
   border-radius: 3px;
 
   ${(props) =>
     props.isHovered &&
+    !props.suppressBorder &&
     `
     //TODO: add style so that the whole point doesn't move when hovered
     //border-box: something?
     border: 1px solid var(--colorFG);
-    border-radius: 3px;
   `}
 `;
 
@@ -68,6 +68,7 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   position: relative;
   width: 100%;
   border: 0;
+  outline: none;
   overflow: hidden;
 
   --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
