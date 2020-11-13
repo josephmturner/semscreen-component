@@ -206,8 +206,18 @@ const HoverLine = styled.div<{ darkMode?: boolean }>`
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const isPersisted = !state.messages.draftIds.includes(
+    state.semanticScreen.currentMessage
+  );
+
   let hoverIndex;
-  if (state.drag.context && state.drag.context.region === ownProps.shape)
+  if (
+    state.drag.context &&
+    state.drag.context.region === ownProps.shape &&
+    // Only set hoverIndex if the message is a draft
+    !isPersisted
+  )
+    //TODO: add shape matches region above
     hoverIndex = state.drag.context.index;
 
   const currentMessage =
@@ -220,9 +230,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     pointIds: currentMessage.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,
-    isPersisted: !state.messages.draftIds.includes(
-      state.semanticScreen.currentMessage
-    ),
+    isPersisted,
     isExpanded,
   };
 };
