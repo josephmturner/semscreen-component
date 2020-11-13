@@ -98,5 +98,10 @@ export interface CursorPositionI {
   index: number;
 }
 
+export type PointHoverOptionsType =
+  | "point"
+  | "draftMessage"
+  | "persistedMessage";
+
 //TODO: rename setFocus case in appReducer
 //TODO: validate that focus points are contained in the points array

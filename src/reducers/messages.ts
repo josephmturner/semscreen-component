@@ -64,7 +64,8 @@ export const initialMessagesState: MessagesState = {
   byId: {
     message0: {
       _id: uuidv4(),
-      //TODO: Replace "author0" with user's id
+      //TODO: Initial state has authorId "author0"
+      //Is this appropriate? Would uuid be better?
       author: "author0",
       shapes: {
         facts: [],

@@ -24,28 +24,25 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import MessageListItem from "./MessageListItem";
-import { StyledRegion } from "./StyledRegion";
 import NewMessageButton from "./NewMessageButton";
 
 const ParkingSpace = (props: {
   displayMessages: string[];
-  userColor: string;
   darkMode?: boolean;
 }) => {
   return (
-    <StyledRegion>
-      <InnerContainer>
-        <NewMessageButton darkMode={props.darkMode} />
-        {props.displayMessages.map((id: string, i: number) => (
-          <MessageListItem
-            key={id}
-            messageId={id}
-            index={i}
-            darkMode={props.darkMode}
-          />
-        ))}
-      </InnerContainer>
-    </StyledRegion>
+    <InnerContainer>
+      <NewMessageButton darkMode={props.darkMode} />
+      {props.displayMessages.map((id: string, i: number) => (
+        <MessageListItem
+          key={id}
+          type="draftMessage"
+          messageId={id}
+          index={i}
+          darkMode={props.darkMode}
+        />
+      ))}
+    </InnerContainer>
   );
 };
 
@@ -64,8 +61,6 @@ const mapStateToProps = (state: AppState) => {
   );
   return {
     displayMessages,
-    //Replace "author1" with redux state for userId
-    userColor: state.authors.byId["author1"].color,
   };
 };
 

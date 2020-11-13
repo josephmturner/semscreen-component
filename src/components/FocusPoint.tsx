@@ -138,7 +138,7 @@ const FocusPoint = (props: AllProps) => {
     >
       {props.isHovered && !props.isPersisted && (
         <PointHoverOptions
-          parent={"Point"}
+          type={"point"}
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}

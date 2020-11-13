@@ -19,7 +19,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { AuthorI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import {
+  AuthorI,
+  PointI,
+  PointHoverOptionsType,
+  PointReferenceI,
+} from "../dataModels/dataModels";
 import { getPointById, getReferenceData } from "../dataModels/pointUtils";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -42,6 +47,7 @@ import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
   messageId: string;
+  type: PointHoverOptionsType;
   index: number;
   darkMode?: boolean;
 }
@@ -62,15 +68,16 @@ const MessageListItem = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.pointsMoveToMessage({ messageId: props.messageId });
+      if (props.type === "draftMessage") {
+        props.pointsMoveToMessage({ messageId: props.messageId });
+      }
     },
     hover: () => {
-      if (!props.isDragHovered) {
+      if (!props.isDragHovered && props.type === "draftMessage") {
         props.hoverOver({
           region: "parking",
           index: props.index,
         });
-        console.log("hover");
       }
     },
   });
@@ -118,7 +125,7 @@ const MessageListItem = (props: AllProps) => {
           <PointHoverOptions
             //TODO: consider a better way to tell PointHoverOptions
             //what its parent is
-            parent={"MessageListItem"}
+            type={props.type}
             id={props.messageId}
             darkMode={props.darkMode}
           />
@@ -165,7 +172,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   if (
     state.drag.context &&
     state.drag.context.region === "parking" &&
-    state.drag.context.index === ownProps.index
+    state.drag.context.index === ownProps.index &&
+    ownProps.type === "draftMessage"
   )
     isDragHovered = true;
 

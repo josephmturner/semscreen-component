@@ -311,7 +311,7 @@ const RegionPoint = (props: AllProps) => {
     >
       {isHovered && !props.isPersisted && (
         <PointHoverOptions
-          parent={"Point"}
+          type="point"
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}
