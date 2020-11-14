@@ -99,3 +99,14 @@ export const containsPoints = (
     return false;
   } else return true;
 };
+
+export function blackOrWhite(
+  darkMode?: boolean,
+  isSelected?: boolean
+): ("black" | "white")[] {
+  let bool = true;
+  if (darkMode) bool = !bool;
+  if (isSelected) bool = !bool;
+
+  return bool ? ["black", "white"] : ["white", "black"];
+}

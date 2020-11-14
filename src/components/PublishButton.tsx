@@ -17,11 +17,12 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import styled from "styled-components";
-
 import { connect } from "react-redux";
+
 import { AppState } from "../reducers/store";
 import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
+
+import { ButtonSvg } from "./PointHoverOptions";
 
 interface OwnProps {
   messageId: string;
@@ -50,55 +51,16 @@ const PublishButton = (props: AllProps) => {
   };
 
   return (
-    <StyledSvg
+    <ButtonSvg
       onClick={handleClick}
       darkMode={props.darkMode}
       viewBox="0 0 16 16"
     >
       <title>Publish message</title>
-      <path
-        fill-rule="evenodd"
-        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
-      />
-    </StyledSvg>
+      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+    </ButtonSvg>
   );
 };
-
-interface StyledProps {
-  darkMode?: boolean;
-}
-
-const StyledSvg = styled.svg<StyledProps>`
-  height: 0.8rem;
-  width: 0.8rem;
-  padding: 0 3px;
-  margin: 0 1px;
-
-  ${(props) =>
-    props.darkMode
-      ? `
-  fill: white;
-  background-color: black;
-  border: 1px solid white;
-  border-radius: 3px;
-
-  :hover {
-    fill: black;
-    background-color: white;
-  }
-  `
-      : `
-  fill: black;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 3px;
-
-  :hover {
-    fill: white;
-    background-color: black;
-  }
- `};
-`;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const message = state.messages.byId[ownProps.messageId];
