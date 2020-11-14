@@ -137,6 +137,7 @@ export const _pointsMoveToMessage = (
 
 export interface PointsDeleteParams {
   pointIds: string[];
+  deleteSelectedPoints?: boolean;
 }
 
 export const pointsDelete = (

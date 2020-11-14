@@ -51,7 +51,10 @@ const PointHoverOptions = (props: Props) => {
   let trashDispatch: any;
   switch (props.type) {
     case "point":
-      trashDispatch = () => dispatch(pointsDelete({ pointIds: [props.id] }));
+      trashDispatch = () =>
+        dispatch(
+          pointsDelete({ pointIds: [props.id], deleteSelectedPoints: true })
+        );
       break;
     case "draftMessage":
       trashDispatch = () => dispatch(messageDelete({ messageId: props.id }));

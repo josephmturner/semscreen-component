@@ -187,7 +187,9 @@ function handlePointsDelete(
   appState: AppState
 ): PointsState {
   let pointIds = action.params.pointIds;
-  pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+  if (action.params.deleteSelectedPoints) {
+    pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+  }
 
   return produce(state, (draft) => {
     pointIds.forEach((id) => delete draft.byId[id]);
