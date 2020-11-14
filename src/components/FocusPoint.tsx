@@ -17,12 +17,7 @@
 */
 import React, { useRef } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import {
-  getPointById,
-  getReferenceData,
-  getOriginalMessageId,
-  getOriginalPointId,
-} from "../dataModels/pointUtils";
+import { getPointById, getReferenceData } from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -96,14 +91,7 @@ const FocusPoint = (props: AllProps) => {
       e.stopPropagation();
     }
 
-    if (props.referenceData) {
-      props.setCurrentMessage({
-        messageId: getOriginalMessageId(props.referenceData),
-        selectedPointIds: [getOriginalPointId(props.referenceData)],
-      });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
+    props.setSelectedPoints({ pointIds: [] });
   };
 
   const handleBlur = () => {

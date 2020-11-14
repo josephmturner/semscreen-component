@@ -9,6 +9,10 @@ import {
 import { PointsState } from "../reducers/points";
 import { AppState } from "../reducers/store";
 
+export function isPoint(id: string, state: AppState): boolean {
+  return Object.keys(state.points.byId).includes(id);
+}
+
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
 }
