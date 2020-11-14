@@ -19,12 +19,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import {
-  getPointById,
-  getReferenceData,
-  getOriginalMessageId,
-  getOriginalPointId,
-} from "../dataModels/pointUtils";
+import { getPointById, getReferenceData } from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -167,15 +162,8 @@ const RegionPoint = (props: AllProps) => {
       e.stopPropagation();
     }
 
-    //TODO: Change the following two gestures to a hoverOver button perhaps?
-    if (props.referenceData) {
-      props.setCurrentMessage({
-        messageId: getOriginalMessageId(props.referenceData),
-        selectedPointIds: [getOriginalPointId(props.referenceData)],
-      });
-    } else {
-      props.setSelectedPoints({ pointIds: [] });
-    }
+    //TODO: Change the following gesture to a hoverOver button perhaps?
+    props.setSelectedPoints({ pointIds: [] });
   };
 
   //TODO: Would it be possible to combine handleKeyDown with

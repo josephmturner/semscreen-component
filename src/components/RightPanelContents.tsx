@@ -23,7 +23,7 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import MessageListItem from "./MessageListItem";
-import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
+import { blackOrWhite } from "../dataModels/pointUtils";
 import Banner from "./Banner";
 
 interface OwnProps {
@@ -132,8 +132,8 @@ const StyledInput = styled.input<StyledProps>`
 `;
 
 const StyledSvg = styled.svg<StyledProps>`
-  --colorFG: ${(props) => useBlackOrWhite(props.darkMode)[0]};
-  --colorBG: ${(props) => useBlackOrWhite(props.darkMode)[1]};
+  --colorFG: ${(props) => blackOrWhite(props.darkMode)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode)[1]};
 
   position: absolute;
   top: 0;

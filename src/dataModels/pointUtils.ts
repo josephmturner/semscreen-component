@@ -9,6 +9,10 @@ import {
 import { PointsState } from "../reducers/points";
 import { AppState } from "../reducers/store";
 
+export function isPoint(id: string, state: AppState): boolean {
+  return Object.keys(state.points.byId).includes(id);
+}
+
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
 }
@@ -99,3 +103,14 @@ export const containsPoints = (
     return false;
   } else return true;
 };
+
+export function blackOrWhite(
+  darkMode?: boolean,
+  isSelected?: boolean
+): ("black" | "white")[] {
+  let bool = true;
+  if (darkMode) bool = !bool;
+  if (isSelected) bool = !bool;
+
+  return bool ? ["black", "white"] : ["white", "black"];
+}

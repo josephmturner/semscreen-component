@@ -18,8 +18,9 @@
 */
 import React, { useState } from "react";
 import styled from "styled-components";
-
+import { useSelector } from "react-redux";
 import { connect } from "react-redux";
+
 import { AppState } from "../reducers/store";
 import {
   setCurrentMessage,
@@ -30,6 +31,8 @@ import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
+
+import { blackOrWhite } from "../dataModels/pointUtils";
 
 interface OwnProps {
   darkMode?: boolean;
@@ -67,17 +70,47 @@ const NewMessageButton = (props: AllProps) => {
 
   const [isHovered, setIsHovered] = useState(false);
 
+  const pointsAreSelected = useSelector(
+    (state: AppState) => state.selectedPoints.pointIds[0] !== undefined
+  );
+
+  const PlusButton = () => (
+    <InnerContainer darkMode={props.darkMode}>
+      <ButtonSvg
+        isHovered={isHovered || props.isDragHovered}
+        darkMode={props.darkMode}
+        viewBox="0 0 16 16"
+      >
+        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+      </ButtonSvg>
+    </InnerContainer>
+  );
+
+  const PointsMoveButton = () => {
+    return (
+      <ButtonSvg
+        isHovered={isHovered || props.isDragHovered}
+        darkMode={props.darkMode}
+        viewBox="0 0 16 16"
+      >
+        <path d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z" />
+        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+      </ButtonSvg>
+    );
+  };
+
   return (
-    <StyledButton
+    <ContainerButton
       ref={drop}
       onClick={handleClick}
       darkMode={props.darkMode}
       isHovered={isHovered || props.isDragHovered}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      title="Create new message"
     >
-      +
-    </StyledButton>
+      {pointsAreSelected ? <PointsMoveButton /> : <PlusButton />}
+    </ContainerButton>
   );
 };
 
@@ -86,15 +119,14 @@ interface StyledProps {
   isHovered: boolean;
 }
 
-const StyledButton = styled.button<StyledProps>`
+const ContainerButton = styled.button<StyledProps>`
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0;
   background-color: transparent;
-  height: 1rem;
+  padding: 0.25rem 0;
   width: 100%;
-  color: ${(props) => (props.darkMode ? "white" : "black")};
 
   ${(props) =>
     props.isHovered &&
@@ -102,6 +134,39 @@ const StyledButton = styled.button<StyledProps>`
     border: 1px solid ${props.darkMode ? "white" : "black"};
     border-radius: 3px;
   `}
+`;
+
+const ButtonSvg = styled.svg<StyledProps>`
+  height: 100%;
+  width: 0.8rem;
+  padding: 0 3px;
+
+  --colorFG: ${(props) => blackOrWhite(props.darkMode)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode)[1]};
+
+  fill: var(--colorFG);
+  background-color: var(--colorBG);
+  border-radius: 3px;
+
+  ${(props) =>
+    props.isHovered &&
+    `
+    fill: var(--colorBG);
+    background-color: var(--colorFG);
+`}
+`;
+
+const InnerContainer = styled.div<{ darkMode?: boolean }>`
+  display: flex;
+  align-items: center;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  height: 1rem;
+  z-index: 10;
+  background-color: ${(props) => (props.darkMode ? "black" : "white")};
+  border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+  border-radius: 3px;
 `;
 
 const mapStateToProps = (state: AppState) => {

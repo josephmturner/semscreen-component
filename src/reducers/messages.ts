@@ -413,7 +413,9 @@ function handlePointsDelete(
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
 
     let pointIds = action.params.pointIds;
-    pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+    if (action.params.deleteSelectedPoints) {
+      pointIds = pointIds.concat(appState.selectedPoints.pointIds);
+    }
 
     _deletePoints(currentMessage, pointIds);
   });

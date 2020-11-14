@@ -129,9 +129,7 @@ function handlePointsDelete(
   state: SelectedPointsState,
   action: Action<PointsDeleteParams>
 ): SelectedPointsState {
-  return {
-    pointIds: [],
-  };
+  return action.params.deleteSelectedPoints ? { pointIds: [] } : state;
 }
 
 function handleCombinePoints(

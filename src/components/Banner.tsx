@@ -19,7 +19,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
+import { blackOrWhite } from "../dataModels/pointUtils";
 import { AuthorI } from "../dataModels/dataModels";
 
 import { connect } from "react-redux";
@@ -72,8 +72,8 @@ interface BannerViewProps extends Placement {
 const BannerView = styled.div<BannerViewProps>`
   position: absolute;
 
-  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   color: var(--colorFG);
   background-color: var(--colorBG);

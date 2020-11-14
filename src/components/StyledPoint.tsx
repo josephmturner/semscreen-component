@@ -19,7 +19,7 @@
 import styled from "styled-components";
 import TextareaAutosize from "react-textarea-autosize";
 
-import { useBlackOrWhite } from "../hooks/useBlackOrWhite";
+import { blackOrWhite } from "../dataModels/pointUtils";
 
 interface StyledPointProps {
   isMainPoint?: boolean;
@@ -40,8 +40,8 @@ export const StyledDiv = styled.div<StyledPointProps>`
   //width: 100%;
   margin: 1px 0;
 
-  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   background-color: var(--colorBG);
   border-radius: 3px;
@@ -59,7 +59,7 @@ export const StyledDiv = styled.div<StyledPointProps>`
 export const StyledImg = styled.img<StyledPointProps>`
   position: absolute;
   height: ${(props) => (props.isMainPoint ? "23px" : "17px")};
-  top: ${(props) => (props.isMainPoint ? 0 : "2px")};
+  top: ${(props) => (props.isMainPoint ? 0 : "0.1rem")};
   left: 0.2rem;
   z-index: 4;
 `;
@@ -71,8 +71,8 @@ export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
   outline: none;
   overflow: hidden;
 
-  --colorFG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => useBlackOrWhite(props.darkMode, props.isSelected)[1]};
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   color: var(--colorFG);
   background-color: transparent;
