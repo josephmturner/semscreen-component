@@ -53,9 +53,11 @@ const PointHoverOptions = (props: Props) => {
         <MainPointIcon
           darkMode={props.darkMode}
           isSelected={props.isSelected}
-          onClick={() => {
+          onClick={(e: React.MouseEvent) => {
             dispatch(setMainPoint({ pointId: props.id }));
+            e.stopPropagation();
           }}
+          title="Set main point"
         >
           !
         </MainPointIcon>
@@ -65,14 +67,18 @@ const PointHoverOptions = (props: Props) => {
       )}
       {(props.type === "point" || props.type === "draftMessage") && (
         <TrashIcon
-          onClick={() => {
+          onClick={(e: React.MouseEvent) => {
             // In persistedMessages trashDispatch is undefined
             if (trashDispatch) trashDispatch();
+            e.stopPropagation();
           }}
           darkMode={props.darkMode}
           isSelected={props.isSelected}
           viewBox="0 0 16 16"
         >
+          <title>
+            {props.type === "draftMessage" ? "Delete message" : "Delete point"}
+          </title>
           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
           <path
             fill-rule="evenodd"

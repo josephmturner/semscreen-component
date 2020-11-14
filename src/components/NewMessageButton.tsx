@@ -75,6 +75,7 @@ const NewMessageButton = (props: AllProps) => {
       isHovered={isHovered || props.isDragHovered}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      title="Create new message"
     >
       +
     </StyledButton>
