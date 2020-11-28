@@ -50,6 +50,7 @@ import {
   semanticScreenReducer,
   SemanticScreenState,
 } from "./semanticScreen";
+import { initialDBState, DBState, dbReducer } from "./db";
 
 import { authors, messages, points } from "../constants/initialState";
 
@@ -60,6 +61,7 @@ const populatedInitialMessagesState = populate ? messages : null;
 const populatedInitialPointsState = populate ? points : null;
 
 export interface AppState {
+  db: DBState;
   cursorPosition: CursorPositionState;
   authors: AuthorsState;
   points: PointsState;
@@ -73,6 +75,7 @@ export interface AppState {
 
 function createAppStore() {
   const initialAppState: AppState = {
+    db: initialDBState,
     cursorPosition: initialCursorPositionState,
     authors: populatedInitialAuthorsState ?? initialAuthorsState,
     points: populatedInitialPointsState ?? initialPointsState,
@@ -86,6 +89,7 @@ function createAppStore() {
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
     let newState: AppState = {
+      db: dbReducer(state.db, action, state),
       cursorPosition: cursorPositionReducer(
         state.cursorPosition,
         action,

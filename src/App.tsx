@@ -16,13 +16,18 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
+
+import memdown from "memdown";
+import { USHINBase } from "ushin-db";
 
 import { AppState } from "./reducers/store";
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
+import { DBState } from './reducers/db';
+import {loadDatabase} from "./actions/dbActions";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
@@ -32,6 +37,8 @@ import RightPanelContents from "./components/RightPanelContents";
 const App = (props: {
   togglePanel: (params: PanelParams) => void;
   panels: PanelsState;
+  db: DBState;
+  loadDatabase: () => void;
 }) => {
   const darkMode = true;
 
@@ -40,6 +47,10 @@ const App = (props: {
       props.togglePanel({ location: "bottom" });
     }
   };
+
+  useEffect(() => {
+    if(props?.db?.loading) props.loadDatabase()
+  });
 
   return (
     <AppStyles darkMode={darkMode}>
@@ -137,11 +148,13 @@ const RightPanel = styled.div`
 const mapStateToProps = (state: AppState) => {
   return {
     panels: state.panels,
+    db: state.db
   };
 };
 
 const mapActionsToProps = {
   togglePanel,
+  loadDatabase
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(App);

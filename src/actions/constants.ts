@@ -53,4 +53,7 @@ export const Actions = {
   deselectAllPoints: "deselectAllPoints",
 
   togglePanel: "togglePanel",
+
+  loadDatabase: "loadDatabase",
+  saveMessage: "saveMessage",
 };
