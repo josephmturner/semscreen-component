@@ -20,7 +20,8 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { AppState } from "../reducers/store";
-import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import { MessageI } from "../dataModels/dataModels";
+import { saveMessage, PointMapping } from '../actions/dbActions'
 
 import { ButtonSvg } from "./PointHoverOptions";
 
@@ -31,12 +32,14 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   message: MessageI;
-  currentPoints: (PointI | PointReferenceI)[];
+  points: PointMapping;
+  saveMessage: (message: MessageI, points: PointMapping) => void;
 }
 
 const PublishButton = (props: AllProps) => {
   const handleClick = () => {
-    if (!props.message.main) {
+    const {points, message,saveMessage} = props
+    if (!message.main) {
       window.alert(
         "Before publishing, please add a main point to your message"
       );
@@ -45,8 +48,8 @@ const PublishButton = (props: AllProps) => {
         "Before publishing, please add a focus point to your message"
       );
     } else {
-      console.log(props.message);
-      console.log(props.currentPoints);
+      console.log('Saving', {message, points});
+      saveMessage(message, points)
     }
   };
 
@@ -64,15 +67,15 @@ const PublishButton = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const message = state.messages.byId[ownProps.messageId];
-  const currentPointIds = Object.values(message.shapes).flat();
-  if (message.focus) currentPointIds.push(message.focus);
-  const currentPoints = currentPointIds.map((id) => state.points.byId[id]);
+  const points = state.points.byId
   return {
     message,
-    currentPoints,
+    points
   };
 };
 
-const mapActionsToProps = {};
+const mapActionsToProps = {
+  saveMessage
+};
 
 export default connect(mapStateToProps, mapActionsToProps)(PublishButton);
