@@ -27,9 +27,10 @@ export const loadDatabase = (): ThunkAction<
 > => {
   return (dispatch, getState) => {
     (async () => {
-      const state = getState()
+      const state = getState();
 
-      if(!state.db.loading) return console.warn('Tried to load DB when already loaded')
+      if (!state.db.loading)
+        return console.warn("Tried to load DB when already loaded");
 
       const leveldown = memdown;
       const db = new USHINBase({ leveldown, authorURL: "anonymous" });

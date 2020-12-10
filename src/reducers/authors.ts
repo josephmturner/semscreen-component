@@ -13,7 +13,7 @@ export interface AuthorsState {
 
 export const initialAuthorsState: AuthorsState = {
   byId: {
-    author0: { _id: "author0", name: "anonymous", color: randomColor() },
+    author1: { _id: "author1", name: "anonymous", color: randomColor() },
   },
 };
 

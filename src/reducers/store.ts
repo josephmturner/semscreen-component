@@ -54,11 +54,27 @@ import { initialDBState, DBState, dbReducer } from "./db";
 
 import { authors, messages, points } from "../constants/initialState";
 
-// Set this to false if you don't want test data.
-const populate = true;
-const populatedInitialAuthorsState = populate ? authors : null;
-const populatedInitialMessagesState = populate ? messages : null;
-const populatedInitialPointsState = populate ? points : null;
+let populatedInitialAuthorsState: AuthorsState | null = null;
+let populatedInitialMessagesState: MessagesState | null = null;
+let populatedInitialPointsState: PointsState | null = null;
+let populatedInitialSemanticScreenState: SemanticScreenState | null = null;
+
+// Set this to true if you want test data (you must delete localStorage)
+const populateWithTestData = true;
+if (populateWithTestData) {
+  populatedInitialAuthorsState = authors;
+  populatedInitialMessagesState = messages;
+  populatedInitialPointsState = points;
+}
+
+const rawPersistedState = localStorage.getItem("draftMessages");
+const persistedState = rawPersistedState ? JSON.parse(rawPersistedState) : null;
+if (persistedState) {
+  populatedInitialAuthorsState = persistedState.authors;
+  populatedInitialMessagesState = persistedState.messages;
+  populatedInitialPointsState = persistedState.points;
+  populatedInitialSemanticScreenState = persistedState.semanticScreen;
+}
 
 export interface AppState {
   db: DBState;
@@ -84,7 +100,8 @@ function createAppStore() {
     selectedPoints: initialSelectedPointsState,
     panels: initialPanelsState,
     drag: initialDragState,
-    semanticScreen: initialSemanticScreenState,
+    semanticScreen:
+      populatedInitialSemanticScreenState ?? initialSemanticScreenState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {

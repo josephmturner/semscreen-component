@@ -28,11 +28,27 @@ import { Provider } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
+const AppWithPersistence = () => {
+  store.subscribe(() => {
+    const reduxState = store.getState();
+    const draftMessages = {
+      authors: reduxState.authors,
+      messages: reduxState.messages,
+      points: reduxState.points,
+      semanticScreen: reduxState.semanticScreen,
+    };
+
+    localStorage.setItem("draftMessages", JSON.stringify(draftMessages));
+  });
+
+  return <App />;
+};
+
 ReactDOM.render(
   <React.StrictMode>
     <DndProvider backend={HTML5Backend}>
       <Provider store={store}>
-        <App />
+        <AppWithPersistence />
       </Provider>
     </DndProvider>
   </React.StrictMode>,

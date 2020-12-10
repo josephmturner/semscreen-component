@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 
 import { AppState } from "../reducers/store";
 import { MessageI } from "../dataModels/dataModels";
-import { saveMessage, PointMapping } from '../actions/dbActions'
+import { saveMessage, PointMapping } from "../actions/dbActions";
 
 import { ButtonSvg } from "./PointHoverOptions";
 
@@ -38,7 +38,7 @@ interface AllProps extends OwnProps {
 
 const PublishButton = (props: AllProps) => {
   const handleClick = () => {
-    const {points, message,saveMessage} = props
+    const { points, message, saveMessage } = props;
     if (!message.main) {
       window.alert(
         "Before publishing, please add a main point to your message"
@@ -48,8 +48,8 @@ const PublishButton = (props: AllProps) => {
         "Before publishing, please add a focus point to your message"
       );
     } else {
-      console.log('Saving', {message, points});
-      saveMessage(message, points)
+      console.log("Saving", { message, points });
+      saveMessage(message, points);
     }
   };
 
@@ -67,15 +67,15 @@ const PublishButton = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const message = state.messages.byId[ownProps.messageId];
-  const points = state.points.byId
+  const points = state.points.byId;
   return {
     message,
-    points
+    points,
   };
 };
 
 const mapActionsToProps = {
-  saveMessage
+  saveMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(PublishButton);
