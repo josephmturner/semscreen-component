@@ -35,6 +35,8 @@ const AppWithPersistence = () => {
       authors: reduxState.authors,
       messages: reduxState.messages,
       points: reduxState.points,
+      draftMessages: reduxState.draftMessages,
+      draftPoints: reduxState.draftPoints,
       semanticScreen: reduxState.semanticScreen,
     };
 

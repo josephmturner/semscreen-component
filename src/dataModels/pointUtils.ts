@@ -6,40 +6,56 @@ import {
   PointReferenceI,
   ReferenceLog,
 } from "./dataModels";
-import { PointsState } from "../reducers/points";
 import { AppState } from "../reducers/store";
 
 export function isPoint(id: string, state: AppState): boolean {
-  return Object.keys(state.points.byId).includes(id);
+  return (
+    Object.keys(state.points.byId).includes(id) ||
+    Object.keys(state.draftPoints.byId).includes(id)
+  );
 }
 
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
 }
 
-export function getPointById(
+export function getPointById(pointId: string, appState: AppState) {
+  const isDraftPoint = appState.draftPoints.allIds.includes(pointId);
+  return isDraftPoint
+    ? appState.draftPoints.byId[pointId]
+    : appState.points.byId[pointId];
+}
+
+export function getMessageById(messageId: string, appState: AppState) {
+  const isDraftMessage = appState.draftMessages.allIds.includes(messageId);
+  return isDraftMessage
+    ? appState.draftMessages.byId[messageId]
+    : appState.messages.byId[messageId];
+}
+
+export function getPointIfReference(
   pointId: string,
-  pointsState: PointsState
+  appState: AppState
 ): PointI {
-  const point = pointsState.byId[pointId];
+  const point = getPointById(pointId, appState);
   return isReference(point)
-    ? (pointsState.byId[getOriginalPointId(point)] as PointI)
+    ? (appState.points.byId[getOriginalPointId(point)] as PointI)
     : point;
 }
 
 export function getReferencedPointId(
   pointId: string,
-  pointsState: PointsState
+  appState: AppState
 ): string | null {
-  const point = pointsState.byId[pointId];
+  const point = getPointById(pointId, appState);
   return isReference(point) ? getOriginalPointId(point) : null;
 }
 
 export function getReferenceData(
   pointId: string,
-  pointsState: PointsState
+  appState: AppState
 ): PointReferenceI | null {
-  const point = pointsState.byId[pointId];
+  const point = getPointById(pointId, appState);
   return isReference(point) ? point : null;
 }
 
@@ -47,9 +63,9 @@ export function createReferenceTo(
   pointId: string,
   appState: AppState
 ): PointReferenceI {
-  const point = appState.points.byId[pointId];
+  const point = getPointById(pointId, appState);
   const messageId = appState.semanticScreen.currentMessage;
-  const authorId = appState.messages.byId[messageId].author;
+  const authorId = getMessageById(messageId, appState).author;
   const newPointId = uuidv4();
 
   const referenceHistory = isReference(point)
@@ -85,23 +101,21 @@ export function getOriginalAuthorId(point: PointReferenceI): string {
 
 export function getOriginalShape(
   point: PointReferenceI,
-  pointsState: PointsState
+  appState: AppState
 ): PointShape {
   const pointId = getOriginalPointId(point);
-  return (pointsState.byId[pointId] as PointI).shape;
+  return (getPointById(pointId, appState) as PointI).shape;
 }
 
 export const containsPoints = (
   messageId: string,
   appState: AppState
 ): boolean => {
-  const message = appState.messages.byId[messageId];
-  if (
-    Object.values(message.shapes).flat().length === 0 &&
-    message.focus === undefined
-  ) {
-    return false;
-  } else return true;
+  const message = getMessageById(messageId, appState);
+  return (
+    Object.values(message.shapes).flat().length !== 0 ||
+    message.focus !== undefined
+  );
 };
 
 export function blackOrWhite(

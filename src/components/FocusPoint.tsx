@@ -17,7 +17,10 @@
 */
 import React, { useRef } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/pointUtils";
+import {
+  getPointIfReference,
+  getReferenceData,
+} from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -29,8 +32,11 @@ import {
   PointUpdateParams,
   pointsDelete,
   PointsDeleteParams,
-} from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
+} from "../actions/draftPointsActions";
+import {
+  setMainPoint,
+  SetMainPointParams,
+} from "../actions/draftMessagesActions";
 import {
   setSelectedPoints,
   SetSelectedPointsParams,
@@ -55,7 +61,7 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
-  isPersisted: boolean;
+  isDraft: boolean;
   pointUpdate: (params: PointUpdateParams) => void;
   setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
@@ -66,7 +72,7 @@ interface AllProps extends OwnProps {
 
 const FocusPoint = (props: AllProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (props.isPersisted) {
+    if (!props.isDraft) {
       return;
     } else {
       if (e.key === "Enter") {
@@ -115,7 +121,7 @@ const FocusPoint = (props: AllProps) => {
       isSelected={props.isSelected}
       isHovered={props.isHovered}
       setIsHovered={props.setIsHovered}
-      readOnlyOverride={props.isPersisted}
+      readOnlyOverride={!props.isDraft}
       darkMode={props.darkMode}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
@@ -124,7 +130,7 @@ const FocusPoint = (props: AllProps) => {
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
     >
-      {props.isHovered && !props.isPersisted && (
+      {props.isHovered && props.isDraft && (
         <PointHoverOptions
           type={"point"}
           id={props.pointId}
@@ -137,12 +143,12 @@ const FocusPoint = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const referenceData = getReferenceData(ownProps.pointId, state.points);
+  const referenceData = getReferenceData(ownProps.pointId, state);
 
   return {
-    point: getPointById(ownProps.pointId, state.points),
+    point: getPointIfReference(ownProps.pointId, state),
     referenceData,
-    isPersisted: !state.messages.draftIds.includes(
+    isDraft: state.draftMessages.allIds.includes(
       state.semanticScreen.currentMessage
     ),
   };

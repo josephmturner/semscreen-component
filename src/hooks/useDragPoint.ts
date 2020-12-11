@@ -18,7 +18,7 @@
 */
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
-import { getPointById } from "../dataModels/pointUtils";
+import { getPointIfReference } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -27,7 +27,7 @@ import { setSelectedPoints } from "../actions/selectPointActions";
 
 export const useDragPoint = (pointId: string, index: number) => {
   const point = useSelector((state: AppState) =>
-    getPointById(pointId, state.points)
+    getPointIfReference(pointId, state)
   );
 
   //Ensure that the dragged point is the first item in the array of

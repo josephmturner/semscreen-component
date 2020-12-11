@@ -21,6 +21,8 @@
 import { AuthorsState } from "../reducers/authors";
 import { MessagesState } from "../reducers/messages";
 import { PointsState } from "../reducers/points";
+import { DraftMessagesState } from "../reducers/draftMessages";
+import { DraftPointsState } from "../reducers/draftPoints";
 
 export const authors: AuthorsState = {
   byId: {
@@ -37,6 +39,24 @@ export const points: PointsState = {
       shape: "topics",
       pointDate: new Date(),
     },
+    pointId3: {
+      content:
+        "Create a frontend which can ride on federated and distributed backends.",
+      _id: "pointId3",
+      shape: "actions",
+      pointDate: new Date(),
+    },
+    pointId8: {
+      content: "Public-key cryptography makes distributed networking possible",
+      _id: "pointId8",
+      shape: "thoughts",
+      pointDate: new Date(),
+    },
+  },
+};
+
+export const draftPoints: DraftPointsState = {
+  byId: {
     REFERENCE_TO_pointId1_0: {
       _id: "REFERENCE_TO_pointId1_0",
       referenceHistory: [
@@ -61,13 +81,6 @@ export const points: PointsState = {
       content:
         "Build an open, collaborative, compassionate system to share information and make decisions",
       _id: "pointId2",
-      shape: "actions",
-      pointDate: new Date(),
-    },
-    pointId3: {
-      content:
-        "Create a frontend which can ride on federated and distributed backends.",
-      _id: "pointId3",
       shape: "actions",
       pointDate: new Date(),
     },
@@ -107,12 +120,6 @@ export const points: PointsState = {
       shape: "actions",
       pointDate: new Date(),
     },
-    pointId8: {
-      content: "Public-key cryptography makes distributed networking possible",
-      _id: "pointId8",
-      shape: "thoughts",
-      pointDate: new Date(),
-    },
     pointId9: {
       content: "Excited!",
       _id: "pointId9",
@@ -132,6 +139,19 @@ export const points: PointsState = {
       pointDate: new Date(),
     },
   },
+  allIds: [
+    "REFERENCE_TO_pointId1_0",
+    "REFERENCE_TO_pointId1_1",
+    "pointId2",
+    "REFERENCE_TO_pointId3",
+    "pointId4",
+    "pointId5",
+    "pointId6",
+    "pointId7",
+    "pointId9",
+    "pointId10",
+    "pointId11",
+  ],
 };
 
 export const messages: MessagesState = {
@@ -152,6 +172,12 @@ export const messages: MessagesState = {
       main: "pointId3",
       createdAt: new Date(),
     },
+  },
+  allIds: ["message0"],
+};
+
+export const draftMessages: DraftMessagesState = {
+  byId: {
     message1: {
       _id: "message1",
       author: "author1",
@@ -191,6 +217,5 @@ export const messages: MessagesState = {
       createdAt: new Date(),
     },
   },
-  allMessages: ["message0", "message1", "message2"],
-  draftIds: ["message1", "message2"],
+  allIds: ["message1", "message2"],
 };

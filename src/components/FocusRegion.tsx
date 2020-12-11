@@ -21,13 +21,14 @@ import FocusPoint from "./FocusPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
+import { getMessageById } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { pointCreate, PointCreateParams } from "../actions/pointsActions";
-import { setFocus, SetFocusParams } from "../actions/messagesActions";
+import { pointCreate, PointCreateParams } from "../actions/draftPointsActions";
+import { setFocus, SetFocusParams } from "../actions/draftMessagesActions";
 import {
   setExpandedRegion,
   ExpandedRegionParams,
@@ -50,7 +51,7 @@ interface AllProps extends OwnProps {
   pointId: string | undefined;
   selectedPoints: string[];
   isMainPoint: boolean;
-  isPersisted: boolean;
+  isDraft: boolean;
   isExpanded: boolean;
   setFocus: (params: SetFocusParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
@@ -86,7 +87,7 @@ const FocusRegion = (props: AllProps) => {
       }
     },
     drop: () => {
-      if (!props.isPersisted) {
+      if (props.isDraft) {
         props.setFocus({});
       }
     },
@@ -144,8 +145,10 @@ const FocusRegion = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-  const currentMessage =
-    state.messages.byId[state.semanticScreen.currentMessage];
+  const currentMessage = getMessageById(
+    state.semanticScreen.currentMessage,
+    state
+  );
   const isMainPoint = currentMessage.focus === currentMessage.main;
 
   const isExpanded = state.expandedRegion.region === "focus";
@@ -155,7 +158,7 @@ const mapStateToProps = (state: AppState) => {
     pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,
-    isPersisted: !state.messages.draftIds.includes(
+    isDraft: state.draftMessages.allIds.includes(
       state.semanticScreen.currentMessage
     ),
     isExpanded,

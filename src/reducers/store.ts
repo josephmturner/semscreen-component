@@ -27,12 +27,22 @@ import {
   CursorPositionState,
 } from "./cursorPosition";
 import { initialAuthorsState, authorsReducer, AuthorsState } from "./authors";
-import { initialPointsState, pointsReducer, PointsState } from "./points";
 import {
   initialMessagesState,
   messagesReducer,
   MessagesState,
 } from "./messages";
+import { initialPointsState, pointsReducer, PointsState } from "./points";
+import {
+  initialDraftMessagesState,
+  draftMessagesReducer,
+  DraftMessagesState,
+} from "./draftMessages";
+import {
+  initialDraftPointsState,
+  draftPointsReducer,
+  DraftPointsState,
+} from "./draftPoints";
 import {
   initialExpandedRegionState,
   expandedRegionReducer,
@@ -52,11 +62,19 @@ import {
 } from "./semanticScreen";
 import { initialDBState, DBState, dbReducer } from "./db";
 
-import { authors, messages, points } from "../constants/initialState";
+import {
+  authors,
+  messages,
+  points,
+  draftMessages,
+  draftPoints,
+} from "../constants/initialState";
 
 let populatedInitialAuthorsState: AuthorsState | null = null;
 let populatedInitialMessagesState: MessagesState | null = null;
 let populatedInitialPointsState: PointsState | null = null;
+let populatedInitialDraftMessagesState: DraftMessagesState | null = null;
+let populatedInitialDraftPointsState: DraftPointsState | null = null;
 let populatedInitialSemanticScreenState: SemanticScreenState | null = null;
 
 // Set this to true if you want test data (you must delete localStorage)
@@ -65,6 +83,8 @@ if (populateWithTestData) {
   populatedInitialAuthorsState = authors;
   populatedInitialMessagesState = messages;
   populatedInitialPointsState = points;
+  populatedInitialDraftMessagesState = draftMessages;
+  populatedInitialDraftPointsState = draftPoints;
 }
 
 const rawPersistedState = localStorage.getItem("draftMessages");
@@ -73,6 +93,8 @@ if (persistedState) {
   populatedInitialAuthorsState = persistedState.authors;
   populatedInitialMessagesState = persistedState.messages;
   populatedInitialPointsState = persistedState.points;
+  populatedInitialDraftMessagesState = persistedState.draftMessages;
+  populatedInitialDraftPointsState = persistedState.draftPoints;
   populatedInitialSemanticScreenState = persistedState.semanticScreen;
 }
 
@@ -80,8 +102,10 @@ export interface AppState {
   db: DBState;
   cursorPosition: CursorPositionState;
   authors: AuthorsState;
-  points: PointsState;
   messages: MessagesState;
+  points: PointsState;
+  draftMessages: DraftMessagesState;
+  draftPoints: DraftPointsState;
   expandedRegion: ExpandedRegionState;
   selectedPoints: SelectedPointsState;
   panels: PanelsState;
@@ -94,8 +118,11 @@ function createAppStore() {
     db: initialDBState,
     cursorPosition: initialCursorPositionState,
     authors: populatedInitialAuthorsState ?? initialAuthorsState,
-    points: populatedInitialPointsState ?? initialPointsState,
     messages: populatedInitialMessagesState ?? initialMessagesState,
+    points: populatedInitialPointsState ?? initialPointsState,
+    draftMessages:
+      populatedInitialDraftMessagesState ?? initialDraftMessagesState,
+    draftPoints: populatedInitialDraftPointsState ?? initialDraftPointsState,
     expandedRegion: initialExpandedRegionState,
     selectedPoints: initialSelectedPointsState,
     panels: initialPanelsState,
@@ -113,8 +140,10 @@ function createAppStore() {
         state
       ),
       authors: authorsReducer(state.authors, action, state),
-      points: pointsReducer(state.points, action, state),
       messages: messagesReducer(state.messages, action, state),
+      points: pointsReducer(state.points, action, state),
+      draftMessages: draftMessagesReducer(state.draftMessages, action, state),
+      draftPoints: draftPointsReducer(state.draftPoints, action, state),
       expandedRegion: expandedRegionReducer(
         state.expandedRegion,
         action,

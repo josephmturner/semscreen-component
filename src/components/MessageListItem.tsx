@@ -25,7 +25,11 @@ import {
   PointHoverOptionsType,
   PointReferenceI,
 } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/pointUtils";
+import {
+  getPointIfReference,
+  getMessageById,
+  getReferenceData,
+} from "../dataModels/pointUtils";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
 import Banner from "./Banner";
@@ -39,7 +43,7 @@ import {
 import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
-} from "../actions/pointsActions";
+} from "../actions/draftPointsActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
@@ -159,14 +163,14 @@ const MessageWrapper = styled.div<{
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const author =
-    state.authors.byId[state.messages.byId[ownProps.messageId].author];
-  const mainPointId = state.messages.byId[ownProps.messageId].main;
+  const message = getMessageById(ownProps.messageId, state);
+  const author = state.authors.byId[message.author];
+  const mainPointId = message.main;
 
   // Type assertion is okay since we only render MessageListItem
   // if the message has a main point
-  const mainPoint = getPointById(mainPointId as string, state.points);
-  const referenceData = getReferenceData(mainPointId as string, state.points);
+  const mainPoint = getPointIfReference(mainPointId as string, state);
+  const referenceData = getReferenceData(mainPointId as string, state);
 
   let isDragHovered = false;
   if (

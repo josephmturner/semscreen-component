@@ -21,11 +21,11 @@ import produce from "immer";
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
-import { _PointsMoveToMessageParams } from "../actions/pointsActions";
+import { _PointsMoveToMessageParams } from "../actions/draftPointsActions";
 import {
   _MessageCreateParams,
   _MessageDeleteParams,
-} from "../actions/messagesActions";
+} from "../actions/draftMessagesActions";
 import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
@@ -104,7 +104,7 @@ function handleMessageDelete(
   }
 
   return produce(state, (draft) => {
-    const remainingDraftMessages = appState.messages.draftIds.filter(
+    const remainingDraftMessages = appState.draftMessages.allIds.filter(
       (id) => id !== action.params.messageId
     );
     // Switch to the next message in the list of drafts...

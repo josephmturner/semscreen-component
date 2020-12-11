@@ -16,10 +16,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { getPointById } from "../dataModels/pointUtils";
+import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
-import { CombinePointsParams } from "../actions/pointsActions";
+import { CombinePointsParams } from "../actions/draftPointsActions";
 
 import { AppState } from "./store";
 
@@ -70,10 +70,12 @@ function handleSetCursorPosition(
   let newState = state;
 
   const pointId = action.params.pointId;
-  const point = getPointById(pointId, appState.points);
+  const point = getPointIfReference(pointId, appState);
   const shape = point.shape;
-  const currentMessage =
-    appState.messages.byId[appState.semanticScreen.currentMessage];
+  const currentMessage = getMessageById(
+    appState.semanticScreen.currentMessage,
+    appState
+  );
   const pointIds = currentMessage.shapes[shape];
   const index = pointIds.findIndex((id) => id === pointId);
   const prevPointId = pointIds[index - 1];
@@ -90,7 +92,7 @@ function handleSetCursorPosition(
     newState = {
       details: {
         pointId: prevPointId,
-        contentIndex: getPointById(prevPointId, appState.points).content.length,
+        contentIndex: getPointIfReference(prevPointId, appState).content.length,
       },
     };
   } else if (action.params.moveTo === "beginningOfNextPoint") {
@@ -126,9 +128,9 @@ function handleCombinePoints(
   );
 
   const currentMessage =
-    appState.messages.byId[appState.semanticScreen.currentMessage];
+    appState.draftMessages.byId[appState.semanticScreen.currentMessage];
   const prevPointId = currentMessage.shapes[action.params.shape][smallerIndex];
-  const prevPoint = getPointById(prevPointId, appState.points);
+  const prevPoint = getPointIfReference(prevPointId, appState);
 
   const newCursorPosition = {
     pointId:

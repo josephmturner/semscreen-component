@@ -33,7 +33,7 @@ export interface _MessageCreateParams extends MessageCreateParams {
 }
 
 function _shouldCopy(appState: AppState): boolean {
-  return !appState.messages.draftIds.includes(
+  return appState.messages.allIds.includes(
     appState.semanticScreen.currentMessage
   );
 }
@@ -44,7 +44,7 @@ export const messageCreate = (
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    //Create newReferencePoints if the current message is a persisted message
+    //Create newReferencePoints if the current message is a published message
     //Cut and paste draft points by leaving newReferencePoints undefined
     let newReferencePoints: PointReferenceI[] | undefined;
     if (_shouldCopy(appState) && appState.selectedPoints.pointIds[0]) {
@@ -86,7 +86,7 @@ export const messageDelete = (
 ): ThunkAction<void, AppState, unknown, Action<_MessageDeleteParams>> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
-    const remainingDraftMessages = appState.messages.draftIds.filter(
+    const remainingDraftMessages = appState.draftMessages.allIds.filter(
       (id) => id !== params.messageId
     );
 

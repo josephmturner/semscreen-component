@@ -82,13 +82,23 @@ export type ShapesI = {
   [shape in PointShape]: string[];
 };
 
-export interface MessageI {
+export interface DraftMessageI {
   _id: string;
   revisionOf?: string;
   author: string;
   shapes: ShapesI;
   focus?: string;
   main?: string;
+  createdAt: Date;
+}
+
+export interface MessageI {
+  _id: string;
+  revisionOf?: string;
+  author: string;
+  shapes: ShapesI;
+  focus: string;
+  main: string;
   createdAt: Date;
 }
 

@@ -26,7 +26,10 @@ import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
-import { messageCreate, MessageCreateParams } from "../actions/messagesActions";
+import {
+  messageCreate,
+  MessageCreateParams,
+} from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
