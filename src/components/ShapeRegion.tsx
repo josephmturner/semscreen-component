@@ -126,7 +126,6 @@ const ShapeRegion = (props: AllProps) => {
   const createEmptyPoint = () => {
     props.pointCreate({
       point: {
-        author: props.author,
         content: "",
         shape,
       },

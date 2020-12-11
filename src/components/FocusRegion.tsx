@@ -97,7 +97,6 @@ const FocusRegion = (props: AllProps) => {
     //global author (not the author of the current message)
     props.pointCreate({
       point: {
-        author: props.author,
         content: "",
         shape,
       },

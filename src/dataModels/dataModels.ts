@@ -56,7 +56,6 @@ export interface AuthorI {
 //make PointI extend PointNoIdI, if possible
 // TODO: move this inside PointCreateParams, and then delete
 export interface PointNoIdI {
-  author: AuthorI;
   content: string;
   shape: PointShape;
 }
