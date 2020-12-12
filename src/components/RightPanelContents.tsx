@@ -161,8 +161,7 @@ const mapStateToProps = (state: AppState) => {
   );
 
   return {
-    //TODO: Replace with current userId
-    authorId: state.authors.byId["author1"]._id,
+    authorId: state.userIdentities.currentIdentity,
     results,
   };
 };

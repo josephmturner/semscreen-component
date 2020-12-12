@@ -38,6 +38,7 @@ const AppWithPersistence = () => {
       draftMessages: reduxState.draftMessages,
       draftPoints: reduxState.draftPoints,
       semanticScreen: reduxState.semanticScreen,
+      userIdentities: reduxState.userIdentities,
     };
 
     localStorage.setItem("draftMessages", JSON.stringify(draftMessages));

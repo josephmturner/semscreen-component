@@ -8,6 +8,10 @@ import {
 } from "./dataModels";
 import { AppState } from "../reducers/store";
 
+export function isUserIdentity(id: string, state: AppState) {
+  return state.userIdentities.allIds.includes(id);
+}
+
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
 }

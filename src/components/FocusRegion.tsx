@@ -21,7 +21,7 @@ import FocusPoint from "./FocusPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
-import { getMessageById } from "../dataModels/pointUtils";
+import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
@@ -94,8 +94,6 @@ const FocusRegion = (props: AllProps) => {
   });
 
   const createEmptyFocus = (shape: PointShape) => {
-    //TODO: the author used to create a point should instead be some
-    //global author (not the author of the current message)
     props.pointCreate({
       point: {
         content: "",
@@ -153,8 +151,12 @@ const mapStateToProps = (state: AppState) => {
 
   const isExpanded = state.expandedRegion.region === "focus";
 
+  const author = isUserIdentity(currentMessage.author, state)
+    ? state.userIdentities.byId[currentMessage.author]
+    : state.authors.byId[currentMessage.author];
+
   return {
-    author: state.authors.byId[currentMessage.author],
+    author,
     pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,

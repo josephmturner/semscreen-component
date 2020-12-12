@@ -17,38 +17,31 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { AuthorI } from "../dataModels/dataModels";
-import { Action, Actions } from "../actions/constants";
-import { SetAuthorsParams } from "../actions/authorsActions";
+import randomColor from "randomcolor";
+import { Action } from "../actions/constants";
 
 import { AppState } from "./store";
 
-export interface AuthorsState {
+export interface UserIdentitiesState {
   byId: {
     [_id: string]: AuthorI;
   };
+  allIds: string[];
+  currentIdentity: string;
 }
 
-export const initialAuthorsState: AuthorsState = {
-  byId: {},
+export const initialUserIdentitiesState: UserIdentitiesState = {
+  byId: {
+    author1: { _id: "author1", name: "anonymous", color: randomColor() },
+  },
+  allIds: ["author1"],
+  currentIdentity: "author1",
 };
 
-export const authorsReducer = (
-  state = initialAuthorsState,
+export const userIdentitiesReducer = (
+  state = initialUserIdentitiesState,
   action: Action,
   appState: AppState
-): AuthorsState => {
-  let newState = state;
-  switch (action.type) {
-    case Actions.setAuthors:
-      newState = handleSetAuthors(state, action as Action<SetAuthorsParams>);
-      break;
-  }
-  return newState;
-};
-
-function handleSetAuthors(
-  state: AuthorsState,
-  action: Action<SetAuthorsParams>
-): AuthorsState {
+): UserIdentitiesState => {
   return state;
-}
+};

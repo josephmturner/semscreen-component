@@ -19,7 +19,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { blackOrWhite } from "../dataModels/pointUtils";
+import { blackOrWhite, isUserIdentity } from "../dataModels/pointUtils";
 import { AuthorI } from "../dataModels/dataModels";
 
 import { connect } from "react-redux";
@@ -111,9 +111,14 @@ const BannerView = styled.div<BannerViewProps>`
   }
 `;
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps) => ({
-  author: state.authors.byId[ownProps.authorId],
-});
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const author = isUserIdentity(ownProps.authorId, state)
+    ? state.userIdentities.byId[ownProps.authorId]
+    : state.authors.byId[ownProps.authorId];
+  return {
+    author,
+  };
+};
 
 const mapActionsToProps = {};
 

@@ -22,7 +22,7 @@ import NewPointButton from "./NewPointButton";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
 import { AuthorI, PointShape } from "../dataModels/dataModels";
-import { getMessageById } from "../dataModels/pointUtils";
+import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import styled from "styled-components";
@@ -223,8 +223,12 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
   const isExpanded = state.expandedRegion.region === ownProps.shape;
 
+  const author = isUserIdentity(currentMessage.author, state)
+    ? state.userIdentities.byId[currentMessage.author]
+    : state.authors.byId[currentMessage.author];
+
   return {
-    author: state.authors.byId[currentMessage.author],
+    author,
     pointIds: currentMessage.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,

@@ -26,6 +26,11 @@ import {
   cursorPositionReducer,
   CursorPositionState,
 } from "./cursorPosition";
+import {
+  initialUserIdentitiesState,
+  userIdentitiesReducer,
+  UserIdentitiesState,
+} from "./userIdentities";
 import { initialAuthorsState, authorsReducer, AuthorsState } from "./authors";
 import {
   initialMessagesState,
@@ -63,6 +68,7 @@ import {
 import { initialDBState, DBState, dbReducer } from "./db";
 
 import {
+  userIdentites,
   authors,
   messages,
   points,
@@ -70,6 +76,7 @@ import {
   draftPoints,
 } from "../constants/initialState";
 
+let populatedInitialUserIdentitiesState: UserIdentitiesState | null = null;
 let populatedInitialAuthorsState: AuthorsState | null = null;
 let populatedInitialMessagesState: MessagesState | null = null;
 let populatedInitialPointsState: PointsState | null = null;
@@ -80,6 +87,7 @@ let populatedInitialSemanticScreenState: SemanticScreenState | null = null;
 // Set this to true if you want test data (you must delete localStorage)
 const populateWithTestData = true;
 if (populateWithTestData) {
+  populatedInitialUserIdentitiesState = userIdentites;
   populatedInitialAuthorsState = authors;
   populatedInitialMessagesState = messages;
   populatedInitialPointsState = points;
@@ -90,6 +98,7 @@ if (populateWithTestData) {
 const rawPersistedState = localStorage.getItem("draftMessages");
 const persistedState = rawPersistedState ? JSON.parse(rawPersistedState) : null;
 if (persistedState) {
+  populatedInitialUserIdentitiesState = persistedState.userIdentities;
   populatedInitialAuthorsState = persistedState.authors;
   populatedInitialMessagesState = persistedState.messages;
   populatedInitialPointsState = persistedState.points;
@@ -100,6 +109,7 @@ if (persistedState) {
 
 export interface AppState {
   db: DBState;
+  userIdentities: UserIdentitiesState;
   cursorPosition: CursorPositionState;
   authors: AuthorsState;
   messages: MessagesState;
@@ -116,6 +126,8 @@ export interface AppState {
 function createAppStore() {
   const initialAppState: AppState = {
     db: initialDBState,
+    userIdentities:
+      populatedInitialUserIdentitiesState ?? initialUserIdentitiesState,
     cursorPosition: initialCursorPositionState,
     authors: populatedInitialAuthorsState ?? initialAuthorsState,
     messages: populatedInitialMessagesState ?? initialMessagesState,
@@ -134,6 +146,11 @@ function createAppStore() {
   const appReducer = (state = initialAppState, action: Action): AppState => {
     let newState: AppState = {
       db: dbReducer(state.db, action, state),
+      userIdentities: userIdentitiesReducer(
+        state.userIdentities,
+        action,
+        state
+      ),
       cursorPosition: cursorPositionReducer(
         state.cursorPosition,
         action,
