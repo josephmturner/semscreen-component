@@ -19,7 +19,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { getPointById, getReferenceData } from "../dataModels/pointUtils";
+import {
+  getPointIfReference,
+  getMessageById,
+  getReferenceData,
+} from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -46,8 +50,11 @@ import {
   PointUpdateParams,
   pointsDelete,
   PointsDeleteParams,
-} from "../actions/pointsActions";
-import { setMainPoint, SetMainPointParams } from "../actions/messagesActions";
+} from "../actions/draftPointsActions";
+import {
+  setMainPoint,
+  SetMainPointParams,
+} from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 import {
   setSelectedPoints,
@@ -73,7 +80,7 @@ interface AllProps extends OwnProps {
   referenceData: PointReferenceI | null;
   isMainPoint: boolean;
   cursorPositionIndex?: number;
-  isPersisted: boolean;
+  isDraft: boolean;
   isDragHovered: boolean;
   splitIntoTwoPoints: (params: SplitIntoTwoPointsParams) => void;
   combinePoints: (params: CombinePointsParams) => void;
@@ -132,7 +139,7 @@ const RegionPoint = (props: AllProps) => {
       });
     },
     drop: () => {
-      if (!props.isPersisted) {
+      if (props.isDraft) {
         props.pointsMoveWithinMessage({});
       }
     },
@@ -170,7 +177,7 @@ const RegionPoint = (props: AllProps) => {
   //handleChange?
   //TODO: place this function inside a useCallback hook?
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (props.isPersisted) {
+    if (!props.isDraft) {
       return;
     } else {
       if (e.key === "Enter") {
@@ -288,7 +295,7 @@ const RegionPoint = (props: AllProps) => {
       isSelected={props.isSelected}
       isHovered={isHovered}
       setIsHovered={setIsHovered}
-      readOnlyOverride={props.isPersisted}
+      readOnlyOverride={!props.isDraft}
       darkMode={props.darkMode}
       handleChange={handleChange}
       handleKeyDown={handleKeyDown}
@@ -297,7 +304,7 @@ const RegionPoint = (props: AllProps) => {
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
     >
-      {isHovered && !props.isPersisted && (
+      {isHovered && props.isDraft && (
         <PointHoverOptions
           type="point"
           id={props.pointId}
@@ -310,11 +317,13 @@ const RegionPoint = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const referenceData = getReferenceData(ownProps.pointId, state.points);
-  const currentMessage =
-    state.messages.byId[state.semanticScreen.currentMessage];
+  const referenceData = getReferenceData(ownProps.pointId, state);
+  const currentMessage = getMessageById(
+    state.semanticScreen.currentMessage,
+    state
+  );
 
-  const point = getPointById(ownProps.pointId, state.points);
+  const point = getPointIfReference(ownProps.pointId, state);
 
   let isDragHovered = false;
   if (
@@ -333,7 +342,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
-    isPersisted: !state.messages.draftIds.includes(
+    isDraft: state.draftMessages.allIds.includes(
       state.semanticScreen.currentMessage
     ),
     isDragHovered,

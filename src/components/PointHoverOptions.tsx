@@ -25,7 +25,6 @@ import {
   getReferenceData,
   getOriginalMessageId,
   getOriginalPointId,
-  isPoint,
 } from "../dataModels/pointUtils";
 import {
   PointHoverOptionsType,
@@ -34,8 +33,11 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../reducers/store";
-import { pointsMoveToMessage, pointsDelete } from "../actions/pointsActions";
-import { messageDelete, setMainPoint } from "../actions/messagesActions";
+import {
+  pointsMoveToMessage,
+  pointsDelete,
+} from "../actions/draftPointsActions";
+import { messageDelete, setMainPoint } from "../actions/draftMessagesActions";
 import { setCurrentMessage } from "../actions/semanticScreenActions";
 
 interface Props {
@@ -66,11 +68,11 @@ const PointHoverOptions = (props: Props) => {
   );
 
   const currentMessageIsDraft = useSelector((state: AppState) =>
-    state.messages.draftIds.includes(state.semanticScreen.currentMessage)
+    state.draftMessages.allIds.includes(state.semanticScreen.currentMessage)
   );
 
   const referenceData = useSelector((state: AppState) => {
-    return isPoint(props.id, state) && getReferenceData(props.id, state.points);
+    return props.type === "point" && getReferenceData(props.id, state);
   });
 
   // Type assertion is okay since ViewOriginalMessageButton only

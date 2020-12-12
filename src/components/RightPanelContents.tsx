@@ -156,7 +156,7 @@ const ResultsContainer = styled.div`
 
 const mapStateToProps = (state: AppState) => {
   //Replace with results from ushin-db
-  const results = state.messages.allMessages.filter(
+  const results = state.messages.allIds.filter(
     (id) => state.messages.byId[id].main
   );
 

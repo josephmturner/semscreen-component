@@ -28,12 +28,12 @@ import {
   CombinePointsParams,
   PointsDeleteParams,
   _PointsMoveToMessageParams,
-} from "../actions/pointsActions";
+} from "../actions/draftPointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import {
   _MessageCreateParams,
   _MessageDeleteParams,
-} from "../actions/messagesActions";
+} from "../actions/draftMessagesActions";
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -138,7 +138,7 @@ function handleCombinePoints(
   appState: AppState
 ): SelectedPointsState {
   const currentMessage =
-    appState.messages.byId[appState.semanticScreen.currentMessage];
+    appState.draftMessages.byId[appState.semanticScreen.currentMessage];
   const deletedPointId =
     currentMessage.shapes[action.params.shape][action.params.deleteIndex];
   return {

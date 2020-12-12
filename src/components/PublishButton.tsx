@@ -20,8 +20,8 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { AppState } from "../reducers/store";
-import { MessageI } from "../dataModels/dataModels";
-import { saveMessage, PointMapping } from '../actions/dbActions'
+import { DraftMessageI, MessageI } from "../dataModels/dataModels";
+import { saveMessage, PointMapping } from "../actions/dbActions";
 
 import { ButtonSvg } from "./PointHoverOptions";
 
@@ -31,25 +31,27 @@ interface OwnProps {
 }
 
 interface AllProps extends OwnProps {
-  message: MessageI;
+  message: DraftMessageI;
   points: PointMapping;
   saveMessage: (message: MessageI, points: PointMapping) => void;
 }
 
 const PublishButton = (props: AllProps) => {
   const handleClick = () => {
-    const {points, message,saveMessage} = props
+    const { points, message, saveMessage } = props;
     if (!message.main) {
       window.alert(
         "Before publishing, please add a main point to your message"
       );
-    } else if (!props.message.focus) {
+    } else if (!message.focus) {
       window.alert(
         "Before publishing, please add a focus point to your message"
       );
     } else {
-      console.log('Saving', {message, points});
-      saveMessage(message, points)
+      console.log("Saving", { message, points });
+      // Type assertion is okay here since main and focus points must
+      // exist to run this code
+      saveMessage(message as MessageI, points);
     }
   };
 
@@ -66,16 +68,16 @@ const PublishButton = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const message = state.messages.byId[ownProps.messageId];
-  const points = state.points.byId
+  const message = state.draftMessages.byId[ownProps.messageId];
+  const points = state.draftPoints.byId;
   return {
     message,
-    points
+    points,
   };
 };
 
 const mapActionsToProps = {
-  saveMessage
+  saveMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(PublishButton);

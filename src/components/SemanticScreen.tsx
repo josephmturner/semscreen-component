@@ -30,12 +30,12 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import { RegionI } from "../dataModels/dataModels";
+import { getMessageById } from "../dataModels/pointUtils";
 
 interface Props {
   authorId: string;
   darkMode: boolean;
   expandedRegion: string;
-  isPersisted: boolean;
 }
 
 const SemanticScreen = (props: Props) => {
@@ -101,11 +101,8 @@ const SemanticScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-  authorId: state.messages.byId[state.semanticScreen.currentMessage].author,
+  authorId: getMessageById(state.semanticScreen.currentMessage, state).author,
   expandedRegion: state.expandedRegion.region,
-  isPersisted: !state.messages.draftIds.includes(
-    state.semanticScreen.currentMessage
-  ),
 });
 
 const mapDispatchToProps = {};

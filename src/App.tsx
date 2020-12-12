@@ -26,8 +26,8 @@ import { USHINBase } from "ushin-db";
 import { AppState } from "./reducers/store";
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
-import { DBState } from './reducers/db';
-import {loadDatabase} from "./actions/dbActions";
+import { DBState } from "./reducers/db";
+import { loadDatabase } from "./actions/dbActions";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
@@ -49,7 +49,7 @@ const App = (props: {
   };
 
   useEffect(() => {
-    if(props?.db?.loading) props.loadDatabase()
+    if (props?.db?.loading) props.loadDatabase();
   });
 
   return (
@@ -148,13 +148,13 @@ const RightPanel = styled.div`
 const mapStateToProps = (state: AppState) => {
   return {
     panels: state.panels,
-    db: state.db
+    db: state.db,
   };
 };
 
 const mapActionsToProps = {
   togglePanel,
-  loadDatabase
+  loadDatabase,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(App);

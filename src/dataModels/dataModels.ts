@@ -56,7 +56,6 @@ export interface AuthorI {
 //make PointI extend PointNoIdI, if possible
 // TODO: move this inside PointCreateParams, and then delete
 export interface PointNoIdI {
-  author: AuthorI;
   content: string;
   shape: PointShape;
 }
@@ -83,13 +82,23 @@ export type ShapesI = {
   [shape in PointShape]: string[];
 };
 
-export interface MessageI {
+export interface DraftMessageI {
   _id: string;
   revisionOf?: string;
   author: string;
   shapes: ShapesI;
   focus?: string;
   main?: string;
+  createdAt: Date;
+}
+
+export interface MessageI {
+  _id: string;
+  revisionOf?: string;
+  author: string;
+  shapes: ShapesI;
+  focus: string;
+  main: string;
   createdAt: Date;
 }
 

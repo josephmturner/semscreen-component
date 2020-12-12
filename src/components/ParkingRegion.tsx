@@ -56,8 +56,8 @@ const InnerContainer = styled.div`
 
 const mapStateToProps = (state: AppState) => {
   // Only display messages which have main points
-  const displayMessages = state.messages.draftIds.filter(
-    (id) => state.messages.byId[id].main
+  const displayMessages = state.draftMessages.allIds.filter(
+    (id) => state.draftMessages.byId[id].main
   );
   return {
     displayMessages,

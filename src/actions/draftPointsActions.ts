@@ -27,7 +27,7 @@ import {
   PointShape,
   PointNoIdI,
 } from "../dataModels/dataModels";
-import { createReferenceTo } from "../dataModels/pointUtils";
+import { createReferenceTo, getMessageById } from "../dataModels/pointUtils";
 
 export interface PointCreateParams {
   point: PointNoIdI;
@@ -85,9 +85,9 @@ function _shouldCopy(
   }
 
   const currentMessageId = appState.semanticScreen.currentMessage;
-  const message = appState.messages.byId[currentMessageId];
+  const message = getMessageById(currentMessageId, appState);
 
-  if (appState.messages.draftIds.includes(message._id)) {
+  if (appState.draftMessages.allIds.includes(message._id)) {
     return false;
   }
 
