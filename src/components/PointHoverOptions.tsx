@@ -25,7 +25,6 @@ import {
   getReferenceData,
   getOriginalMessageId,
   getOriginalPointId,
-  isPoint,
 } from "../dataModels/pointUtils";
 import {
   PointHoverOptionsType,
@@ -73,7 +72,7 @@ const PointHoverOptions = (props: Props) => {
   );
 
   const referenceData = useSelector((state: AppState) => {
-    return isPoint(props.id, state) && getReferenceData(props.id, state);
+    return props.type === "point" && getReferenceData(props.id, state);
   });
 
   // Type assertion is okay since ViewOriginalMessageButton only

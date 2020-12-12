@@ -8,13 +8,6 @@ import {
 } from "./dataModels";
 import { AppState } from "../reducers/store";
 
-export function isPoint(id: string, state: AppState): boolean {
-  return (
-    Object.keys(state.points.byId).includes(id) ||
-    Object.keys(state.draftPoints.byId).includes(id)
-  );
-}
-
 export function isReference(p: PointI | PointReferenceI): p is PointReferenceI {
   return (p as PointReferenceI).referenceHistory !== undefined;
 }
