@@ -36,8 +36,7 @@ export const Actions = {
   pointsMoveWithinMessage: "pointsMoveWithinMessage",
   pointsMoveToMessage: "pointsMoveToMessage",
   pointsDelete: "pointsDelete",
-  setFocus: "setFocus",
-  setMainPoint: "setMainPoint",
+  setMain: "setMain",
   combinePoints: "combinePoints",
   splitIntoTwoPoints: "splitIntoTwoPoints",
 

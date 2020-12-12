@@ -8,6 +8,11 @@ import {
 } from "./dataModels";
 import { AppState } from "../reducers/store";
 
+export function hasPoints(messageId: string, state: AppState) {
+  const message = getMessageById(messageId, state);
+  return Object.values(message.shapes).flat()[0] || message.main;
+}
+
 export function isUserIdentity(id: string, state: AppState) {
   return state.userIdentities.allIds.includes(id);
 }
@@ -111,7 +116,7 @@ export const containsPoints = (
   const message = getMessageById(messageId, appState);
   return (
     Object.values(message.shapes).flat().length !== 0 ||
-    message.focus !== undefined
+    message.main !== undefined
   );
 };
 

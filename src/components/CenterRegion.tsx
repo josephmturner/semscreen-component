@@ -17,7 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useState } from "react";
-import FocusPoint from "./FocusPoint";
+import MainPoint from "./MainPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { PointShape, RegionI } from "../dataModels/dataModels";
@@ -28,7 +28,7 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import { pointCreate, PointCreateParams } from "../actions/draftPointsActions";
-import { setFocus, SetFocusParams } from "../actions/draftMessagesActions";
+import { setMain, SetMainParams } from "../actions/draftMessagesActions";
 import {
   setExpandedRegion,
   ExpandedRegionParams,
@@ -49,10 +49,9 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   pointId: string | undefined;
   selectedPoints: string[];
-  isMainPoint: boolean;
   isDraft: boolean;
   isExpanded: boolean;
-  setFocus: (params: SetFocusParams) => void;
+  setMain: (params: SetMainParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   pointCreate: (params: PointCreateParams) => void;
   togglePoint: (params: TogglePointParams) => void;
@@ -60,9 +59,9 @@ interface AllProps extends OwnProps {
   hoverOver: (params: HoverOverParams) => void;
 }
 
-//TODO: don't pass region to FocusRegion, since its only ever the
-//Focus region
-const FocusRegion = (props: AllProps) => {
+//TODO: don't pass region to CenterRegion, since its only ever the
+//Center region
+const CenterRegion = (props: AllProps) => {
   const { region, isExpanded, pointId } = props;
 
   const [isHovered, setIsHovered] = useState(false);
@@ -75,31 +74,31 @@ const FocusRegion = (props: AllProps) => {
       if (!isExpanded) {
         props.setExpandedRegion({ region });
       }
-      if (item.index !== 0 || item.region !== "focus") {
+      if (item.index !== 0 || item.region !== "center") {
         props.hoverOver({
           index: 0,
-          region: "focus",
+          region: "center",
         });
 
         item.index = 0;
-        item.region = "focus";
+        item.region = "center";
       }
     },
     drop: () => {
       if (props.isDraft) {
-        props.setFocus({});
+        props.setMain({});
       }
     },
   });
 
-  const createEmptyFocus = (shape: PointShape) => {
+  const createEmptyMain = (shape: PointShape) => {
     props.pointCreate({
       point: {
         content: "",
         shape,
       },
       index: 0,
-      focus: true,
+      main: true,
     });
   };
 
@@ -119,9 +118,8 @@ const FocusRegion = (props: AllProps) => {
         }}
       >
         {pointId && (
-          <FocusPoint
+          <MainPoint
             pointId={pointId}
-            isMainPoint={props.isMainPoint}
             isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(pointId)}
             isHovered={isHovered}
@@ -131,7 +129,7 @@ const FocusRegion = (props: AllProps) => {
         )}
         {!pointId && isExpanded && (
           <SevenShapes
-            onShapeClick={createEmptyFocus}
+            onShapeClick={createEmptyMain}
             darkMode={props.darkMode}
           />
         )}
@@ -145,14 +143,12 @@ const mapStateToProps = (state: AppState) => {
     state.semanticScreen.currentMessage,
     state
   );
-  const isMainPoint = currentMessage.focus === currentMessage.main;
 
-  const isExpanded = state.expandedRegion.region === "focus";
+  const isExpanded = state.expandedRegion.region === "center";
 
   return {
-    pointId: currentMessage.focus,
+    pointId: currentMessage.main,
     selectedPoints: state.selectedPoints.pointIds,
-    isMainPoint,
     isDraft: state.draftMessages.allIds.includes(
       state.semanticScreen.currentMessage
     ),
@@ -161,7 +157,7 @@ const mapStateToProps = (state: AppState) => {
 };
 
 const mapDispatchToProps = {
-  setFocus,
+  setMain,
   setExpandedRegion,
   pointCreate,
   togglePoint,
@@ -169,4 +165,4 @@ const mapDispatchToProps = {
   hoverOver,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(FocusRegion);
+export default connect(mapStateToProps, mapDispatchToProps)(CenterRegion);

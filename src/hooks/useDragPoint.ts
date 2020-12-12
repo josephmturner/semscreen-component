@@ -31,8 +31,8 @@ export const useDragPoint = (pointId: string, index: number) => {
   );
 
   //Ensure that the dragged point is the first item in the array of
-  //selectedPoints. When dropping points in the FocusRegion, the first item in the array of
-  //selectedPoints is chosen as the new focus.
+  //selectedPoints. When dropping points in the CenterRegion, the first item in the array of
+  //selectedPoints is chosen as the new main point.
   const newSelectedPointIds = useSelector((state: AppState) => {
     const selected = state.selectedPoints.pointIds.filter(
       (id) => id !== pointId
