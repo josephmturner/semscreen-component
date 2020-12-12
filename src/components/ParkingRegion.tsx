@@ -26,6 +26,8 @@ import { AppState } from "../reducers/store";
 import MessageListItem from "./MessageListItem";
 import NewMessageButton from "./NewMessageButton";
 
+import { hasPoints } from "../dataModels/pointUtils";
+
 const ParkingSpace = (props: {
   displayMessages: string[];
   darkMode?: boolean;
@@ -55,9 +57,8 @@ const InnerContainer = styled.div`
 `;
 
 const mapStateToProps = (state: AppState) => {
-  // Only display messages which have main points
-  const displayMessages = state.draftMessages.allIds.filter(
-    (id) => state.draftMessages.byId[id].main
+  const displayMessages = state.draftMessages.allIds.filter((id) =>
+    hasPoints(id, state)
   );
   return {
     displayMessages,

@@ -18,7 +18,7 @@
 */
 import styled from "styled-components";
 
-const StyledFocusRegion = styled.div`
+const StyledMeritsRegion = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;
@@ -27,4 +27,4 @@ const StyledFocusRegion = styled.div`
   align-items: center;
 `;
 
-export default StyledFocusRegion;
+export default StyledMeritsRegion;

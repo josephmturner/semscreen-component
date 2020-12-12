@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-//TODO: how to confirm that focus point exists in the array of points
+//TODO: how to confirm that main point exists in the array of points
 //contained in the semscreen?
 import { UserIdentitiesState } from "../reducers/userIdentities";
 import { AuthorsState } from "../reducers/authors";
@@ -172,11 +172,10 @@ export const messages: MessagesState = {
         thoughts: ["pointId8"],
         feelings: [],
         needs: [],
-        topics: [],
-        actions: ["pointId3"],
+        topics: ["pointId1"],
+        actions: [],
         people: [],
       },
-      focus: "pointId1",
       main: "pointId3",
       createdAt: new Date(),
     },
@@ -192,13 +191,12 @@ export const draftMessages: DraftMessagesState = {
       shapes: {
         facts: [],
         thoughts: [],
-        feelings: ["pointId9"],
+        feelings: [],
         needs: ["pointId10", "pointId11"],
-        topics: [],
+        topics: ["REFERENCE_TO_pointId1_0"],
         actions: [],
         people: [],
       },
-      focus: "REFERENCE_TO_pointId1_0",
       main: "pointId9",
       createdAt: new Date(),
     },
@@ -210,17 +208,10 @@ export const draftMessages: DraftMessagesState = {
         thoughts: [],
         feelings: [],
         needs: [],
-        topics: ["pointId6"],
-        actions: [
-          "pointId2",
-          "REFERENCE_TO_pointId3",
-          "pointId4",
-          "pointId7",
-          "pointId5",
-        ],
+        topics: ["REFERENCE_TO_pointId1_1", "pointId6"],
+        actions: ["pointId2", "pointId4", "pointId7", "pointId5"],
         people: [],
       },
-      focus: "REFERENCE_TO_pointId1_1",
       main: "REFERENCE_TO_pointId3",
       createdAt: new Date(),
     },

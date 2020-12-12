@@ -36,7 +36,7 @@ export const StyledDiv = styled.div<StyledPointProps>`
   //TODO: perhaps this width: 100% should be replaced with textarea
   //styles which allow it to grow along with its content?
   //The issue is that if we omit width: 100%, banner names can get cut
-  //off without expanding when the focus region expands
+  //off without expanding when the center region expands
   //width: 100%;
   margin: 1px 0;
 

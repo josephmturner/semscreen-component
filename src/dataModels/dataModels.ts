@@ -43,7 +43,7 @@ export function isPointShape(region: string): region is PointShape {
 
 export type PointShapeWithEmpty = PointShape | "";
 
-export type RegionI = PointShape | "merits" | "focus";
+export type RegionI = PointShape | "merits" | "center";
 
 export type RegionWithParkingI = RegionI | "parking";
 
@@ -87,7 +87,6 @@ export interface DraftMessageI {
   revisionOf?: string;
   author: string;
   shapes: ShapesI;
-  focus?: string;
   main?: string;
   createdAt: Date;
 }
@@ -97,7 +96,6 @@ export interface MessageI {
   revisionOf?: string;
   author: string;
   shapes: ShapesI;
-  focus: string;
   main: string;
   createdAt: Date;
 }
@@ -112,5 +110,4 @@ export type PointHoverOptionsType =
   | "draftMessage"
   | "persistedMessage";
 
-//TODO: rename setFocus case in appReducer
-//TODO: validate that focus points are contained in the points array
+//TODO: validate that main points are contained in the points array

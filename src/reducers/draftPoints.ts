@@ -316,8 +316,8 @@ function handleMessageDelete(
   const messageToDelete = appState.draftMessages.byId[action.params.messageId];
   let pointIdsToDelete = Object.values(messageToDelete.shapes).flat();
 
-  if (messageToDelete.focus !== undefined) {
-    pointIdsToDelete.push(messageToDelete.focus);
+  if (messageToDelete.main !== undefined) {
+    pointIdsToDelete.push(messageToDelete.main);
   }
 
   return produce(state, (draft) => {

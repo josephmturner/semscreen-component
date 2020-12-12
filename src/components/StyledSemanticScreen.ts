@@ -67,7 +67,7 @@ const StyledSemanticScreen = styled.div<Props>`
   `}
 
   ${({ expandedRegion }) =>
-    expandedRegion === "focus" &&
+    expandedRegion === "center" &&
     `
     grid-template-columns: var(--minimized-size) var(--expanded-size) var(--minimized-size);
     grid-template-rows: var(--minimized-size) var(--expanded-size) var(--minimized-size);

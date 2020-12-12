@@ -47,8 +47,7 @@ import {
 import {
   _MessageCreateParams,
   _MessageDeleteParams,
-  SetFocusParams,
-  SetMainPointParams,
+  SetMainParams,
 } from "../actions/draftMessagesActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 
@@ -128,17 +127,10 @@ export const draftMessagesReducer = (
         appState
       );
       break;
-    case Actions.setFocus:
-      newState = handleSetFocus(
+    case Actions.setMain:
+      newState = handleSetMain(
         state,
-        action as Action<SetFocusParams>,
-        appState
-      );
-      break;
-    case Actions.setMainPoint:
-      newState = handleSetMainPoint(
-        state,
-        action as Action<SetMainPointParams>,
+        action as Action<SetMainParams>,
         appState
       );
       break;
@@ -213,20 +205,9 @@ function handleMessageCreate(
     },
   };
 
-  newState = handlePointsMoveToMessage(newState, intermediateAction, {
+  return handlePointsMoveToMessage(newState, intermediateAction, {
     ...appState,
     draftMessages: newState,
-  });
-
-  return produce(newState, (draft) => {
-    if (newState.byId[action.params.newMessageId].main === undefined) {
-      // If main point is still undefined, we need to pick a main point.
-      const newMainPointId = action.params.newReferencePoints
-        ? action.params.newReferencePoints[0]._id
-        : appState.selectedPoints.pointIds[0];
-
-      draft.byId[action.params.newMessageId].main = newMainPointId;
-    }
   });
 }
 
@@ -259,8 +240,8 @@ function handlePointCreate(
 
   return produce(state, (draft) => {
     const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
-    if (action.params.focus) {
-      currentMessage.focus = action.params.newPointId;
+    if (action.params.main) {
+      currentMessage.main = action.params.newPointId;
     } else {
       currentMessage.shapes[shape].splice(
         action.params.index,
@@ -268,18 +249,10 @@ function handlePointCreate(
         action.params.newPointId
       );
     }
-    //Message.main should only be undefined if message has no points
-    if (!currentMessage.main) {
-      currentMessage.main = action.params.newPointId;
-    }
   });
 }
 
-function _deletePoints(
-  message: DraftMessageI,
-  pointIds: string[],
-  keepMain?: boolean
-) {
+function _deletePoints(message: DraftMessageI, pointIds: string[]) {
   //Delete pointIds from shapes arrays
   allPointShapes.forEach((shape) => {
     message.shapes[shape] = message.shapes[shape].filter(
@@ -287,18 +260,8 @@ function _deletePoints(
     );
   });
 
-  // Delete focus point if included in list of pointIds
-  message.focus && pointIds.includes(message.focus) && delete message.focus;
-
-  // Reset main if possible (unless keepMain === true)
-  if (message.main && pointIds.includes(message.main) && !keepMain) {
-    const pointInShapes = Object.values(message.shapes).flat()[0];
-    if (pointInShapes) {
-      message.main = pointInShapes;
-    } else {
-      message.main = message.focus;
-    }
-  }
+  // Delete main point if included in list of pointIds
+  message.main && pointIds.includes(message.main) && delete message.main;
 }
 
 function handlePointsMoveToMessage(
@@ -337,7 +300,7 @@ function handlePointsMoveToMessage(
       // If currentMessage is now empty, delete it
       if (
         Object.values(currentMessage.shapes).flat()[0] === undefined &&
-        currentMessage.focus === undefined
+        currentMessage.main === undefined
       ) {
         delete draft.byId[currentMessageId];
         draft.allIds = draft.allIds.filter((m) => m !== currentMessageId);
@@ -386,7 +349,7 @@ function handlePointsMoveWithinMessage(
     const currentMessage = draft.byId[currentMessageId];
 
     // Delete points from original locations...
-    _deletePoints(currentMessage, pointsToMove, true);
+    _deletePoints(currentMessage, pointsToMove);
 
     // then set the pointIds for the destination region
     currentMessage.shapes[region] = newPointIds;
@@ -410,53 +373,36 @@ function handlePointsDelete(
   });
 }
 
-function handleSetFocus(
+function handleSetMain(
   state: DraftMessagesState,
-  action: Action<SetFocusParams>,
+  action: Action<SetMainParams>,
   appState: AppState
 ): DraftMessagesState {
-  const newFocus = appState.selectedPoints.pointIds[0];
-  const currentMessageId = appState.semanticScreen.currentMessage;
-  const currentFocus = state.byId[currentMessageId].focus;
-  if (newFocus === currentFocus) return state;
+  let newMain = appState.selectedPoints.pointIds[0];
+  if (action.params.pointId) newMain = action.params.pointId;
 
-  const newFocusShape = getPointIfReference(newFocus, appState).shape;
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMain = state.byId[currentMessageId].main;
+  if (newMain === currentMain) return state;
+
+  const newMainShape = getPointIfReference(newMain, appState).shape;
 
   return produce(state, (draft) => {
     const currentMessage = draft.byId[currentMessageId];
 
     // Remove the point from the region it came from...
-    currentMessage.shapes[newFocusShape] = currentMessage.shapes[
-      newFocusShape
-    ].filter((id) => id !== newFocus);
+    currentMessage.shapes[newMainShape] = currentMessage.shapes[
+      newMainShape
+    ].filter((id) => id !== newMain);
 
-    // then move the current focus point to the appropriate region
-    if (currentMessage.focus) {
-      const oldFocusShape = getPointIfReference(currentMessage.focus, appState)
+    // then move the current main point to the appropriate region
+    if (currentMessage.main) {
+      const oldMainShape = getPointIfReference(currentMessage.main, appState)
         .shape;
-      currentMessage.shapes[oldFocusShape].push(currentMessage.focus);
+      currentMessage.shapes[oldMainShape].push(currentMessage.main);
     }
-    currentMessage.focus = newFocus;
+    currentMessage.main = newMain;
   });
-}
-
-function handleSetMainPoint(
-  state: DraftMessagesState,
-  action: Action<SetMainPointParams>,
-  appState: AppState
-): DraftMessagesState {
-  const currentMessageId = appState.semanticScreen.currentMessage;
-
-  return {
-    ...state,
-    byId: {
-      ...state.byId,
-      [currentMessageId]: {
-        ...state.byId[currentMessageId],
-        main: action.params.pointId,
-      },
-    },
-  };
 }
 
 function handleCombinePoints(

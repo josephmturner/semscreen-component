@@ -22,7 +22,7 @@ import { wrapGrid } from "animate-css-grid";
 
 import ShapeRegion from "./ShapeRegion";
 import MeritsRegion from "./MeritsRegion";
-import FocusRegion from "./FocusRegion";
+import CenterRegion from "./CenterRegion";
 import Banner from "./Banner";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
@@ -47,7 +47,7 @@ const SemanticScreen = (props: Props) => {
     "merits",
     "people",
     "thoughts",
-    "focus",
+    "center",
     "actions",
     "feelings",
     "needs",
@@ -80,9 +80,9 @@ const SemanticScreen = (props: Props) => {
         if (region === "merits") {
           return <MeritsRegion region={region} key={region} />;
         }
-        if (region === "focus") {
+        if (region === "center") {
           return (
-            <FocusRegion
+            <CenterRegion
               region={region}
               key={region}
               darkMode={props.darkMode}

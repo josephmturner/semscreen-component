@@ -43,14 +43,9 @@ const PublishButton = (props: AllProps) => {
       window.alert(
         "Before publishing, please add a main point to your message"
       );
-    } else if (!message.focus) {
-      window.alert(
-        "Before publishing, please add a focus point to your message"
-      );
     } else {
       console.log("Saving", { message, points });
-      // Type assertion is okay here since main and focus points must
-      // exist to run this code
+      // Type assertion is okay here since main point must exist
       saveMessage(message as MessageI, points);
     }
   };

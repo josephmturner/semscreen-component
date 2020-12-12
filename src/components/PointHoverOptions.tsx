@@ -37,7 +37,7 @@ import {
   pointsMoveToMessage,
   pointsDelete,
 } from "../actions/draftPointsActions";
-import { messageDelete, setMainPoint } from "../actions/draftMessagesActions";
+import { messageDelete, setMain } from "../actions/draftMessagesActions";
 import { setCurrentMessage } from "../actions/semanticScreenActions";
 
 interface Props {
@@ -110,7 +110,7 @@ const PointHoverOptions = (props: Props) => {
       darkMode={props.darkMode}
       isSelected={props.isSelected}
       onClick={(e: React.MouseEvent) => {
-        dispatch(setMainPoint({ pointId: props.id }));
+        dispatch(setMain({ pointId: props.id }));
         e.stopPropagation();
       }}
       title="Set main point"

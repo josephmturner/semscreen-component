@@ -59,7 +59,7 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   author: AuthorI;
-  mainPoint: PointI;
+  displayPoint: PointI;
   referenceData: PointReferenceI | null;
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
@@ -116,7 +116,7 @@ const MessageListItem = (props: AllProps) => {
     >
       <Point
         id={props.messageId}
-        displayPoint={props.mainPoint}
+        displayPoint={props.displayPoint}
         referenceData={props.referenceData}
         isMainPoint={true}
         isSelected={false}
@@ -168,12 +168,15 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const author = isUserIdentity(message.author, state)
     ? state.userIdentities.byId[message.author]
     : state.authors.byId[message.author];
-  const mainPointId = message.main;
 
-  // Type assertion is okay since we only render MessageListItem
-  // if the message has a main point
-  const mainPoint = getPointIfReference(mainPointId as string, state);
-  const referenceData = getReferenceData(mainPointId as string, state);
+  // Display a random point from the message if no main point exists
+  const displayPointId =
+    message.main ??
+    Object.values(
+      state.draftMessages.byId[ownProps.messageId].shapes
+    ).flat()[0];
+  const displayPoint = getPointIfReference(displayPointId, state);
+  const referenceData = getReferenceData(displayPointId, state);
 
   let isDragHovered = false;
   if (
@@ -186,7 +189,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
   return {
     author,
-    mainPoint,
+    displayPoint,
     referenceData,
     isDragHovered,
   };

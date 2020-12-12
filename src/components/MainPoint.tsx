@@ -33,10 +33,7 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/draftPointsActions";
-import {
-  setMainPoint,
-  SetMainPointParams,
-} from "../actions/draftMessagesActions";
+import { setMain, SetMainParams } from "../actions/draftMessagesActions";
 import {
   setSelectedPoints,
   SetSelectedPointsParams,
@@ -51,7 +48,6 @@ import {
 interface OwnProps {
   pointId: string;
   isExpanded: boolean;
-  isMainPoint: boolean;
   isSelected: boolean;
   isHovered: boolean;
   setIsHovered: (isHovered: boolean) => void;
@@ -63,14 +59,14 @@ interface AllProps extends OwnProps {
   referenceData: PointReferenceI | null;
   isDraft: boolean;
   pointUpdate: (params: PointUpdateParams) => void;
-  setMainPoint: (params: SetMainPointParams) => void;
+  setMain: (params: SetMainParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
-const FocusPoint = (props: AllProps) => {
+const MainPoint = (props: AllProps) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!props.isDraft) {
       return;
@@ -117,7 +113,7 @@ const FocusPoint = (props: AllProps) => {
       id={props.pointId}
       displayPoint={props.point}
       referenceData={props.referenceData}
-      isMainPoint={props.isMainPoint}
+      isMainPoint={true}
       isSelected={props.isSelected}
       isHovered={props.isHovered}
       setIsHovered={props.setIsHovered}
@@ -156,11 +152,11 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
 const mapActionsToProps = {
   pointUpdate,
-  setMainPoint,
+  setMain,
   pointsDelete,
   togglePoint,
   setSelectedPoints,
   setCurrentMessage,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(FocusPoint);
+export default connect(mapStateToProps, mapActionsToProps)(MainPoint);

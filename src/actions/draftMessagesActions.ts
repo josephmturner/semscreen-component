@@ -117,24 +117,13 @@ export const _messageDelete = (
   };
 };
 
-export interface SetFocusParams {}
-
-export const setFocus = (params: SetFocusParams): Action<SetFocusParams> => {
-  return {
-    type: Actions.setFocus,
-    params,
-  };
-};
-
-export interface SetMainPointParams {
-  pointId: string;
+export interface SetMainParams {
+  pointId?: string;
 }
 
-export const setMainPoint = (
-  params: SetMainPointParams
-): Action<SetMainPointParams> => {
+export const setMain = (params: SetMainParams): Action<SetMainParams> => {
   return {
-    type: Actions.setMainPoint,
+    type: Actions.setMain,
     params,
   };
 };

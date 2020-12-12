@@ -21,7 +21,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointIfReference,
-  getMessageById,
   getReferenceData,
 } from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -51,10 +50,6 @@ import {
   pointsDelete,
   PointsDeleteParams,
 } from "../actions/draftPointsActions";
-import {
-  setMainPoint,
-  SetMainPointParams,
-} from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 import {
   setSelectedPoints,
@@ -78,7 +73,6 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
-  isMainPoint: boolean;
   cursorPositionIndex?: number;
   isDraft: boolean;
   isDragHovered: boolean;
@@ -88,7 +82,6 @@ interface AllProps extends OwnProps {
   clearCursorPosition: () => void;
   pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   pointUpdate: (params: PointUpdateParams) => void;
-  setMainPoint: (params: SetMainPointParams) => void;
   pointsDelete: (params: PointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
@@ -291,7 +284,7 @@ const RegionPoint = (props: AllProps) => {
       id={props.pointId}
       displayPoint={props.point}
       referenceData={props.referenceData}
-      isMainPoint={props.isMainPoint}
+      isMainPoint={false}
       isSelected={props.isSelected}
       isHovered={isHovered}
       setIsHovered={setIsHovered}
@@ -318,11 +311,6 @@ const RegionPoint = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state);
-  const currentMessage = getMessageById(
-    state.semanticScreen.currentMessage,
-    state
-  );
-
   const point = getPointIfReference(ownProps.pointId, state);
 
   let isDragHovered = false;
@@ -336,7 +324,6 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   return {
     point,
     referenceData,
-    isMainPoint: ownProps.pointId === currentMessage.main,
     cursorPositionIndex:
       state.cursorPosition.details &&
       state.cursorPosition.details.pointId === ownProps.pointId
@@ -356,7 +343,6 @@ const mapActionsToProps = {
   clearCursorPosition,
   pointsMoveWithinMessage,
   pointUpdate,
-  setMainPoint,
   pointsDelete,
   hoverOver,
   togglePoint,

@@ -32,7 +32,7 @@ import { createReferenceTo, getMessageById } from "../dataModels/pointUtils";
 export interface PointCreateParams {
   point: PointNoIdI;
   index: number;
-  focus?: boolean;
+  main?: boolean;
 }
 
 export interface _PointCreateParams extends PointCreateParams {
