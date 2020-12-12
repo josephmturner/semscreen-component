@@ -21,6 +21,7 @@ import styled from "styled-components";
 interface Props {
   expandedRegion: string;
   ref: any;
+  BGColor: string;
 }
 
 const StyledSemanticScreen = styled.div<Props>`
@@ -30,6 +31,8 @@ const StyledSemanticScreen = styled.div<Props>`
   overflow: hidden;
   box-sizing: border-box;
   display: grid;
+  background-color: ${(props) => props.BGColor};
+  border-radius: 3px;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   --expanded-size: 4fr;

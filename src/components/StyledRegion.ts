@@ -18,18 +18,11 @@
 */
 import styled from "styled-components";
 
-interface StyledRegionProps {
-  borderColor?: string;
-}
-
-export const StyledRegion = styled.div<StyledRegionProps>`
+export const StyledRegion = styled.div`
   overflow: hidden;
-  ${(props) =>
-    props.borderColor &&
-    `
-    border: 2px solid ${props.borderColor};
-    border-radius: 3px;
-  `}
+  background-color: black;
+  border-radius: 3px;
+  margin: 2px;
 `;
 
 //This container ensures that StyledRegion only ever has one child,
