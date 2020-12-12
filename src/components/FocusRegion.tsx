@@ -20,7 +20,7 @@ import React, { useState } from "react";
 import FocusPoint from "./FocusPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
-import { AuthorI, PointShape, RegionI } from "../dataModels/dataModels";
+import { PointShape, RegionI } from "../dataModels/dataModels";
 import { getMessageById } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -47,7 +47,6 @@ interface OwnProps {
 }
 
 interface AllProps extends OwnProps {
-  author: AuthorI;
   pointId: string | undefined;
   selectedPoints: string[];
   isMainPoint: boolean;
@@ -94,8 +93,6 @@ const FocusRegion = (props: AllProps) => {
   });
 
   const createEmptyFocus = (shape: PointShape) => {
-    //TODO: the author used to create a point should instead be some
-    //global author (not the author of the current message)
     props.pointCreate({
       point: {
         content: "",
@@ -108,7 +105,6 @@ const FocusRegion = (props: AllProps) => {
 
   return (
     <StyledRegion
-      borderColor={props.author.color}
       onClick={() => props.setExpandedRegion({ region })}
       ref={drop}
     >
@@ -154,7 +150,6 @@ const mapStateToProps = (state: AppState) => {
   const isExpanded = state.expandedRegion.region === "focus";
 
   return {
-    author: state.authors.byId[currentMessage.author],
     pointId: currentMessage.focus,
     selectedPoints: state.selectedPoints.pointIds,
     isMainPoint,

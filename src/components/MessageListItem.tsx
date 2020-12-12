@@ -29,6 +29,7 @@ import {
   getPointIfReference,
   getMessageById,
   getReferenceData,
+  isUserIdentity,
 } from "../dataModels/pointUtils";
 import Point from "./Point";
 import PointHoverOptions from "./PointHoverOptions";
@@ -164,7 +165,9 @@ const MessageWrapper = styled.div<{
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const message = getMessageById(ownProps.messageId, state);
-  const author = state.authors.byId[message.author];
+  const author = isUserIdentity(message.author, state)
+    ? state.userIdentities.byId[message.author]
+    : state.authors.byId[message.author];
   const mainPointId = message.main;
 
   // Type assertion is okay since we only render MessageListItem

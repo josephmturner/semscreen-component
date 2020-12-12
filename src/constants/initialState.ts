@@ -18,16 +18,24 @@
 */
 //TODO: how to confirm that focus point exists in the array of points
 //contained in the semscreen?
+import { UserIdentitiesState } from "../reducers/userIdentities";
 import { AuthorsState } from "../reducers/authors";
 import { MessagesState } from "../reducers/messages";
 import { PointsState } from "../reducers/points";
 import { DraftMessagesState } from "../reducers/draftMessages";
 import { DraftPointsState } from "../reducers/draftPoints";
 
+export const userIdentites: UserIdentitiesState = {
+  byId: {
+    author1: { _id: "author1", name: "KindWoman", color: "#7d3989" },
+  },
+  allIds: ["author1"],
+  currentIdentity: "author1",
+};
+
 export const authors: AuthorsState = {
   byId: {
     author0: { _id: "author0", name: "BreatheOutBreatheIn", color: "#209924" },
-    author1: { _id: "author1", name: "KindWoman", color: "#7d3989" },
   },
 };
 

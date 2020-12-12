@@ -30,12 +30,13 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 
 import { RegionI } from "../dataModels/dataModels";
-import { getMessageById } from "../dataModels/pointUtils";
+import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
 
 interface Props {
   authorId: string;
   darkMode: boolean;
   expandedRegion: string;
+  BGColor: string;
 }
 
 const SemanticScreen = (props: Props) => {
@@ -67,6 +68,7 @@ const SemanticScreen = (props: Props) => {
     <StyledSemanticScreen
       expandedRegion={expandedRegion}
       ref={semanticScreenRef}
+      BGColor={props.BGColor}
     >
       <Banner
         authorId={props.authorId}
@@ -100,10 +102,21 @@ const SemanticScreen = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  authorId: getMessageById(state.semanticScreen.currentMessage, state).author,
-  expandedRegion: state.expandedRegion.region,
-});
+const mapStateToProps = (state: AppState) => {
+  const currentMessage = getMessageById(
+    state.semanticScreen.currentMessage,
+    state
+  );
+  const authorId = currentMessage.author;
+  const BGColor = isUserIdentity(authorId, state)
+    ? state.userIdentities.byId[authorId].color
+    : state.authors.byId[authorId].color;
+  return {
+    authorId,
+    expandedRegion: state.expandedRegion.region,
+    BGColor,
+  };
+};
 
 const mapDispatchToProps = {};
 

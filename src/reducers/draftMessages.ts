@@ -19,7 +19,6 @@
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import produce from "immer";
-import { v4 as uuidv4 } from "uuid";
 
 import {
   allPointShapes,
@@ -63,9 +62,7 @@ export interface DraftMessagesState {
 export const initialDraftMessagesState: DraftMessagesState = {
   byId: {
     message0: {
-      _id: uuidv4(),
-      //TODO: Initial state has authorId "author1"
-      //Is this appropriate? Would uuid be better?
+      _id: "message0",
       author: "author1",
       shapes: {
         facts: [],
@@ -174,7 +171,6 @@ const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
   produce(state, (draft) => {
     draft.byId[newMessageId] = {
       _id: newMessageId,
-      //TODO: Replace "author1" with user's id
       author: "author1",
       shapes: {
         facts: [],
