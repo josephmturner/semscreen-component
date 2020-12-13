@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
@@ -25,23 +25,40 @@ import * as serviceWorker from "./serviceWorker";
 import { store } from "./reducers/store";
 import { Provider } from "react-redux";
 
+import { useDispatch } from "react-redux";
+import { syncWithLocalStorage } from "./actions/localStorageActions";
+
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 const AppWithPersistence = () => {
   store.subscribe(() => {
     const reduxState = store.getState();
-    const draftMessages = {
+    const localStorageState = {
       authors: reduxState.authors,
       messages: reduxState.messages,
       points: reduxState.points,
       draftMessages: reduxState.draftMessages,
       draftPoints: reduxState.draftPoints,
-      semanticScreen: reduxState.semanticScreen,
       userIdentities: reduxState.userIdentities,
     };
 
-    localStorage.setItem("draftMessages", JSON.stringify(draftMessages));
+    localStorage.setItem(
+      "localStorageState",
+      JSON.stringify(localStorageState)
+    );
+  });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    window.onstorage = () => {
+      const rawLocalStorageState = localStorage.getItem("localStorageState");
+      if (rawLocalStorageState) {
+        const localStorageState = JSON.parse(rawLocalStorageState);
+        dispatch(syncWithLocalStorage({ localStorageState }));
+      }
+    };
   });
 
   return <App />;

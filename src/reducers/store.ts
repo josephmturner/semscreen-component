@@ -82,7 +82,6 @@ let populatedInitialMessagesState: MessagesState | null = null;
 let populatedInitialPointsState: PointsState | null = null;
 let populatedInitialDraftMessagesState: DraftMessagesState | null = null;
 let populatedInitialDraftPointsState: DraftPointsState | null = null;
-let populatedInitialSemanticScreenState: SemanticScreenState | null = null;
 
 // Set this to true if you want test data (you must delete localStorage)
 const populateWithTestData = true;
@@ -95,7 +94,7 @@ if (populateWithTestData) {
   populatedInitialDraftPointsState = draftPoints;
 }
 
-const rawPersistedState = localStorage.getItem("draftMessages");
+const rawPersistedState = localStorage.getItem("localStorageState");
 const persistedState = rawPersistedState ? JSON.parse(rawPersistedState) : null;
 if (persistedState) {
   populatedInitialUserIdentitiesState = persistedState.userIdentities;
@@ -104,7 +103,6 @@ if (persistedState) {
   populatedInitialPointsState = persistedState.points;
   populatedInitialDraftMessagesState = persistedState.draftMessages;
   populatedInitialDraftPointsState = persistedState.draftPoints;
-  populatedInitialSemanticScreenState = persistedState.semanticScreen;
 }
 
 export interface AppState {
@@ -139,8 +137,7 @@ function createAppStore() {
     selectedPoints: initialSelectedPointsState,
     panels: initialPanelsState,
     drag: initialDragState,
-    semanticScreen:
-      populatedInitialSemanticScreenState ?? initialSemanticScreenState,
+    semanticScreen: initialSemanticScreenState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {

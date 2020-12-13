@@ -32,6 +32,9 @@ export interface SemanticScreenState {
   currentMessage: string;
 }
 
+//TODO: Since the current message is not tracked by localStorage,
+//initialSemanticScreenState should be null (and the UI should render
+//a welcome screen or a draft message if it exists or something else)
 export const initialSemanticScreenState = {
   currentMessage: "message0",
 };
