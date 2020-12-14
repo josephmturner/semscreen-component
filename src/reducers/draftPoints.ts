@@ -45,6 +45,7 @@ import {
   //which should never make use of the optional newMessageId prop?
   MessageDeleteParams,
 } from "../actions/draftMessagesActions";
+import { SyncWithLocalStorageParams } from "../actions/localStorageActions";
 
 export interface DraftPointsState {
   byId: {
@@ -116,6 +117,12 @@ export const draftPointsReducer = (
         state,
         action as Action<MessageDeleteParams>,
         appState
+      );
+      break;
+    case Actions.syncWithLocalStorage:
+      newState = handleSyncWithLocalStorage(
+        state,
+        action as Action<SyncWithLocalStorageParams>
       );
       break;
   }
@@ -327,3 +334,10 @@ function handleMessageDelete(
     });
   });
 }
+
+const handleSyncWithLocalStorage = (
+  state: DraftPointsState,
+  action: Action<SyncWithLocalStorageParams>
+): DraftPointsState => {
+  return action.params.localStorageState.draftPoints;
+};
