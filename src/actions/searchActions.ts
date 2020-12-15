@@ -2,29 +2,43 @@ import { Action, Actions } from "./constants";
 import { ThunkAction } from "redux-thunk";
 
 import { AppState } from "../reducers/store";
-import { MessageI, PointI } from "../dataModels/dataModels";
+import { MessageI } from "../dataModels/dataModels";
 
-export interface SearchResultParams {
+export interface SearchByContentParams {
+  searchQuery: string;
+}
+
+export interface _SearchByContentParams extends SearchByContentParams {
   results: MessageI[];
-  search: string;
 }
 
 export const searchByContent = (
-  search: string
-): ThunkAction<void, AppState, unknown, Action<SearchResultParams>> => {
+  params: SearchByContentParams
+): ThunkAction<void, AppState, unknown, Action<_SearchByContentParams>> => {
   return (dispatch, getState) => {
     const state = getState();
 
     if (!state.db.db)
       return console.warn("Tried to search before database was loaded");
     const db = state.db.db;
-    db.searchPointsByContent(search).then(async (points) => {
+    db.searchPointsByContent(params.searchQuery).then(async (points) => {
       const results = await db.searchMessagesForPoints(points);
 
-      dispatch({
-        type: Actions.searchResults,
-        params: { search, results },
-      });
+      dispatch(
+        _searchByContent({
+          ...params,
+          results,
+        })
+      );
     });
+  };
+};
+
+const _searchByContent = (
+  params: _SearchByContentParams
+): Action<_SearchByContentParams> => {
+  return {
+    type: Actions.searchByContent,
+    params,
   };
 };

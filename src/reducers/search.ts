@@ -1,17 +1,17 @@
 import { Action, Actions } from "../actions/constants";
 
 import { MessageI } from "../dataModels/dataModels";
-import { SearchResultParams } from "../actions/searchActions";
+import { _SearchByContentParams } from "../actions/searchActions";
 
 import { AppState } from "./store";
 
 export interface SearchState {
-  search: string;
+  searchQuery: string;
   results: MessageI[];
 }
 
 export const initialSearchState: SearchState = {
-  search: "",
+  searchQuery: "",
   results: [],
 };
 
@@ -22,10 +22,10 @@ export const searchReducer = (
 ): SearchState => {
   let newState = state;
   switch (action.type) {
-    case Actions.searchResults:
+    case Actions.searchByContent:
       newState = handleSearchResults(
         state,
-        action as Action<SearchResultParams>,
+        action as Action<_SearchByContentParams>,
         appState
       );
       break;
@@ -36,7 +36,7 @@ export const searchReducer = (
 
 function handleSearchResults(
   state: SearchState,
-  action: Action<SearchResultParams>,
+  action: Action<_SearchByContentParams>,
   appState: AppState
 ) {
   return { ...state, ...action.params };

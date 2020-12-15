@@ -55,7 +55,5 @@ export const Actions = {
 
   loadDatabase: "loadDatabase",
   saveMessage: "saveMessage",
-
-  searchResults: "searchResults",
-  searchTerm: "searchTerm",
+  searchByContent: "searchByContent",
 };

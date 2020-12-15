@@ -25,8 +25,10 @@ import { AppState } from "../reducers/store";
 import MessageListItem from "./MessageListItem";
 import { blackOrWhite } from "../dataModels/pointUtils";
 import Banner from "./Banner";
-import { SearchState } from "../reducers/search";
-import { searchByContent } from "../actions/searchActions";
+import {
+  searchByContent,
+  SearchByContentParams,
+} from "../actions/searchActions";
 import { MessageI } from "../dataModels/dataModels";
 
 interface OwnProps {
@@ -35,9 +37,8 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   authorId: string;
-  search: string;
   results: MessageI[];
-  searchByContent: (search: string) => void;
+  searchByContent: (params: SearchByContentParams) => void;
 }
 
 const RightPanelContents = (props: AllProps) => {
@@ -51,7 +52,7 @@ const RightPanelContents = (props: AllProps) => {
 
   const handleSubmit = () => {
     console.log(searchQuery);
-    searchByContent(searchQuery);
+    searchByContent({ searchQuery });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -159,12 +160,11 @@ const ResultsContainer = styled.div`
 
 const mapStateToProps = (state: AppState) => {
   //Replace with results from ushin-db
-  const { results, search } = state.search;
+  const { results } = state.search;
 
   return {
     authorId: state.userIdentities.currentIdentity,
     results,
-    search,
   };
 };
 

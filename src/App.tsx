@@ -20,9 +20,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
-import memdown from "memdown";
-import { USHINBase } from "ushin-db";
-
 import { AppState } from "./reducers/store";
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
