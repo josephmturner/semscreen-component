@@ -25,6 +25,9 @@ import { AppState } from "../reducers/store";
 import MessageListItem from "./MessageListItem";
 import { blackOrWhite } from "../dataModels/pointUtils";
 import Banner from "./Banner";
+import { SearchState } from "../reducers/search";
+import { searchByContent } from "../actions/searchActions";
+import { MessageI } from "../dataModels/dataModels";
 
 interface OwnProps {
   darkMode?: boolean;
@@ -32,21 +35,23 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   authorId: string;
-  results: string[];
+  search: string;
+  results: MessageI[];
+  searchByContent: (search: string) => void;
 }
 
 const RightPanelContents = (props: AllProps) => {
+  const { results, searchByContent } = props;
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const [showResults, setShowResults] = useState(false);
-
   const handleSubmit = () => {
-    setShowResults(true);
     console.log(searchQuery);
+    searchByContent(searchQuery);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -86,19 +91,17 @@ const RightPanelContents = (props: AllProps) => {
           />
         </StyledSvg>
       </SearchDiv>
-      {showResults && (
-        <ResultsContainer>
-          {props.results.map((id: string, i: number) => (
-            <MessageListItem
-              key={id}
-              type="persistedMessage"
-              messageId={id}
-              index={i}
-              darkMode={props.darkMode}
-            />
-          ))}
-        </ResultsContainer>
-      )}
+      <ResultsContainer>
+        {results.map(({ _id }: MessageI, i: number) => (
+          <MessageListItem
+            key={_id}
+            type="persistedMessage"
+            messageId={_id}
+            index={i}
+            darkMode={props.darkMode}
+          />
+        ))}
+      </ResultsContainer>
     </>
   );
 };
@@ -156,16 +159,17 @@ const ResultsContainer = styled.div`
 
 const mapStateToProps = (state: AppState) => {
   //Replace with results from ushin-db
-  const results = state.messages.allIds.filter(
-    (id) => state.messages.byId[id].main
-  );
+  const { results, search } = state.search;
 
   return {
     authorId: state.userIdentities.currentIdentity,
     results,
+    search,
   };
 };
 
-const mapActionsToProps = {};
+const mapActionsToProps = {
+  searchByContent,
+};
 
 export default connect(mapStateToProps, mapActionsToProps)(RightPanelContents);
