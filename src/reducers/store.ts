@@ -66,6 +66,7 @@ import {
   SemanticScreenState,
 } from "./semanticScreen";
 import { initialDBState, DBState, dbReducer } from "./db";
+import { initialSearchState, SearchState, searchReducer } from "./search";
 
 import {
   userIdentites,
@@ -119,6 +120,7 @@ export interface AppState {
   panels: PanelsState;
   drag: DragState;
   semanticScreen: SemanticScreenState;
+  search: SearchState;
 }
 
 function createAppStore() {
@@ -138,6 +140,7 @@ function createAppStore() {
     panels: initialPanelsState,
     drag: initialDragState,
     semanticScreen: initialSemanticScreenState,
+    search: initialSearchState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
@@ -175,6 +178,7 @@ function createAppStore() {
         action,
         state
       ),
+      search: searchReducer(state.search, action, state),
     };
     return newState;
   };

@@ -11223,9 +11223,9 @@ use@^3.1.0:
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
-ushin-db@USHIN-Inc/ushin-db#new-data-model:
+ushin-db@ushin-inc/ushin-db#searchByPointIds:
   version "1.0.0"
-  resolved "https://codeload.github.com/USHIN-Inc/ushin-db/tar.gz/a15f4451cf70683cb02a560efc585c656ad17d6f"
+  resolved "https://codeload.github.com/ushin-inc/ushin-db/tar.gz/9026d43cc8af89213ceab955859af7382f8996d3"
   dependencies:
     pouchdb "^7.2.2"
     pouchdb-adapter-leveldb-browser "^7.0.0-prerelease"

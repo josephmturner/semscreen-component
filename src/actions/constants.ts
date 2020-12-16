@@ -55,6 +55,7 @@ export const Actions = {
 
   loadDatabase: "loadDatabase",
   saveMessage: "saveMessage",
+  searchByContent: "searchByContent",
 
   syncWithLocalStorage: "syncWithLocalStorage",
 };
