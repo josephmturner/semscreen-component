@@ -18,7 +18,12 @@
 */
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 
-import { StyledImg, StyledDiv, StyledTextArea } from "./StyledPoint";
+import {
+  StyledImg,
+  StyledDiv,
+  StyledTextArea,
+  TextareaWrapper,
+} from "./StyledPoint";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getOriginalAuthorId } from "../dataModels/pointUtils";
 
@@ -42,7 +47,6 @@ interface Props {
   handleBlur?: () => void;
   handlePointDivClick?: (e: React.MouseEvent) => void;
   handleShapeIconClick?: (e: React.MouseEvent) => void;
-  //TODO: What is the correct type of children?
   children?: React.ReactNode;
 }
 
@@ -108,20 +112,23 @@ const Point = forwardRef<any, Props>((props, ref) => {
           ref={bannerRef}
         />
       )}
-      <StyledTextArea
-        value={props.displayPoint.content}
-        onChange={props.handleChange}
-        onBlur={props.handleBlur}
-        readOnly={!!props.referenceData || props.readOnlyOverride}
+      <TextareaWrapper
         isMainPoint={props.isMainPoint}
         isSelected={props.isSelected}
         darkMode={props.darkMode}
-        ref={textareaRef}
         indent={textareaIndent}
         newLine={textareaNewline}
-        autoFocus={!props.suppressAutoFocus}
-        onKeyDown={props.handleKeyDown}
-      />
+      >
+        <StyledTextArea
+          value={props.displayPoint.content}
+          onChange={props.handleChange}
+          onBlur={props.handleBlur}
+          readOnly={!!props.referenceData || props.readOnlyOverride}
+          ref={textareaRef}
+          autoFocus={!props.suppressAutoFocus}
+          onKeyDown={props.handleKeyDown}
+        />
+      </TextareaWrapper>
       {props.children}
     </StyledDiv>
   );

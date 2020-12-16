@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Action, Actions } from "../actions/constants";
+import { Action } from "../actions/constants";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { AppState } from "./store";
 
