@@ -56,6 +56,8 @@ const RightPanelContents = (props: AllProps) => {
     e.preventDefault();
   };
 
+  const [searchButtonIsHovered, setSearchButtonIsHovered] = useState(false);
+
   return (
     <>
       <Banner
@@ -71,21 +73,31 @@ const RightPanelContents = (props: AllProps) => {
             value={searchQuery}
             onChange={handleChange}
             darkMode={props.darkMode}
+            alt="Search for published messages"
           />{" "}
-          <StyledSvg
-            onClick={handleSubmit}
+          <StyledButton
+            type="submit"
             darkMode={props.darkMode}
-            viewBox="0 0 16 16"
+            searchButtonIsHovered={searchButtonIsHovered}
+            onMouseEnter={() => setSearchButtonIsHovered(true)}
+            onMouseLeave={() => setSearchButtonIsHovered(false)}
+            title="Search"
           >
-            <path
-              fillRule="evenodd"
-              d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"
-            />
-            <path
-              fillRule="evenodd"
-              d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
-            />
-          </StyledSvg>
+            <StyledSvg
+              darkMode={props.darkMode}
+              searchButtonIsHovered={searchButtonIsHovered}
+              viewBox="0 0 16 16"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"
+              />
+              <path
+                fillRule="evenodd"
+                d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
+              />
+            </StyledSvg>
+          </StyledButton>
         </form>
       </SearchDiv>
       <ResultsContainer>
@@ -105,30 +117,44 @@ const RightPanelContents = (props: AllProps) => {
 
 interface StyledProps {
   darkMode?: boolean;
+  searchButtonIsHovered?: boolean;
 }
 
 const SearchDiv = styled.div<StyledProps>`
   position: relative;
-  border: 1.5px solid ${(props) => (props.darkMode ? "white" : "black")};
-  border-radius: 3px;
   margin: 2rem 0.2rem 0 0.2rem;
 `;
 
 const StyledInput = styled.input<StyledProps>`
+  --colorFG: ${(props) => blackOrWhite(props.darkMode)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode)[1]};
+
   font: Arial;
   width: calc(100% - 2em);
+  border-radius: 3px;
+  outline: none;
+  color: var(--colorFG);
+  background-color: var(--colorBG);
+  border: 1.5px solid var(--colorFG);
+`;
 
-  ${(props) =>
-    props.darkMode
-      ? `
-    color: white;
-    background-color: black;
-    border: none;`
-      : `
-    color: black;
-    background-color: white;
-    border: none;
-  `}
+const StyledButton = styled.button<StyledProps>`
+  --colorFG: ${(props) => blackOrWhite(props.darkMode)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode)[1]};
+
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 1.5rem;
+  background-color: ${(props) =>
+    props.searchButtonIsHovered ? "var(--colorFG)" : "var(--colorBG)"};
+  border-radius: 3px;
+  border: 1.5px solid var(--colorFG);
 `;
 
 const StyledSvg = styled.svg<StyledProps>`
@@ -136,13 +162,10 @@ const StyledSvg = styled.svg<StyledProps>`
   --colorBG: ${(props) => blackOrWhite(props.darkMode)[1]};
 
   position: absolute;
-  top: 0;
-  right: 0.4rem;
-  bottom: 0;
-  margin: auto 0;
   height: 1rem;
   width: 1rem;
-  fill: var(--colorFG);
+  fill: ${(props) =>
+    props.searchButtonIsHovered ? "var(--colorBG)" : "var(--colorFG)"};
 `;
 
 const ResultsContainer = styled.div`
