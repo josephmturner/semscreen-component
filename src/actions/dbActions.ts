@@ -25,23 +25,15 @@ import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
 import memdown from "memdown";
 import { USHINBase } from "ushin-db";
 
-export interface MessageCreatedParams {
-  messageId: string;
-}
-
-export interface DatabaseLoadedParams {
+export interface LoadDatabaseParams {
   db: USHINBase;
-}
-
-export interface PointMapping {
-  [id: string]: PointI | PointReferenceI;
 }
 
 export const loadDatabase = (): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<DatabaseLoadedParams>
+  Action<LoadDatabaseParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -56,6 +48,8 @@ export const loadDatabase = (): ThunkAction<
       console.log("DB", db);
       await db.init();
 
+      (window as any).db = db;
+
       dispatch({
         type: Actions.loadDatabase,
         params: {
@@ -66,26 +60,40 @@ export const loadDatabase = (): ThunkAction<
   };
 };
 
+export interface PointMapping {
+  [id: string]: PointI | PointReferenceI;
+}
+export interface SaveMessageParams {
+  message: MessageI;
+  points: PointMapping;
+}
+
 export const saveMessage = (
   message: MessageI,
   points: PointMapping
-): ThunkAction<void, AppState, unknown, Action<MessageCreatedParams>> => {
+): ThunkAction<void, AppState, unknown, Action<SaveMessageParams>> => {
   return (dispatch, getState) => {
-    const state = getState();
+    (async () => {
+      const state = getState();
 
-    if (!state.db.db)
-      return console.warn("Tried to save message before database was loaded");
+      if (!state.db.db)
+        return console.warn("Tried to save message before database was loaded");
+      const db = state.db.db;
 
-    state.db.db
-      .addMessage(message, points)
-      .then((messageId: string) => {
+      try {
+        const messageId = await db.addMessage(message, points);
+        const publishedMessage = await db.getMessage(messageId);
+        const publishedPoints = await db.getPointsForMessage(publishedMessage);
         dispatch({
           type: Actions.saveMessage,
           params: {
-            messageId,
+            message: publishedMessage,
+            points: publishedPoints,
           },
         });
-      })
-      .catch(console.error);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
   };
 };

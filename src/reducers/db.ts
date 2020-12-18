@@ -1,7 +1,7 @@
 import { Action, Actions } from "../actions/constants";
 
 import { AppState } from "./store";
-import { DatabaseLoadedParams } from "../actions/dbActions";
+import { LoadDatabaseParams } from "../actions/dbActions";
 
 import { USHINBase } from "ushin-db";
 
@@ -25,7 +25,7 @@ export const dbReducer = (
     case Actions.loadDatabase:
       newState = handleLoadDatabase(
         state,
-        action as Action<DatabaseLoadedParams>,
+        action as Action<LoadDatabaseParams>,
         appState
       );
       break;
@@ -35,7 +35,7 @@ export const dbReducer = (
 
 function handleLoadDatabase(
   state: DBState,
-  action: Action<DatabaseLoadedParams>,
+  action: Action<LoadDatabaseParams>,
   appState: AppState
 ) {
   return { ...state, db: action.params.db, loading: false };

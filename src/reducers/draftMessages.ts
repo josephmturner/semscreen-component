@@ -51,6 +51,7 @@ import {
 } from "../actions/draftMessagesActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { SyncWithLocalStorageParams } from "../actions/localStorageActions";
+import { SaveMessageParams } from "../actions/dbActions";
 
 export interface DraftMessagesState {
   byId: {
@@ -161,6 +162,9 @@ export const draftMessagesReducer = (
         state,
         action as Action<SyncWithLocalStorageParams>
       );
+      break;
+    case Actions.saveMessage:
+      newState = handleSaveMessage(state, action as Action<SaveMessageParams>);
       break;
   }
   return newState;
@@ -511,4 +515,16 @@ const handleSyncWithLocalStorage = (
   action: Action<SyncWithLocalStorageParams>
 ): DraftMessagesState => {
   return action.params.localStorageState.draftMessages;
+};
+
+const handleSaveMessage = (
+  state: DraftMessagesState,
+  action: Action<SaveMessageParams>
+): DraftMessagesState => {
+  return produce(state, (draft) => {
+    delete draft.byId[action.params.message._id];
+    draft.allIds = draft.allIds.filter(
+      (id) => id !== action.params.message._id
+    );
+  });
 };

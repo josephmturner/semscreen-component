@@ -16,9 +16,12 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Action } from "../actions/constants";
+import { Action, Actions } from "../actions/constants";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { AppState } from "./store";
+import { SaveMessageParams } from "../actions/dbActions";
+
+import produce from "immer";
 
 export interface PointsState {
   byId: {
@@ -33,5 +36,22 @@ export const pointsReducer = (
   action: Action,
   appState: AppState
 ): PointsState => {
-  return state;
+  let newState = state;
+  switch (action.type) {
+    case Actions.saveMessage:
+      newState = handleSaveMessage(state, action as Action<SaveMessageParams>);
+      break;
+  }
+  return newState;
 };
+
+function handleSaveMessage(
+  state: PointsState,
+  action: Action<SaveMessageParams>
+) {
+  return produce(state, (draft) => {
+    Object.values(action.params.points).forEach(
+      (point) => (draft.byId[point._id] = point)
+    );
+  });
+}
