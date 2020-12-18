@@ -47,7 +47,7 @@ export const messageCreate = (
     //Create newReferencePoints if the current message is a published message
     //Cut and paste draft points by leaving newReferencePoints undefined
     let newReferencePoints: PointReferenceI[] | undefined;
-    if (_shouldCopy(appState) && appState.selectedPoints.pointIds[0]) {
+    if (_shouldCopy(appState)) {
       newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
         return createReferenceTo(pointId, appState);
       });
