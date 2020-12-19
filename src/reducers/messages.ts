@@ -16,10 +16,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { Action } from "../actions/constants";
+import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 
 import { MessageI } from "../dataModels/dataModels";
+import { SaveMessageParams } from "../actions/dbActions";
+
+import produce from "immer";
 
 export interface MessagesState {
   byId: {
@@ -38,5 +41,21 @@ export const messagesReducer = (
   action: Action,
   appState: AppState
 ): MessagesState => {
-  return state;
+  let newState = state;
+  switch (action.type) {
+    case Actions.saveMessage:
+      newState = handleSaveMessage(state, action as Action<SaveMessageParams>);
+      break;
+  }
+  return newState;
+};
+
+const handleSaveMessage = (
+  state: MessagesState,
+  action: Action<SaveMessageParams>
+): MessagesState => {
+  return produce(state, (draft) => {
+    draft.byId[action.params.message._id] = action.params.message;
+    draft.allIds.push(action.params.message._id);
+  });
 };

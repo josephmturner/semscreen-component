@@ -64,26 +64,32 @@ export const StyledImg = styled.img<StyledPointProps>`
   z-index: 4;
 `;
 
-export const StyledTextArea = styled(TextareaAutosize)<StyledPointProps>`
+export const TextareaWrapper = styled.div<StyledPointProps>`
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
+
+  & > textarea {
+    color: var(--colorFG);
+
+    font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
+    font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
+    text-indent: ${(props) => (props.indent ? props.indent : "1.8em")};
+
+    ${(props) =>
+      props.newLine &&
+      ` top: 1rem;
+      margin-bottom: 1rem;
+    `};
+  }
+`;
+
+export const StyledTextArea = styled(TextareaAutosize)`
   position: relative;
   width: 100%;
   border: 0;
   outline: none;
   overflow: hidden;
-
-  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
-
-  color: var(--colorFG);
+  resize: none;
   background-color: transparent;
   font-family: Arial;
-  font-size: ${(props) => (props.isMainPoint ? "medium" : "small")};
-  font-weight: ${(props) => (props.isMainPoint ? "bold" : "normal")};
-  resize: none;
-  text-indent: ${(props) => (props.indent ? props.indent : "1.8em")};
-  ${(props) =>
-    props.newLine &&
-    ` top: 1rem;
-      margin-bottom: 1rem;
-    `};
 `;
