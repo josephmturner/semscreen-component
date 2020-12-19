@@ -67,6 +67,11 @@ import {
 } from "./semanticScreen";
 import { initialDBState, DBState, dbReducer } from "./db";
 import { initialSearchState, SearchState, searchReducer } from "./search";
+import {
+  initialDisplayAppState,
+  DisplayAppState,
+  displayAppReducer,
+} from "./displayApp";
 
 import {
   userIdentites,
@@ -85,7 +90,7 @@ let populatedInitialDraftMessagesState: DraftMessagesState | null = null;
 let populatedInitialDraftPointsState: DraftPointsState | null = null;
 
 // Set this to true if you want test data (you must delete localStorage)
-const populateWithTestData = true;
+const populateWithTestData = false;
 if (populateWithTestData) {
   populatedInitialUserIdentitiesState = userIdentites;
   populatedInitialAuthorsState = authors;
@@ -121,6 +126,7 @@ export interface AppState {
   drag: DragState;
   semanticScreen: SemanticScreenState;
   search: SearchState;
+  displayApp: DisplayAppState;
 }
 
 function createAppStore() {
@@ -141,6 +147,7 @@ function createAppStore() {
     drag: initialDragState,
     semanticScreen: initialSemanticScreenState,
     search: initialSearchState,
+    displayApp: initialDisplayAppState,
   };
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
@@ -179,6 +186,7 @@ function createAppStore() {
         state
       ),
       search: searchReducer(state.search, action, state),
+      displayApp: displayAppReducer(state.displayApp, action, state),
     };
     return newState;
   };

@@ -16,26 +16,28 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import { AuthorI } from "../dataModels/dataModels";
-import randomColor from "randomcolor";
-import { Action } from "../actions/constants";
-
+import { UserIdentity } from "../dataModels/dataModels";
+import { Action, Actions } from "../actions/constants";
+import { UserIdentityCreateParams } from "../actions/userIdentitiesActions";
 import { AppState } from "./store";
 
+import produce from "immer";
+
+//TODO: Similar issue to initialDraftMessagesState - since the
+//userIdentities data comes from Pouch, the type signature of
+//currentIdentity has to be optional, which makes for weird rendering
+//in the display components
 export interface UserIdentitiesState {
   byId: {
-    [_id: string]: AuthorI;
+    [_id: string]: UserIdentity;
   };
   allIds: string[];
-  currentIdentity: string;
+  currentIdentity?: string;
 }
 
 export const initialUserIdentitiesState: UserIdentitiesState = {
-  byId: {
-    author1: { _id: "author1", name: "anonymous", color: randomColor() },
-  },
-  allIds: ["author1"],
-  currentIdentity: "author1",
+  byId: {},
+  allIds: [],
 };
 
 export const userIdentitiesReducer = (
@@ -43,5 +45,25 @@ export const userIdentitiesReducer = (
   action: Action,
   appState: AppState
 ): UserIdentitiesState => {
-  return state;
+  let newState = state;
+  switch (action.type) {
+    case Actions.userIdentityCreate:
+      newState = handleUserIdentityCreate(
+        state,
+        action as Action<UserIdentityCreateParams>
+      );
+      break;
+  }
+  return newState;
 };
+
+function handleUserIdentityCreate(
+  state: UserIdentitiesState,
+  action: Action<UserIdentityCreateParams>
+): UserIdentitiesState {
+  return produce(state, (draft) => {
+    draft.byId[action.params.userIdentity._id] = action.params.userIdentity;
+    draft.allIds.push(action.params.userIdentity._id);
+    draft.currentIdentity = action.params.userIdentity._id;
+  });
+}

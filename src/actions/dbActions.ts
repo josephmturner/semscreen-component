@@ -20,10 +20,19 @@ import { Action, Actions } from "./constants";
 import { ThunkAction } from "redux-thunk";
 
 import { AppState } from "../reducers/store";
-import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
+import {
+  MessageI,
+  PointI,
+  PointReferenceI,
+  UserIdentity,
+} from "../dataModels/dataModels";
+import { UserIdentityCreateParams } from "./userIdentitiesActions";
+import { DisplayAppParams } from "./displayAppActions";
 
 import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
+
+import randomColor from "randomcolor";
 
 export interface LoadDatabaseParams {
   db: USHINBase;
@@ -33,7 +42,7 @@ export const loadDatabase = (): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<LoadDatabaseParams>
+  Action<LoadDatabaseParams | UserIdentityCreateParams | DisplayAppParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -43,7 +52,7 @@ export const loadDatabase = (): ThunkAction<
         return console.warn("Tried to load DB when already loaded");
 
       const leveldown = leveljs;
-      const db = new USHINBase({ leveldown, authorURL: "anonymous" });
+      const db = new USHINBase({ leveldown, authorURL: "author" });
 
       console.log("DB", db);
       await db.init();
@@ -55,6 +64,27 @@ export const loadDatabase = (): ThunkAction<
         params: {
           db,
         },
+      });
+
+      //TODO: Add type guard isUserIdentity here
+      let userIdentity = (await db.getAuthorInfo()) as UserIdentity;
+      if (userIdentity.name === undefined || userIdentity.color === undefined) {
+        await db.setAuthorInfo({
+          ...userIdentity,
+          name: "anonymous",
+          color: randomColor(),
+        });
+        userIdentity = (await db.getAuthorInfo()) as UserIdentity;
+      }
+      dispatch({
+        type: Actions.userIdentityCreate,
+        params: {
+          userIdentity,
+        },
+      });
+      dispatch({
+        type: Actions.displayApp,
+        params: {},
       });
     })();
   };

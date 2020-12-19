@@ -27,7 +27,13 @@ import { DraftPointsState } from "../reducers/draftPoints";
 
 export const userIdentites: UserIdentitiesState = {
   byId: {
-    author1: { _id: "author1", name: "KindWoman", color: "#7d3989" },
+    author1: {
+      _id: "author1",
+      //_rev is obviously fake here, _rev should come from PouchDB
+      _rev: "asdf",
+      name: "KindWoman",
+      color: "#7d3989",
+    },
   },
   allIds: ["author1"],
   currentIdentity: "author1",

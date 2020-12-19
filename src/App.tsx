@@ -36,6 +36,7 @@ const App = (props: {
   panels: PanelsState;
   db: DBState;
   loadDatabase: () => void;
+  displayApp: boolean;
 }) => {
   const darkMode = true;
 
@@ -51,35 +52,39 @@ const App = (props: {
 
   return (
     <AppStyles darkMode={darkMode}>
-      <MainPanel>
-        <SemscreenPanel>
-          <SemanticScreen darkMode={darkMode || false} />
-          <PanelButton
-            side={"bottom"}
-            onClick={() => {
-              props.togglePanel({ location: "bottom" });
-            }}
-            onDragOver={onDragOverBottomPanel}
-            darkMode={darkMode}
-          />
-          <PanelButton
-            side={"right"}
-            onClick={() => {
-              props.togglePanel({ location: "right" });
-            }}
-            darkMode={darkMode}
-          />
-        </SemscreenPanel>
-        {props.panels.bottom && (
-          <BottomPanel>
-            <ParkingRegion darkMode={darkMode} />
-          </BottomPanel>
-        )}
-      </MainPanel>
-      {props.panels.right && (
-        <RightPanel>
-          <RightPanelContents darkMode={darkMode} />
-        </RightPanel>
+      {props.displayApp && (
+        <>
+          <MainPanel>
+            <SemscreenPanel>
+              <SemanticScreen darkMode={darkMode || false} />
+              <PanelButton
+                side={"bottom"}
+                onClick={() => {
+                  props.togglePanel({ location: "bottom" });
+                }}
+                onDragOver={onDragOverBottomPanel}
+                darkMode={darkMode}
+              />
+              <PanelButton
+                side={"right"}
+                onClick={() => {
+                  props.togglePanel({ location: "right" });
+                }}
+                darkMode={darkMode}
+              />
+            </SemscreenPanel>
+            {props.panels.bottom && (
+              <BottomPanel>
+                <ParkingRegion darkMode={darkMode} />
+              </BottomPanel>
+            )}
+          </MainPanel>
+          {props.panels.right && (
+            <RightPanel>
+              <RightPanelContents darkMode={darkMode} />
+            </RightPanel>
+          )}
+        </>
       )}
     </AppStyles>
   );
@@ -146,6 +151,7 @@ const mapStateToProps = (state: AppState) => {
   return {
     panels: state.panels,
     db: state.db,
+    displayApp: state.displayApp.display,
   };
 };
 

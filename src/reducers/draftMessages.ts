@@ -60,11 +60,14 @@ export interface DraftMessagesState {
   allIds: string[];
 }
 
+//TODO: Would it be better to not have initial message data, since
+//the author information should come from PouchDB anyway (and
+//therefore shouldn't be hardcoded here)
 export const initialDraftMessagesState: DraftMessagesState = {
   byId: {
     message0: {
       _id: "message0",
-      author: "author1",
+      author: "author",
       shapes: {
         facts: [],
         thoughts: [],
@@ -174,7 +177,7 @@ const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
   produce(state, (draft) => {
     draft.byId[newMessageId] = {
       _id: newMessageId,
-      author: "author1",
+      author: "author",
       shapes: {
         facts: [],
         thoughts: [],

@@ -58,4 +58,8 @@ export const Actions = {
   searchByContent: "searchByContent",
 
   syncWithLocalStorage: "syncWithLocalStorage",
+
+  userIdentityCreate: "userIdentityCreate",
+
+  displayApp: "displayApp",
 };
