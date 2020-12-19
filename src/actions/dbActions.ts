@@ -22,7 +22,7 @@ import { ThunkAction } from "redux-thunk";
 import { AppState } from "../reducers/store";
 import { MessageI, PointI, PointReferenceI } from "../dataModels/dataModels";
 
-import memdown from "memdown";
+import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
 
 export interface LoadDatabaseParams {
@@ -42,7 +42,7 @@ export const loadDatabase = (): ThunkAction<
       if (!state.db.loading)
         return console.warn("Tried to load DB when already loaded");
 
-      const leveldown = memdown;
+      const leveldown = leveljs;
       const db = new USHINBase({ leveldown, authorURL: "anonymous" });
 
       console.log("DB", db);
