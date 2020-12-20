@@ -52,7 +52,7 @@ const PointHoverOptions = (props: Props) => {
 
   let trashDispatch: any;
   switch (props.type) {
-    case "point":
+    case "publishedPoint":
       trashDispatch = () =>
         dispatch(
           pointsDelete({ pointIds: [props.id], deleteSelectedPoints: true })
@@ -72,7 +72,10 @@ const PointHoverOptions = (props: Props) => {
   );
 
   const referenceData = useSelector((state: AppState) => {
-    return props.type === "point" && getReferenceData(props.id, state);
+    return (
+      (props.type === "publishedPoint" || props.type === "draftPoint") &&
+      getReferenceData(props.id, state)
+    );
   });
 
   // Type assertion is okay since ViewOriginalMessageButton only
@@ -141,7 +144,6 @@ const PointHoverOptions = (props: Props) => {
   const TrashButton = () => (
     <RedButtonSvg
       onClick={(e: React.MouseEvent) => {
-        // In persistedMessages trashDispatch is undefined
         if (trashDispatch) trashDispatch();
         e.stopPropagation();
       }}
@@ -159,7 +161,9 @@ const PointHoverOptions = (props: Props) => {
 
   const HoverButtons = () => {
     switch (props.type) {
-      case "point":
+      case "publishedPoint":
+        return <>{referenceData && <ViewOriginalMessageButton />}</>;
+      case "draftPoint":
         return (
           <>
             {referenceData && <ViewOriginalMessageButton />}
@@ -175,7 +179,7 @@ const PointHoverOptions = (props: Props) => {
             <TrashButton />
           </>
         );
-      case "persistedMessage":
+      case "publishedMessage":
         return null;
     }
   };

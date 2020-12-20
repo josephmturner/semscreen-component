@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
 import MainPoint from "./MainPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
@@ -64,13 +64,9 @@ interface AllProps extends OwnProps {
 const CenterRegion = (props: AllProps) => {
   const { region, isExpanded, pointId } = props;
 
-  const [isHovered, setIsHovered] = useState(false);
-
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: (item: DraggablePointType) => {
-      setIsHovered(false); // Don't display PointHoverOptions
-
       if (!isExpanded) {
         props.setExpandedRegion({ region });
       }
@@ -122,8 +118,6 @@ const CenterRegion = (props: AllProps) => {
             pointId={pointId}
             isExpanded={props.isExpanded}
             isSelected={props.selectedPoints.includes(pointId)}
-            isHovered={isHovered}
-            setIsHovered={setIsHovered}
             darkMode={props.darkMode}
           />
         )}

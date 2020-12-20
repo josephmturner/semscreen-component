@@ -106,9 +106,10 @@ export interface CursorPositionI {
 }
 
 export type PointHoverOptionsType =
-  | "point"
+  | "draftPoint"
+  | "publishedPoint"
   | "draftMessage"
-  | "persistedMessage";
+  | "publishedMessage";
 
 export interface UserIdentity extends AuthorI {
   _rev: string;

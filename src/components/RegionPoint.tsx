@@ -279,6 +279,9 @@ const RegionPoint = (props: AllProps) => {
 
   const [isHovered, setIsHovered] = useState(false);
 
+  const renderPointHoverOptions =
+    isHovered && (props.isDraft || props.referenceData);
+
   return (
     <Point
       id={props.pointId}
@@ -297,9 +300,9 @@ const RegionPoint = (props: AllProps) => {
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
     >
-      {isHovered && props.isDraft && (
+      {renderPointHoverOptions && (
         <PointHoverOptions
-          type="point"
+          type={props.isDraft ? "draftPoint" : "publishedPoint"}
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}

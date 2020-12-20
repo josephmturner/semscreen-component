@@ -126,10 +126,8 @@ const MessageListItem = (props: AllProps) => {
         suppressAutoFocus={true}
         suppressBorder={true}
       >
-        {isHovered && (
+        {isHovered && props.type !== "publishedMessage" && (
           <PointHoverOptions
-            //TODO: consider a better way to tell PointHoverOptions
-            //what its parent is
             type={props.type}
             id={props.messageId}
             darkMode={props.darkMode}

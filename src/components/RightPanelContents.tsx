@@ -93,7 +93,7 @@ const RightPanelContents = (props: AllProps) => {
         {results.map(({ _id }: MessageI, i: number) => (
           <MessageListItem
             key={_id}
-            type="persistedMessage"
+            type="publishedMessage"
             messageId={_id}
             index={i}
             darkMode={props.darkMode}

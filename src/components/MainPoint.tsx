@@ -15,7 +15,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   getPointIfReference,
@@ -49,8 +49,6 @@ interface OwnProps {
   pointId: string;
   isExpanded: boolean;
   isSelected: boolean;
-  isHovered: boolean;
-  setIsHovered: (isHovered: boolean) => void;
   darkMode: boolean;
 }
 
@@ -108,6 +106,11 @@ const MainPoint = (props: AllProps) => {
   drag(pointRef.current?.img);
   preview(pointRef.current?.div);
 
+  const [isHovered, setIsHovered] = useState(false);
+
+  const renderPointHoverOptions =
+    isHovered && (props.isDraft || props.referenceData);
+
   return (
     <Point
       id={props.pointId}
@@ -115,8 +118,8 @@ const MainPoint = (props: AllProps) => {
       referenceData={props.referenceData}
       isMainPoint={true}
       isSelected={props.isSelected}
-      isHovered={props.isHovered}
-      setIsHovered={props.setIsHovered}
+      isHovered={isHovered}
+      setIsHovered={setIsHovered}
       readOnlyOverride={!props.isDraft}
       darkMode={props.darkMode}
       handleChange={handleChange}
@@ -126,9 +129,9 @@ const MainPoint = (props: AllProps) => {
       handleShapeIconClick={handleShapeIconClick}
       ref={pointRef}
     >
-      {props.isHovered && props.isDraft && (
+      {renderPointHoverOptions && (
         <PointHoverOptions
-          type={"point"}
+          type={props.isDraft ? "draftPoint" : "publishedPoint"}
           id={props.pointId}
           darkMode={props.darkMode}
           isSelected={props.isSelected}
