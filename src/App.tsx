@@ -16,15 +16,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
 import { AppState } from "./reducers/store";
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
-import { DBState } from "./reducers/db";
-import { loadDatabase } from "./actions/dbActions";
 
 import SemanticScreen from "./components/SemanticScreen";
 import PanelButton from "./components/PanelButton";
@@ -34,9 +32,6 @@ import RightPanelContents from "./components/RightPanelContents";
 const App = (props: {
   togglePanel: (params: PanelParams) => void;
   panels: PanelsState;
-  db: DBState;
-  loadDatabase: () => void;
-  displayApp: boolean;
 }) => {
   const darkMode = true;
 
@@ -46,45 +41,37 @@ const App = (props: {
     }
   };
 
-  useEffect(() => {
-    if (props?.db?.loading) props.loadDatabase();
-  });
-
   return (
     <AppStyles darkMode={darkMode}>
-      {props.displayApp && (
-        <>
-          <MainPanel>
-            <SemscreenPanel>
-              <SemanticScreen darkMode={darkMode || false} />
-              <PanelButton
-                side={"bottom"}
-                onClick={() => {
-                  props.togglePanel({ location: "bottom" });
-                }}
-                onDragOver={onDragOverBottomPanel}
-                darkMode={darkMode}
-              />
-              <PanelButton
-                side={"right"}
-                onClick={() => {
-                  props.togglePanel({ location: "right" });
-                }}
-                darkMode={darkMode}
-              />
-            </SemscreenPanel>
-            {props.panels.bottom && (
-              <BottomPanel>
-                <ParkingRegion darkMode={darkMode} />
-              </BottomPanel>
-            )}
-          </MainPanel>
-          {props.panels.right && (
-            <RightPanel>
-              <RightPanelContents darkMode={darkMode} />
-            </RightPanel>
-          )}
-        </>
+      <MainPanel>
+        <SemscreenPanel>
+          <SemanticScreen darkMode={darkMode || false} />
+          <PanelButton
+            side={"bottom"}
+            onClick={() => {
+              props.togglePanel({ location: "bottom" });
+            }}
+            onDragOver={onDragOverBottomPanel}
+            darkMode={darkMode}
+          />
+          <PanelButton
+            side={"right"}
+            onClick={() => {
+              props.togglePanel({ location: "right" });
+            }}
+            darkMode={darkMode}
+          />
+        </SemscreenPanel>
+        {props.panels.bottom && (
+          <BottomPanel>
+            <ParkingRegion darkMode={darkMode} />
+          </BottomPanel>
+        )}
+      </MainPanel>
+      {props.panels.right && (
+        <RightPanel>
+          <RightPanelContents darkMode={darkMode} />
+        </RightPanel>
       )}
     </AppStyles>
   );
@@ -150,14 +137,11 @@ const RightPanel = styled.div`
 const mapStateToProps = (state: AppState) => {
   return {
     panels: state.panels,
-    db: state.db,
-    displayApp: state.displayApp.display,
   };
 };
 
 const mapActionsToProps = {
   togglePanel,
-  loadDatabase,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(App);

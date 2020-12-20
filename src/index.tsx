@@ -23,42 +23,87 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
 import { store } from "./reducers/store";
-import { Provider } from "react-redux";
+import { connect, Provider } from "react-redux";
 
-import { useDispatch } from "react-redux";
-import { syncWithLocalStorage } from "./actions/localStorageActions";
+import { AppState } from "./reducers/store";
+import { DBState } from "./reducers/db";
+import { DisplayAppState } from "./reducers/displayApp";
+import { DraftMessagesState } from "./reducers/draftMessages";
+import { DraftPointsState } from "./reducers/draftPoints";
+
+import { loadDatabase } from "./actions/dbActions";
+import {
+  syncWithLocalStorage,
+  SyncWithLocalStorageParams,
+} from "./actions/localStorageActions";
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-const AppWithPersistence = () => {
-  store.subscribe(() => {
-    const reduxState = store.getState();
-    const localStorageState = {
-      draftMessages: reduxState.draftMessages,
-      draftPoints: reduxState.draftPoints,
-    };
+const mapStateToProps = (state: AppState) => {
+  return {
+    db: state.db,
+    displayApp: state.displayApp,
+    draftMessages: state.draftMessages,
+    draftPoints: state.draftPoints,
+  };
+};
+
+const mapActionsToProps = {
+  loadDatabase,
+  syncWithLocalStorage,
+};
+
+interface Props {
+  db: DBState;
+  displayApp: DisplayAppState;
+  draftMessages: DraftMessagesState;
+  draftPoints: DraftPointsState;
+  loadDatabase: () => void;
+  syncWithLocalStorage: (params: SyncWithLocalStorageParams) => void;
+}
+
+const AppWithPersistence = connect(
+  mapStateToProps,
+  mapActionsToProps
+)(
+  ({
+    db,
+    displayApp,
+    draftMessages,
+    draftPoints,
+    loadDatabase,
+    syncWithLocalStorage,
+  }: Props) => {
+    const localStorageState = { draftMessages, draftPoints };
 
     localStorage.setItem(
       "localStorageState",
       JSON.stringify(localStorageState)
     );
-  });
 
-  const dispatch = useDispatch();
+    useEffect(() => {
+      window.onstorage = () => {
+        const rawLocalStorageState = localStorage.getItem("localStorageState");
+        if (rawLocalStorageState) {
+          const localStorageState = JSON.parse(rawLocalStorageState);
+          syncWithLocalStorage({ localStorageState });
+        }
+      };
+      return () => {
+        window.onstorage = null;
+      };
+    }, [syncWithLocalStorage]);
 
-  useEffect(() => {
-    window.onstorage = () => {
-      const rawLocalStorageState = localStorage.getItem("localStorageState");
-      if (rawLocalStorageState) {
-        const localStorageState = JSON.parse(rawLocalStorageState);
-        dispatch(syncWithLocalStorage({ localStorageState }));
-      }
-    };
-  });
+    useEffect(() => {
+      if (db?.loading) loadDatabase();
+    }, [db, loadDatabase]);
 
-  return <App />;
-};
+    if (!displayApp.display) return null;
+
+    return <App />;
+  }
+);
 
 ReactDOM.render(
   <React.StrictMode>
