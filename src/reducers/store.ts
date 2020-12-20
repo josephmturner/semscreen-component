@@ -74,7 +74,7 @@ import {
 } from "./displayApp";
 
 import {
-  userIdentites,
+  userIdentities,
   authors,
   messages,
   points,
@@ -92,7 +92,7 @@ let populatedInitialDraftPointsState: DraftPointsState | null = null;
 // Set this to true if you want test data (you must delete localStorage)
 const populateWithTestData = false;
 if (populateWithTestData) {
-  populatedInitialUserIdentitiesState = userIdentites;
+  populatedInitialUserIdentitiesState = userIdentities;
   populatedInitialAuthorsState = authors;
   populatedInitialMessagesState = messages;
   populatedInitialPointsState = points;

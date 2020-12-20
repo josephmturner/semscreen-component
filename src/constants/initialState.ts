@@ -25,7 +25,7 @@ import { PointsState } from "../reducers/points";
 import { DraftMessagesState } from "../reducers/draftMessages";
 import { DraftPointsState } from "../reducers/draftPoints";
 
-export const userIdentites: UserIdentitiesState = {
+export const userIdentities: UserIdentitiesState = {
   byId: {
     author1: {
       _id: "author1",
