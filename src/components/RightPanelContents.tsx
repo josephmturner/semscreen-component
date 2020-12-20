@@ -56,8 +56,6 @@ const RightPanelContents = (props: AllProps) => {
     e.preventDefault();
   };
 
-  const [searchButtonIsHovered, setSearchButtonIsHovered] = useState(false);
-
   return (
     <>
       {props.authorId && (
@@ -77,19 +75,8 @@ const RightPanelContents = (props: AllProps) => {
             darkMode={props.darkMode}
             alt="Search for published messages"
           />{" "}
-          <StyledButton
-            type="submit"
-            darkMode={props.darkMode}
-            searchButtonIsHovered={searchButtonIsHovered}
-            onMouseEnter={() => setSearchButtonIsHovered(true)}
-            onMouseLeave={() => setSearchButtonIsHovered(false)}
-            title="Search"
-          >
-            <StyledSvg
-              darkMode={props.darkMode}
-              searchButtonIsHovered={searchButtonIsHovered}
-              viewBox="0 0 16 16"
-            >
+          <StyledButton type="submit" darkMode={props.darkMode} title="Search">
+            <StyledSvg darkMode={props.darkMode} viewBox="0 0 16 16">
               <path
                 fillRule="evenodd"
                 d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"
@@ -119,7 +106,6 @@ const RightPanelContents = (props: AllProps) => {
 
 interface StyledProps {
   darkMode?: boolean;
-  searchButtonIsHovered?: boolean;
 }
 
 const SearchDiv = styled.div<StyledProps>`
@@ -153,10 +139,16 @@ const StyledButton = styled.button<StyledProps>`
   right: 0;
   height: 100%;
   width: 1.5rem;
-  background-color: ${(props) =>
-    props.searchButtonIsHovered ? "var(--colorFG)" : "var(--colorBG)"};
+  background-color: var(--colorBG);
   border-radius: 3px;
   border: 1.5px solid var(--colorFG);
+
+  :hover {
+    background-color: var(--colorFG);
+    & > svg {
+      fill: var(--colorBG);
+    }
+  }
 `;
 
 const StyledSvg = styled.svg<StyledProps>`
@@ -166,8 +158,7 @@ const StyledSvg = styled.svg<StyledProps>`
   position: absolute;
   height: 1rem;
   width: 1rem;
-  fill: ${(props) =>
-    props.searchButtonIsHovered ? "var(--colorBG)" : "var(--colorFG)"};
+  fill: var(--colorFG);
 `;
 
 const ResultsContainer = styled.div`
