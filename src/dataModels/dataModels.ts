@@ -110,4 +110,8 @@ export type PointHoverOptionsType =
   | "draftMessage"
   | "persistedMessage";
 
+export interface UserIdentity extends AuthorI {
+  _rev: string;
+}
+
 //TODO: validate that main points are contained in the points array

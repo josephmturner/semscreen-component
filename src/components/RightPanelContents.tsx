@@ -36,7 +36,7 @@ interface OwnProps {
 }
 
 interface AllProps extends OwnProps {
-  authorId: string;
+  authorId?: string;
   results: MessageI[];
   searchByContent: (params: SearchByContentParams) => void;
 }
@@ -60,12 +60,14 @@ const RightPanelContents = (props: AllProps) => {
 
   return (
     <>
-      <Banner
-        authorId={props.authorId}
-        placement={{ top: "0", right: "0" }}
-        fontSize={"large"}
-        darkMode={props.darkMode}
-      />
+      {props.authorId && (
+        <Banner
+          authorId={props.authorId}
+          placement={{ top: "0", right: "0" }}
+          fontSize={"large"}
+          darkMode={props.darkMode}
+        />
+      )}
       <SearchDiv darkMode={props.darkMode}>
         <form onSubmit={handleSubmit}>
           <StyledInput
