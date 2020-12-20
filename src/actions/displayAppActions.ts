@@ -20,7 +20,7 @@ import { Action, Actions } from "./constants";
 
 export interface DisplayAppParams {}
 
-export const userIdentityCreate = (
+export const userIdentityLoad = (
   params: DisplayAppParams
 ): Action<DisplayAppParams> => {
   return {

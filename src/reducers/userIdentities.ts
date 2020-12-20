@@ -47,7 +47,7 @@ export const userIdentitiesReducer = (
 ): UserIdentitiesState => {
   let newState = state;
   switch (action.type) {
-    case Actions.userIdentityCreate:
+    case Actions.userIdentityLoad:
       newState = handleUserIdentityCreate(
         state,
         action as Action<UserIdentityCreateParams>

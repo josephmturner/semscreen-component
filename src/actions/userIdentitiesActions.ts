@@ -23,11 +23,11 @@ export interface UserIdentityCreateParams {
   userIdentity: UserIdentity;
 }
 
-export const userIdentityCreate = (
+export const userIdentityLoad = (
   params: UserIdentityCreateParams
 ): Action<UserIdentityCreateParams> => {
   return {
-    type: Actions.userIdentityCreate,
+    type: Actions.userIdentityLoad,
     params,
   };
 };

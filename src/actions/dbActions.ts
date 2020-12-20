@@ -77,7 +77,7 @@ export const loadDatabase = (): ThunkAction<
         userIdentity = (await db.getAuthorInfo()) as UserIdentity;
       }
       dispatch({
-        type: Actions.userIdentityCreate,
+        type: Actions.userIdentityLoad,
         params: {
           userIdentity,
         },

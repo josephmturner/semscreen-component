@@ -59,7 +59,7 @@ export const Actions = {
 
   syncWithLocalStorage: "syncWithLocalStorage",
 
-  userIdentityCreate: "userIdentityCreate",
+  userIdentityLoad: "userIdentityLoad",
 
   displayApp: "displayApp",
 };
