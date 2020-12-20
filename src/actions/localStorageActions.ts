@@ -17,23 +17,13 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "./constants";
-import { AuthorsState } from "../reducers/authors";
-import { MessagesState } from "../reducers/messages";
-import { PointsState } from "../reducers/points";
 import { DraftMessagesState } from "../reducers/draftMessages";
 import { DraftPointsState } from "../reducers/draftPoints";
-import { UserIdentitiesState } from "../reducers/userIdentities";
 
-// This action is not called in the authors, messages, points
-// or userIdentities reducers, since their state is synced with PouchDB.
 export interface SyncWithLocalStorageParams {
   localStorageState: {
-    authors: AuthorsState;
-    messages: MessagesState;
-    points: PointsState;
     draftMessages: DraftMessagesState;
     draftPoints: DraftPointsState;
-    userIdentities: UserIdentitiesState;
   };
 }
 

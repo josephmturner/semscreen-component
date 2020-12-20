@@ -35,12 +35,8 @@ const AppWithPersistence = () => {
   store.subscribe(() => {
     const reduxState = store.getState();
     const localStorageState = {
-      authors: reduxState.authors,
-      messages: reduxState.messages,
-      points: reduxState.points,
       draftMessages: reduxState.draftMessages,
       draftPoints: reduxState.draftPoints,
-      userIdentities: reduxState.userIdentities,
     };
 
     localStorage.setItem(
