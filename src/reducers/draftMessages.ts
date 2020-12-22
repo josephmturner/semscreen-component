@@ -46,7 +46,7 @@ import {
 } from "../actions/draftPointsActions";
 import {
   _MessageCreateParams,
-  _MessageDeleteParams,
+  MessageDeleteParams,
   SetMainParams,
 } from "../actions/draftMessagesActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
@@ -82,8 +82,7 @@ export const draftMessagesReducer = (
     case Actions.messageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<_MessageDeleteParams>,
-        appState
+        action as Action<MessageDeleteParams>
       );
       break;
     case Actions.pointCreate:
@@ -216,22 +215,12 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: DraftMessagesState,
-  action: Action<_MessageDeleteParams>,
-  appState: AppState
+  action: Action<MessageDeleteParams>
 ): DraftMessagesState {
-  const messageId = action.params.messageId;
-
-  let newState = produce(state, (draft) => {
-    delete draft.byId[messageId];
-    draft.allIds = draft.allIds.filter((id) => id !== messageId);
+  return produce(state, (draft) => {
+    delete draft.byId[action.params.messageId];
+    draft.allIds = draft.allIds.filter((id) => id !== action.params.messageId);
   });
-
-  // Create a new message if the current message was deleted and no drafts are left
-  if (action.params.newMessageId !== undefined) {
-    newState = _createEmptyMessage(newState, action.params.newMessageId);
-  }
-
-  return newState;
 }
 
 function handlePointCreate(

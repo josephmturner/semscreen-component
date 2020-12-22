@@ -41,8 +41,6 @@ import {
 } from "../actions/draftPointsActions";
 import {
   _MessageCreateParams,
-  //TODO: Does it matter if I pass MessageDeleteParams to the points reducer,
-  //which should never make use of the optional newMessageId prop?
   MessageDeleteParams,
 } from "../actions/draftMessagesActions";
 import { SyncWithLocalStorageParams } from "../actions/localStorageActions";

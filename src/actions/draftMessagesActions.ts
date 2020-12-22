@@ -79,43 +79,34 @@ export interface MessageDeleteParams {
   messageId: string;
 }
 
-export interface _MessageDeleteParams extends MessageDeleteParams {
-  newMessageId?: string;
-}
-
 export const messageDelete = (
   params: MessageDeleteParams
-): ThunkAction<void, AppState, unknown, Action<_MessageDeleteParams>> => {
+): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<MessageDeleteParams | _MessageCreateParams>
+> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
     const remainingDraftMessages = appState.draftMessages.allIds.filter(
       (id) => id !== params.messageId
     );
 
-    // Pass newMessageId if the message to be deleted is both the current message AND the last draft message
-    let newMessageId;
+    // If the message to be deleted is the current message and there are no more draft messages, make a new one:
     if (
       remainingDraftMessages[0] === undefined &&
       appState.semanticScreen.currentMessage === params.messageId
     ) {
-      newMessageId = uuidv4();
+      const newMessageId = uuidv4();
+      dispatch(
+        _messageCreate({
+          newMessageId,
+        })
+      );
     }
 
-    dispatch(
-      _messageDelete({
-        newMessageId,
-        ...params,
-      })
-    );
-  };
-};
-
-export const _messageDelete = (
-  params: _MessageDeleteParams
-): Action<_MessageDeleteParams> => {
-  return {
-    type: Actions.messageDelete,
-    params,
+    dispatch({ type: Actions.messageDelete, params });
   };
 };
 

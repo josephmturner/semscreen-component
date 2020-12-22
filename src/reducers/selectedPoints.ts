@@ -32,7 +32,7 @@ import {
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import {
   _MessageCreateParams,
-  _MessageDeleteParams,
+  MessageDeleteParams,
 } from "../actions/draftMessagesActions";
 
 export interface SelectedPointsState {
@@ -87,7 +87,7 @@ export const selectedPointsReducer = (
     case Actions.messageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<_MessageDeleteParams>,
+        action as Action<MessageDeleteParams>,
         appState
       );
       break;
@@ -170,7 +170,7 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: SelectedPointsState,
-  action: Action<_MessageDeleteParams>,
+  action: Action<MessageDeleteParams>,
   appState: AppState
 ) {
   return produce(state, (draft) => {

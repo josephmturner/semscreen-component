@@ -24,7 +24,7 @@ import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _PointsMoveToMessageParams } from "../actions/draftPointsActions";
 import {
   _MessageCreateParams,
-  _MessageDeleteParams,
+  MessageDeleteParams,
 } from "../actions/draftMessagesActions";
 import { containsPoints } from "../dataModels/pointUtils";
 
@@ -57,7 +57,7 @@ export const semanticScreenReducer = (
     case Actions.messageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<_MessageDeleteParams>,
+        action as Action<MessageDeleteParams>,
         appState
       );
       break;
@@ -97,7 +97,7 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: SemanticScreenState,
-  action: Action<_MessageDeleteParams>,
+  action: Action<MessageDeleteParams>,
   appState: AppState
 ) {
   // Only switch messages if the current message is deleted
@@ -109,13 +109,9 @@ function handleMessageDelete(
     const remainingDraftMessages = appState.draftMessages.allIds.filter(
       (id) => id !== action.params.messageId
     );
+
     // Switch to the next message in the list of drafts...
-    if (action.params.newMessageId === undefined) {
-      draft.currentMessage = remainingDraftMessages[0];
-    } else {
-      // If none exist, switch to the newly created message
-      draft.currentMessage = action.params.newMessageId;
-    }
+    draft.currentMessage = remainingDraftMessages[0];
   });
 }
 
