@@ -332,7 +332,7 @@ function handleMessageDelete(
   return produce(state, (draft) => {
     pointIdsToDelete.forEach((id) => {
       delete draft.byId[id];
-      draft.allIds.filter((pId) => pId !== id);
+      draft.allIds = draft.allIds.filter((pId) => pId !== id);
     });
   });
 }

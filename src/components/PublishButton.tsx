@@ -37,7 +37,9 @@ interface AllProps extends OwnProps {
 }
 
 const PublishButton = (props: AllProps) => {
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
     const { points, message, saveMessage } = props;
     if (!message.main) {
       window.alert(

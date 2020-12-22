@@ -58,6 +58,7 @@ export const loadDatabase = (): ThunkAction<
       console.log("DB", db);
       await db.init();
 
+      //For debugging
       (window as any).db = db;
 
       dispatch({
