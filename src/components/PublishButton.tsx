@@ -21,7 +21,11 @@ import { connect } from "react-redux";
 
 import { AppState } from "../reducers/store";
 import { DraftMessageI, MessageI } from "../dataModels/dataModels";
-import { saveMessage, PointMapping } from "../actions/dbActions";
+import {
+  PointMapping,
+  saveMessage,
+  SaveMessageParams,
+} from "../actions/dbActions";
 
 import { ButtonSvg } from "./PointHoverOptions";
 
@@ -33,7 +37,7 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   message: DraftMessageI;
   points: PointMapping;
-  saveMessage: (message: MessageI, points: PointMapping) => void;
+  saveMessage: (params: SaveMessageParams) => void;
 }
 
 const PublishButton = (props: AllProps) => {
@@ -48,7 +52,7 @@ const PublishButton = (props: AllProps) => {
     } else {
       console.log("Saving", { message, points });
       // Type assertion is okay here since main point must exist
-      saveMessage(message as MessageI, points);
+      saveMessage({ message: message as MessageI, points });
     }
   };
 

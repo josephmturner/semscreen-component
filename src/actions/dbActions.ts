@@ -129,8 +129,7 @@ export interface SaveMessageParams {
 }
 
 export const saveMessage = (
-  message: MessageI,
-  points: PointMapping
+  params: SaveMessageParams
 ): ThunkAction<
   void,
   AppState,
@@ -146,7 +145,7 @@ export const saveMessage = (
       const db = state.db.db;
 
       try {
-        const messageId = await db.addMessage(message, points);
+        const messageId = await db.addMessage(params.message, params.points);
         const publishedMessage = await db.getMessage(messageId);
         const publishedPoints = await db.getPointsForMessage(publishedMessage);
         dispatch({
