@@ -204,7 +204,7 @@ const HoverLine = styled.div<{ darkMode?: boolean }>`
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const currentMessageId = state.semanticScreen.currentMessage;
+  const currentMessageId = state.semanticScreen.currentMessage as string;
   const isDraft = state.draftMessages.allIds.includes(currentMessageId);
 
   let hoverIndex;

@@ -133,19 +133,15 @@ const CenterRegion = (props: AllProps) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-  const currentMessage = getMessageById(
-    state.semanticScreen.currentMessage,
-    state
-  );
+  const currentMessageId = state.semanticScreen.currentMessage as string;
+  const currentMessage = getMessageById(currentMessageId, state);
 
   const isExpanded = state.expandedRegion.region === "center";
 
   return {
     pointId: currentMessage.main,
     selectedPoints: state.selectedPoints.pointIds,
-    isDraft: state.draftMessages.allIds.includes(
-      state.semanticScreen.currentMessage
-    ),
+    isDraft: state.draftMessages.allIds.includes(currentMessageId),
     isExpanded,
   };
 };

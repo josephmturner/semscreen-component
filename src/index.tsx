@@ -30,6 +30,7 @@ import { DBState } from "./reducers/db";
 import { DisplayAppState } from "./reducers/displayApp";
 import { DraftMessagesState } from "./reducers/draftMessages";
 import { DraftPointsState } from "./reducers/draftPoints";
+import { SemanticScreenState } from "./reducers/semanticScreen";
 
 import { loadDatabase } from "./actions/dbActions";
 import {
@@ -46,6 +47,7 @@ const mapStateToProps = (state: AppState) => {
     displayApp: state.displayApp,
     draftMessages: state.draftMessages,
     draftPoints: state.draftPoints,
+    semanticScreen: state.semanticScreen,
   };
 };
 
@@ -60,6 +62,7 @@ interface Props {
   draftMessages: DraftMessagesState;
   draftPoints: DraftPointsState;
   loadDatabase: () => void;
+  semanticScreen: SemanticScreenState;
   syncWithLocalStorage: (params: SyncWithLocalStorageParams) => void;
 }
 
@@ -73,9 +76,10 @@ const AppWithPersistence = connect(
     draftMessages,
     draftPoints,
     loadDatabase,
+    semanticScreen,
     syncWithLocalStorage,
   }: Props) => {
-    const localStorageState = { draftMessages, draftPoints };
+    const localStorageState = { draftMessages, draftPoints, semanticScreen };
 
     localStorage.setItem(
       "localStorageState",

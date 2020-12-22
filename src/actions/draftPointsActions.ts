@@ -84,7 +84,7 @@ function _shouldCopy(
     return false;
   }
 
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
   const message = getMessageById(currentMessageId, appState);
 
   if (appState.draftMessages.allIds.includes(message._id)) {

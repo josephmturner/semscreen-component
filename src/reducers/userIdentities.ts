@@ -23,10 +23,6 @@ import { AppState } from "./store";
 
 import produce from "immer";
 
-//TODO: Similar issue to initialDraftMessagesState - since the
-//userIdentities data comes from Pouch, the type signature of
-//currentIdentity has to be optional, which makes for weird rendering
-//in the display components
 export interface UserIdentitiesState {
   byId: {
     [_id: string]: UserIdentity;

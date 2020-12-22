@@ -66,7 +66,7 @@ export function createReferenceTo(
   appState: AppState
 ): PointReferenceI {
   const point = getPointById(pointId, appState);
-  const messageId = appState.semanticScreen.currentMessage;
+  const messageId = appState.semanticScreen.currentMessage as string;
   const authorId = getMessageById(messageId, appState).author;
   const newPointId = uuidv4();
 

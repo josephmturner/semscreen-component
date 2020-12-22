@@ -100,15 +100,16 @@ if (populateWithTestData) {
   populatedInitialDraftPointsState = draftPoints;
 }
 
-const rawPersistedState = localStorage.getItem("localStorageState");
-const persistedState = rawPersistedState ? JSON.parse(rawPersistedState) : null;
-if (persistedState) {
-  populatedInitialUserIdentitiesState = persistedState.userIdentities;
-  populatedInitialAuthorsState = persistedState.authors;
-  populatedInitialMessagesState = persistedState.messages;
-  populatedInitialPointsState = persistedState.points;
-  populatedInitialDraftMessagesState = persistedState.draftMessages;
-  populatedInitialDraftPointsState = persistedState.draftPoints;
+let populatedInitialSemanticScreenState: SemanticScreenState;
+
+const rawLocalStorageState = localStorage.getItem("localStorageState");
+const localStorageState = rawLocalStorageState
+  ? JSON.parse(rawLocalStorageState)
+  : null;
+if (localStorageState) {
+  populatedInitialDraftMessagesState = localStorageState.draftMessages;
+  populatedInitialDraftPointsState = localStorageState.draftPoints;
+  populatedInitialSemanticScreenState = localStorageState.semanticScreen;
 }
 
 export interface AppState {
@@ -145,7 +146,8 @@ function createAppStore() {
     selectedPoints: initialSelectedPointsState,
     panels: initialPanelsState,
     drag: initialDragState,
-    semanticScreen: initialSemanticScreenState,
+    semanticScreen:
+      populatedInitialSemanticScreenState ?? initialSemanticScreenState,
     search: initialSearchState,
     displayApp: initialDisplayAppState,
   };

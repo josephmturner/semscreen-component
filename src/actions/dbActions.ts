@@ -18,6 +18,7 @@
 */
 import { Action, Actions } from "./constants";
 import { ThunkAction } from "redux-thunk";
+import { v4 as uuidv4 } from "uuid";
 
 import { AppState } from "../reducers/store";
 import {
@@ -82,6 +83,30 @@ export const loadDatabase = (): ThunkAction<
           userIdentity,
         },
       });
+
+      //Load currentMessage from a prior session; if none exists, create a
+      //new message
+      const rawLocalStorageState = localStorage.getItem("localStorageState");
+      let localStorageState;
+      if (rawLocalStorageState) {
+        localStorageState = JSON.parse(rawLocalStorageState);
+      }
+
+      const currentMessage = localStorageState.semanticScreen.currentMessage;
+      if (currentMessage !== undefined) {
+        dispatch({
+          type: Actions.setCurrentMessage,
+          params: { messageId: currentMessage },
+        });
+      } else {
+        const newMessageId = uuidv4();
+
+        dispatch({
+          type: Actions.messageCreate,
+          params: { newMessageId },
+        });
+      }
+
       dispatch({
         type: Actions.displayApp,
         params: {},

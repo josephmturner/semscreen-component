@@ -29,15 +29,10 @@ import {
 import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
-  currentMessage: string;
+  currentMessage?: string;
 }
 
-//TODO: Since the current message is not tracked by localStorage,
-//initialSemanticScreenState should be null (and the UI should render
-//a welcome screen or a draft message if it exists or something else)
-export const initialSemanticScreenState = {
-  currentMessage: "message0",
-};
+export const initialSemanticScreenState = {};
 
 export const semanticScreenReducer = (
   state = initialSemanticScreenState,
@@ -90,7 +85,11 @@ function handleMessageCreate(
   action: Action<_MessageCreateParams>,
   appState: AppState
 ) {
-  if (!containsPoints(state.currentMessage, appState)) return state;
+  if (
+    state.currentMessage !== undefined &&
+    !containsPoints(state.currentMessage, appState)
+  )
+    return state;
   return {
     currentMessage: action.params.newMessageId,
   };

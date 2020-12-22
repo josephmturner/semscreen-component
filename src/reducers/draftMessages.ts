@@ -60,27 +60,9 @@ export interface DraftMessagesState {
   allIds: string[];
 }
 
-//TODO: Would it be better to not have initial message data, since
-//the author information should come from PouchDB anyway (and
-//therefore shouldn't be hardcoded here)
 export const initialDraftMessagesState: DraftMessagesState = {
-  byId: {
-    message0: {
-      _id: "message0",
-      author: "author",
-      shapes: {
-        facts: [],
-        thoughts: [],
-        feelings: [],
-        needs: [],
-        topics: [],
-        actions: [],
-        people: [],
-      },
-      createdAt: new Date(),
-    },
-  },
-  allIds: ["message0"],
+  byId: {},
+  allIds: [],
 };
 
 export const draftMessagesReducer = (
@@ -199,15 +181,22 @@ function handleMessageCreate(
 ): DraftMessagesState {
   //Prevent creation of many empty messages...
 
-  if (!containsPoints(appState.semanticScreen.currentMessage, appState))
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  if (
+    currentMessageId !== undefined &&
+    !containsPoints(currentMessageId, appState)
+  )
     return state;
 
   // Create a new message...
 
-  let newState: DraftMessagesState = _createEmptyMessage(
+  const newState: DraftMessagesState = _createEmptyMessage(
     state,
     action.params.newMessageId
   );
+
+  // (If initializing the app, stop here)
+  if (currentMessageId === undefined) return newState;
 
   // Then use handlePointsMoveToMessage() to move the points into the new message
 
@@ -253,7 +242,8 @@ function handlePointCreate(
   const shape = action.params.point.shape;
 
   return produce(state, (draft) => {
-    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = draft.byId[currentMessageId];
     if (action.params.main) {
       currentMessage.main = action.params.newPointId;
     } else {
@@ -284,7 +274,7 @@ function handlePointsMoveToMessage(
   appState: AppState
 ): DraftMessagesState {
   const { messageId } = action.params;
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
 
   if (messageId === appState.semanticScreen.currentMessage) {
     return state;
@@ -340,7 +330,7 @@ function handlePointsMoveWithinMessage(
       region === getPointIfReference(p, appState).shape
   );
 
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
   const pointIds: string[] = state.byId[currentMessageId].shapes[region];
   let newPointIds: string[] = [];
 
@@ -376,7 +366,8 @@ function handlePointsDelete(
   appState: AppState
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = draft.byId[currentMessageId];
 
     let pointIds = action.params.pointIds;
     if (action.params.deleteSelectedPoints) {
@@ -395,7 +386,7 @@ function handleSetMain(
   let newMain = appState.selectedPoints.pointIds[0];
   if (action.params.pointId) newMain = action.params.pointId;
 
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
   const currentMain = state.byId[currentMessageId].main;
   if (newMain === currentMain) return state;
 
@@ -424,7 +415,7 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): DraftMessagesState {
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
 
   const withinBounds = (index: number): boolean => {
     return (
@@ -480,7 +471,8 @@ function handleSplitIntoTwoPoints(
   }
 
   return produce(state, (draft) => {
-    const currentMessage = draft.byId[appState.semanticScreen.currentMessage];
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = draft.byId[currentMessageId];
 
     const shape = getPointIfReference(action.params.pointId, appState).shape;
     const splitPointIndex =
@@ -501,7 +493,7 @@ const handleSetCurrentMessage = (
   appState: AppState
 ): DraftMessagesState => {
   //Delete an empty message when the SemanticScreen no longer displays it
-  const currentMessageId = appState.semanticScreen.currentMessage;
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
   if (
     containsPoints(currentMessageId, appState) ||
     action.params.messageId === currentMessageId

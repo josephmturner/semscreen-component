@@ -225,8 +225,8 @@ function handleCombinePoints(
   action: Action<CombinePointsParams>,
   appState: AppState
 ): DraftPointsState {
-  const currentMessage =
-    appState.draftMessages.byId[appState.semanticScreen.currentMessage];
+  const currentMessageId = appState.semanticScreen.currentMessage as string;
+  const currentMessage = appState.draftMessages.byId[currentMessageId];
   const withinBounds = (index: number): boolean => {
     return (
       index >= 0 && index < currentMessage.shapes[action.params.shape].length

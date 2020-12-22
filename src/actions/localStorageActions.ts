@@ -20,6 +20,9 @@ import { Action, Actions } from "./constants";
 import { DraftMessagesState } from "../reducers/draftMessages";
 import { DraftPointsState } from "../reducers/draftPoints";
 
+//Note that syncWithLocalStorage does not sync the currentMessage.
+//The persisted value of currentMessage is only accessed in the
+//loadDatabase action inside src/actions/dbActions.ts
 export interface SyncWithLocalStorageParams {
   localStorageState: {
     draftMessages: DraftMessagesState;

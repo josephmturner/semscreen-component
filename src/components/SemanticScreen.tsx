@@ -103,10 +103,8 @@ const SemanticScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-  const currentMessage = getMessageById(
-    state.semanticScreen.currentMessage,
-    state
-  );
+  const currentMessageId = state.semanticScreen.currentMessage as string;
+  const currentMessage = getMessageById(currentMessageId, state);
   const authorId = currentMessage.author;
   const BGColor = isUserIdentity(authorId, state)
     ? state.userIdentities.byId[authorId].color

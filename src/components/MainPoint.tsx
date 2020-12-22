@@ -143,13 +143,12 @@ const MainPoint = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state);
+  const currentMessageId = state.semanticScreen.currentMessage as string;
 
   return {
     point: getPointIfReference(ownProps.pointId, state),
     referenceData,
-    isDraft: state.draftMessages.allIds.includes(
-      state.semanticScreen.currentMessage
-    ),
+    isDraft: state.draftMessages.allIds.includes(currentMessageId),
   };
 };
 

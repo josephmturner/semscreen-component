@@ -324,6 +324,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   )
     isDragHovered = true;
 
+  const currentMessageId = state.semanticScreen.currentMessage as string;
   return {
     point,
     referenceData,
@@ -332,9 +333,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
-    isDraft: state.draftMessages.allIds.includes(
-      state.semanticScreen.currentMessage
-    ),
+    isDraft: state.draftMessages.allIds.includes(currentMessageId),
     isDragHovered,
   };
 };

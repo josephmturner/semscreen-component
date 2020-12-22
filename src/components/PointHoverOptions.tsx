@@ -67,9 +67,10 @@ const PointHoverOptions = (props: Props) => {
     (state: AppState) => state.selectedPoints.pointIds[0] !== undefined
   );
 
-  const currentMessageIsDraft = useSelector((state: AppState) =>
-    state.draftMessages.allIds.includes(state.semanticScreen.currentMessage)
-  );
+  const currentMessageIsDraft = useSelector((state: AppState) => {
+    const currentMessageId = state.semanticScreen.currentMessage as string;
+    return state.draftMessages.allIds.includes(currentMessageId);
+  });
 
   const referenceData = useSelector((state: AppState) => {
     return (

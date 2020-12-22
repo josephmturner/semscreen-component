@@ -33,8 +33,10 @@ export interface _MessageCreateParams extends MessageCreateParams {
 }
 
 function _shouldCopy(appState: AppState): boolean {
-  return appState.messages.allIds.includes(
-    appState.semanticScreen.currentMessage
+  const currentMessageId = appState.semanticScreen.currentMessage;
+  return (
+    currentMessageId !== undefined &&
+    appState.messages.allIds.includes(currentMessageId)
   );
 }
 
