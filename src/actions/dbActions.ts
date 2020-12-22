@@ -86,21 +86,24 @@ export const loadDatabase = (): ThunkAction<
         },
       });
 
-      //Load currentMessage from a prior session; if none exists, create a
-      //new message
+      //Load currentMessageId from a prior session...
       const rawLocalStorageState = localStorage.getItem("localStorageState");
       let localStorageState;
       if (rawLocalStorageState) {
         localStorageState = JSON.parse(rawLocalStorageState);
       }
 
-      const currentMessage = localStorageState.semanticScreen.currentMessage;
-      if (currentMessage !== undefined) {
-        dispatch({
-          type: Actions.setCurrentMessage,
-          params: { messageId: currentMessage },
-        });
+      const currentMessageId = localStorageState.semanticScreen.currentMessage;
+      if (currentMessageId !== undefined) {
+        //Get currentMessage from ushin-db if it's a published message
+        //(if it's a draft, the redux store already got it from localStorage)
+        if (!state.draftMessages.allIds.includes(currentMessageId)) {
+          const message = await db.getMessage(currentMessageId);
+          const points = await db.getPointsForMessage(message);
+          dispatch({ type: Actions.saveMessage, params: { message, points } });
+        }
       } else {
+        //If no currentMessageId exists in localStorage, create a new message
         const newMessageId = uuidv4();
 
         dispatch({
