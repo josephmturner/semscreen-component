@@ -29,6 +29,7 @@ import {
 } from "../dataModels/dataModels";
 import { UserIdentityCreateParams } from "./userIdentitiesActions";
 import { DisplayAppParams } from "./displayAppActions";
+import { MessageDeleteParams } from "./draftMessagesActions";
 
 import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
@@ -127,7 +128,12 @@ export interface SaveMessageParams {
 export const saveMessage = (
   message: MessageI,
   points: PointMapping
-): ThunkAction<void, AppState, unknown, Action<SaveMessageParams>> => {
+): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<SaveMessageParams | MessageDeleteParams>
+> => {
   return (dispatch, getState) => {
     (async () => {
       const state = getState();
@@ -145,6 +151,12 @@ export const saveMessage = (
           params: {
             message: publishedMessage,
             points: publishedPoints,
+          },
+        });
+        dispatch({
+          type: Actions.messageDelete,
+          params: {
+            messageId,
           },
         });
       } catch (e) {

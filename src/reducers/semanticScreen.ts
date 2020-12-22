@@ -16,16 +16,11 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import produce from "immer";
-
 import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _PointsMoveToMessageParams } from "../actions/draftPointsActions";
-import {
-  _MessageCreateParams,
-  MessageDeleteParams,
-} from "../actions/draftMessagesActions";
+import { _MessageCreateParams } from "../actions/draftMessagesActions";
 import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
@@ -51,13 +46,6 @@ export const semanticScreenReducer = (
       newState = handleMessageCreate(
         state,
         action as Action<_MessageCreateParams>,
-        appState
-      );
-      break;
-    case Actions.messageDelete:
-      newState = handleMessageDelete(
-        state,
-        action as Action<MessageDeleteParams>,
         appState
       );
       break;
@@ -93,26 +81,6 @@ function handleMessageCreate(
   return {
     currentMessage: action.params.newMessageId,
   };
-}
-
-function handleMessageDelete(
-  state: SemanticScreenState,
-  action: Action<MessageDeleteParams>,
-  appState: AppState
-) {
-  // Only switch messages if the current message is deleted
-  if (state.currentMessage !== action.params.messageId) {
-    return state;
-  }
-
-  return produce(state, (draft) => {
-    const remainingDraftMessages = appState.draftMessages.allIds.filter(
-      (id) => id !== action.params.messageId
-    );
-
-    // Switch to the next message in the list of drafts...
-    draft.currentMessage = remainingDraftMessages[0];
-  });
 }
 
 function handlePointsMove(

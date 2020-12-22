@@ -93,17 +93,24 @@ export const messageDelete = (
       (id) => id !== params.messageId
     );
 
-    // If the message to be deleted is the current message and there are no more draft messages, make a new one:
-    if (
-      remainingDraftMessages[0] === undefined &&
-      appState.semanticScreen.currentMessage === params.messageId
-    ) {
-      const newMessageId = uuidv4();
-      dispatch(
-        _messageCreate({
-          newMessageId,
-        })
-      );
+    //If we're deleting the current message, we must set the current message
+    if (appState.semanticScreen.currentMessage === params.messageId) {
+      //Set it to the next draft message...
+      if (remainingDraftMessages[0] !== undefined) {
+        const nextDraftId = remainingDraftMessages[0];
+        dispatch({
+          type: Actions.setCurrentMessage,
+          params: { messageId: nextDraftId },
+        });
+      } else {
+        //If no more drafts exists, create a new one
+        const newMessageId = uuidv4();
+        dispatch(
+          _messageCreate({
+            newMessageId,
+          })
+        );
+      }
     }
 
     dispatch({ type: Actions.messageDelete, params });

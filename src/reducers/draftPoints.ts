@@ -44,7 +44,6 @@ import {
   MessageDeleteParams,
 } from "../actions/draftMessagesActions";
 import { SyncWithLocalStorageParams } from "../actions/localStorageActions";
-import { SaveMessageParams } from "../actions/dbActions";
 
 export interface DraftPointsState {
   byId: {
@@ -123,9 +122,6 @@ export const draftPointsReducer = (
         state,
         action as Action<SyncWithLocalStorageParams>
       );
-      break;
-    case Actions.saveMessage:
-      newState = handleSaveMessage(state, action as Action<SaveMessageParams>);
       break;
   }
   return newState;
@@ -342,16 +338,4 @@ const handleSyncWithLocalStorage = (
   action: Action<SyncWithLocalStorageParams>
 ): DraftPointsState => {
   return action.params.localStorageState.draftPoints;
-};
-
-const handleSaveMessage = (
-  state: DraftPointsState,
-  action: Action<SaveMessageParams>
-): DraftPointsState => {
-  return produce(state, (draft) => {
-    Object.values(action.params.points).forEach((point) => {
-      delete draft.byId[point._id];
-      draft.allIds = draft.allIds.filter((id) => id !== point._id);
-    });
-  });
 };
