@@ -72,20 +72,20 @@ export const draftMessagesReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.draftMessageCreate:
-      newState = handleMessageCreate(
+      newState = handleDraftMessageCreate(
         state,
         action as Action<_DraftMessageCreateParams>,
         appState
       );
       break;
     case Actions.draftMessageDelete:
-      newState = handleMessageDelete(
+      newState = handleDraftMessageDelete(
         state,
         action as Action<DraftMessageDeleteParams>
       );
       break;
     case Actions.draftPointCreate:
-      newState = handlePointCreate(
+      newState = handleDraftPointCreate(
         state,
         action as Action<_DraftPointCreateParams>,
         appState
@@ -106,7 +106,7 @@ export const draftMessagesReducer = (
       );
       break;
     case Actions.draftPointsDelete:
-      newState = handlePointsDelete(
+      newState = handleDraftPointsDelete(
         state,
         action as Action<DraftPointsDeleteParams>,
         appState
@@ -169,7 +169,7 @@ const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
     draft.allIds.unshift(newMessageId);
   });
 
-function handleMessageCreate(
+function handleDraftMessageCreate(
   state: DraftMessagesState,
   action: Action<_DraftMessageCreateParams>,
   appState: AppState
@@ -209,7 +209,7 @@ function handleMessageCreate(
   });
 }
 
-function handleMessageDelete(
+function handleDraftMessageDelete(
   state: DraftMessagesState,
   action: Action<DraftMessageDeleteParams>
 ): DraftMessagesState {
@@ -219,7 +219,7 @@ function handleMessageDelete(
   });
 }
 
-function handlePointCreate(
+function handleDraftPointCreate(
   state: DraftMessagesState,
   action: Action<_DraftPointCreateParams>,
   appState: AppState
@@ -345,7 +345,7 @@ function handlePointsMoveWithinMessage(
   });
 }
 
-function handlePointsDelete(
+function handleDraftPointsDelete(
   state: DraftMessagesState,
   action: Action<DraftPointsDeleteParams>,
   appState: AppState

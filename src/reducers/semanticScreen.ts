@@ -43,7 +43,7 @@ export const semanticScreenReducer = (
       );
       break;
     case Actions.draftMessageCreate:
-      newState = handleMessageCreate(
+      newState = handleDraftMessageCreate(
         state,
         action as Action<_DraftMessageCreateParams>,
         appState
@@ -68,7 +68,7 @@ function handleSetCurrentMessage(
   };
 }
 
-function handleMessageCreate(
+function handleDraftMessageCreate(
   state: SemanticScreenState,
   action: Action<_DraftMessageCreateParams>,
   appState: AppState

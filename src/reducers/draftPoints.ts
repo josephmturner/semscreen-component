@@ -65,13 +65,13 @@ export const draftPointsReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.draftPointCreate:
-      newState = handlePointCreate(
+      newState = handleDraftPointCreate(
         state,
         action as Action<_DraftPointCreateParams>
       );
       break;
     case Actions.draftPointUpdate:
-      newState = handlePointUpdate(
+      newState = handleDraftPointUpdate(
         state,
         action as Action<DraftPointUpdateParams>
       );
@@ -91,7 +91,7 @@ export const draftPointsReducer = (
       );
       break;
     case Actions.draftPointsDelete:
-      newState = handlePointsDelete(
+      newState = handleDraftPointsDelete(
         state,
         action as Action<DraftPointsDeleteParams>,
         appState
@@ -111,13 +111,13 @@ export const draftPointsReducer = (
       );
       break;
     case Actions.draftMessageCreate:
-      newState = handleMessageCreate(
+      newState = handleDraftMessageCreate(
         state,
         action as Action<_DraftMessageCreateParams>
       );
       break;
     case Actions.draftMessageDelete:
-      newState = handleMessageDelete(
+      newState = handleDraftMessageDelete(
         state,
         action as Action<DraftMessageDeleteParams>,
         appState
@@ -133,7 +133,7 @@ export const draftPointsReducer = (
   return newState;
 };
 
-function handlePointCreate(
+function handleDraftPointCreate(
   state: DraftPointsState,
   action: Action<_DraftPointCreateParams>
 ): DraftPointsState {
@@ -147,7 +147,7 @@ function handlePointCreate(
   });
 }
 
-function handlePointUpdate(
+function handleDraftPointUpdate(
   state: DraftPointsState,
   action: Action<DraftPointUpdateParams>
 ): DraftPointsState {
@@ -198,7 +198,7 @@ function handlePointsMoveToMessage(
   });
 }
 
-function handlePointsDelete(
+function handleDraftPointsDelete(
   state: DraftPointsState,
   action: Action<DraftPointsDeleteParams>,
   appState: AppState
@@ -211,7 +211,7 @@ function handlePointsDelete(
   return produce(state, (draft) => {
     pointIds.forEach((id) => {
       delete draft.byId[id];
-      draft.allIds.filter((pId) => pId !== id);
+      draft.allIds = draft.allIds.filter((pId) => pId !== id);
     });
   });
 }
@@ -301,7 +301,7 @@ function handleSplitIntoTwoPoints(
   });
 }
 
-function handleMessageCreate(
+function handleDraftMessageCreate(
   state: DraftPointsState,
   action: Action<_DraftMessageCreateParams>
 ): DraftPointsState {
@@ -319,7 +319,7 @@ function handleMessageCreate(
   });
 }
 
-function handleMessageDelete(
+function handleDraftMessageDelete(
   state: DraftPointsState,
   action: Action<DraftMessageDeleteParams>,
   appState: AppState

@@ -66,7 +66,7 @@ export const draftMessageCreate = (
   };
 };
 
-const _draftMessageCreate = (
+export const _draftMessageCreate = (
   params: _DraftMessageCreateParams
 ): Action<_DraftMessageCreateParams> => {
   return {
@@ -113,7 +113,16 @@ export const draftMessageDelete = (
       }
     }
 
-    dispatch({ type: Actions.draftMessageDelete, params });
+    dispatch(_draftMessageDelete(params));
+  };
+};
+
+export const _draftMessageDelete = (
+  params: DraftMessageDeleteParams
+): Action<DraftMessageDeleteParams> => {
+  return {
+    type: Actions.draftMessageDelete,
+    params,
   };
 };
 

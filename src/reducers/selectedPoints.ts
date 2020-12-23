@@ -60,7 +60,7 @@ export const selectedPointsReducer = (
       newState = handleTogglePoint(state, action as Action<TogglePointParams>);
       break;
     case Actions.draftPointsDelete:
-      newState = handlePointsDelete(
+      newState = handleDraftPointsDelete(
         state,
         action as Action<DraftPointsDeleteParams>
       );
@@ -79,13 +79,13 @@ export const selectedPointsReducer = (
       );
       break;
     case Actions.draftMessageCreate:
-      newState = handleMessageCreate(
+      newState = handleDraftMessageCreate(
         state,
         action as Action<_DraftMessageCreateParams>
       );
       break;
     case Actions.draftMessageDelete:
-      newState = handleMessageDelete(
+      newState = handleDraftMessageDelete(
         state,
         action as Action<DraftMessageDeleteParams>,
         appState
@@ -125,7 +125,7 @@ function handleTogglePoint(
   };
 }
 
-function handlePointsDelete(
+function handleDraftPointsDelete(
   state: SelectedPointsState,
   action: Action<DraftPointsDeleteParams>
 ): SelectedPointsState {
@@ -156,7 +156,7 @@ function handleSetCurrentMessage(
   };
 }
 
-function handleMessageCreate(
+function handleDraftMessageCreate(
   state: SelectedPointsState,
   action: Action<_DraftMessageCreateParams>
 ): SelectedPointsState {
@@ -168,7 +168,7 @@ function handleMessageCreate(
   };
 }
 
-function handleMessageDelete(
+function handleDraftMessageDelete(
   state: SelectedPointsState,
   action: Action<DraftMessageDeleteParams>,
   appState: AppState

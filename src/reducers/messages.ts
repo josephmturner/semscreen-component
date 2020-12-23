@@ -20,7 +20,7 @@ import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 
 import { MessageI } from "../dataModels/dataModels";
-import { PopulateMessageAndPointsParams } from "../actions/dbActions";
+import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
 
 import produce from "immer";
 
@@ -44,18 +44,18 @@ export const messagesReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.populateMessageAndPoints:
-      newState = handleSaveMessage(
+      newState = handlePopulateMessageAndPoints(
         state,
-        action as Action<PopulateMessageAndPointsParams>
+        action as Action<_PopulateMessageAndPointsParams>
       );
       break;
   }
   return newState;
 };
 
-const handleSaveMessage = (
+const handlePopulateMessageAndPoints = (
   state: MessagesState,
-  action: Action<PopulateMessageAndPointsParams>
+  action: Action<_PopulateMessageAndPointsParams>
 ): MessagesState => {
   return produce(state, (draft) => {
     draft.byId[action.params.message._id] = action.params.message;

@@ -19,7 +19,7 @@
 import { Action, Actions } from "../actions/constants";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { AppState } from "./store";
-import { PopulateMessageAndPointsParams } from "../actions/dbActions";
+import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
 
 import produce from "immer";
 
@@ -39,18 +39,18 @@ export const pointsReducer = (
   let newState = state;
   switch (action.type) {
     case Actions.populateMessageAndPoints:
-      newState = handleSaveMessage(
+      newState = handlePopulateMessageAndPoints(
         state,
-        action as Action<PopulateMessageAndPointsParams>
+        action as Action<_PopulateMessageAndPointsParams>
       );
       break;
   }
   return newState;
 };
 
-function handleSaveMessage(
+function handlePopulateMessageAndPoints(
   state: PointsState,
-  action: Action<PopulateMessageAndPointsParams>
+  action: Action<_PopulateMessageAndPointsParams>
 ) {
   return produce(state, (draft) => {
     Object.values(action.params.points).forEach(

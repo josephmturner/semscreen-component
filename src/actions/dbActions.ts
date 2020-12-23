@@ -27,9 +27,16 @@ import {
   PointReferenceI,
   UserIdentity,
 } from "../dataModels/dataModels";
-import { UserIdentityCreateParams } from "./userIdentitiesActions";
-import { DisplayAppParams } from "./displayAppActions";
-import { DraftMessageDeleteParams } from "./draftMessagesActions";
+import {
+  userIdentityLoad,
+  UserIdentityCreateParams,
+} from "./userIdentitiesActions";
+import { displayApp, DisplayAppParams } from "./displayAppActions";
+import {
+  _draftMessageCreate,
+  _draftMessageDelete,
+  DraftMessageDeleteParams,
+} from "./draftMessagesActions";
 
 import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
@@ -79,12 +86,7 @@ export const loadDatabase = (): ThunkAction<
         });
         userIdentity = (await db.getAuthorInfo()) as UserIdentity;
       }
-      dispatch({
-        type: Actions.userIdentityLoad,
-        params: {
-          userIdentity,
-        },
-      });
+      dispatch(userIdentityLoad({ userIdentity }));
 
       //Load currentMessageId from a prior session...
       const rawLocalStorageState = localStorage.getItem("localStorageState");
@@ -100,25 +102,16 @@ export const loadDatabase = (): ThunkAction<
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
           const message = await db.getMessage(currentMessageId);
           const points = await db.getPointsForMessage(message);
-          dispatch({
-            type: Actions.populateMessageAndPoints,
-            params: { message, points },
-          });
+          dispatch(populateMessageAndPoints({ message, points }));
         }
       } else {
         //If no currentMessageId exists in localStorage, create a new message
         const newMessageId = uuidv4();
 
-        dispatch({
-          type: Actions.draftMessageCreate,
-          params: { newMessageId },
-        });
+        dispatch(_draftMessageCreate({ newMessageId }));
       }
 
-      dispatch({
-        type: Actions.displayApp,
-        params: {},
-      });
+      dispatch(displayApp({}));
     })();
   };
 };
@@ -126,18 +119,18 @@ export const loadDatabase = (): ThunkAction<
 export interface PointMapping {
   [id: string]: PointI | PointReferenceI;
 }
-export interface PopulateMessageAndPointsParams {
+export interface SaveMessageParams {
   message: MessageI;
   points: PointMapping;
 }
 
-export const populateMessageAndPoints = (
-  params: PopulateMessageAndPointsParams
+export const saveMessage = (
+  params: SaveMessageParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<PopulateMessageAndPointsParams | DraftMessageDeleteParams>
+  Action<_PopulateMessageAndPointsParams | DraftMessageDeleteParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -151,22 +144,27 @@ export const populateMessageAndPoints = (
         const messageId = await db.addMessage(params.message, params.points);
         const publishedMessage = await db.getMessage(messageId);
         const publishedPoints = await db.getPointsForMessage(publishedMessage);
-        dispatch({
-          type: Actions.populateMessageAndPoints,
-          params: {
+        dispatch(
+          populateMessageAndPoints({
             message: publishedMessage,
             points: publishedPoints,
-          },
-        });
-        dispatch({
-          type: Actions.draftMessageDelete,
-          params: {
-            messageId,
-          },
-        });
+          })
+        );
+        dispatch(_draftMessageDelete({ messageId }));
       } catch (e) {
         console.log(e);
       }
     })();
+  };
+};
+
+export interface _PopulateMessageAndPointsParams extends SaveMessageParams {}
+
+export const populateMessageAndPoints = (
+  params: _PopulateMessageAndPointsParams
+): Action<_PopulateMessageAndPointsParams> => {
+  return {
+    type: Actions.populateMessageAndPoints,
+    params,
   };
 };
