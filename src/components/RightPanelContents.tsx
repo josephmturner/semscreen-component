@@ -29,7 +29,6 @@ import {
   searchByContent,
   SearchByContentParams,
 } from "../actions/searchActions";
-import { MessageI } from "../dataModels/dataModels";
 
 interface OwnProps {
   darkMode?: boolean;
@@ -37,7 +36,7 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   authorId?: string;
-  results: MessageI[];
+  results: string[];
   searchByContent: (params: SearchByContentParams) => void;
 }
 
@@ -51,7 +50,6 @@ const RightPanelContents = (props: AllProps) => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log(searchQuery);
     searchByContent({ searchQuery });
     e.preventDefault();
   };
@@ -90,7 +88,7 @@ const RightPanelContents = (props: AllProps) => {
         </form>
       </SearchDiv>
       <ResultsContainer>
-        {results.map(({ _id }: MessageI, i: number) => (
+        {results.map((_id: string, i: number) => (
           <MessageListItem
             key={_id}
             type="publishedMessage"

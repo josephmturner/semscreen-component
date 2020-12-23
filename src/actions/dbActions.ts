@@ -100,7 +100,7 @@ export const loadDatabase = (): ThunkAction<
         //Get currentMessage from ushin-db if it's a published message
         //(if it's a draft, the redux store already got it from localStorage)
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
-          const { messages, points } = await getMessageAndPoints(
+          const { messages, points } = await _getMessagesAndPoints(
             [currentMessageId],
             db
           );
@@ -145,7 +145,10 @@ export const saveMessage = (
 
       try {
         const messageId = await db.addMessage(params.message, params.points);
-        const { messages, points } = await getMessageAndPoints([messageId], db);
+        const { messages, points } = await _getMessagesAndPoints(
+          [messageId],
+          db
+        );
 
         dispatch(populateMessageAndPoints({ messages, points }));
 
@@ -171,7 +174,10 @@ export const populateMessageAndPoints = (
   };
 };
 
-const getMessageAndPoints = async (messageIds: string[], db: USHINBase) => {
+export const _getMessagesAndPoints = async (
+  messageIds: string[],
+  db: USHINBase
+) => {
   const messages = await Promise.all(messageIds.map((id) => db.getMessage(id)));
 
   const arrayOfPointMappings: PointMapping[] = await Promise.all(
