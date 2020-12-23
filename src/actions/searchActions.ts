@@ -5,7 +5,7 @@ import { AppState } from "../reducers/store";
 
 import {
   _getMessagesAndPoints,
-  populateMessageAndPoints,
+  _populateMessageAndPoints,
   _PopulateMessageAndPointsParams,
 } from "./dbActions";
 
@@ -38,7 +38,7 @@ export const searchByContent = (
       const results = _results.map((r) => r._id);
       const { messages, points } = await _getMessagesAndPoints(results, db);
 
-      dispatch(populateMessageAndPoints({ messages, points }));
+      dispatch(_populateMessageAndPoints({ messages, points }));
 
       dispatch(
         _searchByContent({

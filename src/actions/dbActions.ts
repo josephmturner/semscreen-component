@@ -104,7 +104,7 @@ export const loadDatabase = (): ThunkAction<
             [currentMessageId],
             db
           );
-          dispatch(populateMessageAndPoints({ messages, points }));
+          dispatch(_populateMessageAndPoints({ messages, points }));
         }
       } else {
         //If no currentMessageId exists in localStorage, create a new message
@@ -150,7 +150,7 @@ export const saveMessage = (
           db
         );
 
-        dispatch(populateMessageAndPoints({ messages, points }));
+        dispatch(_populateMessageAndPoints({ messages, points }));
 
         dispatch(_draftMessageDelete({ messageId }));
       } catch (e) {
@@ -165,7 +165,7 @@ export interface _PopulateMessageAndPointsParams {
   points: PointMapping;
 }
 
-export const populateMessageAndPoints = (
+export const _populateMessageAndPoints = (
   params: _PopulateMessageAndPointsParams
 ): Action<_PopulateMessageAndPointsParams> => {
   return {
