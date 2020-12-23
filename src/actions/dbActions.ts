@@ -100,9 +100,11 @@ export const loadDatabase = (): ThunkAction<
         //Get currentMessage from ushin-db if it's a published message
         //(if it's a draft, the redux store already got it from localStorage)
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
-          const message = await db.getMessage(currentMessageId);
-          const points = await db.getPointsForMessage(message);
-          dispatch(populateMessageAndPoints({ message, points }));
+          const { messages, points } = await getMessageAndPoints(
+            [currentMessageId],
+            db
+          );
+          dispatch(populateMessageAndPoints({ messages, points }));
         }
       } else {
         //If no currentMessageId exists in localStorage, create a new message
@@ -119,6 +121,7 @@ export const loadDatabase = (): ThunkAction<
 export interface PointMapping {
   [id: string]: PointI | PointReferenceI;
 }
+
 export interface SaveMessageParams {
   message: MessageI;
   points: PointMapping;
@@ -142,14 +145,10 @@ export const saveMessage = (
 
       try {
         const messageId = await db.addMessage(params.message, params.points);
-        const publishedMessage = await db.getMessage(messageId);
-        const publishedPoints = await db.getPointsForMessage(publishedMessage);
-        dispatch(
-          populateMessageAndPoints({
-            message: publishedMessage,
-            points: publishedPoints,
-          })
-        );
+        const { messages, points } = await getMessageAndPoints([messageId], db);
+
+        dispatch(populateMessageAndPoints({ messages, points }));
+
         dispatch(_draftMessageDelete({ messageId }));
       } catch (e) {
         console.log(e);
@@ -158,7 +157,10 @@ export const saveMessage = (
   };
 };
 
-export interface _PopulateMessageAndPointsParams extends SaveMessageParams {}
+export interface _PopulateMessageAndPointsParams {
+  messages: MessageI[];
+  points: PointMapping;
+}
 
 export const populateMessageAndPoints = (
   params: _PopulateMessageAndPointsParams
@@ -166,5 +168,25 @@ export const populateMessageAndPoints = (
   return {
     type: Actions.populateMessageAndPoints,
     params,
+  };
+};
+
+const getMessageAndPoints = async (messageIds: string[], db: USHINBase) => {
+  const messages = await Promise.all(messageIds.map((id) => db.getMessage(id)));
+
+  const arrayOfPointMappings: PointMapping[] = await Promise.all(
+    messages.map((m) => db.getPointsForMessage(m))
+  );
+
+  const points: PointMapping = {};
+  arrayOfPointMappings.forEach((pointMapping) =>
+    Object.keys(pointMapping).forEach(
+      (pointId) => (points[pointId] = pointMapping[pointId])
+    )
+  );
+
+  return {
+    messages,
+    points,
   };
 };
