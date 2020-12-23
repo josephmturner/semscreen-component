@@ -211,7 +211,7 @@ function handlePointsDelete(
   return produce(state, (draft) => {
     pointIds.forEach((id) => {
       delete draft.byId[id];
-      draft.allIds.filter((pId) => pId !== id);
+      draft.allIds = draft.allIds.filter((pId) => pId !== id);
     });
   });
 }
