@@ -28,10 +28,10 @@ import PointHoverOptions from "./PointHoverOptions";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import {
-  pointUpdate,
-  PointUpdateParams,
-  pointsDelete,
-  PointsDeleteParams,
+  draftPointUpdate,
+  DraftPointUpdateParams,
+  draftPointsDelete,
+  DraftPointsDeleteParams,
 } from "../actions/draftPointsActions";
 import { setMain, SetMainParams } from "../actions/draftMessagesActions";
 import {
@@ -56,9 +56,9 @@ interface AllProps extends OwnProps {
   point: PointI;
   referenceData: PointReferenceI | null;
   isDraft: boolean;
-  pointUpdate: (params: PointUpdateParams) => void;
+  draftPointUpdate: (params: DraftPointUpdateParams) => void;
   setMain: (params: SetMainParams) => void;
-  pointsDelete: (params: PointsDeleteParams) => void;
+  draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
@@ -76,7 +76,7 @@ const MainPoint = (props: AllProps) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    props.pointUpdate({
+    props.draftPointUpdate({
       point: { ...props.point, content: e.target.value },
     });
   };
@@ -95,7 +95,8 @@ const MainPoint = (props: AllProps) => {
   };
 
   const handleBlur = () => {
-    if (!props.point.content) props.pointsDelete({ pointIds: [props.pointId] });
+    if (!props.point.content)
+      props.draftPointsDelete({ pointIds: [props.pointId] });
   };
 
   const { drag, preview } = useDragPoint(props.pointId, 0);
@@ -153,9 +154,9 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 };
 
 const mapActionsToProps = {
-  pointUpdate,
+  draftPointUpdate,
   setMain,
-  pointsDelete,
+  draftPointsDelete,
   togglePoint,
   setSelectedPoints,
   setCurrentMessage,

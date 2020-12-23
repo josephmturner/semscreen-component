@@ -26,8 +26,8 @@ import {
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
 import {
-  messageCreate,
-  MessageCreateParams,
+  draftMessageCreate,
+  DraftMessageCreateParams,
 } from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
@@ -44,19 +44,19 @@ interface AllProps extends OwnProps {
   selectedPointIds: string[];
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  messageCreate: (params: MessageCreateParams) => void;
+  draftMessageCreate: (params: DraftMessageCreateParams) => void;
   hoverOver: (params: HoverOverParams) => void;
 }
 
 const NewMessageButton = (props: AllProps) => {
   const handleClick = () => {
-    props.messageCreate({});
+    props.draftMessageCreate({});
   };
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.messageCreate({});
+      props.draftMessageCreate({});
     },
     hover: () => {
       //When hovering over the NewMessageButton, drag.context will be set
@@ -171,7 +171,7 @@ const mapStateToProps = (state: AppState) => {
 
 const mapActionsToProps = {
   setCurrentMessage,
-  messageCreate,
+  draftMessageCreate,
   hoverOver,
 };
 

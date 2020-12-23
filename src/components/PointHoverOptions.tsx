@@ -35,9 +35,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../reducers/store";
 import {
   pointsMoveToMessage,
-  pointsDelete,
+  draftPointsDelete,
 } from "../actions/draftPointsActions";
-import { messageDelete, setMain } from "../actions/draftMessagesActions";
+import { draftMessageDelete, setMain } from "../actions/draftMessagesActions";
 import { setCurrentMessage } from "../actions/semanticScreenActions";
 
 interface Props {
@@ -55,11 +55,15 @@ const PointHoverOptions = (props: Props) => {
     case "draftPoint":
       trashDispatch = () =>
         dispatch(
-          pointsDelete({ pointIds: [props.id], deleteSelectedPoints: true })
+          draftPointsDelete({
+            pointIds: [props.id],
+            deleteSelectedPoints: true,
+          })
         );
       break;
     case "draftMessage":
-      trashDispatch = () => dispatch(messageDelete({ messageId: props.id }));
+      trashDispatch = () =>
+        dispatch(draftMessageDelete({ messageId: props.id }));
       break;
   }
 

@@ -29,7 +29,7 @@ import {
 } from "../dataModels/dataModels";
 import { UserIdentityCreateParams } from "./userIdentitiesActions";
 import { DisplayAppParams } from "./displayAppActions";
-import { MessageDeleteParams } from "./draftMessagesActions";
+import { DraftMessageDeleteParams } from "./draftMessagesActions";
 
 import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
@@ -100,14 +100,17 @@ export const loadDatabase = (): ThunkAction<
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
           const message = await db.getMessage(currentMessageId);
           const points = await db.getPointsForMessage(message);
-          dispatch({ type: Actions.saveMessage, params: { message, points } });
+          dispatch({
+            type: Actions.populateMessageAndPoints,
+            params: { message, points },
+          });
         }
       } else {
         //If no currentMessageId exists in localStorage, create a new message
         const newMessageId = uuidv4();
 
         dispatch({
-          type: Actions.messageCreate,
+          type: Actions.draftMessageCreate,
           params: { newMessageId },
         });
       }
@@ -123,18 +126,18 @@ export const loadDatabase = (): ThunkAction<
 export interface PointMapping {
   [id: string]: PointI | PointReferenceI;
 }
-export interface SaveMessageParams {
+export interface PopulateMessageAndPointsParams {
   message: MessageI;
   points: PointMapping;
 }
 
-export const saveMessage = (
-  params: SaveMessageParams
+export const populateMessageAndPoints = (
+  params: PopulateMessageAndPointsParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<SaveMessageParams | MessageDeleteParams>
+  Action<PopulateMessageAndPointsParams | DraftMessageDeleteParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -149,14 +152,14 @@ export const saveMessage = (
         const publishedMessage = await db.getMessage(messageId);
         const publishedPoints = await db.getPointsForMessage(publishedMessage);
         dispatch({
-          type: Actions.saveMessage,
+          type: Actions.populateMessageAndPoints,
           params: {
             message: publishedMessage,
             points: publishedPoints,
           },
         });
         dispatch({
-          type: Actions.messageDelete,
+          type: Actions.draftMessageDelete,
           params: {
             messageId,
           },

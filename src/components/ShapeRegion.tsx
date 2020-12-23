@@ -30,8 +30,8 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
 import {
-  pointCreate,
-  PointCreateParams,
+  draftPointCreate,
+  DraftPointCreateParams,
   pointsMoveWithinMessage,
   PointsMoveWithinMessageParams,
 } from "../actions/draftPointsActions";
@@ -56,7 +56,7 @@ interface AllProps extends OwnProps {
   pointIds: string[];
   isDraft: boolean;
   isExpanded: boolean;
-  pointCreate: (params: PointCreateParams) => void;
+  draftPointCreate: (params: DraftPointCreateParams) => void;
   pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
@@ -124,7 +124,7 @@ const ShapeRegion = (props: AllProps) => {
   });
 
   const createEmptyPoint = () => {
-    props.pointCreate({
+    props.draftPointCreate({
       point: {
         content: "",
         shape,
@@ -231,7 +231,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 };
 
 const mapDispatchToProps = {
-  pointCreate,
+  draftPointCreate,
   pointsMoveWithinMessage,
   setExpandedRegion,
   togglePoint,

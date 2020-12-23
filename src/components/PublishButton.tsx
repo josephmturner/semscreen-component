@@ -23,8 +23,8 @@ import { AppState } from "../reducers/store";
 import { DraftMessageI, MessageI } from "../dataModels/dataModels";
 import {
   PointMapping,
-  saveMessage,
-  SaveMessageParams,
+  populateMessageAndPoints,
+  PopulateMessageAndPointsParams,
 } from "../actions/dbActions";
 
 import { ButtonSvg } from "./PointHoverOptions";
@@ -37,14 +37,14 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   message: DraftMessageI;
   points: PointMapping;
-  saveMessage: (params: SaveMessageParams) => void;
+  populateMessageAndPoints: (params: PopulateMessageAndPointsParams) => void;
 }
 
 const PublishButton = (props: AllProps) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    const { points, message, saveMessage } = props;
+    const { points, message, populateMessageAndPoints } = props;
     if (!message.main) {
       window.alert(
         "Before publishing, please add a main point to your message"
@@ -52,7 +52,7 @@ const PublishButton = (props: AllProps) => {
     } else {
       console.log("Saving", { message, points });
       // Type assertion is okay here since main point must exist
-      saveMessage({ message: message as MessageI, points });
+      populateMessageAndPoints({ message: message as MessageI, points });
     }
   };
 
@@ -78,7 +78,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 };
 
 const mapActionsToProps = {
-  saveMessage,
+  populateMessageAndPoints,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(PublishButton);

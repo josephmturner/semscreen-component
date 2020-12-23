@@ -29,22 +29,22 @@ import {
 } from "../dataModels/dataModels";
 import { createReferenceTo, getMessageById } from "../dataModels/pointUtils";
 
-export interface PointCreateParams {
+export interface DraftPointCreateParams {
   point: PointNoIdI;
   index: number;
   main?: boolean;
 }
 
-export interface _PointCreateParams extends PointCreateParams {
+export interface _DraftPointCreateParams extends DraftPointCreateParams {
   newPointId: string;
 }
 
-export const pointCreate = (
-  params: PointCreateParams
-): Action<_PointCreateParams> => {
+export const draftPointCreate = (
+  params: DraftPointCreateParams
+): Action<_DraftPointCreateParams> => {
   const newPointId = uuidv4();
   return {
-    type: Actions.pointCreate,
+    type: Actions.draftPointCreate,
     params: {
       ...params,
       newPointId,
@@ -52,15 +52,15 @@ export const pointCreate = (
   };
 };
 
-export interface PointUpdateParams {
+export interface DraftPointUpdateParams {
   point: PointI;
 }
 
-export const pointUpdate = (
-  params: PointUpdateParams
-): Action<PointUpdateParams> => {
+export const draftPointUpdate = (
+  params: DraftPointUpdateParams
+): Action<DraftPointUpdateParams> => {
   return {
-    type: Actions.pointUpdate,
+    type: Actions.draftPointUpdate,
     params,
   };
 };
@@ -135,16 +135,16 @@ export const _pointsMoveToMessage = (
   };
 };
 
-export interface PointsDeleteParams {
+export interface DraftPointsDeleteParams {
   pointIds: string[];
   deleteSelectedPoints?: boolean;
 }
 
-export const pointsDelete = (
-  params: PointsDeleteParams
-): Action<PointsDeleteParams> => {
+export const draftPointsDelete = (
+  params: DraftPointsDeleteParams
+): Action<DraftPointsDeleteParams> => {
   return {
-    type: Actions.pointsDelete,
+    type: Actions.draftPointsDelete,
     params,
   };
 };

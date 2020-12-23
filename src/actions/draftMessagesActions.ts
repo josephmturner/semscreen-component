@@ -25,9 +25,9 @@ import { PointI, PointShape, PointReferenceI } from "../dataModels/dataModels";
 import { createReferenceTo } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 
-export interface MessageCreateParams {}
+export interface DraftMessageCreateParams {}
 
-export interface _MessageCreateParams extends MessageCreateParams {
+export interface _DraftMessageCreateParams extends DraftMessageCreateParams {
   newMessageId: string;
   newReferencePoints?: PointReferenceI[];
 }
@@ -40,9 +40,9 @@ function _shouldCopy(appState: AppState): boolean {
   );
 }
 
-export const messageCreate = (
-  params: MessageCreateParams
-): ThunkAction<void, AppState, unknown, Action<_MessageCreateParams>> => {
+export const draftMessageCreate = (
+  params: DraftMessageCreateParams
+): ThunkAction<void, AppState, unknown, Action<_DraftMessageCreateParams>> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
@@ -58,7 +58,7 @@ export const messageCreate = (
     const newMessageId = uuidv4();
 
     dispatch(
-      _messageCreate({
+      _draftMessageCreate({
         newMessageId,
         newReferencePoints,
       })
@@ -66,26 +66,26 @@ export const messageCreate = (
   };
 };
 
-const _messageCreate = (
-  params: _MessageCreateParams
-): Action<_MessageCreateParams> => {
+const _draftMessageCreate = (
+  params: _DraftMessageCreateParams
+): Action<_DraftMessageCreateParams> => {
   return {
-    type: Actions.messageCreate,
+    type: Actions.draftMessageCreate,
     params,
   };
 };
 
-export interface MessageDeleteParams {
+export interface DraftMessageDeleteParams {
   messageId: string;
 }
 
-export const messageDelete = (
-  params: MessageDeleteParams
+export const draftMessageDelete = (
+  params: DraftMessageDeleteParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<MessageDeleteParams | _MessageCreateParams>
+  Action<DraftMessageDeleteParams | _DraftMessageCreateParams>
 > => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
@@ -106,14 +106,14 @@ export const messageDelete = (
         //If no more drafts exists, create a new one
         const newMessageId = uuidv4();
         dispatch(
-          _messageCreate({
+          _draftMessageCreate({
             newMessageId,
           })
         );
       }
     }
 
-    dispatch({ type: Actions.messageDelete, params });
+    dispatch({ type: Actions.draftMessageDelete, params });
   };
 };
 

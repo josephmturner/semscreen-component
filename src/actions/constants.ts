@@ -26,16 +26,16 @@ export const Actions = {
   clearCursorPosition: "clearCursorPosition",
 
   setCurrentMessage: "setCurrentMessage",
-  messageCreate: "messageCreate",
-  messageDelete: "messageDelete",
+  draftMessageCreate: "draftMessageCreate",
+  draftMessageDelete: "draftMessageDelete",
 
   setAuthors: "setAuthors",
 
-  pointCreate: "pointCreate",
-  pointUpdate: "pointUpdate",
+  draftPointCreate: "draftPointCreate",
+  draftPointUpdate: "draftPointUpdate",
   pointsMoveWithinMessage: "pointsMoveWithinMessage",
   pointsMoveToMessage: "pointsMoveToMessage",
-  pointsDelete: "pointsDelete",
+  draftPointsDelete: "draftPointsDelete",
   setMain: "setMain",
   combinePoints: "combinePoints",
   splitIntoTwoPoints: "splitIntoTwoPoints",
@@ -54,7 +54,7 @@ export const Actions = {
   togglePanel: "togglePanel",
 
   loadDatabase: "loadDatabase",
-  saveMessage: "saveMessage",
+  populateMessageAndPoints: "populateMessageAndPoints",
   searchByContent: "searchByContent",
 
   syncWithLocalStorage: "syncWithLocalStorage",

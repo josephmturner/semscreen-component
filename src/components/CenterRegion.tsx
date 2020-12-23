@@ -27,7 +27,10 @@ import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers/store";
-import { pointCreate, PointCreateParams } from "../actions/draftPointsActions";
+import {
+  draftPointCreate,
+  DraftPointCreateParams,
+} from "../actions/draftPointsActions";
 import { setMain, SetMainParams } from "../actions/draftMessagesActions";
 import {
   setExpandedRegion,
@@ -53,7 +56,7 @@ interface AllProps extends OwnProps {
   isExpanded: boolean;
   setMain: (params: SetMainParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
-  pointCreate: (params: PointCreateParams) => void;
+  draftPointCreate: (params: DraftPointCreateParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   hoverOver: (params: HoverOverParams) => void;
@@ -88,7 +91,7 @@ const CenterRegion = (props: AllProps) => {
   });
 
   const createEmptyMain = (shape: PointShape) => {
-    props.pointCreate({
+    props.draftPointCreate({
       point: {
         content: "",
         shape,
@@ -149,7 +152,7 @@ const mapStateToProps = (state: AppState) => {
 const mapDispatchToProps = {
   setMain,
   setExpandedRegion,
-  pointCreate,
+  draftPointCreate,
   togglePoint,
   setSelectedPoints,
   hoverOver,

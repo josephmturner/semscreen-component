@@ -45,10 +45,10 @@ import {
   CombinePointsParams,
   pointsMoveWithinMessage,
   PointsMoveWithinMessageParams,
-  pointUpdate,
-  PointUpdateParams,
-  pointsDelete,
-  PointsDeleteParams,
+  draftPointUpdate,
+  DraftPointUpdateParams,
+  draftPointsDelete,
+  DraftPointsDeleteParams,
 } from "../actions/draftPointsActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 import {
@@ -81,8 +81,8 @@ interface AllProps extends OwnProps {
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
   pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
-  pointUpdate: (params: PointUpdateParams) => void;
-  pointsDelete: (params: PointsDeleteParams) => void;
+  draftPointUpdate: (params: DraftPointUpdateParams) => void;
+  draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   togglePoint: (params: TogglePointParams) => void;
@@ -147,7 +147,7 @@ const RegionPoint = (props: AllProps) => {
   drop(preview(pointRef.current?.div));
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    props.pointUpdate({
+    props.draftPointUpdate({
       point: { ...point, content: e.target.value },
     });
   };
@@ -242,7 +242,7 @@ const RegionPoint = (props: AllProps) => {
   };
 
   const handleBlur = () => {
-    if (!point.content) props.pointsDelete({ pointIds: [pointId] });
+    if (!point.content) props.draftPointsDelete({ pointIds: [pointId] });
   };
 
   useEffect(() => {
@@ -344,8 +344,8 @@ const mapActionsToProps = {
   setCursorPosition,
   clearCursorPosition,
   pointsMoveWithinMessage,
-  pointUpdate,
-  pointsDelete,
+  draftPointUpdate,
+  draftPointsDelete,
   hoverOver,
   togglePoint,
   setSelectedPoints,

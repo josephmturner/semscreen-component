@@ -54,7 +54,7 @@ export interface AuthorI {
 }
 
 //make PointI extend PointNoIdI, if possible
-// TODO: move this inside PointCreateParams, and then delete
+// TODO: move this inside DraftPointCreateParams, and then delete
 export interface PointNoIdI {
   content: string;
   shape: PointShape;

@@ -37,16 +37,16 @@ import {
   containsPoints,
 } from "../dataModels/pointUtils";
 import {
-  _PointCreateParams,
+  _DraftPointCreateParams,
   _PointsMoveToMessageParams,
   PointsMoveWithinMessageParams,
-  PointsDeleteParams,
+  DraftPointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
 import {
-  _MessageCreateParams,
-  MessageDeleteParams,
+  _DraftMessageCreateParams,
+  DraftMessageDeleteParams,
   SetMainParams,
 } from "../actions/draftMessagesActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
@@ -71,23 +71,23 @@ export const draftMessagesReducer = (
 ): DraftMessagesState => {
   let newState = state;
   switch (action.type) {
-    case Actions.messageCreate:
+    case Actions.draftMessageCreate:
       newState = handleMessageCreate(
         state,
-        action as Action<_MessageCreateParams>,
+        action as Action<_DraftMessageCreateParams>,
         appState
       );
       break;
-    case Actions.messageDelete:
+    case Actions.draftMessageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<MessageDeleteParams>
+        action as Action<DraftMessageDeleteParams>
       );
       break;
-    case Actions.pointCreate:
+    case Actions.draftPointCreate:
       newState = handlePointCreate(
         state,
-        action as Action<_PointCreateParams>,
+        action as Action<_DraftPointCreateParams>,
         appState
       );
       break;
@@ -105,10 +105,10 @@ export const draftMessagesReducer = (
         appState
       );
       break;
-    case Actions.pointsDelete:
+    case Actions.draftPointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>,
+        action as Action<DraftPointsDeleteParams>,
         appState
       );
       break;
@@ -171,7 +171,7 @@ const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
 
 function handleMessageCreate(
   state: DraftMessagesState,
-  action: Action<_MessageCreateParams>,
+  action: Action<_DraftMessageCreateParams>,
   appState: AppState
 ): DraftMessagesState {
   //Prevent creation of many empty messages...
@@ -211,7 +211,7 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: DraftMessagesState,
-  action: Action<MessageDeleteParams>
+  action: Action<DraftMessageDeleteParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
     delete draft.byId[action.params.messageId];
@@ -221,7 +221,7 @@ function handleMessageDelete(
 
 function handlePointCreate(
   state: DraftMessagesState,
-  action: Action<_PointCreateParams>,
+  action: Action<_DraftPointCreateParams>,
   appState: AppState
 ): DraftMessagesState {
   const shape = action.params.point.shape;
@@ -347,7 +347,7 @@ function handlePointsMoveWithinMessage(
 
 function handlePointsDelete(
   state: DraftMessagesState,
-  action: Action<PointsDeleteParams>,
+  action: Action<DraftPointsDeleteParams>,
   appState: AppState
 ): DraftMessagesState {
   return produce(state, (draft) => {

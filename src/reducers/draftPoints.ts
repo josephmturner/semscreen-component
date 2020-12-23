@@ -31,17 +31,17 @@ import {
 } from "../dataModels/pointUtils";
 import { AppState } from "./store";
 import {
-  _PointCreateParams,
-  PointUpdateParams,
+  _DraftPointCreateParams,
+  DraftPointUpdateParams,
   _PointsMoveToMessageParams,
   PointsMoveWithinMessageParams,
-  PointsDeleteParams,
+  DraftPointsDeleteParams,
   CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
 import {
-  _MessageCreateParams,
-  MessageDeleteParams,
+  _DraftMessageCreateParams,
+  DraftMessageDeleteParams,
 } from "../actions/draftMessagesActions";
 import { SyncWithLocalStorageParams } from "../actions/localStorageActions";
 
@@ -64,11 +64,17 @@ export const draftPointsReducer = (
 ): DraftPointsState => {
   let newState = state;
   switch (action.type) {
-    case Actions.pointCreate:
-      newState = handlePointCreate(state, action as Action<_PointCreateParams>);
+    case Actions.draftPointCreate:
+      newState = handlePointCreate(
+        state,
+        action as Action<_DraftPointCreateParams>
+      );
       break;
-    case Actions.pointUpdate:
-      newState = handlePointUpdate(state, action as Action<PointUpdateParams>);
+    case Actions.draftPointUpdate:
+      newState = handlePointUpdate(
+        state,
+        action as Action<DraftPointUpdateParams>
+      );
       break;
     case Actions.pointsMoveWithinMessage:
       newState = handlePointsMoveWithinMessage(
@@ -84,10 +90,10 @@ export const draftPointsReducer = (
         appState
       );
       break;
-    case Actions.pointsDelete:
+    case Actions.draftPointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>,
+        action as Action<DraftPointsDeleteParams>,
         appState
       );
       break;
@@ -104,16 +110,16 @@ export const draftPointsReducer = (
         action as Action<_SplitIntoTwoPointsParams>
       );
       break;
-    case Actions.messageCreate:
+    case Actions.draftMessageCreate:
       newState = handleMessageCreate(
         state,
-        action as Action<_MessageCreateParams>
+        action as Action<_DraftMessageCreateParams>
       );
       break;
-    case Actions.messageDelete:
+    case Actions.draftMessageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<MessageDeleteParams>,
+        action as Action<DraftMessageDeleteParams>,
         appState
       );
       break;
@@ -129,7 +135,7 @@ export const draftPointsReducer = (
 
 function handlePointCreate(
   state: DraftPointsState,
-  action: Action<_PointCreateParams>
+  action: Action<_DraftPointCreateParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
     draft.byId[action.params.newPointId] = {
@@ -143,7 +149,7 @@ function handlePointCreate(
 
 function handlePointUpdate(
   state: DraftPointsState,
-  action: Action<PointUpdateParams>
+  action: Action<DraftPointUpdateParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
     draft.byId[action.params.point._id] = action.params.point;
@@ -194,7 +200,7 @@ function handlePointsMoveToMessage(
 
 function handlePointsDelete(
   state: DraftPointsState,
-  action: Action<PointsDeleteParams>,
+  action: Action<DraftPointsDeleteParams>,
   appState: AppState
 ): DraftPointsState {
   let pointIds = action.params.pointIds;
@@ -297,7 +303,7 @@ function handleSplitIntoTwoPoints(
 
 function handleMessageCreate(
   state: DraftPointsState,
-  action: Action<_MessageCreateParams>
+  action: Action<_DraftMessageCreateParams>
 ): DraftPointsState {
   const { newReferencePoints } = action.params;
 
@@ -315,7 +321,7 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: DraftPointsState,
-  action: Action<MessageDeleteParams>,
+  action: Action<DraftMessageDeleteParams>,
   appState: AppState
 ): DraftPointsState {
   const messageToDelete = appState.draftMessages.byId[action.params.messageId];

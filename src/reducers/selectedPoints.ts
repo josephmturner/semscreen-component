@@ -26,13 +26,13 @@ import {
 } from "../actions/selectPointActions";
 import {
   CombinePointsParams,
-  PointsDeleteParams,
+  DraftPointsDeleteParams,
   _PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import {
-  _MessageCreateParams,
-  MessageDeleteParams,
+  _DraftMessageCreateParams,
+  DraftMessageDeleteParams,
 } from "../actions/draftMessagesActions";
 
 export interface SelectedPointsState {
@@ -59,10 +59,10 @@ export const selectedPointsReducer = (
     case Actions.togglePoint:
       newState = handleTogglePoint(state, action as Action<TogglePointParams>);
       break;
-    case Actions.pointsDelete:
+    case Actions.draftPointsDelete:
       newState = handlePointsDelete(
         state,
-        action as Action<PointsDeleteParams>
+        action as Action<DraftPointsDeleteParams>
       );
       break;
     case Actions.combinePoints:
@@ -78,16 +78,16 @@ export const selectedPointsReducer = (
         action as Action<SetCurrentMessageParams>
       );
       break;
-    case Actions.messageCreate:
+    case Actions.draftMessageCreate:
       newState = handleMessageCreate(
         state,
-        action as Action<_MessageCreateParams>
+        action as Action<_DraftMessageCreateParams>
       );
       break;
-    case Actions.messageDelete:
+    case Actions.draftMessageDelete:
       newState = handleMessageDelete(
         state,
-        action as Action<MessageDeleteParams>,
+        action as Action<DraftMessageDeleteParams>,
         appState
       );
       break;
@@ -127,7 +127,7 @@ function handleTogglePoint(
 
 function handlePointsDelete(
   state: SelectedPointsState,
-  action: Action<PointsDeleteParams>
+  action: Action<DraftPointsDeleteParams>
 ): SelectedPointsState {
   return action.params.deleteSelectedPoints ? { pointIds: [] } : state;
 }
@@ -158,7 +158,7 @@ function handleSetCurrentMessage(
 
 function handleMessageCreate(
   state: SelectedPointsState,
-  action: Action<_MessageCreateParams>
+  action: Action<_DraftMessageCreateParams>
 ): SelectedPointsState {
   const pointIds = action.params.newReferencePoints
     ? action.params.newReferencePoints.map((p) => p._id)
@@ -170,7 +170,7 @@ function handleMessageCreate(
 
 function handleMessageDelete(
   state: SelectedPointsState,
-  action: Action<MessageDeleteParams>,
+  action: Action<DraftMessageDeleteParams>,
   appState: AppState
 ) {
   return produce(state, (draft) => {

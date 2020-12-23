@@ -20,7 +20,7 @@ import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _PointsMoveToMessageParams } from "../actions/draftPointsActions";
-import { _MessageCreateParams } from "../actions/draftMessagesActions";
+import { _DraftMessageCreateParams } from "../actions/draftMessagesActions";
 import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
@@ -42,10 +42,10 @@ export const semanticScreenReducer = (
         action as Action<SetCurrentMessageParams>
       );
       break;
-    case Actions.messageCreate:
+    case Actions.draftMessageCreate:
       newState = handleMessageCreate(
         state,
-        action as Action<_MessageCreateParams>,
+        action as Action<_DraftMessageCreateParams>,
         appState
       );
       break;
@@ -70,7 +70,7 @@ function handleSetCurrentMessage(
 
 function handleMessageCreate(
   state: SemanticScreenState,
-  action: Action<_MessageCreateParams>,
+  action: Action<_DraftMessageCreateParams>,
   appState: AppState
 ) {
   if (
