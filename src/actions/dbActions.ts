@@ -27,6 +27,7 @@ import {
   PointReferenceI,
   UserIdentity,
 } from "../dataModels/dataModels";
+import { isReference } from "../dataModels/pointUtils";
 import {
   userIdentityLoad,
   UserIdentityCreateParams,
@@ -88,7 +89,7 @@ export const loadDatabase = (): ThunkAction<
       }
       dispatch(userIdentityLoad({ userIdentity }));
 
-      //Load currentMessageId from a prior session...
+      //Load currentMessageId from a prior session from localStorage...
       const rawLocalStorageState = localStorage.getItem("localStorageState");
       let localStorageState;
       if (rawLocalStorageState) {
@@ -97,15 +98,35 @@ export const loadDatabase = (): ThunkAction<
 
       const currentMessageId = localStorageState.semanticScreen.currentMessage;
       if (currentMessageId !== undefined) {
-        //Get currentMessage from ushin-db if it's a published message
-        //(if it's a draft, the redux store already got it from localStorage)
+        let messages: MessageI[] = [];
+        let points: PointMapping = {};
+
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
-          const { messages, points } = await _getMessagesAndPoints(
-            [currentMessageId],
-            db
-          );
-          dispatch(_populateMessageAndPoints({ messages, points }));
+          //If the currentMessageId corresponds to a published message, get it from ushin-db
+          const current = await _getMessagesAndPoints([currentMessageId], db);
+          messages = current.messages;
+          points = current.points;
         }
+        //If any draftPoints are quoted points, load the quotes
+
+        const draftPoints = Object.values(state.draftPoints.byId);
+        const referencePointIds: Set<string> = new Set();
+        for (const point of draftPoints) {
+          if (isReference(point)) {
+            for (const log of point.referenceHistory)
+              referencePointIds.add(log.pointId);
+          }
+        }
+
+        const referencePoints: PointReferenceI[] = await Promise.all(
+          Array.from(referencePointIds).map((id) => db.getPoint(id))
+        );
+
+        for (const point of referencePoints) {
+          points[point._id] = point;
+        }
+
+        dispatch(_populateMessageAndPoints({ messages, points }));
       } else {
         //If no currentMessageId exists in localStorage, create a new message
         const newMessageId = uuidv4();
