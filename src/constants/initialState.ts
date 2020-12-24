@@ -67,6 +67,7 @@ export const points: PointsState = {
       pointDate: new Date(),
     },
   },
+  allIds: ["pointId1", "pointId3", "pointId8"],
 };
 
 export const draftPoints: DraftPointsState = {

@@ -36,7 +36,11 @@ export const searchByContent = (
       const pointIds = await db.searchPointsByContent(params.searchQuery);
       const _results = await db.searchMessagesForPoints(pointIds);
       const results = _results.map((r) => r._id);
-      const { messages, points } = await _getMessagesAndPoints(results, db);
+      const { messages, points } = await _getMessagesAndPoints(
+        results,
+        db,
+        state
+      );
 
       dispatch(_populateMessageAndPoints({ messages, points }));
 

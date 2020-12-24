@@ -11245,9 +11245,9 @@ use@^3.1.0:
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
-ushin-db@USHIN-Inc/ushin-db#getPointsForMessage-referencePoints:
+ushin-db@USHIN-Inc/ushin-db#master:
   version "1.0.0"
-  resolved "https://codeload.github.com/USHIN-Inc/ushin-db/tar.gz/08a0fceea74e8af353129a22c86e2ff10261658e"
+  resolved "https://codeload.github.com/USHIN-Inc/ushin-db/tar.gz/3a60c200cacdd39c857e60ae389e8242e3d2711c"
   dependencies:
     pouchdb "^7.2.2"
     pouchdb-adapter-leveldb-browser "^7.0.0-prerelease"

@@ -103,7 +103,11 @@ export const loadDatabase = (): ThunkAction<
 
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
           //If the currentMessageId corresponds to a published message, get it from ushin-db
-          const current = await _getMessagesAndPoints([currentMessageId], db);
+          const current = await _getMessagesAndPoints(
+            [currentMessageId],
+            db,
+            state
+          );
           messages = current.messages;
           points = current.points;
         }
@@ -168,7 +172,8 @@ export const saveMessage = (
         const messageId = await db.addMessage(params.message, params.points);
         const { messages, points } = await _getMessagesAndPoints(
           [messageId],
-          db
+          db,
+          state
         );
 
         dispatch(_populateMessageAndPoints({ messages, points }));
@@ -197,12 +202,13 @@ export const _populateMessageAndPoints = (
 
 export const _getMessagesAndPoints = async (
   messageIds: string[],
-  db: USHINBase
+  db: USHINBase,
+  state: AppState
 ) => {
   const messages = await Promise.all(messageIds.map((id) => db.getMessage(id)));
 
   const arrayOfPointMappings: PointMapping[] = await Promise.all(
-    messages.map((m) => db.getPointsForMessage(m))
+    messages.map((m) => db.getPointsForMessage(m, state.points.byId))
   );
 
   const points: PointMapping = {};
