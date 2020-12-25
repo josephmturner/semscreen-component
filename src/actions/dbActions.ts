@@ -205,7 +205,13 @@ export const _getMessagesAndPoints = async (
   db: USHINBase,
   state: AppState
 ) => {
-  const messages = await Promise.all(messageIds.map((id) => db.getMessage(id)));
+  const dedupedMessageIds = messageIds.filter(
+    (id) => !state.messages.allIds.includes(id)
+  );
+
+  const messages = await Promise.all(
+    dedupedMessageIds.map((id) => db.getMessage(id))
+  );
 
   const arrayOfPointMappings: PointMapping[] = await Promise.all(
     messages.map((m) => db.getPointsForMessage(m, state.points.byId))
