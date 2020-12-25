@@ -27,6 +27,7 @@ import {
   PointReferenceI,
   UserIdentity,
 } from "../dataModels/dataModels";
+import { isReference } from "../dataModels/pointUtils";
 import {
   userIdentityLoad,
   UserIdentityCreateParams,
@@ -88,7 +89,7 @@ export const loadDatabase = (): ThunkAction<
       }
       dispatch(userIdentityLoad({ userIdentity }));
 
-      //Load currentMessageId from a prior session...
+      //Load currentMessageId from a prior session from localStorage...
       const rawLocalStorageState = localStorage.getItem("localStorageState");
       let localStorageState;
       if (rawLocalStorageState) {
@@ -97,13 +98,39 @@ export const loadDatabase = (): ThunkAction<
 
       const currentMessageId = localStorageState.semanticScreen.currentMessage;
       if (currentMessageId !== undefined) {
-        //Get currentMessage from ushin-db if it's a published message
-        //(if it's a draft, the redux store already got it from localStorage)
+        let messages: MessageI[] = [];
+        let points: PointMapping = {};
+
         if (!state.draftMessages.allIds.includes(currentMessageId)) {
-          const message = await db.getMessage(currentMessageId);
-          const points = await db.getPointsForMessage(message);
-          dispatch(populateMessageAndPoints({ message, points }));
+          //If the currentMessageId corresponds to a published message, get it from ushin-db
+          const current = await _getMessagesAndPoints(
+            [currentMessageId],
+            db,
+            state
+          );
+          messages = current.messages;
+          points = current.points;
         }
+        //If any draftPoints are quoted points, load the quotes
+
+        const draftPoints = Object.values(state.draftPoints.byId);
+        const referencePointIds: Set<string> = new Set();
+        for (const point of draftPoints) {
+          if (isReference(point)) {
+            for (const log of point.referenceHistory)
+              referencePointIds.add(log.pointId);
+          }
+        }
+
+        const referencePoints: PointReferenceI[] = await Promise.all(
+          Array.from(referencePointIds).map((id) => db.getPoint(id))
+        );
+
+        for (const point of referencePoints) {
+          points[point._id] = point;
+        }
+
+        dispatch(_populateMessageAndPoints({ messages, points }));
       } else {
         //If no currentMessageId exists in localStorage, create a new message
         const newMessageId = uuidv4();
@@ -119,6 +146,7 @@ export const loadDatabase = (): ThunkAction<
 export interface PointMapping {
   [id: string]: PointI | PointReferenceI;
 }
+
 export interface SaveMessageParams {
   message: MessageI;
   points: PointMapping;
@@ -142,14 +170,14 @@ export const saveMessage = (
 
       try {
         const messageId = await db.addMessage(params.message, params.points);
-        const publishedMessage = await db.getMessage(messageId);
-        const publishedPoints = await db.getPointsForMessage(publishedMessage);
-        dispatch(
-          populateMessageAndPoints({
-            message: publishedMessage,
-            points: publishedPoints,
-          })
+        const { messages, points } = await _getMessagesAndPoints(
+          [messageId],
+          db,
+          state
         );
+
+        dispatch(_populateMessageAndPoints({ messages, points }));
+
         dispatch(_draftMessageDelete({ messageId }));
       } catch (e) {
         console.log(e);
@@ -158,13 +186,44 @@ export const saveMessage = (
   };
 };
 
-export interface _PopulateMessageAndPointsParams extends SaveMessageParams {}
+export interface _PopulateMessageAndPointsParams {
+  messages: MessageI[];
+  points: PointMapping;
+}
 
-export const populateMessageAndPoints = (
+export const _populateMessageAndPoints = (
   params: _PopulateMessageAndPointsParams
 ): Action<_PopulateMessageAndPointsParams> => {
   return {
     type: Actions.populateMessageAndPoints,
     params,
+  };
+};
+
+export const _getMessagesAndPoints = async (
+  messageIds: string[],
+  db: USHINBase,
+  state: AppState
+) => {
+  const dedupedMessageIds = messageIds.filter(
+    (id) => !state.messages.allIds.includes(id)
+  );
+
+  const messages = await Promise.all(
+    dedupedMessageIds.map((id) => db.getMessage(id))
+  );
+
+  const arrayOfPointMappings: PointMapping[] = await Promise.all(
+    messages.map((m) => db.getPointsForMessage(m, state.points.byId))
+  );
+
+  let points: PointMapping = {};
+  for (const pointMapping of arrayOfPointMappings) {
+    points = { ...points, ...pointMapping };
+  }
+
+  return {
+    messages,
+    points,
   };
 };

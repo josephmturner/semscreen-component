@@ -11247,7 +11247,7 @@ use@^3.1.0:
 
 ushin-db@USHIN-Inc/ushin-db#master:
   version "1.0.0"
-  resolved "https://codeload.github.com/USHIN-Inc/ushin-db/tar.gz/67ab4846ccf34577ad6741c5b3821f277ab33741"
+  resolved "https://codeload.github.com/USHIN-Inc/ushin-db/tar.gz/3a60c200cacdd39c857e60ae389e8242e3d2711c"
   dependencies:
     pouchdb "^7.2.2"
     pouchdb-adapter-leveldb-browser "^7.0.0-prerelease"

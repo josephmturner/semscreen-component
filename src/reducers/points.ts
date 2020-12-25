@@ -27,9 +27,10 @@ export interface PointsState {
   byId: {
     [_id: string]: PointI | PointReferenceI;
   };
+  allIds: string[];
 }
 
-export const initialPointsState: PointsState = { byId: {} };
+export const initialPointsState: PointsState = { byId: {}, allIds: [] };
 
 export const pointsReducer = (
   state: PointsState,
@@ -53,8 +54,9 @@ function handlePopulateMessageAndPoints(
   action: Action<_PopulateMessageAndPointsParams>
 ) {
   return produce(state, (draft) => {
-    Object.values(action.params.points).forEach(
-      (point) => (draft.byId[point._id] = point)
-    );
+    draft.byId = { ...draft.byId, ...action.params.points };
+    for (const id in action.params.points) {
+      draft.allIds.push(id);
+    }
   });
 }

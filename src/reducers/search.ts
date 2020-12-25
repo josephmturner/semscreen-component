@@ -1,13 +1,12 @@
 import { Action, Actions } from "../actions/constants";
 
-import { MessageI } from "../dataModels/dataModels";
 import { _SearchByContentParams } from "../actions/searchActions";
 
 import { AppState } from "./store";
 
 export interface SearchState {
   searchQuery: string;
-  results: MessageI[];
+  results: string[];
 }
 
 export const initialSearchState: SearchState = {
@@ -30,7 +29,6 @@ export const searchReducer = (
       );
       break;
   }
-
   return newState;
 };
 
