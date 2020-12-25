@@ -217,12 +217,10 @@ export const _getMessagesAndPoints = async (
     messages.map((m) => db.getPointsForMessage(m, state.points.byId))
   );
 
-  const points: PointMapping = {};
-  arrayOfPointMappings.forEach((pointMapping) =>
-    Object.keys(pointMapping).forEach(
-      (pointId) => (points[pointId] = pointMapping[pointId])
-    )
-  );
+  let points: PointMapping = {};
+  for (const pointMapping of arrayOfPointMappings) {
+    points = { ...points, ...pointMapping };
+  }
 
   return {
     messages,
