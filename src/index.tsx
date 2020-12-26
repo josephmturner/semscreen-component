@@ -33,10 +33,6 @@ import { DraftPointsState } from "./reducers/draftPoints";
 import { SemanticScreenState } from "./reducers/semanticScreen";
 
 import { loadDatabase } from "./actions/dbActions";
-import {
-  syncWithLocalStorage,
-  SyncWithLocalStorageParams,
-} from "./actions/localStorageActions";
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -53,7 +49,6 @@ const mapStateToProps = (state: AppState) => {
 
 const mapActionsToProps = {
   loadDatabase,
-  syncWithLocalStorage,
 };
 
 interface Props {
@@ -63,7 +58,6 @@ interface Props {
   draftPoints: DraftPointsState;
   loadDatabase: () => void;
   semanticScreen: SemanticScreenState;
-  syncWithLocalStorage: (params: SyncWithLocalStorageParams) => void;
 }
 
 const AppWithPersistence = connect(
@@ -77,7 +71,6 @@ const AppWithPersistence = connect(
     draftPoints,
     loadDatabase,
     semanticScreen,
-    syncWithLocalStorage,
   }: Props) => {
     const localStorageState = { draftMessages, draftPoints, semanticScreen };
 
@@ -85,19 +78,6 @@ const AppWithPersistence = connect(
       "localStorageState",
       JSON.stringify(localStorageState)
     );
-
-    useEffect(() => {
-      window.onstorage = () => {
-        const rawLocalStorageState = localStorage.getItem("localStorageState");
-        if (rawLocalStorageState) {
-          const localStorageState = JSON.parse(rawLocalStorageState);
-          syncWithLocalStorage({ localStorageState });
-        }
-      };
-      return () => {
-        window.onstorage = null;
-      };
-    }, [syncWithLocalStorage]);
 
     useEffect(() => {
       if (db?.loading) loadDatabase();

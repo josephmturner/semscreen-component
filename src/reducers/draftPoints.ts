@@ -43,7 +43,6 @@ import {
   _DraftMessageCreateParams,
   DraftMessageDeleteParams,
 } from "../actions/draftMessagesActions";
-import { SyncWithLocalStorageParams } from "../actions/localStorageActions";
 
 export interface DraftPointsState {
   byId: {
@@ -121,12 +120,6 @@ export const draftPointsReducer = (
         state,
         action as Action<DraftMessageDeleteParams>,
         appState
-      );
-      break;
-    case Actions.syncWithLocalStorage:
-      newState = handleSyncWithLocalStorage(
-        state,
-        action as Action<SyncWithLocalStorageParams>
       );
       break;
   }
@@ -338,10 +331,3 @@ function handleDraftMessageDelete(
     });
   });
 }
-
-const handleSyncWithLocalStorage = (
-  state: DraftPointsState,
-  action: Action<SyncWithLocalStorageParams>
-): DraftPointsState => {
-  return action.params.localStorageState.draftPoints;
-};

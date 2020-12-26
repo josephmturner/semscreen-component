@@ -57,8 +57,6 @@ export const Actions = {
   populateMessageAndPoints: "populateMessageAndPoints",
   searchByContent: "searchByContent",
 
-  syncWithLocalStorage: "syncWithLocalStorage",
-
   userIdentityLoad: "userIdentityLoad",
 
   displayApp: "displayApp",
