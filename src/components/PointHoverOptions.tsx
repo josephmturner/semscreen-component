@@ -38,7 +38,7 @@ import {
   draftPointsDelete,
 } from "../actions/draftPointsActions";
 import { draftMessageDelete, setMain } from "../actions/draftMessagesActions";
-import { setCurrentMessage } from "../actions/semanticScreenActions";
+import { viewOriginalMessage } from "../actions/semanticScreenActions";
 
 interface Props {
   type: PointHoverOptionsType;
@@ -94,7 +94,7 @@ const PointHoverOptions = (props: Props) => {
     <ButtonSvg
       onClick={(e: React.MouseEvent) => {
         dispatch(
-          setCurrentMessage({
+          viewOriginalMessage({
             messageId: originalMessageId,
             // Type assertion is okay here for the same reason
             selectedPointIds: [
