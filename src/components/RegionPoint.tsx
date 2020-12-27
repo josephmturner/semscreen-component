@@ -57,10 +57,6 @@ import {
   togglePoint,
   TogglePointParams,
 } from "../actions/selectPointActions";
-import {
-  setCurrentMessage,
-  SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
 
 interface OwnProps {
   pointId: string;
@@ -86,7 +82,6 @@ interface AllProps extends OwnProps {
   hoverOver: (params: HoverOverParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
   togglePoint: (params: TogglePointParams) => void;
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
 const RegionPoint = (props: AllProps) => {
@@ -323,7 +318,6 @@ const mapActionsToProps = {
   hoverOver,
   togglePoint,
   setSelectedPoints,
-  setCurrentMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(RegionPoint);
