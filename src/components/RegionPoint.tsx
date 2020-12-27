@@ -92,7 +92,6 @@ interface AllProps extends OwnProps {
 const RegionPoint = (props: AllProps) => {
   const {
     point,
-    referenceData,
     pointId,
     index,
     cursorPositionIndex,
@@ -233,10 +232,6 @@ const RegionPoint = (props: AllProps) => {
           moveTo: "beginningOfNextPoint",
           pointId,
         });
-      } else if (e.key === "ArrowUp" && index !== 0) {
-        setArrowPressed("ArrowUp");
-      } else if (e.key === "ArrowDown") {
-        setArrowPressed("ArrowDown");
       }
     }
   };
@@ -255,27 +250,6 @@ const RegionPoint = (props: AllProps) => {
       clearCursorPosition();
     }
   }, [cursorPositionIndex, clearCursorPosition]);
-
-  const [arrowPressed, setArrowPressed] = useState<
-    "ArrowUp" | "ArrowDown" | undefined
-  >(undefined);
-  useEffect(() => {
-    if (arrowPressed === "ArrowUp") {
-      (referenceData || pointRef.current?.textarea.selectionStart === 0) &&
-        setCursorPosition({ moveTo: "beginningOfPriorPoint", pointId });
-    } else if (arrowPressed === "ArrowDown") {
-      (referenceData ||
-        pointRef.current?.textarea.selectionStart === point.content.length) &&
-        setCursorPosition({ moveTo: "beginningOfNextPoint", pointId });
-    }
-    setArrowPressed(undefined);
-  }, [
-    arrowPressed,
-    point.content.length,
-    referenceData,
-    setCursorPosition,
-    pointId,
-  ]);
 
   const [isHovered, setIsHovered] = useState(false);
 
