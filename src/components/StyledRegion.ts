@@ -25,14 +25,10 @@ export const StyledRegion = styled.div<{ darkMode?: boolean }>`
   margin: 2px;
 `;
 
-//This container ensures that StyledRegion only ever has one child,
-//which is a requirement of animate-css-grid
-export const InnerContainer = styled.div<{ center?: boolean }>`
+export const InnerContainer = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;
-  justify-content: ${(props) => props.center && "center"};
-  align-items: ${(props) => props.center && "center"};
   height: 100%;
   flex-direction: column;
 `;

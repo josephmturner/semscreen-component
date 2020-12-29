@@ -18,6 +18,7 @@
 */
 import React from "react";
 import MainPoint from "./MainPoint";
+import { MainPointWrapper } from "./StyledPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
 import { PointShape, RegionI } from "../dataModels/dataModels";
@@ -107,14 +108,16 @@ const CenterRegion = (props: AllProps) => {
       darkMode={props.darkMode}
       ref={drop}
     >
-      <InnerContainer center={true}>
+      <InnerContainer>
         {pointId && (
-          <MainPoint
-            pointId={pointId}
-            isExpanded={props.isExpanded}
-            isSelected={props.selectedPoints.includes(pointId)}
-            darkMode={props.darkMode}
-          />
+          <MainPointWrapper>
+            <MainPoint
+              pointId={pointId}
+              isExpanded={props.isExpanded}
+              isSelected={props.selectedPoints.includes(pointId)}
+              darkMode={props.darkMode}
+            />
+          </MainPointWrapper>
         )}
         {!pointId && isExpanded && (
           <SevenShapes

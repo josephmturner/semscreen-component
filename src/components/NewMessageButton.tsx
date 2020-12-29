@@ -145,8 +145,6 @@ const InnerContainer = styled.div<{ darkMode?: boolean }>`
   display: flex;
   align-items: center;
   margin: auto;
-  top: 0;
-  bottom: 0;
   height: 1rem;
   z-index: 10;
   background-color: ${(props) => (props.darkMode ? "black" : "white")};

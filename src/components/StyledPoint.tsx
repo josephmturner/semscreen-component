@@ -29,6 +29,12 @@ interface StyledPointProps {
   newLine?: boolean;
 }
 
+export const MainPointWrapper = styled.div`
+  margin: auto;
+  left: 0;
+  right: 0;
+`;
+
 export const PointWrapper = styled.div<StyledPointProps>`
   margin: 1px 0;
   :focus-within,
@@ -52,8 +58,6 @@ export const StyledButton = styled.button<StyledPointProps>`
   --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   position: absolute;
-  top: 0;
-  bottom: 0;
   height: 1em;
   width: 1em;
   background: none;
