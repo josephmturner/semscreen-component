@@ -25,7 +25,7 @@ import {
   TogglePointParams,
 } from "../actions/selectPointActions";
 import {
-  CombinePointsParams,
+  _CombinePointsParams,
   DraftPointsDeleteParams,
   _PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
@@ -68,8 +68,7 @@ export const selectedPointsReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<CombinePointsParams>,
-        appState
+        action as Action<_CombinePointsParams>
       );
       break;
     case Actions.setCurrentMessage:
@@ -134,16 +133,13 @@ function handleDraftPointsDelete(
 
 function handleCombinePoints(
   state: SelectedPointsState,
-  action: Action<CombinePointsParams>,
-  appState: AppState
+  action: Action<_CombinePointsParams>
 ): SelectedPointsState {
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const currentMessage = appState.draftMessages.byId[currentMessageId];
-  const deletedPointId =
-    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
-  return {
-    pointIds: state.pointIds.filter((id) => id !== deletedPointId),
-  };
+  return produce(state, (draft) => {
+    draft.pointIds = draft.pointIds.filter(
+      (id) => id !== action.params.pointIdToDelete
+    );
+  });
 }
 
 function handleSetCurrentMessage(

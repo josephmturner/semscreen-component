@@ -27,7 +27,11 @@ import {
   PointShape,
   PointNoIdI,
 } from "../dataModels/dataModels";
-import { createReferenceTo, getMessageById } from "../dataModels/pointUtils";
+import {
+  createReferenceTo,
+  getMessageById,
+  getReferencedPointId,
+} from "../dataModels/pointUtils";
 
 export interface DraftPointCreateParams {
   point: PointNoIdI;
@@ -155,12 +159,58 @@ export interface CombinePointsParams {
   deleteIndex: number;
 }
 
-export const combinePoints = (
-  params: CombinePointsParams
-): Action<CombinePointsParams> => {
+export interface _CombinePointsParams extends CombinePointsParams {
+  pointIdToKeep: string;
+  pointIdToDelete: string;
+}
+
+export const _combinePoints = (
+  params: _CombinePointsParams
+): Action<_CombinePointsParams> => {
   return {
     type: Actions.combinePoints,
     params,
+  };
+};
+
+export const combinePoints = (
+  params: CombinePointsParams
+): ThunkAction<void, AppState, unknown, Action<_CombinePointsParams>> => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const currentMessageId = state.semanticScreen.currentMessage as string;
+    const currentMessage = state.draftMessages.byId[currentMessageId];
+
+    const withinBounds = (index: number): boolean => {
+      return index >= 0 && index < currentMessage.shapes[params.shape].length;
+    };
+
+    const isQuoted = (index: number): boolean => {
+      const pointId = currentMessage.shapes[params.shape][index];
+      return !!getReferencedPointId(pointId, state);
+    };
+
+    if (
+      // Only combine points with points that exist
+      withinBounds(params.keepIndex) &&
+      withinBounds(params.deleteIndex) &&
+      // Only combine points with non-quoted points
+      !isQuoted(params.keepIndex) &&
+      !isQuoted(params.deleteIndex)
+    ) {
+      const pointIdToKeep =
+        currentMessage.shapes[params.shape][params.keepIndex];
+      const pointIdToDelete =
+        currentMessage.shapes[params.shape][params.deleteIndex];
+
+      dispatch(
+        _combinePoints({
+          pointIdToKeep,
+          pointIdToDelete,
+          ...params,
+        })
+      );
+    }
   };
 };
 

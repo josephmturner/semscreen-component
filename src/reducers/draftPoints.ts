@@ -26,7 +26,6 @@ import {
 import {
   getPointIfReference,
   getReferenceData,
-  getReferencedPointId,
   isReference,
 } from "../dataModels/pointUtils";
 import { AppState } from "./store";
@@ -36,7 +35,7 @@ import {
   _PointsMoveToMessageParams,
   PointsMoveWithinMessageParams,
   DraftPointsDeleteParams,
-  CombinePointsParams,
+  _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
 import {
@@ -99,7 +98,7 @@ export const draftPointsReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<CombinePointsParams>,
+        action as Action<_CombinePointsParams>,
         appState
       );
       break;
@@ -209,57 +208,26 @@ function handleDraftPointsDelete(
   });
 }
 
-//TODO: reuse withinBounds and isQuoted logic in src/reducers/message
-//Is it good form to access appState in src/draftPointsActions?
-//note: in src/reducers/message, state must be replaced with
-//appState.points (and a similar change in this file)
 function handleCombinePoints(
   state: DraftPointsState,
-  action: Action<CombinePointsParams>,
+  action: Action<_CombinePointsParams>,
   appState: AppState
 ): DraftPointsState {
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const currentMessage = appState.draftMessages.byId[currentMessageId];
-  const withinBounds = (index: number): boolean => {
-    return (
-      index >= 0 && index < currentMessage.shapes[action.params.shape].length
-    );
-  };
-
-  const isQuoted = (index: number): boolean => {
-    const pointId = currentMessage.shapes[action.params.shape][index];
-    return !!getReferencedPointId(pointId, appState);
-  };
-
-  // Don't attempt to combine a point with the point below it if no point
-  // exists below it.
-  if (
-    !withinBounds(action.params.keepIndex) ||
-    !withinBounds(action.params.deleteIndex)
-  ) {
-    return state;
-  }
-
-  // Don't combine points with quoted points:
-  if (
-    isQuoted(action.params.keepIndex) ||
-    isQuoted(action.params.deleteIndex)
-  ) {
-    return state;
-  }
-
-  const pointIdToKeep =
-    currentMessage.shapes[action.params.shape][action.params.keepIndex];
-  const pointIdToDelete =
-    currentMessage.shapes[action.params.shape][action.params.deleteIndex];
-
-  const newContent =
-    action.params.keepIndex < action.params.deleteIndex
-      ? getPointIfReference(pointIdToKeep, appState).content +
-        getPointIfReference(pointIdToDelete, appState).content
-      : getPointIfReference(pointIdToDelete, appState).content +
-        getPointIfReference(pointIdToKeep, appState).content;
   return produce(state, (draft) => {
+    const {
+      pointIdToKeep,
+      keepIndex,
+      pointIdToDelete,
+      deleteIndex,
+    } = action.params;
+
+    const newContent =
+      keepIndex < deleteIndex
+        ? getPointIfReference(pointIdToKeep, appState).content +
+          getPointIfReference(pointIdToDelete, appState).content
+        : getPointIfReference(pointIdToDelete, appState).content +
+          getPointIfReference(pointIdToKeep, appState).content;
+
     const pointToKeep = draft.byId[pointIdToKeep];
     // Type assertion is okay here since pointToKeep will never be a
     // reference point

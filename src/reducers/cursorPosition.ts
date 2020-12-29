@@ -20,7 +20,7 @@ import produce from "immer";
 import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
-import { CombinePointsParams } from "../actions/draftPointsActions";
+import { _CombinePointsParams } from "../actions/draftPointsActions";
 
 import { AppState } from "./store";
 
@@ -55,7 +55,7 @@ export const cursorPositionReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<CombinePointsParams>,
+        action as Action<_CombinePointsParams>,
         appState
       );
       break;
@@ -106,26 +106,25 @@ function handleClearCursorPosition(
 
 function handleCombinePoints(
   state: CursorPositionState,
-  action: Action<CombinePointsParams>,
+  action: Action<_CombinePointsParams>,
   appState: AppState
 ): CursorPositionState {
-  const smallerIndex = Math.min(
-    action.params.keepIndex,
-    action.params.deleteIndex
-  );
+  return produce(state, (draft) => {
+    const smallerIndex = Math.min(
+      action.params.keepIndex,
+      action.params.deleteIndex
+    );
 
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const currentMessage = appState.draftMessages.byId[currentMessageId];
-  const prevPointId = currentMessage.shapes[action.params.shape][smallerIndex];
-  const prevPoint = getPointIfReference(prevPointId, appState);
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = appState.draftMessages.byId[currentMessageId];
+    const prevPointId =
+      currentMessage.shapes[action.params.shape][smallerIndex];
+    const prevPoint = getPointIfReference(prevPointId, appState);
 
-  const newCursorPosition = {
-    pointId:
-      currentMessage.shapes[action.params.shape][action.params.keepIndex],
-    contentIndex: prevPoint.content.length,
-  };
-
-  return {
-    details: newCursorPosition,
-  };
+    draft.details = {
+      pointId:
+        currentMessage.shapes[action.params.shape][action.params.keepIndex],
+      contentIndex: prevPoint.content.length,
+    };
+  });
 }

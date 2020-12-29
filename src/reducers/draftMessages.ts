@@ -31,7 +31,6 @@ import {
   getPointIfReference,
   getPointById,
   getReferenceData,
-  getReferencedPointId,
   isReference,
   getOriginalShape,
   containsPoints,
@@ -41,7 +40,7 @@ import {
   _PointsMoveToMessageParams,
   PointsMoveWithinMessageParams,
   DraftPointsDeleteParams,
-  CombinePointsParams,
+  _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
 import {
@@ -121,7 +120,7 @@ export const draftMessagesReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<CombinePointsParams>,
+        action as Action<_CombinePointsParams>,
         appState
       );
       break;
@@ -390,51 +389,18 @@ function handleSetMain(
 
 function handleCombinePoints(
   state: DraftMessagesState,
-  action: Action<CombinePointsParams>,
+  action: Action<_CombinePointsParams>,
   appState: AppState
 ): DraftMessagesState {
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-
-  const withinBounds = (index: number): boolean => {
-    return (
-      index >= 0 &&
-      index < state.byId[currentMessageId].shapes[action.params.shape].length
-    );
-  };
-
-  const isQuoted = (index: number): boolean => {
-    const pointId =
-      state.byId[currentMessageId].shapes[action.params.shape][index];
-    return !!getReferencedPointId(pointId, appState);
-  };
-
-  // Don't attempt to combine a point with the point below it if no point
-  // exists below it.
-  if (
-    !withinBounds(action.params.keepIndex) ||
-    !withinBounds(action.params.deleteIndex)
-  ) {
-    return state;
-  }
-
-  // Don't combine points with quoted points:
-  if (
-    isQuoted(action.params.keepIndex) ||
-    isQuoted(action.params.deleteIndex)
-  ) {
-    return state;
-  }
-
-  const pointIdToDelete =
-    state.byId[currentMessageId].shapes[action.params.shape][
-      action.params.deleteIndex
-    ];
   return produce(state, (draft) => {
-    draft.byId[currentMessageId].shapes[action.params.shape] = draft.byId[
-      currentMessageId
-    ].shapes[action.params.shape].filter((id) => id !== pointIdToDelete);
-    draft.byId[currentMessageId].main === pointIdToDelete &&
-      delete draft.byId[currentMessageId].main;
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+
+    const currentMessage = draft.byId[currentMessageId];
+    const currentShapes = currentMessage.shapes;
+
+    currentShapes[action.params.shape] = currentShapes[
+      action.params.shape
+    ].filter((id) => id !== action.params.pointIdToDelete);
   });
 }
 
