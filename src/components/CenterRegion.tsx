@@ -107,16 +107,7 @@ const CenterRegion = (props: AllProps) => {
       darkMode={props.darkMode}
       ref={drop}
     >
-      <InnerContainer
-        style={{
-          //TODO: What styles should go here (and/or in StyledPoint
-          //such that the textarea expands as its content grows,
-          //always remaining centered and eventually filling the
-          //width of the parent container - see comment in StyledPoint
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <InnerContainer center={true}>
         {pointId && (
           <MainPoint
             pointId={pointId}
