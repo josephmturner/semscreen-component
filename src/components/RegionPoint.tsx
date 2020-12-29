@@ -25,6 +25,7 @@ import {
 } from "../dataModels/pointUtils";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 import Point from "./Point";
+import { PointWrapper } from "./StyledPoint";
 import PointHoverOptions from "./PointHoverOptions";
 
 import { useDrop, DropTargetMonitor } from "react-dnd";
@@ -137,7 +138,7 @@ const RegionPoint = (props: AllProps) => {
   //TODO: fix ref type
   const pointRef = useRef<any>(null);
 
-  drag(pointRef.current?.img);
+  drag(pointRef.current?.button);
   drop(preview(pointRef.current?.div));
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -252,32 +253,33 @@ const RegionPoint = (props: AllProps) => {
     isHovered && (props.isDraft || props.referenceData);
 
   return (
-    <Point
-      id={props.pointId}
-      displayPoint={props.point}
-      referenceData={props.referenceData}
-      isMainPoint={false}
-      isSelected={props.isSelected}
-      isHovered={isHovered}
-      setIsHovered={setIsHovered}
-      readOnlyOverride={!props.isDraft}
-      darkMode={props.darkMode}
-      handleChange={handleChange}
-      handleKeyDown={handleKeyDown}
-      handleBlur={handleBlur}
-      handlePointDivClick={handlePointDivClick}
-      handleShapeIconClick={handleShapeIconClick}
-      ref={pointRef}
-    >
-      {renderPointHoverOptions && (
-        <PointHoverOptions
-          type={props.isDraft ? "draftPoint" : "publishedPoint"}
-          id={props.pointId}
-          darkMode={props.darkMode}
-          isSelected={props.isSelected}
-        />
-      )}
-    </Point>
+    <PointWrapper isSelected={props.isSelected} darkMode={props.darkMode}>
+      <Point
+        id={props.pointId}
+        displayPoint={props.point}
+        referenceData={props.referenceData}
+        isMainPoint={false}
+        isSelected={props.isSelected}
+        setIsHovered={setIsHovered}
+        readOnlyOverride={!props.isDraft}
+        darkMode={props.darkMode}
+        handleChange={handleChange}
+        handleKeyDown={handleKeyDown}
+        handleBlur={handleBlur}
+        handlePointDivClick={handlePointDivClick}
+        handleShapeIconClick={handleShapeIconClick}
+        ref={pointRef}
+      >
+        {renderPointHoverOptions && (
+          <PointHoverOptions
+            type={props.isDraft ? "draftPoint" : "publishedPoint"}
+            id={props.pointId}
+            darkMode={props.darkMode}
+            isSelected={props.isSelected}
+          />
+        )}
+      </Point>
+    </PointWrapper>
   );
 };
 

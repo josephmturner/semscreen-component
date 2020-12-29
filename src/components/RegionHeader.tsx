@@ -17,32 +17,26 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import { PointShape } from "../dataModels/dataModels";
 import styled from "styled-components";
+import { PointShape } from "../dataModels/dataModels";
+import AllShapes from "./AllShapes";
 
 //TODO: Properly type ref
 const RegionHeader = React.forwardRef(
   (props: { shape: PointShape; darkMode?: boolean }, ref: any) => {
-    const imageUrl = require(`../images/${props.shape}.svg`);
-
     return (
-      <StyledSpan ref={ref} darkMode={props.darkMode}>
-        <img src={imageUrl} height={17} alt={props.shape} />
+      <StyledSpan ref={ref}>
+        <AllShapes shape={props.shape} darkMode={props.darkMode} />
         {props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1)}
       </StyledSpan>
     );
   }
 );
 
-interface StyledProps {
-  darkMode?: boolean;
-}
-
-const StyledSpan = styled.span<StyledProps>`
+const StyledSpan = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: "#000";
-  color: ${(props) => (props.darkMode ? "#fff" : "#000")};
 `;
+
 export default RegionHeader;

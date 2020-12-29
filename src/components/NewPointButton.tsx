@@ -18,6 +18,7 @@
 */
 import React from "react";
 import { PointShape } from "../dataModels/dataModels";
+import AllShapes from "./AllShapes";
 import styled from "styled-components";
 
 interface Props {
@@ -36,7 +37,7 @@ const NewPointButton = (props: Props) => {
 
   return (
     <StyledSpan onClick={handleClick}>
-      <StyledImg src={require(`../images/${shape}.svg`)} alt={shape} />
+      <AllShapes shape={shape} darkMode={props.darkMode} />
       <StyledDiv
         darkMode={props.darkMode}
       >{`New ${shape.toLowerCase()} point`}</StyledDiv>
@@ -51,12 +52,6 @@ interface StyledProps {
 const StyledSpan = styled.span`
   display: flex;
   padding-top: 2px;
-`;
-
-const StyledImg = styled.img`
-  height: 17px;
-  margin: 0px 4px 0 3px;
-  opacity: 0.4;
 `;
 
 const StyledDiv = styled.div<StyledProps>`

@@ -23,6 +23,7 @@ import {
 } from "../dataModels/pointUtils";
 import { useDragPoint } from "../hooks/useDragPoint";
 import Point from "./Point";
+import { PointWrapper } from "./StyledPoint";
 import PointHoverOptions from "./PointHoverOptions";
 
 import { connect } from "react-redux";
@@ -104,7 +105,7 @@ const MainPoint = (props: AllProps) => {
   //TODO: fix ref type
   const pointRef = useRef<any>(null);
 
-  drag(pointRef.current?.img);
+  drag(pointRef.current?.button);
   preview(pointRef.current?.div);
 
   const [isHovered, setIsHovered] = useState(false);
@@ -113,32 +114,33 @@ const MainPoint = (props: AllProps) => {
     isHovered && (props.isDraft || props.referenceData);
 
   return (
-    <Point
-      id={props.pointId}
-      displayPoint={props.point}
-      referenceData={props.referenceData}
-      isMainPoint={true}
-      isSelected={props.isSelected}
-      isHovered={isHovered}
-      setIsHovered={setIsHovered}
-      readOnlyOverride={!props.isDraft}
-      darkMode={props.darkMode}
-      handleChange={handleChange}
-      handleKeyDown={handleKeyDown}
-      handleBlur={handleBlur}
-      handlePointDivClick={handlePointDivClick}
-      handleShapeIconClick={handleShapeIconClick}
-      ref={pointRef}
-    >
-      {renderPointHoverOptions && (
-        <PointHoverOptions
-          type={props.isDraft ? "draftPoint" : "publishedPoint"}
-          id={props.pointId}
-          darkMode={props.darkMode}
-          isSelected={props.isSelected}
-        />
-      )}
-    </Point>
+    <PointWrapper isSelected={props.isSelected} darkMode={props.darkMode}>
+      <Point
+        id={props.pointId}
+        displayPoint={props.point}
+        referenceData={props.referenceData}
+        isMainPoint={true}
+        isSelected={props.isSelected}
+        setIsHovered={setIsHovered}
+        readOnlyOverride={!props.isDraft}
+        darkMode={props.darkMode}
+        handleChange={handleChange}
+        handleKeyDown={handleKeyDown}
+        handleBlur={handleBlur}
+        handlePointDivClick={handlePointDivClick}
+        handleShapeIconClick={handleShapeIconClick}
+        ref={pointRef}
+      >
+        {renderPointHoverOptions && (
+          <PointHoverOptions
+            type={props.isDraft ? "draftPoint" : "publishedPoint"}
+            id={props.pointId}
+            darkMode={props.darkMode}
+            isSelected={props.isSelected}
+          />
+        )}
+      </Point>
+    </PointWrapper>
   );
 };
 

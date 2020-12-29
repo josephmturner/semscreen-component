@@ -24,44 +24,50 @@ import { blackOrWhite } from "../dataModels/pointUtils";
 interface StyledPointProps {
   isMainPoint?: boolean;
   isSelected?: boolean;
-  isHovered?: boolean;
   darkMode?: boolean;
   indent?: string;
   newLine?: boolean;
-  suppressBorder?: boolean;
 }
 
-export const StyledDiv = styled.div<StyledPointProps>`
-  position: relative;
-  //TODO: perhaps this width: 100% should be replaced with textarea
-  //styles which allow it to grow along with its content?
-  //The issue is that if we omit width: 100%, banner names can get cut
-  //off without expanding when the center region expands
-  //width: 100%;
+export const PointWrapper = styled.div<StyledPointProps>`
   margin: 1px 0;
-
+  :focus-within,
+  :hover {
+    border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+    border-radius: 3px;
+  }
   --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
   --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   background-color: var(--colorBG);
   border-radius: 3px;
-
-  ${(props) =>
-    props.isHovered &&
-    !props.suppressBorder &&
-    `
-    //TODO: add style so that the whole point doesn't move when hovered
-    //border-box: something?
-    border: 1px solid var(--colorFG);
-  `}
 `;
 
-export const StyledImg = styled.img<StyledPointProps>`
+export const StyledDiv = styled.div<StyledPointProps>`
+  position: relative;
+`;
+
+export const StyledButton = styled.button<StyledPointProps>`
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
+
   position: absolute;
-  height: ${(props) => (props.isMainPoint ? "23px" : "17px")};
-  top: ${(props) => (props.isMainPoint ? 0 : "0.1rem")};
-  left: 0.2rem;
+  top: 0;
+  bottom: 0;
+  height: 1em;
+  width: 1em;
+  background: none;
+  border: none;
+  left: -0.2rem;
   z-index: 4;
+
+  :focus {
+    outline: none;
+    & > svg {
+      border: 1px solid var(--colorFG);
+      border-radius: 3px;
+    }
+  }
 `;
 
 export const TextareaWrapper = styled.div<StyledPointProps>`

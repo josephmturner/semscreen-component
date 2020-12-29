@@ -120,11 +120,9 @@ const MessageListItem = (props: AllProps) => {
         referenceData={props.referenceData}
         isMainPoint={true}
         isSelected={false}
-        isHovered={isHovered || props.isDragHovered}
         readOnlyOverride={true}
         darkMode={props.darkMode}
         suppressAutoFocus={true}
-        suppressBorder={true}
       >
         {isHovered && props.type !== "publishedMessage" && (
           <PointHoverOptions
@@ -151,8 +149,14 @@ const MessageWrapper = styled.div<{
   darkMode?: boolean;
 }>`
   position: relative;
+  border-radius: 3px;
+  padding: 3px 0 3px 3px;
+
   ${(props) =>
-    ` border: 1.5px solid ${props.author.color}; border-top: 0.5rem solid ${props.author.color}; border-radius: 3px; padding: 3px 0 3px 3px;`}
+    `
+    border: 1.5px solid ${props.author.color};
+    border-top: 0.5rem solid ${props.author.color}; 
+  `}
 
   ${(props) =>
     props.isHovered &&

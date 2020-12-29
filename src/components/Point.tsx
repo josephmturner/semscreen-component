@@ -19,7 +19,7 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 
 import {
-  StyledImg,
+  StyledButton,
   StyledDiv,
   StyledTextArea,
   TextareaWrapper,
@@ -28,6 +28,7 @@ import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { getOriginalAuthorId } from "../dataModels/pointUtils";
 
 import Banner from "./Banner";
+import AllShapes from "./AllShapes";
 import { useTextareaIndent } from "../hooks/useTextareaIndent";
 
 interface Props {
@@ -36,11 +37,9 @@ interface Props {
   referenceData: PointReferenceI | null;
   isMainPoint: boolean;
   isSelected: boolean;
-  isHovered: boolean;
   setIsHovered?: (isHovered: boolean) => void;
   readOnlyOverride: boolean;
   suppressAutoFocus?: boolean;
-  suppressBorder?: boolean;
   darkMode?: boolean;
   handleChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleKeyDown?: (e: React.KeyboardEvent) => void;
@@ -53,7 +52,7 @@ interface Props {
 //TODO: fix ref type below
 const Point = forwardRef<any, Props>((props, ref) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -61,8 +60,8 @@ const Point = forwardRef<any, Props>((props, ref) => {
     get div() {
       return divRef.current;
     },
-    get img() {
-      return imgRef.current;
+    get button() {
+      return buttonRef.current;
     },
     get banner() {
       return bannerRef.current;
@@ -71,8 +70,6 @@ const Point = forwardRef<any, Props>((props, ref) => {
       return textareaRef.current;
     },
   }));
-
-  const imageUrl = require(`../images/${props.displayPoint.shape}.svg`);
 
   const { textareaIndent, textareaNewline } = useTextareaIndent(
     divRef,
@@ -90,18 +87,22 @@ const Point = forwardRef<any, Props>((props, ref) => {
       }}
       ref={divRef}
       isSelected={props.isSelected}
-      isHovered={props.isHovered}
-      suppressBorder={props.suppressBorder}
       darkMode={props.darkMode}
     >
-      <StyledImg
-        ref={imgRef}
-        src={imageUrl}
+      <StyledButton
         onClick={props.handleShapeIconClick}
-        isMainPoint={props.isMainPoint}
+        isSelected={props.isSelected}
         darkMode={props.darkMode}
-        alt={props.displayPoint.shape}
-      />
+        title="Select point"
+        ref={buttonRef}
+      >
+        <AllShapes
+          shape={props.displayPoint.shape}
+          isMainPoint={props.isMainPoint}
+          isSelected={props.isSelected}
+          darkMode={props.darkMode}
+        />
+      </StyledButton>
       {props.referenceData && (
         //TODO: Place Banner inside a container which handles placement
         <Banner
