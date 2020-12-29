@@ -154,7 +154,7 @@ const ShapeRegion = (props: AllProps) => {
     listItems.splice(
       props.hoverIndex,
       0,
-      <HoverLine darkMode={props.darkMode} />
+      <HoverLine darkMode={props.darkMode} key="hover-line" />
     );
   }
 
