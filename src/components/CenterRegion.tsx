@@ -104,6 +104,7 @@ const CenterRegion = (props: AllProps) => {
   return (
     <StyledRegion
       onClick={() => props.setExpandedRegion({ region })}
+      darkMode={props.darkMode}
       ref={drop}
     >
       <InnerContainer

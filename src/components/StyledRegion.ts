@@ -18,9 +18,9 @@
 */
 import styled from "styled-components";
 
-export const StyledRegion = styled.div`
+export const StyledRegion = styled.div<{ darkMode?: boolean }>`
   overflow: hidden;
-  background-color: black;
+  background-color: ${(props) => (props.darkMode ? "black" : "white")};
   border-radius: 3px;
   margin: 2px;
 `;

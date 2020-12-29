@@ -161,6 +161,7 @@ const ShapeRegion = (props: AllProps) => {
   return (
     <StyledRegion
       onClick={() => props.setExpandedRegion({ region: shape })}
+      darkMode={props.darkMode}
       ref={expandRef}
     >
       <InnerContainer>
