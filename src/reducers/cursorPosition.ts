@@ -16,6 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import produce from "immer";
 import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "../actions/constants";
 import { CursorPositionParams } from "../actions/cursorPositionActions";
@@ -67,52 +68,40 @@ function handleSetCursorPosition(
   action: Action<CursorPositionParams>,
   appState: AppState
 ): CursorPositionState {
-  let newState = state;
+  return produce(state, (draft) => {
+    const pointId = action.params.pointId;
+    const { shape } = getPointIfReference(pointId, appState);
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = getMessageById(currentMessageId, appState);
+    const pointIds = currentMessage.shapes[shape];
+    const index = pointIds.findIndex((id) => id === pointId);
+    const prev = pointIds[index - 1];
+    const next = pointIds[index + 1];
 
-  const pointId = action.params.pointId;
-  const point = getPointIfReference(pointId, appState);
-  const shape = point.shape;
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const currentMessage = getMessageById(currentMessageId, appState);
-  const pointIds = currentMessage.shapes[shape];
-  const index = pointIds.findIndex((id) => id === pointId);
-  const prevPointId = pointIds[index - 1];
-  const nextPointId = pointIds[index + 1];
-
-  if (action.params.moveTo === "beginningOfPriorPoint") {
-    newState = {
-      details: {
-        pointId: prevPointId,
+    if (action.params.moveTo === "endOfPriorPoint" && index !== 0) {
+      draft.details = {
+        pointId: prev,
+        contentIndex: getPointIfReference(prev, appState).content.length,
+      };
+    } else if (
+      action.params.moveTo === "beginningOfNextPoint" &&
+      index !== pointIds.length - 1
+    ) {
+      draft.details = {
+        pointId: next,
         contentIndex: 0,
-      },
-    };
-  } else if (action.params.moveTo === "endOfPriorPoint") {
-    newState = {
-      details: {
-        pointId: prevPointId,
-        contentIndex: getPointIfReference(prevPointId, appState).content.length,
-      },
-    };
-  } else if (action.params.moveTo === "beginningOfNextPoint") {
-    if (index !== pointIds.length - 1) {
-      newState = {
-        details: {
-          pointId: nextPointId,
-          contentIndex: 0,
-        },
       };
     }
-  } else {
-    throw new Error(`Unknown moveTo param: ${action.params.moveTo}`);
-  }
-  return newState;
+  });
 }
 
 function handleClearCursorPosition(
   state: CursorPositionState,
   action: Action
 ): CursorPositionState {
-  return {};
+  return produce(state, (draft) => {
+    delete draft.details;
+  });
 }
 
 function handleCombinePoints(

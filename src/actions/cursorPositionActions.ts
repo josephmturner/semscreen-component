@@ -18,13 +18,8 @@
 */
 import { Action, Actions } from "./constants";
 
-export type MoveToType =
-  | "beginningOfPriorPoint"
-  | "endOfPriorPoint"
-  | "beginningOfNextPoint";
-
 export interface CursorPositionParams {
-  moveTo: MoveToType;
+  moveTo: "endOfPriorPoint" | "beginningOfNextPoint";
   pointId: string;
 }
 

@@ -212,8 +212,7 @@ const RegionPoint = (props: AllProps) => {
         e.key === "ArrowLeft" &&
         pointRef.current.textarea.selectionStart === 0 &&
         pointRef.current.textarea.selectionStart ===
-          pointRef.current.textarea.selectionEnd &&
-        index !== 0
+          pointRef.current.textarea.selectionEnd
       ) {
         e.preventDefault();
         setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
