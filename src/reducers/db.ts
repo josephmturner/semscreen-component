@@ -1,3 +1,5 @@
+import produce from "immer";
+
 import { Action, Actions } from "../actions/constants";
 
 import { AppState } from "./store";
@@ -25,8 +27,7 @@ export const dbReducer = (
     case Actions.loadDatabase:
       newState = handleLoadDatabase(
         state,
-        action as Action<LoadDatabaseParams>,
-        appState
+        action as Action<LoadDatabaseParams>
       );
       break;
   }
@@ -35,8 +36,10 @@ export const dbReducer = (
 
 function handleLoadDatabase(
   state: DBState,
-  action: Action<LoadDatabaseParams>,
-  appState: AppState
+  action: Action<LoadDatabaseParams>
 ) {
-  return { ...state, db: action.params.db, loading: false };
+  return produce(state, (draft) => {
+    draft.db = action.params.db;
+    draft.loading = false;
+  });
 }
