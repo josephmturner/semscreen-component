@@ -73,10 +73,9 @@ const BannerView = styled.div<BannerViewProps>`
   position: absolute;
 
   --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
   color: var(--colorFG);
-  background-color: var(--colorBG);
+  background-color: transparent;
   max-width: 80%;
   white-space: nowrap;
   overflow: hidden;
@@ -93,9 +92,18 @@ const BannerView = styled.div<BannerViewProps>`
     content: "";
     position: absolute;
     background-image: ${(props) =>
-      `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='450' width='450' preserveAspectRatio='none'> <path d='M391.908 347.474c-2.816 9.508-9.271 16.797-23.376 21.095 0 0-73.876 28.625-143.069 0-69.194-28.627-143.066 0-143.066 0-12.913 0-23.378-9.44-23.378-21.095V89.287c5.229-11.555 12.51-17.483 23.469-21.826 0 0 64.284-31.412 142.975.73 78.504 32.068 143.069 0 143.069 0 12.911 0 23.376 9.446 23.376 21.096z' fill='${
-        props.color && props.color.replace("#", "%23")
-      }' fill-opacity='0.1' stroke='${
+      `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' height='450' width='450' preserveAspectRatio='none'> <path d='M391.908 347.474c-2.816 9.508-9.271 16.797-23.376 21.095 0 0-73.876 28.625-143.069 0-69.194-28.627-143.066 0-143.066 0-12.913 0-23.378-9.44-23.378-21.095V89.287c5.229-11.555 12.51-17.483 23.469-21.826 0 0 64.284-31.412 142.975.73 78.504 32.068 143.069 0 143.069 0 12.911 0 23.376 9.446 23.376 21.096z' fill=${
+        //For some reason, putting var(--colorBG) as the value of fill
+        //doesn't render the correct fill color when a point is selected.
+        //This is the same logic written out again...
+        props.isSelected
+          ? props.darkMode
+            ? "'white'"
+            : "'black'"
+          : props.darkMode
+          ? "'black'"
+          : "'white'"
+      } stroke='${
         props.isHovered
           ? props.darkMode
             ? "white"
