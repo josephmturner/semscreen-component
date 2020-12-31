@@ -16,22 +16,28 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
-export interface PanelButtonProps {
+import { connect } from "react-redux";
+import { AppState } from "../reducers/store";
+import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
+
+interface OwnProps {
   side: "right" | "bottom";
   onClick: () => void;
   darkMode: boolean;
   onDragOver?: () => void;
 }
 
-const PanelButton = (props: PanelButtonProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+interface AllProps extends OwnProps {
+  color: string;
+}
 
+const PanelButton = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: props.onDragOver,
@@ -44,13 +50,10 @@ const PanelButton = (props: PanelButtonProps) => {
       height={props.side === "bottom" ? "1em" : "2em"}
       viewBox="0 0 16 16"
       preserveAspectRatio="none"
-      opacity={isHovered ? "1" : "0.5"}
-      fill={props.darkMode ? "white" : "black"}
       onClick={props.onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       side={props.side}
       darkMode={props.darkMode}
+      color={props.color}
     >
       {props.side === "right" && (
         <path d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671z" />
@@ -65,30 +68,51 @@ const PanelButton = (props: PanelButtonProps) => {
 interface StyledProps {
   side: "right" | "bottom";
   darkMode?: boolean;
+  color: string;
 }
+
 const StyledSvg = styled.svg<StyledProps>`
   position: absolute;
-  border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
+  background-color: ${(props) => props.color};
+  opacity: 1;
+  fill: ${(props) => (props.darkMode ? "black" : "white")};
+  z-index: 9999;
+  :hover {
+    fill: ${(props) => (props.darkMode ? "white" : "black")};
+  }
   ${(props) =>
     props.side === "right" &&
     `
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto 0;
     border-right: none;
     border-radius: 3px 0 0 3px;
 `}
   ${(props) =>
     props.side === "bottom" &&
     `
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
     border-bottom: none;
     border-radius: 3px 3px 0 0;
-`}
+`};
 `;
 
-export default PanelButton;
+const mapStateToProps = (state: AppState) => {
+  const currentMessageId = state.semanticScreen.currentMessage as string;
+  const authorId = getMessageById(currentMessageId, state).author;
+  const { color } = isUserIdentity(authorId, state)
+    ? state.userIdentities.byId[authorId]
+    : state.authors.byId[authorId];
+  return {
+    color,
+  };
+};
+
+const mapActionsToProps = {};
+
+export default connect(mapStateToProps, mapActionsToProps)(PanelButton);

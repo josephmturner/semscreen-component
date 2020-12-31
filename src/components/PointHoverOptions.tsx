@@ -214,7 +214,7 @@ const StyledPointHoverOptions = styled.div<StyledProps>`
   margin: auto;
   top: 0;
   bottom: 0;
-  right: 7px;
+  right: 12px;
   height: 1rem;
   z-index: 10;
   background-color: var(--colorBG);
