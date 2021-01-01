@@ -18,7 +18,6 @@
 */
 import { Action, Actions } from "../actions/constants";
 import { DisplayAppParams } from "../actions/displayAppActions";
-import { AppState } from "./store";
 
 import produce from "immer";
 
@@ -32,8 +31,7 @@ export const initialDisplayAppState: DisplayAppState = {
 
 export const displayAppReducer = (
   state = initialDisplayAppState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): DisplayAppState => {
   let newState = state;
   switch (action.type) {

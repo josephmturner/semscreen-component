@@ -17,8 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "../actions/constants";
-import { AppState } from "./store";
-
 import { MessageI } from "../dataModels/dataModels";
 import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
 
@@ -38,8 +36,7 @@ export const initialMessagesState: MessagesState = {
 
 export const messagesReducer = (
   state = initialMessagesState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): MessagesState => {
   let newState = state;
   switch (action.type) {

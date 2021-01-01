@@ -2,7 +2,6 @@ import produce from "immer";
 
 import { Action, Actions } from "../actions/constants";
 
-import { AppState } from "./store";
 import { LoadDatabaseParams } from "../actions/dbActions";
 
 import { USHINBase } from "ushin-db";
@@ -17,11 +16,7 @@ export const initialDBState: DBState = {
   db: null,
 };
 
-export const dbReducer = (
-  state = initialDBState,
-  action: Action,
-  appState: AppState
-): DBState => {
+export const dbReducer = (state = initialDBState, action: Action): DBState => {
   let newState = state;
   switch (action.type) {
     case Actions.loadDatabase:

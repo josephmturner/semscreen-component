@@ -154,37 +154,29 @@ function createAppStore() {
 
   const appReducer = (state = initialAppState, action: Action): AppState => {
     let newState: AppState = {
-      db: dbReducer(state.db, action, state),
-      userIdentities: userIdentitiesReducer(
-        state.userIdentities,
-        action,
-        state
-      ),
+      db: dbReducer(state.db, action),
+      userIdentities: userIdentitiesReducer(state.userIdentities, action),
       cursorPosition: cursorPositionReducer(state.cursorPosition, action),
       authors: authorsReducer(state.authors, action, state),
-      messages: messagesReducer(state.messages, action, state),
-      points: pointsReducer(state.points, action, state),
+      messages: messagesReducer(state.messages, action),
+      points: pointsReducer(state.points, action),
       draftMessages: draftMessagesReducer(state.draftMessages, action, state),
       draftPoints: draftPointsReducer(state.draftPoints, action, state),
-      expandedRegion: expandedRegionReducer(
-        state.expandedRegion,
-        action,
-        state
-      ),
+      expandedRegion: expandedRegionReducer(state.expandedRegion, action),
       selectedPoints: selectedPointsReducer(
         state.selectedPoints,
         action,
         state
       ),
-      panels: panelsReducer(state.panels, action, state),
-      drag: dragReducer(state.drag, action, state),
+      panels: panelsReducer(state.panels, action),
+      drag: dragReducer(state.drag, action),
       semanticScreen: semanticScreenReducer(
         state.semanticScreen,
         action,
         state
       ),
-      search: searchReducer(state.search, action, state),
-      displayApp: displayAppReducer(state.displayApp, action, state),
+      search: searchReducer(state.search, action),
+      displayApp: displayAppReducer(state.displayApp, action),
     };
     return newState;
   };

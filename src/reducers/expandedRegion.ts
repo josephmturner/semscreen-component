@@ -19,8 +19,6 @@
 import { Action, Actions } from "../actions/constants";
 import { ExpandedRegionParams } from "../actions/expandedRegionActions";
 
-import { AppState } from "./store";
-
 import { RegionI } from "../dataModels/dataModels";
 
 export interface ExpandedRegionState {
@@ -33,8 +31,7 @@ export const initialExpandedRegionState: ExpandedRegionState = {
 
 export const expandedRegionReducer = (
   state = initialExpandedRegionState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): ExpandedRegionState => {
   let newState = state;
   switch (action.type) {

@@ -19,8 +19,6 @@
 import { Action, Actions } from "../actions/constants";
 import { PanelParams } from "../actions/panelsActions";
 
-import { AppState } from "./store";
-
 export interface PanelsState {
   bottom: boolean;
   right: boolean;
@@ -33,8 +31,7 @@ export const initialPanelsState: PanelsState = {
 
 export const panelsReducer = (
   state: PanelsState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): PanelsState => {
   let newState = state;
   switch (action.type) {

@@ -1,5 +1,4 @@
 import { Action, Actions } from "../actions/constants";
-import { AppState } from "./store";
 
 import { HoverOverParams, EndDragParams } from "../actions/dragActions";
 
@@ -16,11 +15,7 @@ export const initialDragState: DragState = {
   context: null,
 };
 
-export const dragReducer = (
-  state: DragState,
-  action: Action,
-  appState: AppState
-): DragState => {
+export const dragReducer = (state: DragState, action: Action): DragState => {
   let newState = state;
   switch (action.type) {
     case Actions.hoverOver:

@@ -16,12 +16,10 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import produce from "immer";
 import { UserIdentity } from "../dataModels/dataModels";
 import { Action, Actions } from "../actions/constants";
 import { UserIdentityCreateParams } from "../actions/userIdentitiesActions";
-import { AppState } from "./store";
-
-import produce from "immer";
 
 export interface UserIdentitiesState {
   byId: {
@@ -38,8 +36,7 @@ export const initialUserIdentitiesState: UserIdentitiesState = {
 
 export const userIdentitiesReducer = (
   state = initialUserIdentitiesState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): UserIdentitiesState => {
   let newState = state;
   switch (action.type) {

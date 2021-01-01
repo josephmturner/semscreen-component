@@ -18,7 +18,6 @@
 */
 import { Action, Actions } from "../actions/constants";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { AppState } from "./store";
 import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
 
 import produce from "immer";
@@ -34,8 +33,7 @@ export const initialPointsState: PointsState = { byId: {}, allIds: [] };
 
 export const pointsReducer = (
   state: PointsState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): PointsState => {
   let newState = state;
   switch (action.type) {

@@ -2,8 +2,6 @@ import { Action, Actions } from "../actions/constants";
 
 import { _SearchByContentParams } from "../actions/searchActions";
 
-import { AppState } from "./store";
-
 export interface SearchState {
   searchQuery: string;
   results: string[];
@@ -16,16 +14,14 @@ export const initialSearchState: SearchState = {
 
 export const searchReducer = (
   state = initialSearchState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): SearchState => {
   let newState = state;
   switch (action.type) {
     case Actions.searchByContent:
       newState = handleSearchResults(
         state,
-        action as Action<_SearchByContentParams>,
-        appState
+        action as Action<_SearchByContentParams>
       );
       break;
   }
@@ -34,8 +30,7 @@ export const searchReducer = (
 
 function handleSearchResults(
   state: SearchState,
-  action: Action<_SearchByContentParams>,
-  appState: AppState
+  action: Action<_SearchByContentParams>
 ) {
   return { ...state, ...action.params };
 }
