@@ -16,19 +16,58 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import { ThunkAction } from "redux-thunk";
+
+import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "./constants";
+import { PointI } from "../dataModels/dataModels";
+import { AppState } from "../reducers/store";
 
 export interface CursorPositionParams {
-  moveTo: "endOfPriorPoint" | "beginningOfNextPoint";
-  pointId: string;
+  point: PointI;
+  index: number;
+  moveTo: "endOfPrevPoint" | "beginningOfNextPoint";
+}
+
+export interface _CursorPositionParams
+  extends Omit<CursorPositionParams, "point" | "index"> {
+  nextId: string;
+  prevPoint: PointI;
 }
 
 export const setCursorPosition = (
   params: CursorPositionParams
-): Action<CursorPositionParams> => {
-  return {
-    type: Actions.setCursorPosition,
-    params,
+): ThunkAction<void, AppState, unknown, Action<_CursorPositionParams>> => {
+  return (dispatch, getState) => {
+    const state = getState();
+
+    const { point, index, moveTo } = params;
+    const { shape } = point;
+
+    const currentMessageId = state.semanticScreen.currentMessage as string;
+    const currentMessage = getMessageById(currentMessageId, state);
+    const currentPointIds = currentMessage.shapes[shape];
+
+    // Don't try to move the cursor to a point which doesn't exist
+    if (
+      (moveTo === "endOfPrevPoint" && index === 0) ||
+      (moveTo === "beginningOfNextPoint" && index === currentPointIds.length)
+    ) {
+      return;
+    }
+
+    const nextId = currentPointIds[index + 1];
+    const prevId = currentPointIds[index - 1];
+    const prevPoint = getPointIfReference(prevId, state);
+
+    dispatch({
+      type: Actions.setCursorPosition,
+      params: {
+        ...params,
+        nextId,
+        prevPoint,
+      },
+    });
   };
 };
 

@@ -23,11 +23,7 @@ import {
   PointReferenceI,
   isPointShape,
 } from "../dataModels/dataModels";
-import {
-  getPointIfReference,
-  getReferenceData,
-  isReference,
-} from "../dataModels/pointUtils";
+import { getReferenceData, isReference } from "../dataModels/pointUtils";
 import { AppState } from "./store";
 import {
   _DraftPointCreateParams,
@@ -98,8 +94,7 @@ export const draftPointsReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<_CombinePointsParams>,
-        appState
+        action as Action<_CombinePointsParams>
       );
       break;
     case Actions.splitIntoTwoPoints:
@@ -210,30 +205,29 @@ function handleDraftPointsDelete(
 
 function handleCombinePoints(
   state: DraftPointsState,
-  action: Action<_CombinePointsParams>,
-  appState: AppState
+  action: Action<_CombinePointsParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
     const {
-      pointIdToKeep,
+      pointToKeepId,
       keepIndex,
-      pointIdToDelete,
+      pointToDeleteId,
       deleteIndex,
     } = action.params;
 
     const newContent =
       keepIndex < deleteIndex
-        ? getPointIfReference(pointIdToKeep, appState).content +
-          getPointIfReference(pointIdToDelete, appState).content
-        : getPointIfReference(pointIdToDelete, appState).content +
-          getPointIfReference(pointIdToKeep, appState).content;
+        ? (state.byId[pointToKeepId] as PointI).content +
+          (state.byId[pointToDeleteId] as PointI).content
+        : (state.byId[pointToDeleteId] as PointI).content +
+          (state.byId[pointToKeepId] as PointI).content;
 
-    const pointToKeep = draft.byId[pointIdToKeep];
+    const pointToKeep = draft.byId[pointToKeepId];
     // Type assertion is okay here since pointToKeep will never be a
     // reference point
     (pointToKeep as PointI).content = newContent;
-    delete draft.byId[pointIdToDelete];
-    draft.allIds.filter((id) => id !== pointIdToDelete);
+    delete draft.byId[pointToDeleteId];
+    draft.allIds.filter((id) => id !== pointToDeleteId);
   });
 }
 

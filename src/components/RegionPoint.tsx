@@ -215,7 +215,7 @@ const RegionPoint = (props: AllProps) => {
           pointRef.current.textarea.selectionEnd
       ) {
         e.preventDefault();
-        setCursorPosition({ moveTo: "endOfPriorPoint", pointId });
+        setCursorPosition({ point, index, moveTo: "endOfPrevPoint" });
       } else if (
         e.key === "ArrowRight" &&
         pointRef.current.textarea.selectionStart === point.content.length &&
@@ -224,8 +224,9 @@ const RegionPoint = (props: AllProps) => {
       ) {
         e.preventDefault();
         setCursorPosition({
+          point,
+          index,
           moveTo: "beginningOfNextPoint",
-          pointId,
         });
       }
     }

@@ -160,11 +160,7 @@ function createAppStore() {
         action,
         state
       ),
-      cursorPosition: cursorPositionReducer(
-        state.cursorPosition,
-        action,
-        state
-      ),
+      cursorPosition: cursorPositionReducer(state.cursorPosition, action),
       authors: authorsReducer(state.authors, action, state),
       messages: messagesReducer(state.messages, action, state),
       points: pointsReducer(state.points, action, state),

@@ -30,6 +30,7 @@ import {
 import {
   createReferenceTo,
   getMessageById,
+  getPointById,
   getReferencedPointId,
 } from "../dataModels/pointUtils";
 
@@ -160,8 +161,10 @@ export interface CombinePointsParams {
 }
 
 export interface _CombinePointsParams extends CombinePointsParams {
-  pointIdToKeep: string;
-  pointIdToDelete: string;
+  pointToKeepId: string;
+  pointToKeep: PointI;
+  pointToDeleteId: string;
+  currentMessageId: string;
 }
 
 export const _combinePoints = (
@@ -178,39 +181,41 @@ export const combinePoints = (
 ): ThunkAction<void, AppState, unknown, Action<_CombinePointsParams>> => {
   return (dispatch, getState) => {
     const state = getState();
+    const { shape, keepIndex, deleteIndex } = params;
     const currentMessageId = state.semanticScreen.currentMessage as string;
     const currentMessage = state.draftMessages.byId[currentMessageId];
 
     const withinBounds = (index: number): boolean => {
-      return index >= 0 && index < currentMessage.shapes[params.shape].length;
+      return index >= 0 && index < currentMessage.shapes[shape].length;
     };
 
     const isQuoted = (index: number): boolean => {
-      const pointId = currentMessage.shapes[params.shape][index];
+      const pointId = currentMessage.shapes[shape][index];
       return !!getReferencedPointId(pointId, state);
     };
 
     if (
       // Only combine points with points that exist
-      withinBounds(params.keepIndex) &&
-      withinBounds(params.deleteIndex) &&
+      (!withinBounds(keepIndex) && !withinBounds(deleteIndex)) ||
       // Only combine points with non-quoted points
-      !isQuoted(params.keepIndex) &&
-      !isQuoted(params.deleteIndex)
+      (isQuoted(keepIndex) && isQuoted(deleteIndex))
     ) {
-      const pointIdToKeep =
-        currentMessage.shapes[params.shape][params.keepIndex];
-      const pointIdToDelete =
-        currentMessage.shapes[params.shape][params.deleteIndex];
-
-      dispatch(
-        _combinePoints({
-          pointIdToKeep,
-          pointIdToDelete,
-          ...params,
-        })
-      );
+      return;
     }
+
+    const pointToKeepId = currentMessage.shapes[shape][keepIndex];
+    const pointToKeep = getPointById(pointToKeepId, state) as PointI;
+    const pointToDeleteId = currentMessage.shapes[shape][deleteIndex];
+
+    dispatch(
+      _combinePoints({
+        pointToKeepId,
+        pointToKeep,
+        pointToDeleteId,
+        currentMessageId,
+        ...params,
+      })
+    );
   };
 };
 

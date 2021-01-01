@@ -137,7 +137,7 @@ function handleCombinePoints(
 ): SelectedPointsState {
   return produce(state, (draft) => {
     draft.pointIds = draft.pointIds.filter(
-      (id) => id !== action.params.pointIdToDelete
+      (id) => id !== action.params.pointToDeleteId
     );
   });
 }

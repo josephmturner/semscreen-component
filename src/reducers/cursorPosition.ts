@@ -17,12 +17,9 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import produce from "immer";
-import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "../actions/constants";
-import { CursorPositionParams } from "../actions/cursorPositionActions";
+import { _CursorPositionParams } from "../actions/cursorPositionActions";
 import { _CombinePointsParams } from "../actions/draftPointsActions";
-
-import { AppState } from "./store";
 
 export interface Details {
   pointId: string;
@@ -37,16 +34,14 @@ export const initialCursorPositionState: CursorPositionState = {};
 
 export const cursorPositionReducer = (
   state = initialCursorPositionState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): CursorPositionState => {
   let newState = state;
   switch (action.type) {
     case Actions.setCursorPosition:
       newState = handleSetCursorPosition(
         state,
-        action as Action<CursorPositionParams>,
-        appState
+        action as Action<_CursorPositionParams>
       );
       break;
     case Actions.clearCursorPosition:
@@ -55,8 +50,7 @@ export const cursorPositionReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<_CombinePointsParams>,
-        appState
+        action as Action<_CombinePointsParams>
       );
       break;
   }
@@ -65,30 +59,19 @@ export const cursorPositionReducer = (
 
 function handleSetCursorPosition(
   state: CursorPositionState,
-  action: Action<CursorPositionParams>,
-  appState: AppState
+  action: Action<_CursorPositionParams>
 ): CursorPositionState {
   return produce(state, (draft) => {
-    const pointId = action.params.pointId;
-    const { shape } = getPointIfReference(pointId, appState);
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-    const currentMessage = getMessageById(currentMessageId, appState);
-    const pointIds = currentMessage.shapes[shape];
-    const index = pointIds.findIndex((id) => id === pointId);
-    const prev = pointIds[index - 1];
-    const next = pointIds[index + 1];
+    const { nextId, prevPoint } = action.params;
 
-    if (action.params.moveTo === "endOfPriorPoint" && index !== 0) {
+    if (action.params.moveTo === "endOfPrevPoint") {
       draft.details = {
-        pointId: prev,
-        contentIndex: getPointIfReference(prev, appState).content.length,
+        pointId: prevPoint._id,
+        contentIndex: prevPoint.content.length,
       };
-    } else if (
-      action.params.moveTo === "beginningOfNextPoint" &&
-      index !== pointIds.length - 1
-    ) {
+    } else if (action.params.moveTo === "beginningOfNextPoint") {
       draft.details = {
-        pointId: next,
+        pointId: nextId,
         contentIndex: 0,
       };
     }
@@ -106,25 +89,14 @@ function handleClearCursorPosition(
 
 function handleCombinePoints(
   state: CursorPositionState,
-  action: Action<_CombinePointsParams>,
-  appState: AppState
+  action: Action<_CombinePointsParams>
 ): CursorPositionState {
   return produce(state, (draft) => {
-    const smallerIndex = Math.min(
-      action.params.keepIndex,
-      action.params.deleteIndex
-    );
-
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-    const currentMessage = appState.draftMessages.byId[currentMessageId];
-    const prevPointId =
-      currentMessage.shapes[action.params.shape][smallerIndex];
-    const prevPoint = getPointIfReference(prevPointId, appState);
+    const { pointToKeep } = action.params;
 
     draft.details = {
-      pointId:
-        currentMessage.shapes[action.params.shape][action.params.keepIndex],
-      contentIndex: prevPoint.content.length,
+      pointId: pointToKeep._id,
+      contentIndex: pointToKeep.content.length,
     };
   });
 }

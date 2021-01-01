@@ -120,8 +120,7 @@ export const draftMessagesReducer = (
     case Actions.combinePoints:
       newState = handleCombinePoints(
         state,
-        action as Action<_CombinePointsParams>,
-        appState
+        action as Action<_CombinePointsParams>
       );
       break;
     case Actions.splitIntoTwoPoints:
@@ -389,18 +388,17 @@ function handleSetMain(
 
 function handleCombinePoints(
   state: DraftMessagesState,
-  action: Action<_CombinePointsParams>,
-  appState: AppState
+  action: Action<_CombinePointsParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const { currentMessageId } = action.params;
 
     const currentMessage = draft.byId[currentMessageId];
     const currentShapes = currentMessage.shapes;
 
     currentShapes[action.params.shape] = currentShapes[
       action.params.shape
-    ].filter((id) => id !== action.params.pointIdToDelete);
+    ].filter((id) => id !== action.params.pointToDeleteId);
   });
 }
 
