@@ -130,7 +130,7 @@ const PointHoverOptions = (props: Props) => {
   const PointsMoveButton = () => (
     <ButtonSvg
       onClick={(e: React.MouseEvent) => {
-        dispatch(pointsMoveToMessage({ messageId: props.id }));
+        dispatch(pointsMoveToMessage({ newMessageId: props.id }));
         e.stopPropagation();
       }}
       darkMode={props.darkMode}

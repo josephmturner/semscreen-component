@@ -163,18 +163,10 @@ function createAppStore() {
       draftMessages: draftMessagesReducer(state.draftMessages, action, state),
       draftPoints: draftPointsReducer(state.draftPoints, action, state),
       expandedRegion: expandedRegionReducer(state.expandedRegion, action),
-      selectedPoints: selectedPointsReducer(
-        state.selectedPoints,
-        action,
-        state
-      ),
+      selectedPoints: selectedPointsReducer(state.selectedPoints, action),
       panels: panelsReducer(state.panels, action),
       drag: dragReducer(state.drag, action),
-      semanticScreen: semanticScreenReducer(
-        state.semanticScreen,
-        action,
-        state
-      ),
+      semanticScreen: semanticScreenReducer(state.semanticScreen, action),
       search: searchReducer(state.search, action),
       displayApp: displayAppReducer(state.displayApp, action),
     };

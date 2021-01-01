@@ -28,16 +28,13 @@ import { AppState } from "./store";
 import {
   _DraftPointCreateParams,
   DraftPointUpdateParams,
-  _PointsMoveToMessageParams,
+  DraftPointReferencesCreate,
   PointsMoveWithinMessageParams,
   DraftPointsDeleteParams,
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
-import {
-  _DraftMessageCreateParams,
-  DraftMessageDeleteParams,
-} from "../actions/draftMessagesActions";
+import { DraftMessageDeleteParams } from "../actions/draftMessagesActions";
 
 export interface DraftPointsState {
   byId: {
@@ -77,11 +74,10 @@ export const draftPointsReducer = (
         appState
       );
       break;
-    case Actions.pointsMoveToMessage:
-      newState = handlePointsMoveToMessage(
+    case Actions.draftPointReferencesCreate:
+      newState = handleDraftPointReferencesCreate(
         state,
-        action as Action<_PointsMoveToMessageParams>,
-        appState
+        action as Action<DraftPointReferencesCreate>
       );
       break;
     case Actions.draftPointsDelete:
@@ -101,12 +97,6 @@ export const draftPointsReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>
-      );
-      break;
-    case Actions.draftMessageCreate:
-      newState = handleDraftMessageCreate(
-        state,
-        action as Action<_DraftMessageCreateParams>
       );
       break;
     case Actions.draftMessageDelete:
@@ -166,22 +156,15 @@ function handlePointsMoveWithinMessage(
   });
 }
 
-function handlePointsMoveToMessage(
+function handleDraftPointReferencesCreate(
   state: DraftPointsState,
-  action: Action<_PointsMoveToMessageParams>,
-  appState: AppState
+  action: Action<DraftPointReferencesCreate>
 ): DraftPointsState {
-  const { newReferencePoints } = action.params;
-
-  if (newReferencePoints === undefined) {
-    return state;
-  }
-
   return produce(state, (draft) => {
-    newReferencePoints.forEach((point) => {
+    for (const point of action.params.points) {
       draft.byId[point._id] = point;
       draft.allIds.push(point._id);
-    });
+    }
   });
 }
 
@@ -253,24 +236,6 @@ function handleSplitIntoTwoPoints(
       pointDate: new Date(),
     };
     draft.allIds.push(action.params.newPointId);
-  });
-}
-
-function handleDraftMessageCreate(
-  state: DraftPointsState,
-  action: Action<_DraftMessageCreateParams>
-): DraftPointsState {
-  const { newReferencePoints } = action.params;
-
-  if (newReferencePoints === undefined) {
-    return state;
-  }
-
-  return produce(state, (draft) => {
-    newReferencePoints.forEach((point) => {
-      draft.byId[point._id] = point;
-      draft.allIds.push(point._id);
-    });
   });
 }
 

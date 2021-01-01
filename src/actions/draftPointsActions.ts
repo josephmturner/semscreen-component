@@ -24,14 +24,16 @@ import { AppState } from "../reducers/store";
 import {
   PointI,
   PointReferenceI,
+  PointReferenceWithShape,
   PointShape,
   PointNoIdI,
 } from "../dataModels/dataModels";
 import {
-  createReferenceTo,
   getMessageById,
+  getOriginalShape,
   getPointById,
   getReferencedPointId,
+  isReference,
 } from "../dataModels/pointUtils";
 
 export interface DraftPointCreateParams {
@@ -81,54 +83,119 @@ export const pointsMoveWithinMessage = (
   };
 };
 
-function _shouldCopy(
-  params: PointsMoveToMessageParams,
+function createReferenceTo(
+  pointId: string,
+  messageId: string,
   appState: AppState
-): boolean {
-  if (params.messageId === undefined) {
-    return false;
-  }
+): PointReferenceI {
+  const point = getPointById(pointId, appState);
+  const authorId = getMessageById(messageId, appState).author;
+  const newPointId = uuidv4();
 
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const message = getMessageById(currentMessageId, appState);
+  const referenceHistory = isReference(point)
+    ? [...point.referenceHistory]
+    : [];
+  referenceHistory.push({
+    pointId,
+    messageId,
+    authorId,
+  });
 
-  if (appState.draftMessages.allIds.includes(message._id)) {
-    return false;
-  }
-
-  return true;
+  return {
+    _id: newPointId,
+    referenceHistory,
+  };
 }
 
 export interface PointsMoveToMessageParams {
-  messageId: string;
+  newMessageId: string;
+  oldMessageId?: string;
 }
 
 export const pointsMoveToMessage = (
   params: PointsMoveToMessageParams
-): ThunkAction<void, AppState, unknown, Action<_PointsMoveToMessageParams>> => {
+): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<_PointsMoveToMessageParams | DraftPointReferencesCreate>
+> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    let newReferencePoints: PointReferenceI[] | undefined;
+    const { newMessageId } = params;
+    const oldMessageId =
+      params.oldMessageId ?? (appState.semanticScreen.currentMessage as string);
 
-    if (_shouldCopy(params, appState)) {
-      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
-        return createReferenceTo(pointId, appState);
+    //Don't move points to the same message
+    if (oldMessageId === newMessageId) {
+      return;
+    }
+
+    // If the current message is a draft, cut the selected points
+    // from the current message and paste them into the new one
+    let cutFromMessageId: string | undefined = oldMessageId;
+    let newPoints: (
+      | PointReferenceWithShape
+      | PointI
+    )[] = appState.selectedPoints.pointIds.map((id) => {
+      const point = getPointById(id, appState);
+
+      // It is necessary to pass the shape along with each reference point
+      // so the draftMessageReducer knows where in the shapes object to put it
+      if (isReference(point)) {
+        const shape = getOriginalShape(point, appState);
+
+        return { ...point, shape };
+      }
+
+      return point;
+    });
+
+    // If the currentMessage is not a draft, create reference points
+    // from the selected points (do not cut from the original message)
+    if (!appState.draftMessages.allIds.includes(oldMessageId)) {
+      cutFromMessageId = undefined;
+      const _newPoints: PointReferenceI[] = [];
+      newPoints = appState.selectedPoints.pointIds.map((pointId) => {
+        const point = createReferenceTo(pointId, oldMessageId, appState);
+        _newPoints.push(point);
+
+        const shape = getOriginalShape(point, appState);
+        return { ...point, shape };
       });
+      // Create the new points (convert them to the correct type)
+
+      dispatch(draftPointReferencesCreate({ points: _newPoints }));
     }
 
     dispatch(
       _pointsMoveToMessage({
-        messageId: params.messageId,
-        newReferencePoints,
+        newMessageId,
+        oldMessageId,
+        newPoints,
+        cutFromMessageId,
       })
     );
   };
 };
 
-export interface _PointsMoveToMessageParams {
-  messageId: string;
-  newReferencePoints?: PointReferenceI[];
+export interface DraftPointReferencesCreate {
+  points: (PointI | PointReferenceI)[];
+}
+
+export const draftPointReferencesCreate = (
+  params: DraftPointReferencesCreate
+): Action<DraftPointReferencesCreate> => {
+  return {
+    type: Actions.draftPointReferencesCreate,
+    params,
+  };
+};
+
+export interface _PointsMoveToMessageParams extends PointsMoveToMessageParams {
+  newPoints: (PointI | PointReferenceWithShape)[];
+  cutFromMessageId?: string;
 }
 
 export const _pointsMoveToMessage = (

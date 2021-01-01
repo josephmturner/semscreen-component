@@ -36,7 +36,7 @@ import { displayApp, DisplayAppParams } from "./displayAppActions";
 import {
   _draftMessageCreate,
   _draftMessageDelete,
-  DraftMessageDeleteParams,
+  _DraftMessageDeleteParams,
 } from "./draftMessagesActions";
 
 import leveljs from "level-js";
@@ -158,7 +158,7 @@ export const saveMessage = (
   void,
   AppState,
   unknown,
-  Action<_PopulateMessageAndPointsParams | DraftMessageDeleteParams>
+  Action<_PopulateMessageAndPointsParams | _DraftMessageDeleteParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -178,7 +178,8 @@ export const saveMessage = (
 
         dispatch(_populateMessageAndPoints({ messages, points }));
 
-        dispatch(_draftMessageDelete({ messageId }));
+        const currentMessageId = state.semanticScreen.currentMessage as string;
+        dispatch(_draftMessageDelete({ messageId, currentMessageId }));
       } catch (e) {
         console.log(e);
       }

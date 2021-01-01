@@ -21,48 +21,52 @@ import { ThunkAction } from "redux-thunk";
 import { v4 as uuidv4 } from "uuid";
 
 import { Action, Actions } from "./constants";
-import { PointI, PointShape, PointReferenceI } from "../dataModels/dataModels";
-import { createReferenceTo } from "../dataModels/pointUtils";
+import { PointI, PointShape } from "../dataModels/dataModels";
+import { containsPoints } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
+import {
+  pointsMoveToMessage,
+  PointsMoveToMessageParams,
+} from "./draftPointsActions";
 
-export interface DraftMessageCreateParams {}
-
-export interface _DraftMessageCreateParams extends DraftMessageCreateParams {
+export interface _DraftMessageCreateParams {
   newMessageId: string;
-  newReferencePoints?: PointReferenceI[];
 }
 
-function _shouldCopy(appState: AppState): boolean {
-  const currentMessageId = appState.semanticScreen.currentMessage;
-  return (
-    currentMessageId !== undefined &&
-    appState.messages.allIds.includes(currentMessageId)
-  );
-}
-
-export const draftMessageCreate = (
-  params: DraftMessageCreateParams
-): ThunkAction<void, AppState, unknown, Action<_DraftMessageCreateParams>> => {
+export const draftMessageCreate = (): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<_DraftMessageCreateParams | PointsMoveToMessageParams>
+> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
 
-    //Create newReferencePoints if the current message is a published message
-    //Cut and paste draft points by leaving newReferencePoints undefined
-    let newReferencePoints: PointReferenceI[] | undefined;
-    if (_shouldCopy(appState)) {
-      newReferencePoints = appState.selectedPoints.pointIds.map((pointId) => {
-        return createReferenceTo(pointId, appState);
-      });
+    //Prevent creation of many empty messages...
+
+    const oldMessageId = appState.semanticScreen.currentMessage as string;
+    if (!containsPoints(oldMessageId, appState)) {
+      return;
     }
 
+    // Create the new message...
     const newMessageId = uuidv4();
 
     dispatch(
       _draftMessageCreate({
         newMessageId,
-        newReferencePoints,
       })
     );
+
+    // If there are points selected, add them to the new message
+    if (appState.selectedPoints.pointIds) {
+      dispatch(
+        pointsMoveToMessage({
+          newMessageId,
+          oldMessageId,
+        })
+      );
+    }
   };
 };
 
@@ -79,13 +83,17 @@ export interface DraftMessageDeleteParams {
   messageId: string;
 }
 
+export interface _DraftMessageDeleteParams extends DraftMessageDeleteParams {
+  currentMessageId: string;
+}
+
 export const draftMessageDelete = (
   params: DraftMessageDeleteParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<DraftMessageDeleteParams | _DraftMessageCreateParams>
+  Action<_DraftMessageDeleteParams | _DraftMessageCreateParams>
 > => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
@@ -94,13 +102,14 @@ export const draftMessageDelete = (
     );
 
     //If we're deleting the current message, we must set the current message
-    if (appState.semanticScreen.currentMessage === params.messageId) {
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    if (currentMessageId === params.messageId) {
       //Set it to the next draft message...
       if (remainingDraftMessages[0] !== undefined) {
         const nextDraftId = remainingDraftMessages[0];
         dispatch({
           type: Actions.setCurrentMessage,
-          params: { messageId: nextDraftId },
+          params: { messageId: nextDraftId, currentMessageId },
         });
       } else {
         //If no more drafts exists, create a new one
@@ -113,13 +122,13 @@ export const draftMessageDelete = (
       }
     }
 
-    dispatch(_draftMessageDelete(params));
+    dispatch(_draftMessageDelete({ ...params, currentMessageId }));
   };
 };
 
 export const _draftMessageDelete = (
-  params: DraftMessageDeleteParams
-): Action<DraftMessageDeleteParams> => {
+  params: _DraftMessageDeleteParams
+): Action<_DraftMessageDeleteParams> => {
   return {
     type: Actions.draftMessageDelete,
     params,

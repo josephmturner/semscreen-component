@@ -16,12 +16,11 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
+import produce from "immer";
 import { Action, Actions } from "../actions/constants";
-import { AppState } from "./store";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 import { _PointsMoveToMessageParams } from "../actions/draftPointsActions";
 import { _DraftMessageCreateParams } from "../actions/draftMessagesActions";
-import { containsPoints } from "../dataModels/pointUtils";
 
 export interface SemanticScreenState {
   currentMessage?: string;
@@ -31,8 +30,7 @@ export const initialSemanticScreenState = {};
 
 export const semanticScreenReducer = (
   state = initialSemanticScreenState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): SemanticScreenState => {
   let newState = state;
   switch (action.type) {
@@ -45,12 +43,11 @@ export const semanticScreenReducer = (
     case Actions.draftMessageCreate:
       newState = handleDraftMessageCreate(
         state,
-        action as Action<_DraftMessageCreateParams>,
-        appState
+        action as Action<_DraftMessageCreateParams>
       );
       break;
     case Actions.pointsMoveToMessage:
-      newState = handlePointsMove(
+      newState = handlePointsMoveToMessage(
         state,
         action as Action<_PointsMoveToMessageParams>
       );
@@ -58,40 +55,31 @@ export const semanticScreenReducer = (
   }
   return newState;
 };
+//TODO: What's the best way to consolidate this repeated logic?
 
 function handleSetCurrentMessage(
   state: SemanticScreenState,
   action: Action<SetCurrentMessageParams>
 ) {
-  return {
-    currentMessage: action.params.messageId,
-  };
+  return produce(state, (draft) => {
+    draft.currentMessage = action.params.messageId;
+  });
 }
 
 function handleDraftMessageCreate(
   state: SemanticScreenState,
-  action: Action<_DraftMessageCreateParams>,
-  appState: AppState
+  action: Action<_DraftMessageCreateParams>
 ) {
-  if (
-    state.currentMessage !== undefined &&
-    !containsPoints(state.currentMessage, appState)
-  )
-    return state;
-  return {
-    currentMessage: action.params.newMessageId,
-  };
+  return produce(state, (draft) => {
+    draft.currentMessage = action.params.newMessageId;
+  });
 }
 
-function handlePointsMove(
+function handlePointsMoveToMessage(
   state: SemanticScreenState,
   action: Action<_PointsMoveToMessageParams>
 ): SemanticScreenState {
-  const messageId = action.params.messageId
-    ? action.params.messageId
-    : state.currentMessage;
-
-  return {
-    currentMessage: messageId,
-  };
+  return produce(state, (draft) => {
+    draft.currentMessage = action.params.newMessageId;
+  });
 }

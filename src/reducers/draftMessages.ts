@@ -24,15 +24,12 @@ import {
   allPointShapes,
   DraftMessageI,
   isPointShape,
-  PointI,
-  PointReferenceI,
 } from "../dataModels/dataModels";
 import {
   getPointIfReference,
   getPointById,
   getReferenceData,
   isReference,
-  getOriginalShape,
   containsPoints,
 } from "../dataModels/pointUtils";
 import {
@@ -72,8 +69,7 @@ export const draftMessagesReducer = (
     case Actions.draftMessageCreate:
       newState = handleDraftMessageCreate(
         state,
-        action as Action<_DraftMessageCreateParams>,
-        appState
+        action as Action<_DraftMessageCreateParams>
       );
       break;
     case Actions.draftMessageDelete:
@@ -99,8 +95,7 @@ export const draftMessagesReducer = (
     case Actions.pointsMoveToMessage:
       newState = handlePointsMoveToMessage(
         state,
-        action as Action<_PointsMoveToMessageParams>,
-        appState
+        action as Action<_PointsMoveToMessageParams>
       );
       break;
     case Actions.draftPointsDelete:
@@ -141,10 +136,16 @@ export const draftMessagesReducer = (
   return newState;
 };
 
-const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
-  produce(state, (draft) => {
+function handleDraftMessageCreate(
+  state: DraftMessagesState,
+  action: Action<_DraftMessageCreateParams>
+): DraftMessagesState {
+  return produce(state, (draft) => {
+    const { newMessageId } = action.params;
+
     draft.byId[newMessageId] = {
       _id: newMessageId,
+      //TODO: replace with author from ushin-db
       author: "author",
       shapes: {
         facts: [],
@@ -158,45 +159,6 @@ const _createEmptyMessage = (state: DraftMessagesState, newMessageId: string) =>
       createdAt: new Date(),
     };
     draft.allIds.unshift(newMessageId);
-  });
-
-function handleDraftMessageCreate(
-  state: DraftMessagesState,
-  action: Action<_DraftMessageCreateParams>,
-  appState: AppState
-): DraftMessagesState {
-  //Prevent creation of many empty messages...
-
-  const currentMessageId = appState.semanticScreen.currentMessage;
-  if (
-    currentMessageId !== undefined &&
-    !containsPoints(currentMessageId, appState)
-  )
-    return state;
-
-  // Create a new message...
-
-  const newState: DraftMessagesState = _createEmptyMessage(
-    state,
-    action.params.newMessageId
-  );
-
-  // (If initializing the app, stop here)
-  if (currentMessageId === undefined) return newState;
-
-  // Then use handlePointsMoveToMessage() to move the points into the new message
-
-  const intermediateAction: Action<_PointsMoveToMessageParams> = {
-    type: Actions.pointsMoveToMessage,
-    params: {
-      messageId: action.params.newMessageId,
-      newReferencePoints: action.params.newReferencePoints,
-    },
-  };
-
-  return handlePointsMoveToMessage(newState, intermediateAction, {
-    ...appState,
-    draftMessages: newState,
   });
 }
 
@@ -246,44 +208,29 @@ function _deletePoints(message: DraftMessageI, pointIds: string[]) {
 
 function handlePointsMoveToMessage(
   state: DraftMessagesState,
-  action: Action<_PointsMoveToMessageParams>,
-  appState: AppState
+  action: Action<_PointsMoveToMessageParams>
 ): DraftMessagesState {
-  const { messageId } = action.params;
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-
-  if (messageId === appState.semanticScreen.currentMessage) {
-    return state;
-  }
-
-  const points: (PointI | PointReferenceI)[] =
-    action.params.newReferencePoints ??
-    appState.selectedPoints.pointIds.map((pointId) => {
-      return getPointById(pointId, appState);
-    });
-
-  const isCutAndPaste = action.params.newReferencePoints === undefined;
-
   return produce(state, (draft) => {
-    const targetMessage = draft.byId[messageId];
-    points.forEach((point) => {
-      const shape = isReference(point)
-        ? getOriginalShape(point, appState)
-        : point.shape;
-      targetMessage.shapes[shape].push(point._id);
+    const { newMessageId, newPoints, cutFromMessageId } = action.params;
+
+    const newMessage = draft.byId[newMessageId];
+    newPoints.forEach((point) => {
+      const { _id, shape } = point;
+      newMessage.shapes[shape].push(_id);
     });
 
-    if (isCutAndPaste) {
-      const currentMessage = draft.byId[currentMessageId];
-      _deletePoints(currentMessage, appState.selectedPoints.pointIds);
+    if (cutFromMessageId) {
+      const cutFromMessage = draft.byId[cutFromMessageId];
+      const pointsToCutIds = newPoints.map((p) => p._id);
+      _deletePoints(cutFromMessage, pointsToCutIds);
 
       // If currentMessage is now empty, delete it
       if (
-        Object.values(currentMessage.shapes).flat()[0] === undefined &&
-        currentMessage.main === undefined
+        Object.values(cutFromMessage.shapes).flat()[0] === undefined &&
+        cutFromMessage.main === undefined
       ) {
-        delete draft.byId[currentMessageId];
-        draft.allIds = draft.allIds.filter((m) => m !== currentMessageId);
+        delete draft.byId[cutFromMessageId];
+        draft.allIds = draft.allIds.filter((m) => m !== cutFromMessageId);
       }
     }
   });

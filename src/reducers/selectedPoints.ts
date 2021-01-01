@@ -19,7 +19,6 @@
 import produce from "immer";
 
 import { Action, Actions } from "../actions/constants";
-import { AppState } from "./store";
 import {
   SetSelectedPointsParams,
   TogglePointParams,
@@ -30,10 +29,7 @@ import {
   _PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
-import {
-  _DraftMessageCreateParams,
-  DraftMessageDeleteParams,
-} from "../actions/draftMessagesActions";
+import { _DraftMessageDeleteParams } from "../actions/draftMessagesActions";
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -45,8 +41,7 @@ export const initialSelectedPointsState: SelectedPointsState = {
 
 export const selectedPointsReducer = (
   state = initialSelectedPointsState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): SelectedPointsState => {
   let newState = state;
   switch (action.type) {
@@ -77,21 +72,14 @@ export const selectedPointsReducer = (
         action as Action<SetCurrentMessageParams>
       );
       break;
-    case Actions.draftMessageCreate:
-      newState = handleDraftMessageCreate(
-        state,
-        action as Action<_DraftMessageCreateParams>
-      );
-      break;
     case Actions.draftMessageDelete:
       newState = handleDraftMessageDelete(
         state,
-        action as Action<DraftMessageDeleteParams>,
-        appState
+        action as Action<_DraftMessageDeleteParams>
       );
       break;
     case Actions.pointsMoveToMessage:
-      newState = handlePointsMove(
+      newState = handlePointsMoveToMessage(
         state,
         action as Action<_PointsMoveToMessageParams>
       );
@@ -152,38 +140,24 @@ function handleSetCurrentMessage(
   };
 }
 
-function handleDraftMessageCreate(
-  state: SelectedPointsState,
-  action: Action<_DraftMessageCreateParams>
-): SelectedPointsState {
-  const pointIds = action.params.newReferencePoints
-    ? action.params.newReferencePoints.map((p) => p._id)
-    : state.pointIds;
-  return {
-    pointIds,
-  };
-}
-
 function handleDraftMessageDelete(
   state: SelectedPointsState,
-  action: Action<DraftMessageDeleteParams>,
-  appState: AppState
+  action: Action<_DraftMessageDeleteParams>
 ) {
   return produce(state, (draft) => {
-    if (appState.semanticScreen.currentMessage === action.params.messageId) {
+    const { messageId, currentMessageId } = action.params;
+    if (messageId === currentMessageId) {
       draft.pointIds = [];
     }
   });
 }
 
-function handlePointsMove(
+function handlePointsMoveToMessage(
   state: SelectedPointsState,
   action: Action<_PointsMoveToMessageParams>
 ): SelectedPointsState {
-  const pointIds = action.params.newReferencePoints
-    ? action.params.newReferencePoints.map((p) => p._id)
-    : state.pointIds;
-  return {
-    pointIds,
-  };
+  return produce(state, (draft) => {
+    const { newPoints } = action.params;
+    draft.pointIds = newPoints.map((p) => p._id);
+  });
 }

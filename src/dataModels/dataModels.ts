@@ -78,6 +78,10 @@ export interface PointReferenceI {
   referenceHistory: ReferenceLog[];
 }
 
+export interface PointReferenceWithShape extends PointReferenceI {
+  shape: PointShape;
+}
+
 export type ShapesI = {
   [shape in PointShape]: string[];
 };

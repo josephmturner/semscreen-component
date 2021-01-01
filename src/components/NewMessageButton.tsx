@@ -25,10 +25,7 @@ import {
   setCurrentMessage,
   SetCurrentMessageParams,
 } from "../actions/semanticScreenActions";
-import {
-  draftMessageCreate,
-  DraftMessageCreateParams,
-} from "../actions/draftMessagesActions";
+import { draftMessageCreate } from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
@@ -44,19 +41,19 @@ interface AllProps extends OwnProps {
   selectedPointIds: string[];
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  draftMessageCreate: (params: DraftMessageCreateParams) => void;
+  draftMessageCreate: () => void;
   hoverOver: (params: HoverOverParams) => void;
 }
 
 const NewMessageButton = (props: AllProps) => {
   const handleClick = () => {
-    props.draftMessageCreate({});
+    props.draftMessageCreate();
   };
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.draftMessageCreate({});
+      props.draftMessageCreate();
     },
     hover: () => {
       //When hovering over the NewMessageButton, drag.context will be set

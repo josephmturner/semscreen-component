@@ -32,6 +32,7 @@ export const Actions = {
   setAuthors: "setAuthors",
 
   draftPointCreate: "draftPointCreate",
+  draftPointReferencesCreate: "draftPointReferencesCreate",
   draftPointUpdate: "draftPointUpdate",
   pointsMoveWithinMessage: "pointsMoveWithinMessage",
   pointsMoveToMessage: "pointsMoveToMessage",

@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-
 import {
   PointShape,
   PointI,
@@ -59,30 +57,6 @@ export function getReferenceData(
 ): PointReferenceI | null {
   const point = getPointById(pointId, appState);
   return isReference(point) ? point : null;
-}
-
-export function createReferenceTo(
-  pointId: string,
-  appState: AppState
-): PointReferenceI {
-  const point = getPointById(pointId, appState);
-  const messageId = appState.semanticScreen.currentMessage as string;
-  const authorId = getMessageById(messageId, appState).author;
-  const newPointId = uuidv4();
-
-  const referenceHistory = isReference(point)
-    ? [...point.referenceHistory]
-    : [];
-  referenceHistory.push({
-    pointId,
-    messageId,
-    authorId,
-  });
-
-  return {
-    _id: newPointId,
-    referenceHistory,
-  };
 }
 
 function getOriginalReferenceLog(point: PointReferenceI): ReferenceLog {

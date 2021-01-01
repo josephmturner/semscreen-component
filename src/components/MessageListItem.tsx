@@ -74,7 +74,7 @@ const MessageListItem = (props: AllProps) => {
     accept: ItemTypes.POINT,
     drop: () => {
       if (props.type === "draftMessage") {
-        props.pointsMoveToMessage({ messageId: props.messageId });
+        props.pointsMoveToMessage({ newMessageId: props.messageId });
       }
     },
     hover: () => {
