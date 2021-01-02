@@ -64,7 +64,7 @@ function handleSetCursorPosition(
   return produce(state, (draft) => {
     const { nextId, prevPoint } = action.params;
 
-    if (action.params.moveTo === "endOfPrevPoint") {
+    if (action.params.moveTo === "endOfPrevPoint" && prevPoint) {
       draft.details = {
         pointId: prevPoint._id,
         contentIndex: prevPoint.content.length,

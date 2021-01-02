@@ -32,7 +32,7 @@ export interface CursorPositionParams {
 export interface _CursorPositionParams
   extends Omit<CursorPositionParams, "point" | "index"> {
   nextId: string;
-  prevPoint: PointI;
+  prevPoint?: PointI;
 }
 
 export const setCursorPosition = (
@@ -58,7 +58,10 @@ export const setCursorPosition = (
 
     const nextId = currentPointIds[index + 1];
     const prevId = currentPointIds[index - 1];
-    const prevPoint = getPointIfReference(prevId, state);
+    let prevPoint: PointI | undefined;
+    if (moveTo === "endOfPrevPoint") {
+      prevPoint = getPointIfReference(prevId, state);
+    }
 
     dispatch({
       type: Actions.setCursorPosition,
