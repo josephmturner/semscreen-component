@@ -28,6 +28,10 @@ import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
 } from "./draftPointsActions";
+import {
+  _setCurrentMessage,
+  SetCurrentMessageParams,
+} from "./semanticScreenActions";
 
 export interface _DraftMessageCreateParams {
   newMessageId: string;
@@ -83,17 +87,17 @@ export interface DraftMessageDeleteParams {
   messageId: string;
 }
 
-export interface _DraftMessageDeleteParams extends DraftMessageDeleteParams {
-  currentMessageId: string;
-}
-
 export const draftMessageDelete = (
   params: DraftMessageDeleteParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<_DraftMessageDeleteParams | _DraftMessageCreateParams>
+  Action<
+    | _DraftMessageDeleteParams
+    | _DraftMessageCreateParams
+    | SetCurrentMessageParams
+  >
 > => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
@@ -107,13 +111,12 @@ export const draftMessageDelete = (
       //Set it to the next draft message...
       if (remainingDraftMessages[0] !== undefined) {
         const nextDraftId = remainingDraftMessages[0];
-        dispatch({
-          type: Actions.setCurrentMessage,
-          params: { messageId: nextDraftId, currentMessageId },
-        });
+
+        dispatch(_setCurrentMessage({ messageId: nextDraftId }));
       } else {
         //If no more drafts exists, create a new one
         const newMessageId = uuidv4();
+
         dispatch(
           _draftMessageCreate({
             newMessageId,
@@ -125,6 +128,10 @@ export const draftMessageDelete = (
     dispatch(_draftMessageDelete({ ...params, currentMessageId }));
   };
 };
+
+export interface _DraftMessageDeleteParams extends DraftMessageDeleteParams {
+  currentMessageId: string;
+}
 
 export const _draftMessageDelete = (
   params: _DraftMessageDeleteParams

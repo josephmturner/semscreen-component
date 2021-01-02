@@ -38,7 +38,6 @@ interface OwnProps {
 }
 
 interface AllProps extends OwnProps {
-  selectedPointIds: string[];
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   draftMessageCreate: () => void;
@@ -159,7 +158,6 @@ const mapStateToProps = (state: AppState) => {
     isDragHovered = true;
 
   return {
-    selectedPointIds: state.selectedPoints.pointIds,
     isDragHovered,
   };
 };

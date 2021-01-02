@@ -25,6 +25,8 @@ import {
   _populateMessageAndPoints,
   _PopulateMessageAndPointsParams,
 } from "./dbActions";
+import { containsPoints } from "../dataModels/pointUtils";
+import { _draftMessageDelete } from "./draftMessagesActions";
 
 export interface SetCurrentMessageParams {
   messageId: string;
@@ -32,6 +34,30 @@ export interface SetCurrentMessageParams {
 }
 
 export const setCurrentMessage = (
+  params: SetCurrentMessageParams
+): ThunkAction<void, AppState, unknown, Action<SetCurrentMessageParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const { messageId: newCurrentMessage } = params;
+    const oldCurrentMessage = appState.semanticScreen.currentMessage as string;
+
+    dispatch(_setCurrentMessage(params));
+    // Delete an empty message when the SemanticScreen no longer displays it
+    if (
+      !containsPoints(oldCurrentMessage, appState) &&
+      newCurrentMessage !== oldCurrentMessage
+    ) {
+      dispatch(
+        _draftMessageDelete({
+          messageId: oldCurrentMessage,
+          currentMessageId: newCurrentMessage,
+        })
+      );
+    }
+  };
+};
+
+export const _setCurrentMessage = (
   params: SetCurrentMessageParams
 ): Action<SetCurrentMessageParams> => {
   return {

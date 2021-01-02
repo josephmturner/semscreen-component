@@ -30,7 +30,6 @@ import {
   getPointById,
   getReferenceData,
   isReference,
-  containsPoints,
 } from "../dataModels/pointUtils";
 import {
   _DraftPointCreateParams,
@@ -45,7 +44,6 @@ import {
   DraftMessageDeleteParams,
   SetMainParams,
 } from "../actions/draftMessagesActions";
-import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
 
 export interface DraftMessagesState {
   byId: {
@@ -122,13 +120,6 @@ export const draftMessagesReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>,
-        appState
-      );
-      break;
-    case Actions.setCurrentMessage:
-      newState = handleSetCurrentMessage(
-        state,
-        action as Action<SetCurrentMessageParams>,
         appState
       );
       break;
@@ -375,21 +366,3 @@ function handleSplitIntoTwoPoints(
     );
   });
 }
-
-const handleSetCurrentMessage = (
-  state: DraftMessagesState,
-  action: Action<SetCurrentMessageParams>,
-  appState: AppState
-): DraftMessagesState => {
-  //Delete an empty message when the SemanticScreen no longer displays it
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  if (
-    containsPoints(currentMessageId, appState) ||
-    action.params.messageId === currentMessageId
-  )
-    return state;
-  return produce(state, (draft) => {
-    delete draft.byId[currentMessageId];
-    draft.allIds = draft.allIds.filter((id) => id !== currentMessageId);
-  });
-};
