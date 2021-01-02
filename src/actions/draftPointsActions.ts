@@ -22,6 +22,7 @@ import { ThunkAction } from "redux-thunk";
 
 import { AppState } from "../reducers/store";
 import {
+  isPointShape,
   PointI,
   PointReferenceI,
   PointReferenceWithShape,
@@ -32,6 +33,8 @@ import {
   getMessageById,
   getOriginalShape,
   getPointById,
+  getPointIfReference,
+  getReferenceData,
   getReferencedPointId,
   isReference,
 } from "../dataModels/pointUtils";
@@ -76,7 +79,59 @@ export interface PointsMoveWithinMessageParams {}
 
 export const pointsMoveWithinMessage = (
   params: PointsMoveWithinMessageParams
-): Action<PointsMoveWithinMessageParams> => {
+): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<_PointsMoveWithinMessageParams>
+> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+
+    if (appState.drag.context === null) return;
+
+    const { region, index } = appState.drag.context;
+
+    // Only move points when hovering over semantic screen regions
+    if (!isPointShape(region)) return;
+
+    // Don't move quoted points to regions with a different shape
+    const selectedPointIds = appState.selectedPoints.pointIds;
+    const pointsToMoveIds = selectedPointIds.filter(
+      (p) =>
+        !getReferenceData(p, appState) ||
+        region === getPointIfReference(p, appState).shape
+    );
+    // Don't change the shape of any reference points
+    const pointIdsExcludingReferencePoints = selectedPointIds.filter(
+      (p) => !getReferenceData(p, appState)
+    );
+
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+
+    dispatch(
+      _pointsMoveWithinMessage({
+        currentMessageId,
+        pointsToMoveIds,
+        pointIdsExcludingReferencePoints,
+        region,
+        index,
+      })
+    );
+  };
+};
+
+export interface _PointsMoveWithinMessageParams {
+  currentMessageId: string;
+  pointsToMoveIds: string[];
+  pointIdsExcludingReferencePoints: string[];
+  region: PointShape;
+  index: number;
+}
+
+export const _pointsMoveWithinMessage = (
+  params: _PointsMoveWithinMessageParams
+): Action<_PointsMoveWithinMessageParams> => {
   return {
     type: Actions.pointsMoveWithinMessage,
     params,

@@ -20,19 +20,11 @@ import { Action, Actions } from "../actions/constants";
 import { AppState } from "./store";
 import produce from "immer";
 
-import {
-  allPointShapes,
-  DraftMessageI,
-  isPointShape,
-} from "../dataModels/dataModels";
-import {
-  getPointIfReference,
-  getReferenceData,
-} from "../dataModels/pointUtils";
+import { allPointShapes, DraftMessageI } from "../dataModels/dataModels";
 import {
   _DraftPointCreateParams,
   _PointsMoveToMessageParams,
-  PointsMoveWithinMessageParams,
+  _PointsMoveWithinMessageParams,
   _DraftPointsDeleteParams,
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -84,8 +76,7 @@ export const draftMessagesReducer = (
     case Actions.pointsMoveWithinMessage:
       newState = handlePointsMoveWithinMessage(
         state,
-        action as Action<PointsMoveWithinMessageParams>,
-        appState
+        action as Action<_PointsMoveWithinMessageParams>
       );
       break;
     case Actions.pointsMoveToMessage:
@@ -221,45 +212,31 @@ function handlePointsMoveToMessage(
 
 function handlePointsMoveWithinMessage(
   state: DraftMessagesState,
-  action: Action<PointsMoveWithinMessageParams>,
-  appState: AppState
+  action: Action<_PointsMoveWithinMessageParams>
 ): DraftMessagesState {
-  if (appState.drag.context === null) return state;
-
-  const { region, index } = appState.drag.context;
-
-  if (!isPointShape(region)) return state;
-
-  const pointsToMove = appState.selectedPoints.pointIds.filter(
-    (p) =>
-      !getReferenceData(p, appState) ||
-      region === getPointIfReference(p, appState).shape
-  );
-
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const pointIds: string[] = state.byId[currentMessageId].shapes[region];
-  let newPointIds: string[] = [];
-
-  // Rebuild array of pointIds for state.shapes[region]
-  pointIds.forEach((pointId: string, i: number) => {
-    if (i === index) {
-      newPointIds = newPointIds.concat(pointsToMove);
-    }
-
-    if (!appState.selectedPoints.pointIds.includes(pointId)) {
-      newPointIds.push(pointId);
-    }
-  });
-
-  if (index === pointIds.length) {
-    newPointIds = newPointIds.concat(pointsToMove);
-  }
-
   return produce(state, (draft) => {
+    const { currentMessageId, pointsToMoveIds, region, index } = action.params;
     const currentMessage = draft.byId[currentMessageId];
+    let pointIds: string[] = currentMessage.shapes[region];
+    let newPointIds: string[] = [];
+
+    // Rebuild array of pointIds for state.shapes[region]
+    pointIds.forEach((pointId: string, i: number) => {
+      if (i === index) {
+        newPointIds = newPointIds.concat(pointsToMoveIds);
+      }
+
+      if (!pointsToMoveIds.includes(pointId)) {
+        newPointIds.push(pointId);
+      }
+    });
+
+    if (index === pointIds.length) {
+      newPointIds = newPointIds.concat(pointsToMoveIds);
+    }
 
     // Delete points from original locations...
-    _deletePoints(currentMessage, pointsToMove);
+    _deletePoints(currentMessage, pointsToMoveIds);
 
     // then set the pointIds for the destination region
     currentMessage.shapes[region] = newPointIds;

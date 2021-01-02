@@ -18,18 +18,13 @@
 */
 import { Action, Actions } from "../actions/constants";
 import produce from "immer";
-import {
-  PointI,
-  PointReferenceI,
-  isPointShape,
-} from "../dataModels/dataModels";
-import { getReferenceData } from "../dataModels/pointUtils";
+import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import { AppState } from "./store";
 import {
   _DraftPointCreateParams,
   DraftPointUpdateParams,
   DraftPointReferencesCreate,
-  PointsMoveWithinMessageParams,
+  _PointsMoveWithinMessageParams,
   DraftPointsDeleteParams,
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
@@ -70,8 +65,7 @@ export const draftPointsReducer = (
     case Actions.pointsMoveWithinMessage:
       newState = handlePointsMoveWithinMessage(
         state,
-        action as Action<PointsMoveWithinMessageParams>,
-        appState
+        action as Action<_PointsMoveWithinMessageParams>
       );
       break;
     case Actions.draftPointReferencesCreate:
@@ -134,24 +128,16 @@ function handleDraftPointUpdate(
 
 function handlePointsMoveWithinMessage(
   state: DraftPointsState,
-  action: Action<PointsMoveWithinMessageParams>,
-  appState: AppState
+  action: Action<_PointsMoveWithinMessageParams>
 ): DraftPointsState {
-  if (appState.drag.context === null) return state;
-  const { region } = appState.drag.context;
-
-  if (!isPointShape(region)) return state;
-  const pointIdsExcludingReferencePoints = appState.selectedPoints.pointIds.filter(
-    (p) => !getReferenceData(p, appState)
-  );
   return produce(state, (draft) => {
-    pointIdsExcludingReferencePoints.forEach(
-      (id) =>
-        (draft.byId[id] = {
-          ...draft.byId[id],
-          shape: region,
-        })
-    );
+    const { region, pointIdsExcludingReferencePoints } = action.params;
+    for (const id of pointIdsExcludingReferencePoints) {
+      draft.byId[id] = {
+        ...draft.byId[id],
+        shape: region,
+      };
+    }
   });
 }
 
