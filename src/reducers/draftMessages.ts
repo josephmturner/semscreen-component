@@ -33,7 +33,7 @@ import {
   _DraftPointCreateParams,
   _PointsMoveToMessageParams,
   PointsMoveWithinMessageParams,
-  DraftPointsDeleteParams,
+  _DraftPointsDeleteParams,
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
@@ -97,8 +97,7 @@ export const draftMessagesReducer = (
     case Actions.draftPointsDelete:
       newState = handleDraftPointsDelete(
         state,
-        action as Action<DraftPointsDeleteParams>,
-        appState
+        action as Action<_DraftPointsDeleteParams>
       );
       break;
     case Actions.setMain:
@@ -269,17 +268,11 @@ function handlePointsMoveWithinMessage(
 
 function handleDraftPointsDelete(
   state: DraftMessagesState,
-  action: Action<DraftPointsDeleteParams>,
-  appState: AppState
+  action: Action<_DraftPointsDeleteParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const { pointIds, currentMessageId } = action.params;
     const currentMessage = draft.byId[currentMessageId];
-
-    let pointIds = action.params.pointIds;
-    if (action.params.deleteSelectedPoints) {
-      pointIds = pointIds.concat(appState.selectedPoints.pointIds);
-    }
 
     _deletePoints(currentMessage, pointIds);
   });

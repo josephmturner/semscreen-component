@@ -83,8 +83,7 @@ export const draftPointsReducer = (
     case Actions.draftPointsDelete:
       newState = handleDraftPointsDelete(
         state,
-        action as Action<DraftPointsDeleteParams>,
-        appState
+        action as Action<DraftPointsDeleteParams>
       );
       break;
     case Actions.combinePoints:
@@ -170,16 +169,10 @@ function handleDraftPointReferencesCreate(
 
 function handleDraftPointsDelete(
   state: DraftPointsState,
-  action: Action<DraftPointsDeleteParams>,
-  appState: AppState
+  action: Action<DraftPointsDeleteParams>
 ): DraftPointsState {
-  let pointIds = action.params.pointIds;
-  if (action.params.deleteSelectedPoints) {
-    pointIds = pointIds.concat(appState.selectedPoints.pointIds);
-  }
-
   return produce(state, (draft) => {
-    pointIds.forEach((id) => {
+    action.params.pointIds.forEach((id) => {
       delete draft.byId[id];
       draft.allIds = draft.allIds.filter((pId) => pId !== id);
     });

@@ -214,7 +214,30 @@ export interface DraftPointsDeleteParams {
 
 export const draftPointsDelete = (
   params: DraftPointsDeleteParams
-): Action<DraftPointsDeleteParams> => {
+): ThunkAction<void, AppState, unknown, Action<_DraftPointsDeleteParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+
+    let { pointIds, deleteSelectedPoints } = params;
+    if (deleteSelectedPoints === true) {
+      const selectedPoints = appState.selectedPoints.pointIds;
+      pointIds = pointIds.concat(selectedPoints);
+    }
+
+    dispatch(
+      _draftPointsDelete({ pointIds, currentMessageId, deleteSelectedPoints })
+    );
+  };
+};
+
+export interface _DraftPointsDeleteParams extends DraftPointsDeleteParams {
+  currentMessageId: string;
+}
+
+export const _draftPointsDelete = (
+  params: _DraftPointsDeleteParams
+): Action<_DraftPointsDeleteParams> => {
   return {
     type: Actions.draftPointsDelete,
     params,

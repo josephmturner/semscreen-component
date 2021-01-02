@@ -116,7 +116,11 @@ function handleDraftPointsDelete(
   state: SelectedPointsState,
   action: Action<DraftPointsDeleteParams>
 ): SelectedPointsState {
-  return action.params.deleteSelectedPoints ? { pointIds: [] } : state;
+  return produce(state, (draft) => {
+    if (action.params.deleteSelectedPoints) {
+      draft.pointIds = [];
+    }
+  });
 }
 
 function handleCombinePoints(
