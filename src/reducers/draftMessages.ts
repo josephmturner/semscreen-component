@@ -27,9 +27,7 @@ import {
 } from "../dataModels/dataModels";
 import {
   getPointIfReference,
-  getPointById,
   getReferenceData,
-  isReference,
 } from "../dataModels/pointUtils";
 import {
   _DraftPointCreateParams,
@@ -119,8 +117,7 @@ export const draftMessagesReducer = (
     case Actions.splitIntoTwoPoints:
       newState = handleSplitIntoTwoPoints(
         state,
-        action as Action<_SplitIntoTwoPointsParams>,
-        appState
+        action as Action<_SplitIntoTwoPointsParams>
       );
       break;
   }
@@ -342,27 +339,14 @@ function handleCombinePoints(
 
 function handleSplitIntoTwoPoints(
   state: DraftMessagesState,
-  action: Action<_SplitIntoTwoPointsParams>,
-  appState: AppState
+  action: Action<_SplitIntoTwoPointsParams>
 ): DraftMessagesState {
-  const point = getPointById(action.params.pointId, appState);
-  if (isReference(point)) {
-    return state;
-  }
-
   return produce(state, (draft) => {
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const { currentMessageId, pointId, newPointId, shape } = action.params;
     const currentMessage = draft.byId[currentMessageId];
 
-    const shape = getPointIfReference(action.params.pointId, appState).shape;
     const splitPointIndex =
-      currentMessage.shapes[shape].findIndex(
-        (id) => id === action.params.pointId
-      ) + 1;
-    currentMessage.shapes[shape].splice(
-      splitPointIndex,
-      0,
-      action.params.newPointId
-    );
+      currentMessage.shapes[shape].findIndex((id) => id === pointId) + 1;
+    currentMessage.shapes[shape].splice(splitPointIndex, 0, newPointId);
   });
 }

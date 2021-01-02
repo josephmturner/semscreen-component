@@ -23,7 +23,7 @@ import {
   PointReferenceI,
   isPointShape,
 } from "../dataModels/dataModels";
-import { getReferenceData, isReference } from "../dataModels/pointUtils";
+import { getReferenceData } from "../dataModels/pointUtils";
 import { AppState } from "./store";
 import {
   _DraftPointCreateParams,
@@ -219,23 +219,21 @@ function handleSplitIntoTwoPoints(
   action: Action<_SplitIntoTwoPointsParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
-    const topPoint = draft.byId[action.params.pointId];
-    if (isReference(topPoint)) {
-      return draft;
-    }
+    const { pointId, newPointId, shape, sliceIndex } = action.params;
+    const topPoint = draft.byId[pointId] as PointI;
 
-    const topContent = topPoint.content.slice(0, action.params.sliceIndex);
-    const bottomContent = topPoint.content.slice(action.params.sliceIndex);
+    const topContent = topPoint.content.slice(0, sliceIndex);
+    const bottomContent = topPoint.content.slice(sliceIndex);
 
     topPoint.content = topContent;
 
-    draft.byId[action.params.newPointId] = {
+    draft.byId[newPointId] = {
       content: bottomContent,
-      _id: action.params.newPointId,
-      shape: topPoint.shape,
+      _id: newPointId,
+      shape: shape,
       pointDate: new Date(),
     };
-    draft.allIds.push(action.params.newPointId);
+    draft.allIds.push(newPointId);
   });
 }
 

@@ -247,10 +247,10 @@ export const combinePoints = (
   params: CombinePointsParams
 ): ThunkAction<void, AppState, unknown, Action<_CombinePointsParams>> => {
   return (dispatch, getState) => {
-    const state = getState();
+    const appState = getState();
     const { shape, keepIndex, deleteIndex } = params;
-    const currentMessageId = state.semanticScreen.currentMessage as string;
-    const currentMessage = state.draftMessages.byId[currentMessageId];
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const currentMessage = appState.draftMessages.byId[currentMessageId];
 
     const withinBounds = (index: number): boolean => {
       return index >= 0 && index < currentMessage.shapes[shape].length;
@@ -258,7 +258,7 @@ export const combinePoints = (
 
     const isQuoted = (index: number): boolean => {
       const pointId = currentMessage.shapes[shape][index];
-      return !!getReferencedPointId(pointId, state);
+      return !!getReferencedPointId(pointId, appState);
     };
 
     if (
@@ -271,7 +271,7 @@ export const combinePoints = (
     }
 
     const pointToKeepId = currentMessage.shapes[shape][keepIndex];
-    const pointToKeep = getPointById(pointToKeepId, state) as PointI;
+    const pointToKeep = getPointById(pointToKeepId, appState) as PointI;
     const pointToDeleteId = currentMessage.shapes[shape][deleteIndex];
 
     dispatch(
@@ -291,12 +291,32 @@ export interface SplitIntoTwoPointsParams {
   sliceIndex: number;
 }
 
-export interface _SplitIntoTwoPointsParams extends SplitIntoTwoPointsParams {
-  newPointId: string;
-}
-
 export const splitIntoTwoPoints = (
   params: SplitIntoTwoPointsParams
+): ThunkAction<void, AppState, unknown, Action<_SplitIntoTwoPointsParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const point = getPointById(params.pointId, appState);
+    if (isReference(point)) {
+      return;
+    }
+    const { shape } = point;
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const newPointId = uuidv4();
+    dispatch(
+      _splitIntoTwoPoints({ ...params, newPointId, currentMessageId, shape })
+    );
+  };
+};
+
+export interface _SplitIntoTwoPointsParams extends SplitIntoTwoPointsParams {
+  newPointId: string;
+  currentMessageId: string;
+  shape: PointShape;
+}
+
+export const _splitIntoTwoPoints = (
+  params: _SplitIntoTwoPointsParams
 ): Action<_SplitIntoTwoPointsParams> => {
   const newPointId = uuidv4();
   return {
