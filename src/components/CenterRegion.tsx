@@ -86,6 +86,7 @@ const CenterRegion = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
+        // Set the first selected point as the new main point
         props.setMain({});
       }
     },

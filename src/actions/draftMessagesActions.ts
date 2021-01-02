@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Action, Actions } from "./constants";
 import { PointI, PointShape } from "../dataModels/dataModels";
-import { containsPoints } from "../dataModels/pointUtils";
+import { containsPoints, getPointIfReference } from "../dataModels/pointUtils";
 import { AppState } from "../reducers/store";
 import {
   pointsMoveToMessage,
@@ -143,10 +143,53 @@ export const _draftMessageDelete = (
 };
 
 export interface SetMainParams {
-  pointId?: string;
+  newMainId?: string;
 }
 
-export const setMain = (params: SetMainParams): Action<SetMainParams> => {
+export const setMain = (
+  params: SetMainParams
+): ThunkAction<void, AppState, unknown, Action<_SetMainParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+
+    let { newMainId } = params;
+    if (newMainId === undefined) {
+      newMainId = appState.selectedPoints.pointIds[0];
+    }
+    const oldMainId: string | undefined =
+      appState.draftMessages.byId[currentMessageId].main;
+
+    if (newMainId === oldMainId) {
+      return;
+    }
+
+    const newMainShape = getPointIfReference(newMainId, appState).shape;
+    let oldMainShape: PointShape | undefined;
+    if (oldMainId !== undefined) {
+      oldMainShape = getPointIfReference(oldMainId, appState).shape;
+    }
+
+    dispatch(
+      _setMain({
+        currentMessageId,
+        newMainId,
+        newMainShape,
+        oldMainId,
+        oldMainShape,
+      })
+    );
+  };
+};
+
+export interface _SetMainParams extends Required<SetMainParams> {
+  currentMessageId: string;
+  newMainShape: PointShape;
+  oldMainId?: string;
+  oldMainShape?: PointShape;
+}
+
+export const _setMain = (params: _SetMainParams): Action<_SetMainParams> => {
   return {
     type: Actions.setMain,
     params,

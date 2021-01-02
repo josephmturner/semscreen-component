@@ -118,7 +118,7 @@ const PointHoverOptions = (props: Props) => {
       darkMode={props.darkMode}
       isSelected={props.isSelected}
       onClick={(e: React.MouseEvent) => {
-        dispatch(setMain({ pointId: props.id }));
+        dispatch(setMain({ newMainId: props.id }));
         e.stopPropagation();
       }}
       title="Set main point"

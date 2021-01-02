@@ -40,7 +40,7 @@ import {
 import {
   _DraftMessageCreateParams,
   DraftMessageDeleteParams,
-  SetMainParams,
+  _SetMainParams,
 } from "../actions/draftMessagesActions";
 
 export interface DraftMessagesState {
@@ -102,11 +102,7 @@ export const draftMessagesReducer = (
       );
       break;
     case Actions.setMain:
-      newState = handleSetMain(
-        state,
-        action as Action<SetMainParams>,
-        appState
-      );
+      newState = handleSetMain(state, action as Action<_SetMainParams>);
       break;
     case Actions.combinePoints:
       newState = handleCombinePoints(
@@ -291,33 +287,28 @@ function handleDraftPointsDelete(
 
 function handleSetMain(
   state: DraftMessagesState,
-  action: Action<SetMainParams>,
-  appState: AppState
+  action: Action<_SetMainParams>
 ): DraftMessagesState {
-  let newMain = appState.selectedPoints.pointIds[0];
-  if (action.params.pointId) newMain = action.params.pointId;
-
-  const currentMessageId = appState.semanticScreen.currentMessage as string;
-  const currentMain = state.byId[currentMessageId].main;
-  if (newMain === currentMain) return state;
-
-  const newMainShape = getPointIfReference(newMain, appState).shape;
-
   return produce(state, (draft) => {
+    const {
+      newMainId,
+      newMainShape,
+      oldMainId,
+      oldMainShape,
+      currentMessageId,
+    } = action.params;
     const currentMessage = draft.byId[currentMessageId];
 
     // Remove the point from the region it came from...
     currentMessage.shapes[newMainShape] = currentMessage.shapes[
       newMainShape
-    ].filter((id) => id !== newMain);
+    ].filter((id) => id !== newMainId);
 
     // then move the current main point to the appropriate region
-    if (currentMessage.main) {
-      const oldMainShape = getPointIfReference(currentMessage.main, appState)
-        .shape;
-      currentMessage.shapes[oldMainShape].push(currentMessage.main);
+    if (oldMainId && oldMainShape) {
+      currentMessage.shapes[oldMainShape].push(oldMainId);
     }
-    currentMessage.main = newMain;
+    currentMessage.main = newMainId;
   });
 }
 

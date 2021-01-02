@@ -34,7 +34,6 @@ import {
   draftPointsDelete,
   DraftPointsDeleteParams,
 } from "../actions/draftPointsActions";
-import { setMain, SetMainParams } from "../actions/draftMessagesActions";
 import {
   setSelectedPoints,
   SetSelectedPointsParams,
@@ -58,7 +57,6 @@ interface AllProps extends OwnProps {
   referenceData: PointReferenceI | null;
   isDraft: boolean;
   draftPointUpdate: (params: DraftPointUpdateParams) => void;
-  setMain: (params: SetMainParams) => void;
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
@@ -157,7 +155,6 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
 
 const mapActionsToProps = {
   draftPointUpdate,
-  setMain,
   draftPointsDelete,
   togglePoint,
   setSelectedPoints,
