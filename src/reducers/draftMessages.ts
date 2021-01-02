@@ -17,7 +17,6 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import { Action, Actions } from "../actions/constants";
-import { AppState } from "./store";
 import produce from "immer";
 
 import { allPointShapes, DraftMessageI } from "../dataModels/dataModels";
@@ -49,8 +48,7 @@ export const initialDraftMessagesState: DraftMessagesState = {
 
 export const draftMessagesReducer = (
   state = initialDraftMessagesState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): DraftMessagesState => {
   let newState = state;
   switch (action.type) {
@@ -69,8 +67,7 @@ export const draftMessagesReducer = (
     case Actions.draftPointCreate:
       newState = handleDraftPointCreate(
         state,
-        action as Action<_DraftPointCreateParams>,
-        appState
+        action as Action<_DraftPointCreateParams>
       );
       break;
     case Actions.pointsMoveWithinMessage:
@@ -148,22 +145,16 @@ function handleDraftMessageDelete(
 
 function handleDraftPointCreate(
   state: DraftMessagesState,
-  action: Action<_DraftPointCreateParams>,
-  appState: AppState
+  action: Action<_DraftPointCreateParams>
 ): DraftMessagesState {
-  const shape = action.params.point.shape;
-
   return produce(state, (draft) => {
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const { currentMessageId, point, newPointId, index, main } = action.params;
+
     const currentMessage = draft.byId[currentMessageId];
-    if (action.params.main) {
-      currentMessage.main = action.params.newPointId;
+    if (main) {
+      currentMessage.main = newPointId;
     } else {
-      currentMessage.shapes[shape].splice(
-        action.params.index,
-        0,
-        action.params.newPointId
-      );
+      currentMessage.shapes[point.shape].splice(index, 0, newPointId);
     }
   });
 }

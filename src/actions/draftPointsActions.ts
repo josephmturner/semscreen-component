@@ -45,12 +45,24 @@ export interface DraftPointCreateParams {
   main?: boolean;
 }
 
-export interface _DraftPointCreateParams extends DraftPointCreateParams {
-  newPointId: string;
-}
-
 export const draftPointCreate = (
   params: DraftPointCreateParams
+): ThunkAction<void, AppState, unknown, Action<_DraftPointCreateParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const newPointId = uuidv4();
+    dispatch(_draftPointCreate({ ...params, newPointId, currentMessageId }));
+  };
+};
+
+export interface _DraftPointCreateParams extends DraftPointCreateParams {
+  newPointId: string;
+  currentMessageId: string;
+}
+
+export const _draftPointCreate = (
+  params: _DraftPointCreateParams
 ): Action<_DraftPointCreateParams> => {
   const newPointId = uuidv4();
   return {
