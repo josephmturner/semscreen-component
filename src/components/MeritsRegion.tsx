@@ -24,7 +24,7 @@ import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   setExpandedRegion,
   ExpandedRegionParams,

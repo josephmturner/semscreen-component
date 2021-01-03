@@ -20,7 +20,7 @@ import React from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
-import { AppState } from "./reducers/store";
+import { AppState } from "./reducers";
 import { togglePanel, PanelParams } from "./actions/panelsActions";
 import { PanelsState } from "./reducers/panels";
 

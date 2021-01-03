@@ -4,7 +4,7 @@ import {
   PointReferenceI,
   ReferenceLog,
 } from "./dataModels";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 
 export function hasPoints(messageId: string, state: AppState) {
   const message = getMessageById(messageId, state);

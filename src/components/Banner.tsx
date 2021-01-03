@@ -23,7 +23,7 @@ import { blackOrWhite, isUserIdentity } from "../dataModels/pointUtils";
 import { AuthorI } from "../dataModels/dataModels";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 
 interface Placement {
   top: string;

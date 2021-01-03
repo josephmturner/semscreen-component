@@ -42,7 +42,7 @@ export const initialDraftPointsState: DraftPointsState = {
 };
 
 export const draftPointsReducer = (
-  state: DraftPointsState,
+  state = initialDraftPointsState,
   action: Action
 ): DraftPointsState => {
   let newState = state;

@@ -32,7 +32,7 @@ import {
 } from "../dataModels/dataModels";
 
 import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   pointsMoveToMessage,
   draftPointsDelete,

@@ -27,7 +27,7 @@ import { PointWrapper } from "./StyledPoint";
 import PointHoverOptions from "./PointHoverOptions";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   draftPointUpdate,
   DraftPointUpdateParams,

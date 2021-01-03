@@ -22,10 +22,10 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-import { store } from "./reducers/store";
+import { store } from "./reducers";
 import { connect, Provider } from "react-redux";
 
-import { AppState } from "./reducers/store";
+import { AppState } from "./reducers";
 import { DBState } from "./reducers/db";
 import { DisplayAppState } from "./reducers/displayApp";
 import { DraftMessagesState } from "./reducers/draftMessages";

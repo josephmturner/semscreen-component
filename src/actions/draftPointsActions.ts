@@ -20,7 +20,7 @@ import { Action, Actions } from "./constants";
 import { v4 as uuidv4 } from "uuid";
 import { ThunkAction } from "redux-thunk";
 
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   isPointShape,
   PointI,

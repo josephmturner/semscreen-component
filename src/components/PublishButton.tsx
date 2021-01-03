@@ -19,7 +19,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import { DraftMessageI, MessageI } from "../dataModels/dataModels";
 import {
   PointMapping,

@@ -27,7 +27,7 @@ import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   draftPointCreate,
   DraftPointCreateParams,

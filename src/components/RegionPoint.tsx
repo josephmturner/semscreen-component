@@ -33,7 +33,7 @@ import { useDragPoint } from "../hooks/useDragPoint";
 import { XYCoord } from "dnd-core";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   setCursorPosition,
   clearCursorPosition,

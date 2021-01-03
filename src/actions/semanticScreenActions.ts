@@ -19,7 +19,7 @@
 import { ThunkAction } from "redux-thunk";
 
 import { Action, Actions } from "./constants";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   _getMessagesAndPoints,
   _populateMessageAndPoints,

@@ -36,7 +36,7 @@ import PointHoverOptions from "./PointHoverOptions";
 import Banner from "./Banner";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   setCurrentMessage,
   SetCurrentMessageParams,

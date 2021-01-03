@@ -21,7 +21,7 @@ import { ThunkAction } from "redux-thunk";
 import { getPointIfReference, getMessageById } from "../dataModels/pointUtils";
 import { Action, Actions } from "./constants";
 import { PointI } from "../dataModels/dataModels";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 
 export interface CursorPositionParams {
   point: PointI;

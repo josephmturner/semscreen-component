@@ -19,7 +19,7 @@
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 import { getPointIfReference } from "../dataModels/pointUtils";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 
 import { useDispatch, useSelector } from "react-redux";
 import { endDrag } from "../actions/dragActions";

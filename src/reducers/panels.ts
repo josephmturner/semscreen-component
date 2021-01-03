@@ -30,7 +30,7 @@ export const initialPanelsState: PanelsState = {
 };
 
 export const panelsReducer = (
-  state: PanelsState,
+  state = initialPanelsState,
   action: Action
 ): PanelsState => {
   let newState = state;

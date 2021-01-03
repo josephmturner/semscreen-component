@@ -27,7 +27,7 @@ import Banner from "./Banner";
 import StyledSemanticScreen from "./StyledSemanticScreen";
 
 import { connect } from "react-redux";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 
 import { RegionI } from "../dataModels/dataModels";
 import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";

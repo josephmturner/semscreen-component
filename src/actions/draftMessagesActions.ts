@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Action, Actions } from "./constants";
 import { PointI, PointShape } from "../dataModels/dataModels";
 import { containsPoints, getPointIfReference } from "../dataModels/pointUtils";
-import { AppState } from "../reducers/store";
+import { AppState } from "../reducers";
 import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,

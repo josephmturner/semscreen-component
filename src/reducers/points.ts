@@ -32,7 +32,7 @@ export interface PointsState {
 export const initialPointsState: PointsState = { byId: {}, allIds: [] };
 
 export const pointsReducer = (
-  state: PointsState,
+  state = initialPointsState,
   action: Action
 ): PointsState => {
   let newState = state;

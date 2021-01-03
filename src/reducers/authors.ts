@@ -20,8 +20,6 @@ import { AuthorI } from "../dataModels/dataModels";
 import { Action, Actions } from "../actions/constants";
 import { SetAuthorsParams } from "../actions/authorsActions";
 
-import { AppState } from "./store";
-
 export interface AuthorsState {
   byId: {
     [_id: string]: AuthorI;
@@ -34,8 +32,7 @@ export const initialAuthorsState: AuthorsState = {
 
 export const authorsReducer = (
   state = initialAuthorsState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): AuthorsState => {
   let newState = state;
   switch (action.type) {
