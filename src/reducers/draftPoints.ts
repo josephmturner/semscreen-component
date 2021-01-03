@@ -19,7 +19,6 @@
 import { Action, Actions } from "../actions/constants";
 import produce from "immer";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { AppState } from "./store";
 import {
   _DraftPointCreateParams,
   DraftPointUpdateParams,
@@ -29,7 +28,6 @@ import {
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
-import { DraftMessageDeleteParams } from "../actions/draftMessagesActions";
 
 export interface DraftPointsState {
   byId: {
@@ -45,8 +43,7 @@ export const initialDraftPointsState: DraftPointsState = {
 
 export const draftPointsReducer = (
   state: DraftPointsState,
-  action: Action,
-  appState: AppState
+  action: Action
 ): DraftPointsState => {
   let newState = state;
   switch (action.type) {
@@ -90,13 +87,6 @@ export const draftPointsReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>
-      );
-      break;
-    case Actions.draftMessageDelete:
-      newState = handleDraftMessageDelete(
-        state,
-        action as Action<DraftMessageDeleteParams>,
-        appState
       );
       break;
   }
@@ -213,25 +203,5 @@ function handleSplitIntoTwoPoints(
       pointDate: new Date(),
     };
     draft.allIds.push(newPointId);
-  });
-}
-
-function handleDraftMessageDelete(
-  state: DraftPointsState,
-  action: Action<DraftMessageDeleteParams>,
-  appState: AppState
-): DraftPointsState {
-  const messageToDelete = appState.draftMessages.byId[action.params.messageId];
-  let pointIdsToDelete = Object.values(messageToDelete.shapes).flat();
-
-  if (messageToDelete.main !== undefined) {
-    pointIdsToDelete.push(messageToDelete.main);
-  }
-
-  return produce(state, (draft) => {
-    pointIdsToDelete.forEach((id) => {
-      delete draft.byId[id];
-      draft.allIds = draft.allIds.filter((pId) => pId !== id);
-    });
   });
 }

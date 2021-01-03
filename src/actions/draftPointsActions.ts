@@ -276,6 +276,7 @@ export const _pointsMoveToMessage = (
 
 export interface DraftPointsDeleteParams {
   pointIds: string[];
+  messageId?: string;
   deleteSelectedPoints?: boolean;
 }
 
@@ -284,7 +285,8 @@ export const draftPointsDelete = (
 ): ThunkAction<void, AppState, unknown, Action<_DraftPointsDeleteParams>> => {
   return (dispatch, getState) => {
     const appState = getState();
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const messageId =
+      params.messageId ?? (appState.semanticScreen.currentMessage as string);
 
     let { pointIds, deleteSelectedPoints } = params;
     if (deleteSelectedPoints === true) {
@@ -292,14 +294,12 @@ export const draftPointsDelete = (
       pointIds = pointIds.concat(selectedPoints);
     }
 
-    dispatch(
-      _draftPointsDelete({ pointIds, currentMessageId, deleteSelectedPoints })
-    );
+    dispatch(_draftPointsDelete({ pointIds, messageId, deleteSelectedPoints }));
   };
 };
 
 export interface _DraftPointsDeleteParams extends DraftPointsDeleteParams {
-  currentMessageId: string;
+  messageId: string;
 }
 
 export const _draftPointsDelete = (

@@ -161,7 +161,7 @@ function createAppStore() {
       messages: messagesReducer(state.messages, action),
       points: pointsReducer(state.points, action),
       draftMessages: draftMessagesReducer(state.draftMessages, action),
-      draftPoints: draftPointsReducer(state.draftPoints, action, state),
+      draftPoints: draftPointsReducer(state.draftPoints, action),
       expandedRegion: expandedRegionReducer(state.expandedRegion, action),
       selectedPoints: selectedPointsReducer(state.selectedPoints, action),
       panels: panelsReducer(state.panels, action),

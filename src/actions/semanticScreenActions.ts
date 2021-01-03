@@ -26,7 +26,7 @@ import {
   _PopulateMessageAndPointsParams,
 } from "./dbActions";
 import { containsPoints } from "../dataModels/pointUtils";
-import { _draftMessageDelete } from "./draftMessagesActions";
+import { _draftMessageAndPointsDelete } from "./draftMessagesActions";
 
 export interface SetCurrentMessageParams {
   messageId: string;
@@ -48,9 +48,8 @@ export const setCurrentMessage = (
       newCurrentMessage !== oldCurrentMessage
     ) {
       dispatch(
-        _draftMessageDelete({
+        _draftMessageAndPointsDelete({
           messageId: oldCurrentMessage,
-          currentMessageId: newCurrentMessage,
         })
       );
     }

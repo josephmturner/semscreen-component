@@ -29,7 +29,6 @@ import {
   _PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
 import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
-import { _DraftMessageDeleteParams } from "../actions/draftMessagesActions";
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -72,12 +71,6 @@ export const selectedPointsReducer = (
         action as Action<SetCurrentMessageParams>
       );
       break;
-    case Actions.draftMessageDelete:
-      newState = handleDraftMessageDelete(
-        state,
-        action as Action<_DraftMessageDeleteParams>
-      );
-      break;
     case Actions.pointsMoveToMessage:
       newState = handlePointsMoveToMessage(
         state,
@@ -117,9 +110,9 @@ function handleDraftPointsDelete(
   action: Action<DraftPointsDeleteParams>
 ): SelectedPointsState {
   return produce(state, (draft) => {
-    if (action.params.deleteSelectedPoints) {
-      draft.pointIds = [];
-    }
+    draft.pointIds = draft.pointIds.filter((id) =>
+      action.params.pointIds.includes(id)
+    );
   });
 }
 
@@ -142,18 +135,6 @@ function handleSetCurrentMessage(
   return {
     pointIds,
   };
-}
-
-function handleDraftMessageDelete(
-  state: SelectedPointsState,
-  action: Action<_DraftMessageDeleteParams>
-) {
-  return produce(state, (draft) => {
-    const { messageId, currentMessageId } = action.params;
-    if (messageId === currentMessageId) {
-      draft.pointIds = [];
-    }
-  });
 }
 
 function handlePointsMoveToMessage(

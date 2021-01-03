@@ -27,6 +27,7 @@ import { AppState } from "../reducers/store";
 import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
+  _draftPointsDelete,
 } from "./draftPointsActions";
 import {
   _setCurrentMessage,
@@ -94,7 +95,7 @@ export const draftMessageDelete = (
   AppState,
   unknown,
   Action<
-    | _DraftMessageDeleteParams
+    | DraftMessageDeleteParams
     | _DraftMessageCreateParams
     | SetCurrentMessageParams
   >
@@ -125,17 +126,34 @@ export const draftMessageDelete = (
       }
     }
 
-    dispatch(_draftMessageDelete({ ...params, currentMessageId }));
+    dispatch(
+      _draftMessageAndPointsDelete({
+        ...params,
+      })
+    );
   };
 };
 
-export interface _DraftMessageDeleteParams extends DraftMessageDeleteParams {
-  currentMessageId: string;
-}
+export const _draftMessageAndPointsDelete = (
+  params: DraftMessageDeleteParams
+): ThunkAction<void, AppState, unknown, Action<DraftMessageDeleteParams>> => {
+  return (dispatch, getState) => {
+    const appState = getState();
+    const { messageId } = params;
+    const messageToDelete = appState.draftMessages.byId[messageId];
+    let pointIds = Object.values(messageToDelete.shapes).flat();
+    if (messageToDelete.main !== undefined) {
+      pointIds.push(messageToDelete.main);
+    }
+
+    dispatch(_draftPointsDelete({ pointIds, messageId }));
+    dispatch(_draftMessageDelete(params));
+  };
+};
 
 export const _draftMessageDelete = (
-  params: _DraftMessageDeleteParams
-): Action<_DraftMessageDeleteParams> => {
+  params: DraftMessageDeleteParams
+): Action<DraftMessageDeleteParams> => {
   return {
     type: Actions.draftMessageDelete,
     params,

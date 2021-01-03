@@ -239,10 +239,10 @@ function handleDraftPointsDelete(
   action: Action<_DraftPointsDeleteParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { pointIds, currentMessageId } = action.params;
-    const currentMessage = draft.byId[currentMessageId];
+    const { pointIds, messageId } = action.params;
+    const message = draft.byId[messageId];
 
-    _deletePoints(currentMessage, pointIds);
+    _deletePoints(message, pointIds);
   });
 }
 
