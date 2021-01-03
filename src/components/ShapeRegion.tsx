@@ -33,7 +33,6 @@ import {
   draftPointCreate,
   DraftPointCreateParams,
   pointsMoveWithinMessage,
-  PointsMoveWithinMessageParams,
 } from "../actions/draftPointsActions";
 import {
   setExpandedRegion,
@@ -57,7 +56,7 @@ interface AllProps extends OwnProps {
   isDraft: boolean;
   isExpanded: boolean;
   draftPointCreate: (params: DraftPointCreateParams) => void;
-  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
+  pointsMoveWithinMessage: () => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
   togglePoint: (params: TogglePointParams) => void;
@@ -86,7 +85,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage({});
+        props.pointsMoveWithinMessage();
       }
     },
   });
@@ -109,7 +108,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage({});
+        props.pointsMoveWithinMessage();
       }
     },
   });

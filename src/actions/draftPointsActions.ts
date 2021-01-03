@@ -87,11 +87,7 @@ export const draftPointUpdate = (
   };
 };
 
-export interface PointsMoveWithinMessageParams {}
-
-export const pointsMoveWithinMessage = (
-  params: PointsMoveWithinMessageParams
-): ThunkAction<
+export const pointsMoveWithinMessage = (): ThunkAction<
   void,
   AppState,
   unknown,

@@ -45,7 +45,6 @@ import {
   combinePoints,
   CombinePointsParams,
   pointsMoveWithinMessage,
-  PointsMoveWithinMessageParams,
   draftPointUpdate,
   DraftPointUpdateParams,
   draftPointsDelete,
@@ -77,7 +76,7 @@ interface AllProps extends OwnProps {
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
-  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
+  pointsMoveWithinMessage: () => void;
   draftPointUpdate: (params: DraftPointUpdateParams) => void;
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
@@ -128,7 +127,7 @@ const RegionPoint = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage({});
+        props.pointsMoveWithinMessage();
       }
     },
   });
