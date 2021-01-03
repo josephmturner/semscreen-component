@@ -313,22 +313,6 @@ export interface CombinePointsParams {
   deleteIndex: number;
 }
 
-export interface _CombinePointsParams extends CombinePointsParams {
-  pointToKeepId: string;
-  pointToKeep: PointI;
-  pointToDeleteId: string;
-  currentMessageId: string;
-}
-
-export const _combinePoints = (
-  params: _CombinePointsParams
-): Action<_CombinePointsParams> => {
-  return {
-    type: Actions.combinePoints,
-    params,
-  };
-};
-
 export const combinePoints = (
   params: CombinePointsParams
 ): ThunkAction<void, AppState, unknown, Action<_CombinePointsParams>> => {
@@ -349,9 +333,11 @@ export const combinePoints = (
 
     if (
       // Only combine points with points that exist
-      (!withinBounds(keepIndex) && !withinBounds(deleteIndex)) ||
+      !withinBounds(keepIndex) ||
+      !withinBounds(deleteIndex) ||
       // Only combine points with non-quoted points
-      (isQuoted(keepIndex) && isQuoted(deleteIndex))
+      isQuoted(keepIndex) ||
+      isQuoted(deleteIndex)
     ) {
       return;
     }
@@ -369,6 +355,22 @@ export const combinePoints = (
         ...params,
       })
     );
+  };
+};
+
+export interface _CombinePointsParams extends CombinePointsParams {
+  pointToKeepId: string;
+  pointToKeep: PointI;
+  pointToDeleteId: string;
+  currentMessageId: string;
+}
+
+export const _combinePoints = (
+  params: _CombinePointsParams
+): Action<_CombinePointsParams> => {
+  return {
+    type: Actions.combinePoints,
+    params,
   };
 };
 
