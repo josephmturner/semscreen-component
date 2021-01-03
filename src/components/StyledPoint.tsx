@@ -36,15 +36,16 @@ export const MainPointWrapper = styled.div`
 `;
 
 export const PointWrapper = styled.div<StyledPointProps>`
-  margin: 1px 0;
+  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
+  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
+
   :focus-within,
   :hover {
     border: 1px solid ${(props) => (props.darkMode ? "white" : "black")};
     border-radius: 3px;
   }
-  --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
-  --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
+  margin: 2px 2px;
   background-color: var(--colorBG);
   border-radius: 3px;
 `;

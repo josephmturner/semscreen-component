@@ -122,6 +122,15 @@ const ShapeRegion = (props: AllProps) => {
     },
   });
 
+  const [, hoverLineRef] = useDrop({
+    accept: ItemTypes.POINT,
+    drop: () => {
+      if (props.isDraft) {
+        props.pointsMoveWithinMessage();
+      }
+    },
+  });
+
   const createEmptyPoint = () => {
     props.draftPointCreate({
       point: {
@@ -153,7 +162,9 @@ const ShapeRegion = (props: AllProps) => {
     listItems.splice(
       props.hoverIndex,
       0,
-      <HoverLine darkMode={props.darkMode} key="hover-line" />
+      <HoverLineWrapper key="hover-line">
+        <HoverLine darkMode={props.darkMode} ref={hoverLineRef} />
+      </HoverLineWrapper>
     );
   }
 
@@ -198,9 +209,21 @@ const DropTargetDiv = styled.div<DropTargetDivProps>`
   height: 100%;
 `;
 
+// Wrapping HoverLine in a relaively positioned div allows us to
+// add a border which takes up the margin between two points.
+// Since HoverLine is a drop target, this ensures that the margin
+// between two points always accepts dropped points.
+const HoverLineWrapper = styled.div`
+  position: relative;
+`;
+
 const HoverLine = styled.div<{ darkMode?: boolean }>`
-  border-bottom: ${(props) =>
-    props.darkMode ? "2px solid white" : "2px solid black"};
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  height: 1.4px;
+  top: -2px;
+  border: 2px solid black;
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
