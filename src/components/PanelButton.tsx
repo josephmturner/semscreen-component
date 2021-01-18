@@ -22,22 +22,18 @@ import styled from "styled-components";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
-import { connect } from "react-redux";
-import { AppState } from "../reducers";
-import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
+import { SemanticScreenRouteParams } from "../dataModels/dataModels";
 
-interface OwnProps {
+interface Props {
+  params: SemanticScreenRouteParams;
   side: "right" | "bottom";
+  color: string;
   onClick: () => void;
   darkMode: boolean;
   onDragOver?: () => void;
 }
 
-interface AllProps extends OwnProps {
-  color: string;
-}
-
-const PanelButton = (props: AllProps) => {
+const PanelButton = (props: Props) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     hover: props.onDragOver,
@@ -102,17 +98,4 @@ const StyledSvg = styled.svg<StyledProps>`
 `};
 `;
 
-const mapStateToProps = (state: AppState) => {
-  const currentMessageId = state.semanticScreen.currentMessage as string;
-  const authorId = getMessageById(currentMessageId, state).author;
-  const { color } = isUserIdentity(authorId, state)
-    ? state.userIdentities.byId[authorId]
-    : state.authors.byId[authorId];
-  return {
-    color,
-  };
-};
-
-const mapActionsToProps = {};
-
-export default connect(mapStateToProps, mapActionsToProps)(PanelButton);
+export default PanelButton;
