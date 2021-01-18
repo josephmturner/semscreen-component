@@ -18,7 +18,11 @@
 */
 import React, { useEffect, useRef, useState } from "react";
 
-import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import {
+  PointI,
+  PointReferenceI,
+  SemanticScreenRouteParams,
+} from "../dataModels/dataModels";
 import {
   getPointIfReference,
   getReferenceData,
@@ -45,6 +49,7 @@ import {
   combinePoints,
   CombinePointsParams,
   pointsMoveWithinMessage,
+  PointsMoveWithinMessageParams,
   draftPointUpdate,
   DraftPointUpdateParams,
   draftPointsDelete,
@@ -59,6 +64,7 @@ import {
 } from "../actions/selectPointActions";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   pointId: string;
   index: number;
   isExpanded: boolean;
@@ -68,7 +74,7 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   point: PointI;
-  referenceData: PointReferenceI | null;
+  referenceData?: PointReferenceI;
   cursorPositionIndex?: number;
   isDraft: boolean;
   isDragHovered: boolean;
@@ -76,7 +82,7 @@ interface AllProps extends OwnProps {
   combinePoints: (params: CombinePointsParams) => void;
   setCursorPosition: (params: CursorPositionParams) => void;
   clearCursorPosition: () => void;
-  pointsMoveWithinMessage: () => void;
+  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   draftPointUpdate: (params: DraftPointUpdateParams) => void;
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   hoverOver: (params: HoverOverParams) => void;
@@ -93,6 +99,7 @@ const RegionPoint = (props: AllProps) => {
     clearCursorPosition,
     setCursorPosition,
   } = props;
+  const { messageId } = props.params;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -127,7 +134,7 @@ const RegionPoint = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage();
+        props.pointsMoveWithinMessage({ messageId });
       }
     },
   });
@@ -173,6 +180,7 @@ const RegionPoint = (props: AllProps) => {
           props.splitIntoTwoPoints({
             pointId,
             sliceIndex: pointRef.current.textarea.selectionStart,
+            messageId,
           });
       } else if (
         e.key === "Backspace" &&
@@ -184,6 +192,7 @@ const RegionPoint = (props: AllProps) => {
           e.preventDefault();
           props.combinePoints({
             shape: point.shape,
+            messageId,
             keepIndex: index - 1,
             deleteIndex: index,
           });
@@ -191,6 +200,7 @@ const RegionPoint = (props: AllProps) => {
           e.preventDefault();
           props.combinePoints({
             shape: point.shape,
+            messageId,
             keepIndex: index,
             deleteIndex: index + 1,
           });
@@ -204,6 +214,7 @@ const RegionPoint = (props: AllProps) => {
         e.preventDefault();
         props.combinePoints({
           shape: point.shape,
+          messageId,
           keepIndex: index,
           deleteIndex: index + 1,
         });
@@ -214,7 +225,12 @@ const RegionPoint = (props: AllProps) => {
           pointRef.current.textarea.selectionEnd
       ) {
         e.preventDefault();
-        setCursorPosition({ point, index, moveTo: "endOfPrevPoint" });
+        setCursorPosition({
+          point,
+          messageId,
+          index,
+          moveTo: "endOfPrevPoint",
+        });
       } else if (
         e.key === "ArrowRight" &&
         pointRef.current.textarea.selectionStart === point.content.length &&
@@ -224,6 +240,7 @@ const RegionPoint = (props: AllProps) => {
         e.preventDefault();
         setCursorPosition({
           point,
+          messageId,
           index,
           moveTo: "beginningOfNextPoint",
         });
@@ -232,7 +249,12 @@ const RegionPoint = (props: AllProps) => {
   };
 
   const handleBlur = () => {
-    if (!point.content) props.draftPointsDelete({ pointIds: [pointId] });
+    if (!point.content)
+      props.draftPointsDelete({
+        pointIds: [pointId],
+        messageId,
+        deleteSelectedPoints: false,
+      });
   };
 
   useEffect(() => {
@@ -271,6 +293,7 @@ const RegionPoint = (props: AllProps) => {
       >
         {renderPointHoverOptions && (
           <PointHoverOptions
+            params={props.params}
             type={props.isDraft ? "draftPoint" : "publishedPoint"}
             id={props.pointId}
             darkMode={props.darkMode}
@@ -294,7 +317,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   )
     isDragHovered = true;
 
-  const currentMessageId = state.semanticScreen.currentMessage as string;
+  const { messageId } = ownProps.params;
   return {
     point,
     referenceData,
@@ -303,7 +326,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
       state.cursorPosition.details.pointId === ownProps.pointId
         ? state.cursorPosition.details.contentIndex
         : undefined,
-    isDraft: state.draftMessages.allIds.includes(currentMessageId),
+    isDraft: state.draftMessages.allIds.includes(messageId),
     isDragHovered,
   };
 };

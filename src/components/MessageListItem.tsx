@@ -17,6 +17,7 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 
 import {
@@ -24,6 +25,7 @@ import {
   PointI,
   PointHoverOptionsType,
   PointReferenceI,
+  SemanticScreenRouteParams,
 } from "../dataModels/dataModels";
 import {
   getPointIfReference,
@@ -40,7 +42,7 @@ import { AppState } from "../reducers";
 import {
   setCurrentMessage,
   SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
+} from "../actions/selectPointActions";
 import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
@@ -51,6 +53,7 @@ import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   messageId: string;
   type: PointHoverOptionsType;
   index: number;
@@ -60,7 +63,7 @@ interface OwnProps {
 interface AllProps extends OwnProps {
   author: AuthorI;
   displayPoint: PointI;
-  referenceData: PointReferenceI | null;
+  referenceData?: PointReferenceI;
   isDragHovered: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
@@ -69,12 +72,19 @@ interface AllProps extends OwnProps {
 
 const MessageListItem = (props: AllProps) => {
   const { referenceData } = props;
+  const { messageId: oldMessageId } = props.params;
+
+  const history = useHistory();
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
       if (props.type === "draftMessage") {
-        props.pointsMoveToMessage({ newMessageId: props.messageId });
+        props.pointsMoveToMessage({
+          moveToMessageId: props.messageId,
+          moveFromMessageId: oldMessageId,
+          history,
+        });
       }
     },
     hover: () => {
@@ -88,7 +98,13 @@ const MessageListItem = (props: AllProps) => {
   });
 
   const handleClick = () => {
-    props.setCurrentMessage({ messageId: props.messageId });
+    props.setCurrentMessage({
+      oldMessageId,
+      newAuthorId: props.author._id,
+      newMessageId: props.messageId,
+      history,
+      oldMessageIsDraft: props.type === "draftMessage",
+    });
   };
 
   //The useState and useEffect are purely to cause the component to
@@ -126,6 +142,7 @@ const MessageListItem = (props: AllProps) => {
       >
         {isHovered && props.type !== "publishedMessage" && (
           <PointHoverOptions
+            params={props.params}
             type={props.type}
             id={props.messageId}
             darkMode={props.darkMode}

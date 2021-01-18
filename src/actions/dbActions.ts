@@ -33,26 +33,31 @@ import {
   UserIdentityCreateParams,
 } from "./userIdentitiesActions";
 import { displayApp, DisplayAppParams } from "./displayAppActions";
-import {
-  _draftMessageCreate,
-  _draftMessageAndPointsDelete,
-  DraftMessageDeleteParams,
-} from "./draftMessagesActions";
+import { _draftMessageCreate } from "./draftMessagesActions";
 
 import leveljs from "level-js";
 import { USHINBase } from "ushin-db";
 
 import randomColor from "randomcolor";
 
+import { History } from "history";
+
 export interface LoadDatabaseParams {
+  history: History;
+  pathname: string;
+}
+
+export interface _LoadDatabaseParams {
   db: USHINBase;
 }
 
-export const loadDatabase = (): ThunkAction<
+export const loadDatabase = (
+  params: LoadDatabaseParams
+): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<LoadDatabaseParams | UserIdentityCreateParams | DisplayAppParams>
+  Action<_LoadDatabaseParams | UserIdentityCreateParams | DisplayAppParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
@@ -89,56 +94,87 @@ export const loadDatabase = (): ThunkAction<
       }
       dispatch(userIdentityLoad({ userIdentity }));
 
-      //Load currentMessageId from a prior session from localStorage...
-      const rawLocalStorageState = localStorage.getItem("localStorageState");
-      let localStorageState;
-      if (rawLocalStorageState) {
-        localStorageState = JSON.parse(rawLocalStorageState);
-      }
-
-      const currentMessageId = localStorageState.semanticScreen.currentMessage;
-      if (currentMessageId !== undefined) {
-        let messages: MessageI[] = [];
-        let points: PointMapping = {};
-
-        if (!state.draftMessages.allIds.includes(currentMessageId)) {
-          //If the currentMessageId corresponds to a published message, get it from ushin-db
-          const current = await _getMessagesAndPoints(
-            [currentMessageId],
-            db,
-            state
-          );
-          messages = current.messages;
-          points = current.points;
+      // Hydrate all referenced points in draft messages
+      const allDraftMessageIds = state.draftMessages.allIds;
+      const allDraftMessages = allDraftMessageIds.map(
+        (id) => state.draftMessages.byId[id]
+      );
+      const allReferencePointIds: Set<string> = new Set();
+      for (const { shapes, main } of allDraftMessages) {
+        const allDraftPointIds = Object.values(shapes).flat();
+        if (main) {
+          allDraftPointIds.push(main);
         }
-        //If any draftPoints are quoted points, load the quotes
-
-        const draftPoints = Object.values(state.draftPoints.byId);
-        const referencePointIds: Set<string> = new Set();
-        for (const point of draftPoints) {
+        for (const pointId of allDraftPointIds) {
+          const point = state.draftPoints.byId[pointId];
           if (isReference(point)) {
             for (const log of point.referenceHistory)
-              referencePointIds.add(log.pointId);
+              allReferencePointIds.add(log.pointId);
           }
         }
+      }
+      const referencePoints: PointReferenceI[] = await Promise.all(
+        Array.from(allReferencePointIds).map((id) => db.getPoint(id))
+      );
 
-        const referencePoints: PointReferenceI[] = await Promise.all(
-          Array.from(referencePointIds).map((id) => db.getPoint(id))
-        );
+      let points: PointMapping = {};
+      for (const point of referencePoints) {
+        points[point._id] = point;
+      }
 
-        for (const point of referencePoints) {
-          points[point._id] = point;
+      dispatch(_populateMessageAndPoints({ points }));
+
+      const priorPathname = localStorage.getItem("pathname");
+
+      if (params.pathname === "/") {
+        //Restore prior pathname if no pathname has been entered
+        if (priorPathname !== null && priorPathname !== "/") {
+          params.history.push(priorPathname);
+        } else {
+          //If no prior pathname exists, create a new message
+          const newMessageId = uuidv4();
+          dispatch(_draftMessageCreate({ newMessageId }));
+          params.history.push(`/u/${userIdentity._id}/d/${newMessageId}`);
         }
-
-        dispatch(_populateMessageAndPoints({ messages, points }));
-      } else {
-        //If no currentMessageId exists in localStorage, create a new message
-        const newMessageId = uuidv4();
-
-        dispatch(_draftMessageCreate({ newMessageId }));
       }
 
       dispatch(displayApp({}));
+    })();
+  };
+};
+
+export interface LoadMessageParams {
+  messageId: string;
+}
+
+export const loadMessage = (
+  params: LoadMessageParams
+): ThunkAction<
+  void,
+  AppState,
+  unknown,
+  Action<_PopulateMessageAndPointsParams>
+> => {
+  return (dispatch, getState) => {
+    (async () => {
+      const state = getState();
+
+      if (!state.db.db)
+        return console.warn(
+          "Tried to load message and author before database was loaded"
+        );
+      const db = state.db.db;
+
+      try {
+        const { messages, points } = await _getMessagesAndPoints(
+          [params.messageId],
+          db,
+          state
+        );
+        dispatch(_populateMessageAndPoints({ messages, points }));
+      } catch (e) {
+        console.error(e);
+      }
     })();
   };
 };
@@ -147,47 +183,42 @@ export interface PointMapping {
   [id: string]: PointI | PointReferenceI;
 }
 
-export interface SaveMessageParams {
+export interface PublishMessageParams {
   message: MessageI;
   points: PointMapping;
+  history: History;
 }
 
-export const saveMessage = (
-  params: SaveMessageParams
+export const publishMessage = (
+  params: PublishMessageParams
 ): ThunkAction<
   void,
   AppState,
   unknown,
-  Action<_PopulateMessageAndPointsParams | DraftMessageDeleteParams>
+  Action<_PopulateMessageAndPointsParams>
 > => {
   return (dispatch, getState) => {
     (async () => {
       const state = getState();
 
       if (!state.db.db)
-        return console.warn("Tried to save message before database was loaded");
+        return console.warn(
+          "Tried to publish message before database was loaded"
+        );
       const db = state.db.db;
 
       try {
         const messageId = await db.addMessage(params.message, params.points);
-        const { messages, points } = await _getMessagesAndPoints(
-          [messageId],
-          db,
-          state
-        );
-
-        dispatch(_populateMessageAndPoints({ messages, points }));
-
-        dispatch(_draftMessageAndPointsDelete({ messageId }));
+        dispatch(loadMessage({ messageId }));
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     })();
   };
 };
 
 export interface _PopulateMessageAndPointsParams {
-  messages: MessageI[];
+  messages?: MessageI[];
   points: PointMapping;
 }
 

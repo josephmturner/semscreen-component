@@ -19,6 +19,7 @@
 
 import { ThunkAction } from "redux-thunk";
 import { v4 as uuidv4 } from "uuid";
+import { History } from "history";
 
 import { Action, Actions } from "./constants";
 import { PointI, PointShape } from "../dataModels/dataModels";
@@ -27,18 +28,16 @@ import { AppState } from "../reducers";
 import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
-  _draftPointsDelete,
 } from "./draftPointsActions";
-import {
-  _setCurrentMessage,
-  SetCurrentMessageParams,
-} from "./semanticScreenActions";
 
-export interface _DraftMessageCreateParams {
-  newMessageId: string;
+export interface DraftMessageCreateParams {
+  oldMessageId: string;
+  history: History;
 }
 
-export const draftMessageCreate = (): ThunkAction<
+export const draftMessageCreate = (
+  params: DraftMessageCreateParams
+): ThunkAction<
   void,
   AppState,
   unknown,
@@ -48,8 +47,7 @@ export const draftMessageCreate = (): ThunkAction<
     const appState: AppState = getState();
 
     //Prevent creation of many empty messages...
-
-    const oldMessageId = appState.semanticScreen.currentMessage as string;
+    const { oldMessageId } = params;
     if (!containsPoints(oldMessageId, appState)) {
       return;
     }
@@ -64,16 +62,24 @@ export const draftMessageCreate = (): ThunkAction<
     );
 
     // If there are points selected, add them to the new message
-    if (appState.selectedPoints.pointIds) {
+    if (appState.selectedPoints.pointIds.length !== 0) {
       dispatch(
         pointsMoveToMessage({
-          newMessageId,
-          oldMessageId,
+          moveToMessageId: newMessageId,
+          moveFromMessageId: oldMessageId,
+          history: params.history,
         })
       );
+    } else {
+      const currentIdentity = appState.userIdentities.currentIdentity;
+      params.history.push(`/u/${currentIdentity}/d/${newMessageId}`);
     }
   };
 };
+
+export interface _DraftMessageCreateParams {
+  newMessageId: string;
+}
 
 export const _draftMessageCreate = (
   params: _DraftMessageCreateParams
@@ -86,6 +92,8 @@ export const _draftMessageCreate = (
 
 export interface DraftMessageDeleteParams {
   messageId: string;
+  currentMessageId: string;
+  history: History;
 }
 
 export const draftMessageDelete = (
@@ -94,26 +102,24 @@ export const draftMessageDelete = (
   void,
   AppState,
   unknown,
-  Action<
-    | DraftMessageDeleteParams
-    | _DraftMessageCreateParams
-    | SetCurrentMessageParams
-  >
+  Action<_DraftMessageDeleteParams | _DraftMessageCreateParams>
 > => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
+    const { messageId, currentMessageId } = params;
     const remainingDraftMessages = appState.draftMessages.allIds.filter(
-      (id) => id !== params.messageId
+      (id) => id !== messageId
     );
 
     //If we're deleting the current message, we must set the current message
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-    if (currentMessageId === params.messageId) {
+    if (currentMessageId === messageId) {
+      const currentIdentity = appState.userIdentities.currentIdentity;
+
       //Set it to the next draft message...
       if (remainingDraftMessages[0] !== undefined) {
         const nextDraftId = remainingDraftMessages[0];
 
-        dispatch(_setCurrentMessage({ messageId: nextDraftId }));
+        params.history.push(`/u/${currentIdentity}/d/${nextDraftId}`);
       } else {
         //If no more drafts exists, create a new one
         const newMessageId = uuidv4();
@@ -123,37 +129,28 @@ export const draftMessageDelete = (
             newMessageId,
           })
         );
+        params.history.push(`/u/${currentIdentity}/d/${newMessageId}`);
       }
     }
 
-    dispatch(
-      _draftMessageAndPointsDelete({
-        ...params,
-      })
-    );
-  };
-};
-
-export const _draftMessageAndPointsDelete = (
-  params: DraftMessageDeleteParams
-): ThunkAction<void, AppState, unknown, Action<DraftMessageDeleteParams>> => {
-  return (dispatch, getState) => {
-    const appState = getState();
-    const { messageId } = params;
     const messageToDelete = appState.draftMessages.byId[messageId];
     let pointIds = Object.values(messageToDelete.shapes).flat();
     if (messageToDelete.main !== undefined) {
       pointIds.push(messageToDelete.main);
     }
 
-    dispatch(_draftPointsDelete({ pointIds, messageId }));
-    dispatch(_draftMessageDelete(params));
+    dispatch(_draftMessageDelete({ pointIds, messageId }));
   };
 };
 
+export interface _DraftMessageDeleteParams {
+  messageId: string;
+  pointIds: string[];
+}
+
 export const _draftMessageDelete = (
-  params: DraftMessageDeleteParams
-): Action<DraftMessageDeleteParams> => {
+  params: _DraftMessageDeleteParams
+): Action<_DraftMessageDeleteParams> => {
   return {
     type: Actions.draftMessageDelete,
     params,
@@ -162,6 +159,7 @@ export const _draftMessageDelete = (
 
 export interface SetMainParams {
   newMainId?: string;
+  messageId: string;
 }
 
 export const setMain = (
@@ -169,14 +167,14 @@ export const setMain = (
 ): ThunkAction<void, AppState, unknown, Action<_SetMainParams>> => {
   return (dispatch, getState) => {
     const appState = getState();
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
 
+    const { messageId } = params;
     let { newMainId } = params;
     if (newMainId === undefined) {
       newMainId = appState.selectedPoints.pointIds[0];
     }
     const oldMainId: string | undefined =
-      appState.draftMessages.byId[currentMessageId].main;
+      appState.draftMessages.byId[messageId].main;
 
     if (newMainId === oldMainId) {
       return;
@@ -190,7 +188,7 @@ export const setMain = (
 
     dispatch(
       _setMain({
-        currentMessageId,
+        messageId,
         newMainId,
         newMainShape,
         oldMainId,
@@ -201,7 +199,6 @@ export const setMain = (
 };
 
 export interface _SetMainParams extends Required<SetMainParams> {
-  currentMessageId: string;
   newMainShape: PointShape;
   oldMainId?: string;
   oldMainShape?: PointShape;

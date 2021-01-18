@@ -49,10 +49,6 @@ import {
 } from "./selectedPoints";
 import { panelsReducer as panels, PanelsState } from "./panels";
 import { dragReducer as drag, DragState } from "./drag";
-import {
-  semanticScreenReducer as semanticScreen,
-  SemanticScreenState,
-} from "./semanticScreen";
 import { DBState, dbReducer as db } from "./db";
 import { SearchState, searchReducer as search } from "./search";
 import { DisplayAppState, displayAppReducer as displayApp } from "./displayApp";
@@ -70,7 +66,6 @@ export interface AppState {
   selectedPoints: SelectedPointsState;
   panels: PanelsState;
   drag: DragState;
-  semanticScreen: SemanticScreenState;
   search: SearchState;
   displayApp: DisplayAppState;
 }
@@ -88,23 +83,18 @@ const rootReducer = combineReducers({
   selectedPoints,
   panels,
   drag,
-  semanticScreen,
   search,
   displayApp,
 });
 
 let preloadedDraftMessagesState: DraftMessagesState | undefined;
 let preloadedDraftPointsState: DraftPointsState | undefined;
-let preloadedSemanticScreenState: SemanticScreenState | undefined;
 
-const rawLocalStorageState = localStorage.getItem("localStorageState");
-const localStorageState = rawLocalStorageState
-  ? JSON.parse(rawLocalStorageState)
-  : null;
-if (localStorageState) {
-  preloadedDraftMessagesState = localStorageState.draftMessages;
-  preloadedDraftPointsState = localStorageState.draftPoints;
-  preloadedSemanticScreenState = localStorageState.semanticScreen;
+const rawDrafts = localStorage.getItem("drafts");
+const drafts = rawDrafts ? JSON.parse(rawDrafts) : null;
+if (drafts) {
+  preloadedDraftMessagesState = drafts.draftMessages;
+  preloadedDraftPointsState = drafts.draftPoints;
 }
 
 export const store = createStore(
@@ -112,7 +102,6 @@ export const store = createStore(
   {
     draftMessages: preloadedDraftMessagesState,
     draftPoints: preloadedDraftPointsState,
-    semanticScreen: preloadedSemanticScreenState,
   },
   composeWithDevTools(applyMiddleware(thunk))
 );

@@ -16,106 +16,189 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useRef } from "react";
-
-import { wrapGrid } from "animate-css-grid";
-
-import ShapeRegion from "./ShapeRegion";
-import MeritsRegion from "./MeritsRegion";
-import CenterRegion from "./CenterRegion";
-import Banner from "./Banner";
-import StyledSemanticScreen from "./StyledSemanticScreen";
-
+import React from "react";
+import styled from "styled-components";
 import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
+import { SemanticScreenRouteParams } from "../dataModels/dataModels";
+
 import { AppState } from "../reducers";
 
-import { RegionI } from "../dataModels/dataModels";
-import { getMessageById, isUserIdentity } from "../dataModels/pointUtils";
+import { togglePanel, PanelParams } from "../actions/panelsActions";
+import { loadMessage, LoadMessageParams } from "../actions/dbActions";
+import { PanelsState } from "../reducers/panels";
 
-interface Props {
-  authorId: string;
+import RegionsGrid from "./RegionsGrid";
+import PanelButton from "./PanelButton";
+import ParkingRegion from "./ParkingRegion";
+import RightPanelContents from "./RightPanelContents";
+
+interface OwnProps {
   darkMode: boolean;
-  expandedRegion: string;
-  BGColor: string;
+  isDraft?: boolean;
 }
 
-const SemanticScreen = (props: Props) => {
-  const { expandedRegion } = props;
-
-  const regions: RegionI[] = [
-    "facts",
-    "merits",
-    "people",
-    "thoughts",
-    "center",
-    "actions",
-    "feelings",
-    "needs",
-    "topics",
-  ];
-
-  const semanticScreenRef = useRef<HTMLDivElement>();
-
-  useEffect(() => {
-    semanticScreenRef.current &&
-      wrapGrid(semanticScreenRef.current, {
-        duration: 150,
-        easing: "linear",
-      });
-  }, []);
-
-  return (
-    <StyledSemanticScreen
-      expandedRegion={expandedRegion}
-      ref={semanticScreenRef}
-      BGColor={props.BGColor}
-    >
-      <Banner
-        authorId={props.authorId}
-        placement={{ top: "0", right: "0" }}
-        fontSize={"medium"}
-        darkMode={props.darkMode}
-      />
-      {regions.map((region: RegionI) => {
-        if (region === "merits") {
-          return <MeritsRegion region={region} key={region} />;
-        }
-        if (region === "center") {
-          return (
-            <CenterRegion
-              region={region}
-              key={region}
-              darkMode={props.darkMode}
-            />
-          );
-        } else {
-          return (
-            <ShapeRegion
-              shape={region}
-              key={region}
-              darkMode={props.darkMode}
-            />
-          );
-        }
-      })}
-    </StyledSemanticScreen>
-  );
+export const SemanticScreen = (props: OwnProps) => {
+  const params: SemanticScreenRouteParams = useParams();
+  return <WrappedSemanticScreen {...props} params={params} />;
 };
 
-const mapStateToProps = (state: AppState) => {
-  const currentMessageId = state.semanticScreen.currentMessage as string;
-  const currentMessage = getMessageById(currentMessageId, state);
-  const authorId = currentMessage.author;
-  const BGColor = isUserIdentity(authorId, state)
-    ? state.userIdentities.byId[authorId].color
-    : state.authors.byId[authorId].color;
+interface OwnPropsWithRouteParams extends OwnProps {
+  params: SemanticScreenRouteParams;
+}
+
+interface AllProps extends OwnPropsWithRouteParams {
+  messageExists: boolean;
+  panels: PanelsState;
+  currentIdentityColor: string;
+  togglePanel: (params: PanelParams) => void;
+  loadMessage: (params: LoadMessageParams) => void;
+}
+
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnPropsWithRouteParams
+) => {
+  const currentIdentityId = state.userIdentities.currentIdentity as string;
+  const currentIdentity = state.userIdentities.byId[currentIdentityId];
+  const currentIdentityColor = currentIdentity.color;
+
+  const messageExists =
+    (ownProps.isDraft &&
+      state.draftMessages.allIds.includes(ownProps.params.messageId)) ||
+    (!ownProps.isDraft &&
+      state.messages.allIds.includes(ownProps.params.messageId));
+
   return {
-    authorId,
-    expandedRegion: state.expandedRegion.region,
-    BGColor,
+    messageExists,
+    panels: state.panels,
+    currentIdentityColor,
   };
 };
 
-const mapDispatchToProps = {};
+const mapActionsToProps = {
+  togglePanel,
+  loadMessage,
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(SemanticScreen);
+export const WrappedSemanticScreen = connect(
+  mapStateToProps,
+  mapActionsToProps
+)((props: AllProps) => {
+  const { messageId } = props.params;
+
+  const onDragOverBottomPanel = () => {
+    if (!props.panels.bottom) {
+      props.togglePanel({ location: "bottom" });
+    }
+  };
+
+  let mainPanelContent;
+  if (!props.messageExists && props.isDraft) {
+    mainPanelContent = <div>This draft doesn't exist.</div>;
+  } else if (!props.messageExists && !props.isDraft) {
+    mainPanelContent = <div>Loading published message...</div>;
+    //TODO: Timeout if the message cannot be found?
+    props.loadMessage({ messageId });
+  } else {
+    mainPanelContent = (
+      <RegionsGrid params={props.params} darkMode={props.darkMode || false} />
+    );
+  }
+
+  return (
+    <AppStyles darkMode={props.darkMode}>
+      <MainPanel>
+        <SemscreenPanel>
+          {mainPanelContent}
+          <PanelButton
+            params={props.params}
+            side={"bottom"}
+            color={props.currentIdentityColor}
+            onClick={() => {
+              props.togglePanel({ location: "bottom" });
+            }}
+            onDragOver={onDragOverBottomPanel}
+            darkMode={props.darkMode}
+          />
+          <PanelButton
+            params={props.params}
+            side={"right"}
+            color={props.currentIdentityColor}
+            onClick={() => {
+              props.togglePanel({ location: "right" });
+            }}
+            darkMode={props.darkMode}
+          />
+        </SemscreenPanel>
+        {props.panels.bottom && (
+          <BottomPanel>
+            <ParkingRegion params={props.params} darkMode={props.darkMode} />
+          </BottomPanel>
+        )}
+      </MainPanel>
+      {props.panels.right && (
+        <RightPanel>
+          <RightPanelContents params={props.params} darkMode={props.darkMode} />
+        </RightPanel>
+      )}
+    </AppStyles>
+  );
+});
+
+const AppStyles = styled.div<{ darkMode: boolean }>`
+  display: flex;
+  height: 100%;
+
+  ${(props) =>
+    props.darkMode
+      ? `
+    --thumbBG: #7e7e7e;
+    --scrollbarBG: black;
+    background-color: black;
+    color: white;
+  `
+      : `
+    --thumbBG: #696969;
+    --scrollbarBG: white;
+    background-color: white;
+    color: black;
+  `}
+
+  *>div {
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+    scrollbar-width: thin;
+  }
+  * > div ::-webkit-scrollbar {
+    width: 11px;
+  }
+  * > div ::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border: 3px solid var(--scrollbarBG);
+  }
+`;
+
+const MainPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+`;
+
+const SemscreenPanel = styled.div`
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+`;
+
+const BottomPanel = styled.div`
+  margin: 3px 0;
+`;
+
+const RightPanel = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 16rem;
+  overflow: hidden;
+`;

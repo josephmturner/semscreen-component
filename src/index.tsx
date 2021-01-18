@@ -18,6 +18,11 @@
 */
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
+import {
+  BrowserRouter as Router,
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
@@ -30,9 +35,8 @@ import { DBState } from "./reducers/db";
 import { DisplayAppState } from "./reducers/displayApp";
 import { DraftMessagesState } from "./reducers/draftMessages";
 import { DraftPointsState } from "./reducers/draftPoints";
-import { SemanticScreenState } from "./reducers/semanticScreen";
 
-import { loadDatabase } from "./actions/dbActions";
+import { loadDatabase, LoadDatabaseParams } from "./actions/dbActions";
 
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -40,10 +44,9 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 const mapStateToProps = (state: AppState) => {
   return {
     db: state.db,
-    displayApp: state.displayApp,
     draftMessages: state.draftMessages,
     draftPoints: state.draftPoints,
-    semanticScreen: state.semanticScreen,
+    displayApp: state.displayApp,
   };
 };
 
@@ -53,47 +56,41 @@ const mapActionsToProps = {
 
 interface Props {
   db: DBState;
-  displayApp: DisplayAppState;
   draftMessages: DraftMessagesState;
   draftPoints: DraftPointsState;
-  loadDatabase: () => void;
-  semanticScreen: SemanticScreenState;
+  displayApp: DisplayAppState;
+  loadDatabase: (params: LoadDatabaseParams) => void;
 }
 
 const AppWithPersistence = connect(
   mapStateToProps,
   mapActionsToProps
-)(
-  ({
-    db,
-    displayApp,
-    draftMessages,
-    draftPoints,
-    loadDatabase,
-    semanticScreen,
-  }: Props) => {
-    const localStorageState = { draftMessages, draftPoints, semanticScreen };
+)(({ db, draftMessages, draftPoints, displayApp, loadDatabase }: Props) => {
+  const { pathname } = useLocation();
+  localStorage.setItem("pathname", pathname);
 
-    localStorage.setItem(
-      "localStorageState",
-      JSON.stringify(localStorageState)
-    );
+  useEffect(() => {
+    const drafts = { draftMessages, draftPoints };
+    localStorage.setItem("drafts", JSON.stringify(drafts));
+  }, [draftMessages, draftPoints]);
 
-    useEffect(() => {
-      if (db?.loading) loadDatabase();
-    }, [db, loadDatabase]);
+  const history = useHistory();
+  useEffect(() => {
+    if (db?.loading) loadDatabase({ pathname, history });
+  }, [db, history, pathname, loadDatabase]);
 
-    if (!displayApp.display) return null;
+  if (!displayApp.display) return null;
 
-    return <App />;
-  }
-);
+  return <App />;
+});
 
 ReactDOM.render(
   <React.StrictMode>
     <DndProvider backend={HTML5Backend}>
       <Provider store={store}>
-        <AppWithPersistence />
+        <Router>
+          <AppWithPersistence />
+        </Router>
       </Provider>
     </DndProvider>
   </React.StrictMode>,

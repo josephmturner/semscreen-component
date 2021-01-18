@@ -27,8 +27,10 @@ import MessageListItem from "./MessageListItem";
 import NewMessageButton from "./NewMessageButton";
 
 import { hasPoints } from "../dataModels/pointUtils";
+import { SemanticScreenRouteParams } from "../dataModels/dataModels";
 
 const ParkingSpace = (props: {
+  params: SemanticScreenRouteParams;
   displayMessages: string[];
   darkMode?: boolean;
 }) => {
@@ -37,11 +39,12 @@ const ParkingSpace = (props: {
       <NewMessageButton darkMode={props.darkMode} />
       {props.displayMessages.map((id: string, i: number) => (
         <MessageListItem
-          key={id}
+          params={props.params}
           type="draftMessage"
           messageId={id}
           index={i}
           darkMode={props.darkMode}
+          key={id}
         />
       ))}
     </InnerContainer>

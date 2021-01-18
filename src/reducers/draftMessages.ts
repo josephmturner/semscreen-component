@@ -30,9 +30,10 @@ import {
 } from "../actions/draftPointsActions";
 import {
   _DraftMessageCreateParams,
-  DraftMessageDeleteParams,
+  _DraftMessageDeleteParams,
   _SetMainParams,
 } from "../actions/draftMessagesActions";
+import { _SetCurrentMessageParams } from "../actions/selectPointActions";
 
 export interface DraftMessagesState {
   byId: {
@@ -61,7 +62,7 @@ export const draftMessagesReducer = (
     case Actions.draftMessageDelete:
       newState = handleDraftMessageDelete(
         state,
-        action as Action<DraftMessageDeleteParams>
+        action as Action<_DraftMessageDeleteParams>
       );
       break;
     case Actions.draftPointCreate:
@@ -74,6 +75,12 @@ export const draftMessagesReducer = (
       newState = handlePointsMoveWithinMessage(
         state,
         action as Action<_PointsMoveWithinMessageParams>
+      );
+      break;
+    case Actions.setCurrentMessage:
+      newState = handleSetCurrentMessage(
+        state,
+        action as Action<_SetCurrentMessageParams>
       );
       break;
     case Actions.pointsMoveToMessage:
@@ -135,7 +142,7 @@ function handleDraftMessageCreate(
 
 function handleDraftMessageDelete(
   state: DraftMessagesState,
-  action: Action<DraftMessageDeleteParams>
+  action: Action<_DraftMessageDeleteParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
     delete draft.byId[action.params.messageId];
@@ -148,13 +155,13 @@ function handleDraftPointCreate(
   action: Action<_DraftPointCreateParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { currentMessageId, point, newPointId, index, main } = action.params;
+    const { messageId, point, newPointId, index, main } = action.params;
 
-    const currentMessage = draft.byId[currentMessageId];
+    const message = draft.byId[messageId];
     if (main) {
-      currentMessage.main = newPointId;
+      message.main = newPointId;
     } else {
-      currentMessage.shapes[point.shape].splice(index, 0, newPointId);
+      message.shapes[point.shape].splice(index, 0, newPointId);
     }
   });
 }
@@ -171,32 +178,46 @@ function _deletePoints(message: DraftMessageI, pointIds: string[]) {
   message.main && pointIds.includes(message.main) && delete message.main;
 }
 
+function _deleteIfEmpty(messageId: string, state: DraftMessagesState) {
+  const message = state.byId[messageId];
+  if (
+    Object.values(message.shapes).flat().length === 0 &&
+    message.main === undefined
+  ) {
+    delete state.byId[messageId];
+    state.allIds = state.allIds.filter((id) => id !== messageId);
+  }
+}
+
+function handleSetCurrentMessage(
+  state: DraftMessagesState,
+  action: Action<_SetCurrentMessageParams>
+): DraftMessagesState {
+  return produce(state, (draft) => {
+    if (state.allIds.includes(action.params.oldMessageId)) {
+      _deleteIfEmpty(action.params.oldMessageId, draft);
+    }
+  });
+}
+
 function handlePointsMoveToMessage(
   state: DraftMessagesState,
   action: Action<_PointsMoveToMessageParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { newMessageId, newPoints, cutFromMessageId } = action.params;
+    const { moveToMessageId, movePoints, cutFromMessageId } = action.params;
 
-    const newMessage = draft.byId[newMessageId];
-    newPoints.forEach((point) => {
-      const { _id, shape } = point;
-      newMessage.shapes[shape].push(_id);
-    });
+    const moveToMessage = draft.byId[moveToMessageId];
+    for (const { _id, shape } of movePoints) {
+      moveToMessage.shapes[shape].push(_id);
+    }
 
     if (cutFromMessageId) {
       const cutFromMessage = draft.byId[cutFromMessageId];
-      const pointsToCutIds = newPoints.map((p) => p._id);
-      _deletePoints(cutFromMessage, pointsToCutIds);
+      const pointsToCutIds = movePoints.map((p) => p._id);
 
-      // If currentMessage is now empty, delete it
-      if (
-        Object.values(cutFromMessage.shapes).flat()[0] === undefined &&
-        cutFromMessage.main === undefined
-      ) {
-        delete draft.byId[cutFromMessageId];
-        draft.allIds = draft.allIds.filter((m) => m !== cutFromMessageId);
-      }
+      _deletePoints(cutFromMessage, pointsToCutIds);
+      _deleteIfEmpty(cutFromMessageId, draft);
     }
   });
 }
@@ -206,9 +227,9 @@ function handlePointsMoveWithinMessage(
   action: Action<_PointsMoveWithinMessageParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { currentMessageId, pointsToMoveIds, region, index } = action.params;
-    const currentMessage = draft.byId[currentMessageId];
-    let pointIds: string[] = currentMessage.shapes[region];
+    const { messageId, pointsToMoveIds, region, index } = action.params;
+    const message = draft.byId[messageId];
+    let pointIds: string[] = message.shapes[region];
     let newPointIds: string[] = [];
 
     // Rebuild array of pointIds for state.shapes[region]
@@ -227,10 +248,10 @@ function handlePointsMoveWithinMessage(
     }
 
     // Delete points from original locations...
-    _deletePoints(currentMessage, pointsToMoveIds);
+    _deletePoints(message, pointsToMoveIds);
 
     // then set the pointIds for the destination region
-    currentMessage.shapes[region] = newPointIds;
+    message.shapes[region] = newPointIds;
   });
 }
 
@@ -256,20 +277,20 @@ function handleSetMain(
       newMainShape,
       oldMainId,
       oldMainShape,
-      currentMessageId,
+      messageId,
     } = action.params;
-    const currentMessage = draft.byId[currentMessageId];
+    const message = draft.byId[messageId];
 
     // Remove the point from the region it came from...
-    currentMessage.shapes[newMainShape] = currentMessage.shapes[
-      newMainShape
-    ].filter((id) => id !== newMainId);
+    message.shapes[newMainShape] = message.shapes[newMainShape].filter(
+      (id) => id !== newMainId
+    );
 
     // then move the current main point to the appropriate region
     if (oldMainId && oldMainShape) {
-      currentMessage.shapes[oldMainShape].push(oldMainId);
+      message.shapes[oldMainShape].push(oldMainId);
     }
-    currentMessage.main = newMainId;
+    message.main = newMainId;
   });
 }
 
@@ -278,14 +299,14 @@ function handleCombinePoints(
   action: Action<_CombinePointsParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { currentMessageId } = action.params;
+    const { messageId } = action.params;
 
-    const currentMessage = draft.byId[currentMessageId];
-    const currentShapes = currentMessage.shapes;
+    const message = draft.byId[messageId];
+    const shapes = message.shapes;
 
-    currentShapes[action.params.shape] = currentShapes[
-      action.params.shape
-    ].filter((id) => id !== action.params.pointToDeleteId);
+    shapes[action.params.shape] = shapes[action.params.shape].filter(
+      (id) => id !== action.params.pointToDeleteId
+    );
   });
 }
 
@@ -294,11 +315,11 @@ function handleSplitIntoTwoPoints(
   action: Action<_SplitIntoTwoPointsParams>
 ): DraftMessagesState {
   return produce(state, (draft) => {
-    const { currentMessageId, pointId, newPointId, shape } = action.params;
-    const currentMessage = draft.byId[currentMessageId];
+    const { messageId, pointId, newPointId, shape } = action.params;
+    const message = draft.byId[messageId];
 
     const splitPointIndex =
-      currentMessage.shapes[shape].findIndex((id) => id === pointId) + 1;
-    currentMessage.shapes[shape].splice(splitPointIndex, 0, newPointId);
+      message.shapes[shape].findIndex((id) => id === pointId) + 1;
+    message.shapes[shape].splice(splitPointIndex, 0, newPointId);
   });
 }

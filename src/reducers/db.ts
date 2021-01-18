@@ -2,7 +2,7 @@ import produce from "immer";
 
 import { Action, Actions } from "../actions/constants";
 
-import { LoadDatabaseParams } from "../actions/dbActions";
+import { _LoadDatabaseParams } from "../actions/dbActions";
 
 import { USHINBase } from "ushin-db";
 
@@ -22,7 +22,7 @@ export const dbReducer = (state = initialDBState, action: Action): DBState => {
     case Actions.loadDatabase:
       newState = handleLoadDatabase(
         state,
-        action as Action<LoadDatabaseParams>
+        action as Action<_LoadDatabaseParams>
       );
       break;
   }
@@ -31,7 +31,7 @@ export const dbReducer = (state = initialDBState, action: Action): DBState => {
 
 function handleLoadDatabase(
   state: DBState,
-  action: Action<LoadDatabaseParams>
+  action: Action<_LoadDatabaseParams>
 ) {
   return produce(state, (draft) => {
     draft.db = action.params.db;

@@ -17,131 +17,23 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React from "react";
-import styled from "styled-components";
-import { connect } from "react-redux";
+import { Route, Switch } from "react-router-dom";
 
-import { AppState } from "./reducers";
-import { togglePanel, PanelParams } from "./actions/panelsActions";
-import { PanelsState } from "./reducers/panels";
+import { SemanticScreen } from "./components/SemanticScreen";
 
-import SemanticScreen from "./components/SemanticScreen";
-import PanelButton from "./components/PanelButton";
-import ParkingRegion from "./components/ParkingRegion";
-import RightPanelContents from "./components/RightPanelContents";
+const darkMode = true;
+const App = () => (
+  <Switch>
+    <Route path="/u/:authorId/m/:messageId">
+      <SemanticScreen darkMode={darkMode} />
+    </Route>
+    <Route path="/u/:authorId/d/:messageId">
+      <SemanticScreen isDraft={true} darkMode={darkMode} />
+    </Route>
+    <Route path="/">
+      <div>You shouldn't see this page</div>
+    </Route>
+  </Switch>
+);
 
-const App = (props: {
-  togglePanel: (params: PanelParams) => void;
-  panels: PanelsState;
-}) => {
-  const darkMode = true;
-
-  const onDragOverBottomPanel = () => {
-    if (!props.panels.bottom) {
-      props.togglePanel({ location: "bottom" });
-    }
-  };
-
-  return (
-    <AppStyles darkMode={darkMode}>
-      <MainPanel>
-        <SemscreenPanel>
-          <SemanticScreen darkMode={darkMode || false} />
-          <PanelButton
-            side={"bottom"}
-            onClick={() => {
-              props.togglePanel({ location: "bottom" });
-            }}
-            onDragOver={onDragOverBottomPanel}
-            darkMode={darkMode}
-          />
-          <PanelButton
-            side={"right"}
-            onClick={() => {
-              props.togglePanel({ location: "right" });
-            }}
-            darkMode={darkMode}
-          />
-        </SemscreenPanel>
-        {props.panels.bottom && (
-          <BottomPanel>
-            <ParkingRegion darkMode={darkMode} />
-          </BottomPanel>
-        )}
-      </MainPanel>
-      {props.panels.right && (
-        <RightPanel>
-          <RightPanelContents darkMode={darkMode} />
-        </RightPanel>
-      )}
-    </AppStyles>
-  );
-};
-
-const AppStyles = styled.div<{ darkMode: boolean }>`
-  display: flex;
-  height: 100%;
-
-  ${(props) =>
-    props.darkMode
-      ? `
-    --thumbBG: #7e7e7e;
-    --scrollbarBG: black;
-    background-color: black;
-    color: white;
-  `
-      : `
-    --thumbBG: #696969;
-    --scrollbarBG: white;
-    background-color: white;
-    color: black;
-  `}
-
-  *>div {
-    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
-    scrollbar-width: thin;
-  }
-  * > div ::-webkit-scrollbar {
-    width: 11px;
-  }
-  * > div ::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG);
-    border: 3px solid var(--scrollbarBG);
-  }
-`;
-
-const MainPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-`;
-
-const SemscreenPanel = styled.div`
-  position: relative;
-  height: 100%;
-  overflow: hidden;
-`;
-
-const BottomPanel = styled.div`
-  margin: 3px 0;
-`;
-
-const RightPanel = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 16rem;
-  overflow: hidden;
-`;
-
-const mapStateToProps = (state: AppState) => {
-  return {
-    panels: state.panels,
-  };
-};
-
-const mapActionsToProps = {
-  togglePanel,
-};
-
-export default connect(mapStateToProps, mapActionsToProps)(App);
+export default App;

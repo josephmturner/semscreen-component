@@ -54,9 +54,11 @@ export function getReferencedPointId(
 export function getReferenceData(
   pointId: string,
   appState: AppState
-): PointReferenceI | null {
+): PointReferenceI | undefined {
   const point = getPointById(pointId, appState);
-  return isReference(point) ? point : null;
+  if (isReference(point)) {
+    return point;
+  }
 }
 
 function getOriginalReferenceLog(point: PointReferenceI): ReferenceLog {

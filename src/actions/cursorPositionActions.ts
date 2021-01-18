@@ -25,12 +25,13 @@ import { AppState } from "../reducers";
 
 export interface CursorPositionParams {
   point: PointI;
+  messageId: string;
   index: number;
   moveTo: "endOfPrevPoint" | "beginningOfNextPoint";
 }
 
-export interface _CursorPositionParams
-  extends Omit<CursorPositionParams, "point" | "index"> {
+export interface _CursorPositionParams {
+  moveTo: "endOfPrevPoint" | "beginningOfNextPoint";
   nextId: string;
   prevPoint?: PointI;
 }
@@ -41,23 +42,22 @@ export const setCursorPosition = (
   return (dispatch, getState) => {
     const state = getState();
 
-    const { point, index, moveTo } = params;
+    const { point, messageId, index, moveTo } = params;
     const { shape } = point;
 
-    const currentMessageId = state.semanticScreen.currentMessage as string;
-    const currentMessage = getMessageById(currentMessageId, state);
-    const currentPointIds = currentMessage.shapes[shape];
+    const message = getMessageById(messageId, state);
+    const pointIds = message.shapes[shape];
 
     // Don't try to move the cursor to a point which doesn't exist
     if (
       (moveTo === "endOfPrevPoint" && index === 0) ||
-      (moveTo === "beginningOfNextPoint" && index === currentPointIds.length)
+      (moveTo === "beginningOfNextPoint" && index === pointIds.length)
     ) {
       return;
     }
 
-    const nextId = currentPointIds[index + 1];
-    const prevId = currentPointIds[index - 1];
+    const nextId = pointIds[index + 1];
+    const prevId = pointIds[index - 1];
     let prevPoint: PointI | undefined;
     if (moveTo === "endOfPrevPoint") {
       prevPoint = getPointIfReference(prevId, state);

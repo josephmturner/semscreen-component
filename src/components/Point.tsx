@@ -34,7 +34,7 @@ import { useTextareaIndent } from "../hooks/useTextareaIndent";
 interface Props {
   id: string;
   displayPoint: PointI;
-  referenceData: PointReferenceI | null;
+  referenceData?: PointReferenceI;
   isMainPoint: boolean;
   isSelected: boolean;
   setIsHovered?: (isHovered: boolean) => void;

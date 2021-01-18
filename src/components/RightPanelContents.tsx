@@ -23,6 +23,7 @@ import { connect } from "react-redux";
 import { AppState } from "../reducers";
 
 import MessageListItem from "./MessageListItem";
+import { SemanticScreenRouteParams } from "../dataModels/dataModels";
 import { blackOrWhite } from "../dataModels/pointUtils";
 import Banner from "./Banner";
 import {
@@ -31,6 +32,7 @@ import {
 } from "../actions/searchActions";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   darkMode?: boolean;
 }
 
@@ -90,11 +92,12 @@ const RightPanelContents = (props: AllProps) => {
       <ResultsContainer>
         {results.map((_id: string, i: number) => (
           <MessageListItem
-            key={_id}
+            params={props.params}
             type="publishedMessage"
             messageId={_id}
             index={i}
             darkMode={props.darkMode}
+            key={_id}
           />
         ))}
       </ResultsContainer>

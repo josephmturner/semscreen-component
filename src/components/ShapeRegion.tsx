@@ -21,7 +21,10 @@ import RegionPoint from "./RegionPoint";
 import NewPointButton from "./NewPointButton";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import RegionHeader from "./RegionHeader";
-import { PointShape } from "../dataModels/dataModels";
+import {
+  PointShape,
+  SemanticScreenRouteParams,
+} from "../dataModels/dataModels";
 import { getMessageById } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -33,6 +36,7 @@ import {
   draftPointCreate,
   DraftPointCreateParams,
   pointsMoveWithinMessage,
+  PointsMoveWithinMessageParams,
 } from "../actions/draftPointsActions";
 import {
   setExpandedRegion,
@@ -47,6 +51,7 @@ import {
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   shape: PointShape;
   darkMode?: boolean;
 }
@@ -56,7 +61,7 @@ interface AllProps extends OwnProps {
   isDraft: boolean;
   isExpanded: boolean;
   draftPointCreate: (params: DraftPointCreateParams) => void;
-  pointsMoveWithinMessage: () => void;
+  pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
   selectedPoints: string[];
   togglePoint: (params: TogglePointParams) => void;
@@ -67,6 +72,7 @@ interface AllProps extends OwnProps {
 
 const ShapeRegion = (props: AllProps) => {
   const { shape, pointIds } = props;
+  const { messageId } = props.params;
 
   //TODO: Reuse logic between regionHeaderRef and expandRef
   //definitions
@@ -85,7 +91,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage();
+        props.pointsMoveWithinMessage({ messageId });
       }
     },
   });
@@ -108,7 +114,7 @@ const ShapeRegion = (props: AllProps) => {
     },
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage();
+        props.pointsMoveWithinMessage({ messageId });
       }
     },
   });
@@ -126,7 +132,7 @@ const ShapeRegion = (props: AllProps) => {
     accept: ItemTypes.POINT,
     drop: () => {
       if (props.isDraft) {
-        props.pointsMoveWithinMessage();
+        props.pointsMoveWithinMessage({ messageId });
       }
     },
   });
@@ -137,6 +143,7 @@ const ShapeRegion = (props: AllProps) => {
         content: "",
         shape,
       },
+      messageId,
       index: pointIds.length,
     });
   };
@@ -149,6 +156,7 @@ const ShapeRegion = (props: AllProps) => {
 
   const listItems = pointIds.map((id: string, i: number) => (
     <RegionPoint
+      params={props.params}
       key={id}
       pointId={id}
       index={i}
@@ -227,8 +235,8 @@ const HoverLine = styled.div<{ darkMode?: boolean }>`
 `;
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
-  const currentMessageId = state.semanticScreen.currentMessage as string;
-  const isDraft = state.draftMessages.allIds.includes(currentMessageId);
+  const { messageId } = ownProps.params;
+  const isDraft = state.draftMessages.allIds.includes(messageId);
 
   let hoverIndex;
   if (
@@ -240,12 +248,12 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     //TODO: add shape matches region above
     hoverIndex = state.drag.context.index;
 
-  const currentMessage = getMessageById(currentMessageId, state);
+  const message = getMessageById(messageId, state);
 
   const isExpanded = state.expandedRegion.region === ownProps.shape;
 
   return {
-    pointIds: currentMessage.shapes[ownProps.shape],
+    pointIds: message.shapes[ownProps.shape],
     selectedPoints: state.selectedPoints.pointIds,
     hoverIndex,
     isDraft,

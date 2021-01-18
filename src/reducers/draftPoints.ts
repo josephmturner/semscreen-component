@@ -22,12 +22,13 @@ import { PointI, PointReferenceI } from "../dataModels/dataModels";
 import {
   _DraftPointCreateParams,
   DraftPointUpdateParams,
-  DraftPointReferencesCreate,
   _PointsMoveWithinMessageParams,
-  DraftPointsDeleteParams,
+  _PointsMoveToMessageParams,
+  _DraftPointsDeleteParams,
   _CombinePointsParams,
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
+import { _DraftMessageDeleteParams } from "../actions/draftMessagesActions";
 
 export interface DraftPointsState {
   byId: {
@@ -65,16 +66,22 @@ export const draftPointsReducer = (
         action as Action<_PointsMoveWithinMessageParams>
       );
       break;
-    case Actions.draftPointReferencesCreate:
-      newState = handleDraftPointReferencesCreate(
+    case Actions.pointsMoveToMessage:
+      newState = handlePointsMoveToMessage(
         state,
-        action as Action<DraftPointReferencesCreate>
+        action as Action<_PointsMoveToMessageParams>
       );
       break;
     case Actions.draftPointsDelete:
       newState = handleDraftPointsDelete(
         state,
-        action as Action<DraftPointsDeleteParams>
+        action as Action<_DraftPointsDeleteParams>
+      );
+      break;
+    case Actions.draftMessageDelete:
+      newState = handleDraftMessageDelete(
+        state,
+        action as Action<_DraftMessageDeleteParams>
       );
       break;
     case Actions.combinePoints:
@@ -131,21 +138,36 @@ function handlePointsMoveWithinMessage(
   });
 }
 
-function handleDraftPointReferencesCreate(
+function handlePointsMoveToMessage(
   state: DraftPointsState,
-  action: Action<DraftPointReferencesCreate>
+  action: Action<_PointsMoveToMessageParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
-    for (const point of action.params.points) {
-      draft.byId[point._id] = point;
-      draft.allIds.push(point._id);
+    const { newDraftPoints } = action.params;
+    if (newDraftPoints) {
+      for (const point of newDraftPoints) {
+        draft.byId[point._id] = point;
+        draft.allIds.push(point._id);
+      }
+    }
+  });
+}
+
+function handleDraftMessageDelete(
+  state: DraftPointsState,
+  action: Action<_DraftMessageDeleteParams>
+): DraftPointsState {
+  return produce(state, (draft) => {
+    for (const id of action.params.pointIds) {
+      delete draft.byId[id];
+      draft.allIds = draft.allIds.filter((pId) => pId !== id);
     }
   });
 }
 
 function handleDraftPointsDelete(
   state: DraftPointsState,
-  action: Action<DraftPointsDeleteParams>
+  action: Action<_DraftPointsDeleteParams>
 ): DraftPointsState {
   return produce(state, (draft) => {
     action.params.pointIds.forEach((id) => {

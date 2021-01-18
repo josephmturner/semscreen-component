@@ -55,9 +55,11 @@ const handlePopulateMessageAndPoints = (
   action: Action<_PopulateMessageAndPointsParams>
 ): MessagesState => {
   return produce(state, (draft) => {
-    action.params.messages.forEach((m) => {
-      draft.byId[m._id] = m;
-      draft.allIds.push(m._id);
-    });
+    if (action.params.messages) {
+      for (const message of action.params.messages) {
+        draft.byId[message._id] = message;
+        draft.allIds.push(message._id);
+      }
+    }
   });
 };

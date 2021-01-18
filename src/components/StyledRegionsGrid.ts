@@ -24,7 +24,7 @@ interface Props {
   BGColor: string;
 }
 
-const StyledSemanticScreen = styled.div<Props>`
+const StyledRegionsGrid = styled.div<Props>`
   height: 100%;
   width: 100%;
   position: relative;
@@ -102,4 +102,4 @@ const StyledSemanticScreen = styled.div<Props>`
   `}
 `;
 
-export default StyledSemanticScreen;
+export default StyledRegionsGrid;

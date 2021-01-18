@@ -25,10 +25,10 @@ import {
 } from "../actions/selectPointActions";
 import {
   _CombinePointsParams,
-  DraftPointsDeleteParams,
+  _DraftPointsDeleteParams,
   _PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
-import { SetCurrentMessageParams } from "../actions/semanticScreenActions";
+import { _SetCurrentMessageParams } from "../actions/selectPointActions";
 
 export interface SelectedPointsState {
   pointIds: string[];
@@ -56,7 +56,7 @@ export const selectedPointsReducer = (
     case Actions.draftPointsDelete:
       newState = handleDraftPointsDelete(
         state,
-        action as Action<DraftPointsDeleteParams>
+        action as Action<_DraftPointsDeleteParams>
       );
       break;
     case Actions.combinePoints:
@@ -68,7 +68,7 @@ export const selectedPointsReducer = (
     case Actions.setCurrentMessage:
       newState = handleSetCurrentMessage(
         state,
-        action as Action<SetCurrentMessageParams>
+        action as Action<_SetCurrentMessageParams>
       );
       break;
     case Actions.pointsMoveToMessage:
@@ -107,11 +107,11 @@ function handleTogglePoint(
 
 function handleDraftPointsDelete(
   state: SelectedPointsState,
-  action: Action<DraftPointsDeleteParams>
+  action: Action<_DraftPointsDeleteParams>
 ): SelectedPointsState {
   return produce(state, (draft) => {
-    draft.pointIds = draft.pointIds.filter((id) =>
-      action.params.pointIds.includes(id)
+    draft.pointIds = draft.pointIds.filter(
+      (id) => !action.params.pointIds.includes(id)
     );
   });
 }
@@ -129,12 +129,11 @@ function handleCombinePoints(
 
 function handleSetCurrentMessage(
   state: SelectedPointsState,
-  action: Action<SetCurrentMessageParams>
+  action: Action<_SetCurrentMessageParams>
 ): SelectedPointsState {
-  const pointIds = action.params.selectedPointIds ?? [];
-  return {
-    pointIds,
-  };
+  return produce(state, (draft) => {
+    draft.pointIds = [];
+  });
 }
 
 function handlePointsMoveToMessage(
@@ -142,7 +141,7 @@ function handlePointsMoveToMessage(
   action: Action<_PointsMoveToMessageParams>
 ): SelectedPointsState {
   return produce(state, (draft) => {
-    const { newPoints } = action.params;
-    draft.pointIds = newPoints.map((p) => p._id);
+    const { movePoints } = action.params;
+    draft.pointIds = movePoints.map((p) => p._id);
   });
 }

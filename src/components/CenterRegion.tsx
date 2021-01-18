@@ -21,7 +21,11 @@ import MainPoint from "./MainPoint";
 import { MainPointWrapper } from "./StyledPoint";
 import { StyledRegion, InnerContainer } from "./StyledRegion";
 import SevenShapes from "./SevenShapes";
-import { PointShape, RegionI } from "../dataModels/dataModels";
+import {
+  PointShape,
+  RegionI,
+  SemanticScreenRouteParams,
+} from "../dataModels/dataModels";
 import { getMessageById } from "../dataModels/pointUtils";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DraggablePointType } from "../constants/React-Dnd";
@@ -46,6 +50,7 @@ import {
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   region: RegionI;
   darkMode: boolean;
 }
@@ -67,6 +72,7 @@ interface AllProps extends OwnProps {
 //Center region
 const CenterRegion = (props: AllProps) => {
   const { region, isExpanded, pointId } = props;
+  const { messageId } = props.params;
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
@@ -87,7 +93,7 @@ const CenterRegion = (props: AllProps) => {
     drop: () => {
       if (props.isDraft) {
         // Set the first selected point as the new main point
-        props.setMain({});
+        props.setMain({ messageId });
       }
     },
   });
@@ -98,6 +104,7 @@ const CenterRegion = (props: AllProps) => {
         content: "",
         shape,
       },
+      messageId,
       index: 0,
       main: true,
     });
@@ -113,6 +120,7 @@ const CenterRegion = (props: AllProps) => {
         {pointId && (
           <MainPointWrapper>
             <MainPoint
+              params={props.params}
               pointId={pointId}
               isExpanded={props.isExpanded}
               isSelected={props.selectedPoints.includes(pointId)}
@@ -131,17 +139,15 @@ const CenterRegion = (props: AllProps) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => {
-  const currentMessageId = state.semanticScreen.currentMessage as string;
-  const currentMessage = getMessageById(currentMessageId, state);
-
-  const isExpanded = state.expandedRegion.region === "center";
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const { messageId } = ownProps.params;
+  const message = getMessageById(messageId, state);
 
   return {
-    pointId: currentMessage.main,
+    pointId: message.main,
     selectedPoints: state.selectedPoints.pointIds,
-    isDraft: state.draftMessages.allIds.includes(currentMessageId),
-    isExpanded,
+    isDraft: state.draftMessages.allIds.includes(messageId),
+    isExpanded: state.expandedRegion.region === "center",
   };
 };
 

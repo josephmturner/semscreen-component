@@ -119,4 +119,9 @@ export interface UserIdentity extends AuthorI {
   _rev: string;
 }
 
+export interface SemanticScreenRouteParams {
+  authorId: string;
+  messageId: string;
+}
+
 //TODO: validate that main points are contained in the points array

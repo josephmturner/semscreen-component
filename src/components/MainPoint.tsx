@@ -16,7 +16,11 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useRef, useState } from "react";
-import { PointI, PointReferenceI } from "../dataModels/dataModels";
+import {
+  PointI,
+  PointReferenceI,
+  SemanticScreenRouteParams,
+} from "../dataModels/dataModels";
 import {
   getPointIfReference,
   getReferenceData,
@@ -40,12 +44,9 @@ import {
   togglePoint,
   TogglePointParams,
 } from "../actions/selectPointActions";
-import {
-  setCurrentMessage,
-  SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
 
 interface OwnProps {
+  params: SemanticScreenRouteParams;
   pointId: string;
   isExpanded: boolean;
   isSelected: boolean;
@@ -54,16 +55,17 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   point: PointI;
-  referenceData: PointReferenceI | null;
+  referenceData?: PointReferenceI;
   isDraft: boolean;
   draftPointUpdate: (params: DraftPointUpdateParams) => void;
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
 }
 
 const MainPoint = (props: AllProps) => {
+  const { messageId } = props.params;
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!props.isDraft) {
       return;
@@ -95,7 +97,11 @@ const MainPoint = (props: AllProps) => {
 
   const handleBlur = () => {
     if (!props.point.content)
-      props.draftPointsDelete({ pointIds: [props.pointId] });
+      props.draftPointsDelete({
+        pointIds: [props.pointId],
+        messageId,
+        deleteSelectedPoints: false,
+      });
   };
 
   const { drag, preview } = useDragPoint(props.pointId, 0);
@@ -131,6 +137,7 @@ const MainPoint = (props: AllProps) => {
       >
         {renderPointHoverOptions && (
           <PointHoverOptions
+            params={props.params}
             type={props.isDraft ? "draftPoint" : "publishedPoint"}
             id={props.pointId}
             darkMode={props.darkMode}
@@ -144,12 +151,12 @@ const MainPoint = (props: AllProps) => {
 
 const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const referenceData = getReferenceData(ownProps.pointId, state);
-  const currentMessageId = state.semanticScreen.currentMessage as string;
+  const { messageId } = ownProps.params;
 
   return {
     point: getPointIfReference(ownProps.pointId, state),
     referenceData,
-    isDraft: state.draftMessages.allIds.includes(currentMessageId),
+    isDraft: state.draftMessages.allIds.includes(messageId),
   };
 };
 
@@ -158,7 +165,6 @@ const mapActionsToProps = {
   draftPointsDelete,
   togglePoint,
   setSelectedPoints,
-  setCurrentMessage,
 };
 
 export default connect(mapStateToProps, mapActionsToProps)(MainPoint);

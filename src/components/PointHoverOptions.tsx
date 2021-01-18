@@ -18,92 +18,106 @@
 */
 import React from "react";
 import styled from "styled-components";
+import { useHistory } from "react-router-dom";
 
 import PublishButton from "./PublishButton";
 import {
   blackOrWhite,
   getReferenceData,
+  getOriginalAuthorId,
   getOriginalMessageId,
-  getOriginalPointId,
 } from "../dataModels/pointUtils";
 import {
   PointHoverOptionsType,
   PointReferenceI,
+  SemanticScreenRouteParams,
 } from "../dataModels/dataModels";
 
-import { useDispatch, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import { AppState } from "../reducers";
 import {
   pointsMoveToMessage,
+  PointsMoveToMessageParams,
   draftPointsDelete,
+  DraftPointsDeleteParams,
 } from "../actions/draftPointsActions";
-import { draftMessageDelete, setMain } from "../actions/draftMessagesActions";
-import { viewOriginalMessage } from "../actions/semanticScreenActions";
+import {
+  draftMessageDelete,
+  DraftMessageDeleteParams,
+  setMain,
+  SetMainParams,
+} from "../actions/draftMessagesActions";
+import {
+  setSelectedPoints,
+  SetSelectedPointsParams,
+  viewOriginalMessage,
+  ViewOriginalMessageParams,
+} from "../actions/selectPointActions";
 
-interface Props {
+interface OwnProps {
+  params: SemanticScreenRouteParams;
   type: PointHoverOptionsType;
   id: string;
   darkMode?: boolean;
   isSelected?: boolean;
 }
 
-const PointHoverOptions = (props: Props) => {
-  const dispatch = useDispatch();
+interface AllProps extends OwnProps {
+  draftMessageDelete: (params: DraftMessageDeleteParams) => void;
+  draftPointsDelete: (params: DraftPointsDeleteParams) => void;
+  pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
+  setMain: (params: SetMainParams) => void;
+  setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  viewOriginalMessage: (params: ViewOriginalMessageParams) => void;
+  pointsAreSelected: boolean;
+  referenceData?: PointReferenceI;
+}
+
+const PointHoverOptions = (props: AllProps) => {
+  const history = useHistory();
 
   let trashDispatch: any;
   switch (props.type) {
     case "draftPoint":
       trashDispatch = () =>
-        dispatch(
-          draftPointsDelete({
-            pointIds: [props.id],
-            deleteSelectedPoints: true,
-          })
-        );
+        props.draftPointsDelete({
+          pointIds: [props.id],
+          messageId: props.params.messageId,
+          deleteSelectedPoints: true,
+        });
       break;
     case "draftMessage":
       trashDispatch = () =>
-        dispatch(draftMessageDelete({ messageId: props.id }));
+        props.draftMessageDelete({
+          messageId: props.id,
+          currentMessageId: props.params.messageId,
+          history,
+        });
       break;
   }
 
-  const pointsAreSelected = useSelector(
-    (state: AppState) => state.selectedPoints.pointIds[0] !== undefined
-  );
-
-  const currentMessageIsDraft = useSelector((state: AppState) => {
-    const currentMessageId = state.semanticScreen.currentMessage as string;
-    return state.draftMessages.allIds.includes(currentMessageId);
-  });
-
-  const referenceData = useSelector((state: AppState) => {
-    return (
-      (props.type === "publishedPoint" || props.type === "draftPoint") &&
-      getReferenceData(props.id, state)
-    );
-  });
-
-  // Type assertion is okay since ViewOriginalMessageButton only
-  // appear on top of quoted points
+  let originalAuthorId: string;
   let originalMessageId: string;
-  if (referenceData) {
-    originalMessageId = getOriginalMessageId(referenceData as PointReferenceI);
+  if (props.referenceData) {
+    // Type assertion is okay since ViewOriginalMessageButton only
+    // appears on top of quoted points
+    originalAuthorId = getOriginalAuthorId(
+      props.referenceData as PointReferenceI
+    );
+    originalMessageId = getOriginalMessageId(
+      props.referenceData as PointReferenceI
+    );
+  }
+
+  function handleViewOriginalMessageButtonClick(e: React.MouseEvent) {
+    history.push(`/u/${originalAuthorId}/m/${originalMessageId}`);
+    props.viewOriginalMessage({ pointId: props.id });
+    e.stopPropagation();
   }
 
   const ViewOriginalMessageButton = () => (
     <ButtonSvg
-      onClick={(e: React.MouseEvent) => {
-        dispatch(
-          viewOriginalMessage({
-            messageId: originalMessageId,
-            // Type assertion is okay here for the same reason
-            selectedPointIds: [
-              getOriginalPointId(referenceData as PointReferenceI),
-            ],
-          })
-        );
-        e.stopPropagation();
-      }}
+      onClick={handleViewOriginalMessageButtonClick}
       darkMode={props.darkMode}
       isSelected={props.isSelected}
       viewBox="0 0 16 16"
@@ -118,8 +132,11 @@ const PointHoverOptions = (props: Props) => {
       darkMode={props.darkMode}
       isSelected={props.isSelected}
       onClick={(e: React.MouseEvent) => {
-        dispatch(setMain({ newMainId: props.id }));
         e.stopPropagation();
+        props.setMain({
+          newMainId: props.id,
+          messageId: props.params.messageId,
+        });
       }}
       title="Set main point"
     >
@@ -130,18 +147,18 @@ const PointHoverOptions = (props: Props) => {
   const PointsMoveButton = () => (
     <ButtonSvg
       onClick={(e: React.MouseEvent) => {
-        dispatch(pointsMoveToMessage({ newMessageId: props.id }));
+        props.pointsMoveToMessage({
+          moveToMessageId: props.id,
+          moveFromMessageId: props.params.messageId,
+          history,
+        });
         e.stopPropagation();
       }}
       darkMode={props.darkMode}
       isSelected={props.isSelected}
       viewBox="0 0 16 16"
     >
-      <title>
-        {currentMessageIsDraft
-          ? "Move selected points"
-          : "Copy selected points"}
-      </title>
+      <title>"Put selected points"</title>
       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
     </ButtonSvg>
   );
@@ -167,11 +184,11 @@ const PointHoverOptions = (props: Props) => {
   const HoverButtons = () => {
     switch (props.type) {
       case "publishedPoint":
-        return <>{referenceData && <ViewOriginalMessageButton />}</>;
+        return <>{props.referenceData && <ViewOriginalMessageButton />}</>;
       case "draftPoint":
         return (
           <>
-            {referenceData && <ViewOriginalMessageButton />}
+            {props.referenceData && <ViewOriginalMessageButton />}
             <MainPointButton />
             <TrashButton />
           </>
@@ -179,7 +196,7 @@ const PointHoverOptions = (props: Props) => {
       case "draftMessage":
         return (
           <>
-            {pointsAreSelected && <PointsMoveButton />}
+            {props.pointsAreSelected && <PointsMoveButton />}
             <PublishButton messageId={props.id} darkMode={props.darkMode} />
             <TrashButton />
           </>
@@ -279,4 +296,27 @@ const RedButtonSvg = styled.svg<StyledProps>`
   }
 `;
 
-export default PointHoverOptions;
+const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
+  const pointsAreSelected = state.selectedPoints.pointIds[0] !== undefined;
+
+  let referenceData;
+  if (ownProps.type === "publishedPoint" || ownProps.type === "draftPoint") {
+    referenceData = getReferenceData(ownProps.id, state);
+  }
+
+  return {
+    pointsAreSelected,
+    referenceData,
+  };
+};
+
+const mapActionsToProps = {
+  draftMessageDelete,
+  draftPointsDelete,
+  pointsMoveToMessage,
+  setMain,
+  setSelectedPoints,
+  viewOriginalMessage,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(PointHoverOptions);

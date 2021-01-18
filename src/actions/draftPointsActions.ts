@@ -20,6 +20,7 @@ import { Action, Actions } from "./constants";
 import { v4 as uuidv4 } from "uuid";
 import { ThunkAction } from "redux-thunk";
 
+import { History } from "history";
 import { AppState } from "../reducers";
 import {
   isPointShape,
@@ -42,27 +43,16 @@ import {
 export interface DraftPointCreateParams {
   point: PointNoIdI;
   index: number;
+  messageId: string;
   main?: boolean;
+}
+
+export interface _DraftPointCreateParams extends DraftPointCreateParams {
+  newPointId: string;
 }
 
 export const draftPointCreate = (
   params: DraftPointCreateParams
-): ThunkAction<void, AppState, unknown, Action<_DraftPointCreateParams>> => {
-  return (dispatch, getState) => {
-    const appState = getState();
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-    const newPointId = uuidv4();
-    dispatch(_draftPointCreate({ ...params, newPointId, currentMessageId }));
-  };
-};
-
-export interface _DraftPointCreateParams extends DraftPointCreateParams {
-  newPointId: string;
-  currentMessageId: string;
-}
-
-export const _draftPointCreate = (
-  params: _DraftPointCreateParams
 ): Action<_DraftPointCreateParams> => {
   const newPointId = uuidv4();
   return {
@@ -87,7 +77,13 @@ export const draftPointUpdate = (
   };
 };
 
-export const pointsMoveWithinMessage = (): ThunkAction<
+export interface PointsMoveWithinMessageParams {
+  messageId: string;
+}
+
+export const pointsMoveWithinMessage = (
+  params: PointsMoveWithinMessageParams
+): ThunkAction<
   void,
   AppState,
   unknown,
@@ -115,11 +111,9 @@ export const pointsMoveWithinMessage = (): ThunkAction<
       (p) => !getReferenceData(p, appState)
     );
 
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-
     dispatch(
       _pointsMoveWithinMessage({
-        currentMessageId,
+        ...params,
         pointsToMoveIds,
         pointIdsExcludingReferencePoints,
         region,
@@ -130,7 +124,7 @@ export const pointsMoveWithinMessage = (): ThunkAction<
 };
 
 export interface _PointsMoveWithinMessageParams {
-  currentMessageId: string;
+  messageId: string;
   pointsToMoveIds: string[];
   pointIdsExcludingReferencePoints: string[];
   region: PointShape;
@@ -171,93 +165,80 @@ function createReferenceTo(
 }
 
 export interface PointsMoveToMessageParams {
-  newMessageId: string;
-  oldMessageId?: string;
+  moveToMessageId: string;
+  moveFromMessageId: string;
+  history: History;
 }
 
 export const pointsMoveToMessage = (
   params: PointsMoveToMessageParams
-): ThunkAction<
-  void,
-  AppState,
-  unknown,
-  Action<_PointsMoveToMessageParams | DraftPointReferencesCreate>
-> => {
+): ThunkAction<void, AppState, unknown, Action<_PointsMoveToMessageParams>> => {
   return (dispatch, getState) => {
     const appState: AppState = getState();
-
-    const { newMessageId } = params;
-    const oldMessageId =
-      params.oldMessageId ?? (appState.semanticScreen.currentMessage as string);
+    const { moveToMessageId, moveFromMessageId, history } = params;
 
     //Don't move points to the same message
-    if (oldMessageId === newMessageId) {
+    if (moveFromMessageId === moveToMessageId) {
       return;
     }
 
-    // If the current message is a draft, cut the selected points
-    // from the current message and paste them into the new one
-    let cutFromMessageId: string | undefined = oldMessageId;
-    let newPoints: (
-      | PointReferenceWithShape
-      | PointI
-    )[] = appState.selectedPoints.pointIds.map((id) => {
-      const point = getPointById(id, appState);
+    // Move points in draftMessageReducer
+    let movePoints: (PointReferenceWithShape | PointI)[] = [];
 
-      // It is necessary to pass the shape along with each reference point
-      // so the draftMessageReducer knows where in the shapes object to put it
-      if (isReference(point)) {
-        const shape = getOriginalShape(point, appState);
+    // Create these reference points in draftPointsReducer
+    let newDraftPoints: PointReferenceI[] = [];
 
-        return { ...point, shape };
-      }
+    // Remove points from original message?
+    let cutFromMessageId: string | undefined;
 
-      return point;
-    });
+    // If the old message is a draft, cut the selected points
+    // from the old message and paste them into the new one
+    if (appState.draftMessages.allIds.includes(moveFromMessageId)) {
+      cutFromMessageId = moveFromMessageId;
+      movePoints = appState.selectedPoints.pointIds.map((id) => {
+        const point = getPointById(id, appState);
 
-    // If the currentMessage is not a draft, create reference points
-    // from the selected points (do not cut from the original message)
-    if (!appState.draftMessages.allIds.includes(oldMessageId)) {
-      cutFromMessageId = undefined;
-      const _newPoints: PointReferenceI[] = [];
-      newPoints = appState.selectedPoints.pointIds.map((pointId) => {
-        const point = createReferenceTo(pointId, oldMessageId, appState);
-        _newPoints.push(point);
+        // It is necessary to pass the shape along with each reference point
+        // so the draftMessageReducer knows where in the shapes object to put it
+        if (isReference(point)) {
+          const shape = getOriginalShape(point, appState);
+          return { ...point, shape };
+        }
 
-        const shape = getOriginalShape(point, appState);
-        return { ...point, shape };
+        return point;
       });
-      // Create the new points (convert them to the correct type)
+    } else {
+      // If the old message is not a draft, create reference points
+      // from the selected points (do not remove points from the original message)
+      if (!appState.draftMessages.allIds.includes(moveFromMessageId)) {
+        movePoints = appState.selectedPoints.pointIds.map((pointId) => {
+          const point = createReferenceTo(pointId, moveFromMessageId, appState);
+          newDraftPoints.push(point);
+          const shape = getOriginalShape(point, appState);
 
-      dispatch(draftPointReferencesCreate({ points: _newPoints }));
+          return { ...point, shape };
+        });
+      }
     }
+
+    const currentIdentity = appState.userIdentities.currentIdentity;
+    history.push(`/u/${currentIdentity}/d/${moveToMessageId}`);
 
     dispatch(
       _pointsMoveToMessage({
-        newMessageId,
-        oldMessageId,
-        newPoints,
+        moveToMessageId,
+        movePoints,
+        newDraftPoints,
         cutFromMessageId,
       })
     );
   };
 };
 
-export interface DraftPointReferencesCreate {
-  points: (PointI | PointReferenceI)[];
-}
-
-export const draftPointReferencesCreate = (
-  params: DraftPointReferencesCreate
-): Action<DraftPointReferencesCreate> => {
-  return {
-    type: Actions.draftPointReferencesCreate,
-    params,
-  };
-};
-
-export interface _PointsMoveToMessageParams extends PointsMoveToMessageParams {
-  newPoints: (PointI | PointReferenceWithShape)[];
+export interface _PointsMoveToMessageParams {
+  moveToMessageId: string;
+  movePoints: (PointI | PointReferenceWithShape)[];
+  newDraftPoints?: PointReferenceI[];
   cutFromMessageId?: string;
 }
 
@@ -272,8 +253,8 @@ export const _pointsMoveToMessage = (
 
 export interface DraftPointsDeleteParams {
   pointIds: string[];
-  messageId?: string;
-  deleteSelectedPoints?: boolean;
+  messageId: string;
+  deleteSelectedPoints: boolean;
 }
 
 export const draftPointsDelete = (
@@ -281,21 +262,21 @@ export const draftPointsDelete = (
 ): ThunkAction<void, AppState, unknown, Action<_DraftPointsDeleteParams>> => {
   return (dispatch, getState) => {
     const appState = getState();
-    const messageId =
-      params.messageId ?? (appState.semanticScreen.currentMessage as string);
 
-    let { pointIds, deleteSelectedPoints } = params;
+    let { pointIds, messageId, deleteSelectedPoints } = params;
     if (deleteSelectedPoints === true) {
       const selectedPoints = appState.selectedPoints.pointIds;
       pointIds = pointIds.concat(selectedPoints);
     }
 
-    dispatch(_draftPointsDelete({ pointIds, messageId, deleteSelectedPoints }));
+    dispatch(_draftPointsDelete({ pointIds, messageId }));
   };
 };
 
-export interface _DraftPointsDeleteParams extends DraftPointsDeleteParams {
+export interface _DraftPointsDeleteParams
+  extends Omit<DraftPointsDeleteParams, "deleteSelectedPoints"> {
   messageId: string;
+  pointIds: string[];
 }
 
 export const _draftPointsDelete = (
@@ -309,6 +290,7 @@ export const _draftPointsDelete = (
 
 export interface CombinePointsParams {
   shape: PointShape;
+  messageId: string;
   keepIndex: number;
   deleteIndex: number;
 }
@@ -318,16 +300,15 @@ export const combinePoints = (
 ): ThunkAction<void, AppState, unknown, Action<_CombinePointsParams>> => {
   return (dispatch, getState) => {
     const appState = getState();
-    const { shape, keepIndex, deleteIndex } = params;
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
-    const currentMessage = appState.draftMessages.byId[currentMessageId];
+    const { shape, messageId, keepIndex, deleteIndex } = params;
+    const message = appState.draftMessages.byId[messageId];
 
     const withinBounds = (index: number): boolean => {
-      return index >= 0 && index < currentMessage.shapes[shape].length;
+      return index >= 0 && index < message.shapes[shape].length;
     };
 
     const isQuoted = (index: number): boolean => {
-      const pointId = currentMessage.shapes[shape][index];
+      const pointId = message.shapes[shape][index];
       return !!getReferencedPointId(pointId, appState);
     };
 
@@ -342,16 +323,16 @@ export const combinePoints = (
       return;
     }
 
-    const pointToKeepId = currentMessage.shapes[shape][keepIndex];
+    const pointToKeepId = message.shapes[shape][keepIndex];
     const pointToKeep = getPointById(pointToKeepId, appState) as PointI;
-    const pointToDeleteId = currentMessage.shapes[shape][deleteIndex];
+    const pointToDeleteId = message.shapes[shape][deleteIndex];
 
     dispatch(
       _combinePoints({
         pointToKeepId,
         pointToKeep,
         pointToDeleteId,
-        currentMessageId,
+        messageId,
         ...params,
       })
     );
@@ -362,7 +343,7 @@ export interface _CombinePointsParams extends CombinePointsParams {
   pointToKeepId: string;
   pointToKeep: PointI;
   pointToDeleteId: string;
-  currentMessageId: string;
+  messageId: string;
 }
 
 export const _combinePoints = (
@@ -377,6 +358,7 @@ export const _combinePoints = (
 export interface SplitIntoTwoPointsParams {
   pointId: string;
   sliceIndex: number;
+  messageId: string;
 }
 
 export const splitIntoTwoPoints = (
@@ -389,17 +371,15 @@ export const splitIntoTwoPoints = (
       return;
     }
     const { shape } = point;
-    const currentMessageId = appState.semanticScreen.currentMessage as string;
+    const { messageId } = params;
     const newPointId = uuidv4();
-    dispatch(
-      _splitIntoTwoPoints({ ...params, newPointId, currentMessageId, shape })
-    );
+    dispatch(_splitIntoTwoPoints({ ...params, newPointId, messageId, shape }));
   };
 };
 
 export interface _SplitIntoTwoPointsParams extends SplitIntoTwoPointsParams {
   newPointId: string;
-  currentMessageId: string;
+  messageId: string;
   shape: PointShape;
 }
 

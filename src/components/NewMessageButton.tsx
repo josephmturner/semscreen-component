@@ -19,13 +19,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { AppState } from "../reducers";
 import {
-  setCurrentMessage,
-  SetCurrentMessageParams,
-} from "../actions/semanticScreenActions";
-import { draftMessageCreate } from "../actions/draftMessagesActions";
+  draftMessageCreate,
+  DraftMessageCreateParams,
+} from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
 
 import { useDrop } from "react-dnd";
@@ -39,20 +40,22 @@ interface OwnProps {
 
 interface AllProps extends OwnProps {
   isDragHovered: boolean;
-  setCurrentMessage: (params: SetCurrentMessageParams) => void;
-  draftMessageCreate: () => void;
+  draftMessageCreate: (params: DraftMessageCreateParams) => void;
   hoverOver: (params: HoverOverParams) => void;
 }
 
 const NewMessageButton = (props: AllProps) => {
+  const { messageId } = useParams();
+  const history = useHistory();
+
   const handleClick = () => {
-    props.draftMessageCreate();
+    props.draftMessageCreate({ oldMessageId: messageId, history });
   };
 
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      props.draftMessageCreate();
+      props.draftMessageCreate({ oldMessageId: messageId, history });
     },
     hover: () => {
       //When hovering over the NewMessageButton, drag.context will be set
@@ -163,7 +166,6 @@ const mapStateToProps = (state: AppState) => {
 };
 
 const mapActionsToProps = {
-  setCurrentMessage,
   draftMessageCreate,
   hoverOver,
 };
