@@ -20,6 +20,8 @@
     "animate-css-grid": "^1.4.3",
     "immer": ">=8.0.1",
     "level-js": "^5.0.2",
+    "pouchdb-adapter-leveldb-browser": "^7.0.0-prerelease",
+    "pouchdb-adapter-leveldb-core": "^7.2.2",
     "prettier": "^2.0.5",
     "randomcolor": "^0.6.2",
     "react": "^16.13.1",
