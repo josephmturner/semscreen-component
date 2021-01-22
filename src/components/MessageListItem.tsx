@@ -16,14 +16,14 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useState } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 
 import {
   AuthorI,
   PointI,
-  PointHoverOptionsType,
+  HoverOptionsType,
   PointReferenceI,
   SemanticScreenRouteParams,
 } from "../dataModels/dataModels";
@@ -34,8 +34,11 @@ import {
   isUserIdentity,
 } from "../dataModels/pointUtils";
 import Point from "./Point";
-import PointHoverOptions from "./PointHoverOptions";
+import HoverOptions from "./HoverOptions";
 import Banner from "./Banner";
+import { Hamburger } from "./Hamburger";
+
+import { useHoverOptions } from "../hooks/useHoverOptions";
 
 import { connect } from "react-redux";
 import { AppState } from "../reducers";
@@ -55,7 +58,7 @@ import { ItemTypes } from "../constants/React-Dnd";
 interface OwnProps {
   params: SemanticScreenRouteParams;
   messageId: string;
-  type: PointHoverOptionsType;
+  type: HoverOptionsType;
   index: number;
   darkMode?: boolean;
 }
@@ -106,17 +109,20 @@ const MessageListItem = (props: AllProps) => {
     });
   };
 
-  const [isHovered, setIsHovered] = useState(false);
+  const {
+    isHovered,
+    renderHamburger,
+    renderHoverOptions,
+    handleHamburgerMouseEnter,
+    handlePointMouseEnter,
+    handlePointMouseLeave,
+  } = useHoverOptions();
 
   return (
     <MessageWrapper
       author={props.author}
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
+      onMouseEnter={handlePointMouseEnter}
+      onMouseLeave={handlePointMouseLeave}
       onClick={handleClick}
       isHovered={isHovered || props.isDragHovered}
       darkMode={props.darkMode}
@@ -132,8 +138,14 @@ const MessageListItem = (props: AllProps) => {
         darkMode={props.darkMode}
         suppressAutoFocus={true}
       >
-        {isHovered && props.type !== "publishedMessage" && (
-          <PointHoverOptions
+        {renderHamburger && props.type !== "publishedMessage" && (
+          <Hamburger
+            onMouseEnter={handleHamburgerMouseEnter}
+            darkMode={props.darkMode}
+          />
+        )}
+        {renderHoverOptions && props.type !== "publishedMessage" && (
+          <HoverOptions
             params={props.params}
             type={props.type}
             id={props.messageId}
@@ -159,7 +171,7 @@ const MessageWrapper = styled.div<{
 }>`
   position: relative;
   border-radius: 3px;
-  padding: 3px 0 3px 3px;
+  padding: 3px 1rem 3px 3px;
 
   ${(props) =>
     `

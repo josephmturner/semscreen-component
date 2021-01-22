@@ -28,7 +28,7 @@ import {
   getOriginalMessageId,
 } from "../dataModels/pointUtils";
 import {
-  PointHoverOptionsType,
+  HoverOptionsType,
   PointReferenceI,
   SemanticScreenRouteParams,
 } from "../dataModels/dataModels";
@@ -48,15 +48,13 @@ import {
   SetMainParams,
 } from "../actions/draftMessagesActions";
 import {
-  setSelectedPoints,
-  SetSelectedPointsParams,
   viewOriginalMessage,
   ViewOriginalMessageParams,
 } from "../actions/selectPointActions";
 
 interface OwnProps {
   params: SemanticScreenRouteParams;
-  type: PointHoverOptionsType;
+  type: HoverOptionsType;
   id: string;
   darkMode?: boolean;
   isSelected?: boolean;
@@ -67,13 +65,12 @@ interface AllProps extends OwnProps {
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
   setMain: (params: SetMainParams) => void;
-  setSelectedPoints: (params: SetSelectedPointsParams) => void;
   viewOriginalMessage: (params: ViewOriginalMessageParams) => void;
   pointsAreSelected: boolean;
   referenceData?: PointReferenceI;
 }
 
-const PointHoverOptions = (props: AllProps) => {
+const HoverOptions = (props: AllProps) => {
   const history = useHistory();
 
   let trashDispatch: any;
@@ -207,12 +204,9 @@ const PointHoverOptions = (props: AllProps) => {
   };
 
   return (
-    <StyledPointHoverOptions
-      isSelected={props.isSelected}
-      darkMode={props.darkMode}
-    >
+    <StyledHoverOptions isSelected={props.isSelected} darkMode={props.darkMode}>
       <HoverButtons />
-    </StyledPointHoverOptions>
+    </StyledHoverOptions>
   );
 };
 
@@ -221,7 +215,7 @@ interface StyledProps {
   isSelected?: boolean;
 }
 
-const StyledPointHoverOptions = styled.div<StyledProps>`
+const StyledHoverOptions = styled.div<StyledProps>`
   --colorFG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[0]};
   --colorBG: ${(props) => blackOrWhite(props.darkMode, props.isSelected)[1]};
 
@@ -231,7 +225,7 @@ const StyledPointHoverOptions = styled.div<StyledProps>`
   margin: auto;
   top: 0;
   bottom: 0;
-  right: 12px;
+  right: -0.5rem;
   height: 1rem;
   z-index: 10;
   background-color: var(--colorBG);
@@ -315,8 +309,7 @@ const mapDispatchToProps = {
   draftPointsDelete,
   pointsMoveToMessage,
   setMain,
-  setSelectedPoints,
   viewOriginalMessage,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PointHoverOptions);
+export default connect(mapStateToProps, mapDispatchToProps)(HoverOptions);

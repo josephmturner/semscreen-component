@@ -28,7 +28,7 @@ import {
   PublishMessageParams,
 } from "../actions/dbActions";
 
-import { ButtonSvg } from "./PointHoverOptions";
+import { ButtonSvg } from "./HoverOptions";
 
 interface OwnProps {
   messageId: string;
