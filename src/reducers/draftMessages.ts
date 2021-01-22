@@ -34,6 +34,7 @@ import {
   _SetMainParams,
 } from "../actions/draftMessagesActions";
 import { _SetCurrentMessageParams } from "../actions/selectPointActions";
+import { _PublishMessageParams } from "../actions/dbActions";
 
 export interface DraftMessagesState {
   byId: {
@@ -108,6 +109,12 @@ export const draftMessagesReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>
+      );
+      break;
+    case Actions.publishMessage:
+      newState = handlePublishMessage(
+        state,
+        action as Action<_PublishMessageParams>
       );
       break;
   }
@@ -321,5 +328,18 @@ function handleSplitIntoTwoPoints(
     const splitPointIndex =
       message.shapes[shape].findIndex((id) => id === pointId) + 1;
     message.shapes[shape].splice(splitPointIndex, 0, newPointId);
+  });
+}
+
+function handlePublishMessage(
+  state: DraftMessagesState,
+  action: Action<_PublishMessageParams>
+): DraftMessagesState {
+  return produce(state, (draft) => {
+    for (const message of action.params.messages) {
+      const { _id } = message;
+      delete draft.byId[_id];
+      draft.allIds = draft.allIds.filter((id) => id !== _id);
+    }
   });
 }

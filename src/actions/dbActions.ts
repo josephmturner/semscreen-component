@@ -191,12 +191,7 @@ export interface PublishMessageParams {
 
 export const publishMessage = (
   params: PublishMessageParams
-): ThunkAction<
-  void,
-  AppState,
-  unknown,
-  Action<_PopulateMessageAndPointsParams>
-> => {
+): ThunkAction<void, AppState, unknown, Action<_PublishMessageParams>> => {
   return (dispatch, getState) => {
     (async () => {
       const state = getState();
@@ -209,11 +204,33 @@ export const publishMessage = (
 
       try {
         const messageId = await db.addMessage(params.message, params.points);
-        dispatch(loadMessage({ messageId }));
+        const { messages, points } = await _getMessagesAndPoints(
+          [messageId],
+          db,
+          state
+        );
+        dispatch(_publishMessage({ messages, points }));
+
+        const { currentIdentity } = state.userIdentities;
+        params.history.push(`/u/${currentIdentity}/m/${messageId}`);
       } catch (e) {
         console.error(e);
       }
     })();
+  };
+};
+
+export interface _PublishMessageParams {
+  messages: MessageI[];
+  points: PointMapping;
+}
+
+const _publishMessage = (
+  params: _PublishMessageParams
+): Action<_PublishMessageParams> => {
+  return {
+    type: Actions.publishMessage,
+    params,
   };
 };
 

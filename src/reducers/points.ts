@@ -18,7 +18,10 @@
 */
 import { Action, Actions } from "../actions/constants";
 import { PointI, PointReferenceI } from "../dataModels/dataModels";
-import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
+import {
+  _PopulateMessageAndPointsParams,
+  _PublishMessageParams,
+} from "../actions/dbActions";
 
 import produce from "immer";
 
@@ -43,6 +46,12 @@ export const pointsReducer = (
         action as Action<_PopulateMessageAndPointsParams>
       );
       break;
+    case Actions.publishMessage:
+      newState = handlePublishMessage(
+        state,
+        action as Action<_PublishMessageParams>
+      );
+      break;
   }
   return newState;
 };
@@ -51,6 +60,18 @@ function handlePopulateMessageAndPoints(
   state: PointsState,
   action: Action<_PopulateMessageAndPointsParams>
 ) {
+  return produce(state, (draft) => {
+    draft.byId = { ...draft.byId, ...action.params.points };
+    for (const id in action.params.points) {
+      draft.allIds.push(id);
+    }
+  });
+}
+
+function handlePublishMessage(
+  state: PointsState,
+  action: Action<_PublishMessageParams>
+): PointsState {
   return produce(state, (draft) => {
     draft.byId = { ...draft.byId, ...action.params.points };
     for (const id in action.params.points) {

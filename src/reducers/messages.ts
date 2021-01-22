@@ -18,7 +18,10 @@
 */
 import { Action, Actions } from "../actions/constants";
 import { MessageI } from "../dataModels/dataModels";
-import { _PopulateMessageAndPointsParams } from "../actions/dbActions";
+import {
+  _PopulateMessageAndPointsParams,
+  _PublishMessageParams,
+} from "../actions/dbActions";
 
 import produce from "immer";
 
@@ -46,6 +49,12 @@ export const messagesReducer = (
         action as Action<_PopulateMessageAndPointsParams>
       );
       break;
+    case Actions.publishMessage:
+      newState = handlePublishMessage(
+        state,
+        action as Action<_PublishMessageParams>
+      );
+      break;
   }
   return newState;
 };
@@ -60,6 +69,18 @@ const handlePopulateMessageAndPoints = (
         draft.byId[message._id] = message;
         draft.allIds.push(message._id);
       }
+    }
+  });
+};
+
+const handlePublishMessage = (
+  state: MessagesState,
+  action: Action<_PublishMessageParams>
+): MessagesState => {
+  return produce(state, (draft) => {
+    for (const message of action.params.messages) {
+      draft.byId[message._id] = message;
+      draft.allIds.push(message._id);
     }
   });
 };

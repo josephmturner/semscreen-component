@@ -57,6 +57,7 @@ export const Actions = {
   loadDatabase: "loadDatabase",
   populateMessageAndPoints: "populateMessageAndPoints",
   searchByContent: "searchByContent",
+  publishMessage: "publishMessage",
 
   userIdentityLoad: "userIdentityLoad",
 

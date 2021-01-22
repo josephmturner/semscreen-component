@@ -29,6 +29,7 @@ import {
   _SplitIntoTwoPointsParams,
 } from "../actions/draftPointsActions";
 import { _DraftMessageDeleteParams } from "../actions/draftMessagesActions";
+import { _PublishMessageParams } from "../actions/dbActions";
 
 export interface DraftPointsState {
   byId: {
@@ -94,6 +95,12 @@ export const draftPointsReducer = (
       newState = handleSplitIntoTwoPoints(
         state,
         action as Action<_SplitIntoTwoPointsParams>
+      );
+      break;
+    case Actions.publishMessage:
+      newState = handlePublishMessage(
+        state,
+        action as Action<_PublishMessageParams>
       );
       break;
   }
@@ -225,5 +232,17 @@ function handleSplitIntoTwoPoints(
       pointDate: new Date(),
     };
     draft.allIds.push(newPointId);
+  });
+}
+
+function handlePublishMessage(
+  state: DraftPointsState,
+  action: Action<_PublishMessageParams>
+): DraftPointsState {
+  return produce(state, (draft) => {
+    for (const id in action.params.points) {
+      delete draft.byId[id];
+      draft.allIds = draft.allIds.filter((pId) => pId !== id);
+    }
   });
 }
