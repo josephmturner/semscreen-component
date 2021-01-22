@@ -16,7 +16,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 import {
   StyledButton,
@@ -75,6 +81,16 @@ const Point = forwardRef<any, Props>((props, ref) => {
     divRef,
     bannerRef
   );
+
+  //The useState and useEffect are purely to cause the component to
+  //re-render after it first mounts. A better solution must exist.
+  const { referenceData } = props;
+  const [, setCounter] = useState(0);
+  useEffect(() => {
+    if (referenceData) {
+      setCounter((c) => c + 1);
+    }
+  }, [referenceData]);
 
   return (
     <StyledDiv

@@ -16,7 +16,7 @@
   You should have received a copy of the GNU Affero General Public License
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 
@@ -71,7 +71,6 @@ interface AllProps extends OwnProps {
 }
 
 const MessageListItem = (props: AllProps) => {
-  const { referenceData } = props;
   const { messageId: oldMessageId } = props.params;
 
   const history = useHistory();
@@ -106,13 +105,6 @@ const MessageListItem = (props: AllProps) => {
       oldMessageIsDraft: props.type === "draftMessage",
     });
   };
-
-  //The useState and useEffect are purely to cause the component to
-  //re-render after it first mounts. A better solution must exist.
-  const [, setCounter] = useState(0);
-  useEffect(() => {
-    setCounter((c) => c + 1);
-  }, [referenceData]);
 
   const [isHovered, setIsHovered] = useState(false);
 
