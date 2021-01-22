@@ -265,8 +265,8 @@ export const draftPointsDelete = (
 
     let { pointIds, messageId, deleteSelectedPoints } = params;
     if (deleteSelectedPoints === true) {
-      const selectedPoints = appState.selectedPoints.pointIds;
-      pointIds = pointIds.concat(selectedPoints);
+      const selectedPointIds = appState.selectedPoints.pointIds;
+      pointIds = Array.from(new Set(pointIds.concat(selectedPointIds)));
     }
 
     dispatch(_draftPointsDelete({ pointIds, messageId }));
