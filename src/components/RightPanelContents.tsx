@@ -180,8 +180,8 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   searchByContent,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(RightPanelContents);
+export default connect(mapStateToProps, mapDispatchToProps)(RightPanelContents);

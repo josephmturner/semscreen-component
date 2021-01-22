@@ -76,14 +76,14 @@ const mapStateToProps = (
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   togglePanel,
   loadMessage,
 };
 
 export const WrappedSemanticScreen = connect(
   mapStateToProps,
-  mapActionsToProps
+  mapDispatchToProps
 )((props: AllProps) => {
   const { messageId } = props.params;
 

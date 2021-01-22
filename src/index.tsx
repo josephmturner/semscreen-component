@@ -50,7 +50,7 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   loadDatabase,
 };
 
@@ -64,7 +64,7 @@ interface Props {
 
 const AppWithPersistence = connect(
   mapStateToProps,
-  mapActionsToProps
+  mapDispatchToProps
 )(({ db, draftMessages, draftPoints, displayApp, loadDatabase }: Props) => {
   const { pathname } = useLocation();
   localStorage.setItem("pathname", pathname);

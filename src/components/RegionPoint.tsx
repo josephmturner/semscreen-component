@@ -331,7 +331,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   splitIntoTwoPoints,
   combinePoints,
   setCursorPosition,
@@ -344,4 +344,4 @@ const mapActionsToProps = {
   setSelectedPoints,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(RegionPoint);
+export default connect(mapStateToProps, mapDispatchToProps)(RegionPoint);

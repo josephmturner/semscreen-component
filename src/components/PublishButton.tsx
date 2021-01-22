@@ -84,8 +84,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   publishMessage,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(PublishButton);
+export default connect(mapStateToProps, mapDispatchToProps)(PublishButton);

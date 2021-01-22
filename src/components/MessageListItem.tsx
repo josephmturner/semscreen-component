@@ -206,10 +206,10 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   setCurrentMessage,
   pointsMoveToMessage,
   hoverOver,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(MessageListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(MessageListItem);

@@ -165,9 +165,9 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   draftMessageCreate,
   hoverOver,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(NewMessageButton);
+export default connect(mapStateToProps, mapDispatchToProps)(NewMessageButton);

@@ -310,7 +310,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   };
 };
 
-const mapActionsToProps = {
+const mapDispatchToProps = {
   draftMessageDelete,
   draftPointsDelete,
   pointsMoveToMessage,
@@ -319,4 +319,4 @@ const mapActionsToProps = {
   viewOriginalMessage,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(PointHoverOptions);
+export default connect(mapStateToProps, mapDispatchToProps)(PointHoverOptions);

@@ -128,8 +128,8 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   };
 };
 
-const mapActionsToProps = {};
+const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapActionsToProps, null, {
+export default connect(mapStateToProps, mapDispatchToProps, null, {
   forwardRef: true,
 })(Banner);
