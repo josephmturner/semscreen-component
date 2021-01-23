@@ -40,7 +40,7 @@ const ParkingSpace = (props: {
       {props.displayMessages.map((id: string, i: number) => (
         <MessageListItem
           params={props.params}
-          type="draftMessage"
+          isDraft={true}
           messageId={id}
           index={i}
           darkMode={props.darkMode}

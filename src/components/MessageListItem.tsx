@@ -23,7 +23,6 @@ import styled from "styled-components";
 import {
   AuthorI,
   PointI,
-  HoverOptionsType,
   PointReferenceI,
   SemanticScreenRouteParams,
 } from "../dataModels/dataModels";
@@ -34,9 +33,12 @@ import {
   isUserIdentity,
 } from "../dataModels/pointUtils";
 import Point from "./Point";
-import HoverOptions from "./HoverOptions";
 import Banner from "./Banner";
 import { Hamburger } from "./Hamburger";
+import { HoverContainer } from "./hover-buttons/HoverContainer";
+import { PointsMoveButton } from "./hover-buttons/PointsMoveButton";
+import { PublishButton } from "./hover-buttons/PublishButton";
+import { TrashButton } from "./hover-buttons/TrashButton";
 
 import { useHoverOptions } from "../hooks/useHoverOptions";
 
@@ -50,7 +52,12 @@ import {
   pointsMoveToMessage,
   PointsMoveToMessageParams,
 } from "../actions/draftPointsActions";
+import {
+  draftMessageDelete,
+  DraftMessageDeleteParams,
+} from "../actions/draftMessagesActions";
 import { hoverOver, HoverOverParams } from "../actions/dragActions";
+import { publishMessage, PublishMessageParams } from "../actions/dbActions";
 
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "../constants/React-Dnd";
@@ -58,19 +65,23 @@ import { ItemTypes } from "../constants/React-Dnd";
 interface OwnProps {
   params: SemanticScreenRouteParams;
   messageId: string;
-  type: HoverOptionsType;
+  isDraft: boolean;
   index: number;
   darkMode?: boolean;
 }
 
 interface AllProps extends OwnProps {
   author: AuthorI;
+  main?: string;
   displayPoint: PointI;
   referenceData?: PointReferenceI;
   isDragHovered: boolean;
+  pointsAreSelected: boolean;
   setCurrentMessage: (params: SetCurrentMessageParams) => void;
   pointsMoveToMessage: (params: PointsMoveToMessageParams) => void;
   hoverOver: (params: HoverOverParams) => void;
+  draftMessageDelete: (params: DraftMessageDeleteParams) => void;
+  publishMessage: (params: PublishMessageParams) => void;
 }
 
 const MessageListItem = (props: AllProps) => {
@@ -81,7 +92,7 @@ const MessageListItem = (props: AllProps) => {
   const [, drop] = useDrop({
     accept: ItemTypes.POINT,
     drop: () => {
-      if (props.type === "draftMessage") {
+      if (props.isDraft) {
         props.pointsMoveToMessage({
           moveToMessageId: props.messageId,
           moveFromMessageId: oldMessageId,
@@ -90,7 +101,7 @@ const MessageListItem = (props: AllProps) => {
       }
     },
     hover: () => {
-      if (!props.isDragHovered && props.type === "draftMessage") {
+      if (!props.isDragHovered && props.isDraft) {
         props.hoverOver({
           region: "parking",
           index: props.index,
@@ -105,7 +116,7 @@ const MessageListItem = (props: AllProps) => {
       newAuthorId: props.author._id,
       newMessageId: props.messageId,
       history,
-      oldMessageIsDraft: props.type === "draftMessage",
+      oldMessageIsDraft: props.isDraft,
     });
   };
 
@@ -117,6 +128,38 @@ const MessageListItem = (props: AllProps) => {
     handlePointMouseEnter,
     handlePointMouseLeave,
   } = useHoverOptions();
+
+  function handlePointsMoveButtonClick(e: React.MouseEvent) {
+    props.pointsMoveToMessage({
+      moveToMessageId: props.messageId,
+      moveFromMessageId: props.params.messageId,
+      history,
+    });
+    e.stopPropagation();
+  }
+
+  function handleTrashButtonClick(e: React.MouseEvent) {
+    props.draftMessageDelete({
+      messageId: props.messageId,
+      currentMessageId: props.params.messageId,
+      history,
+    });
+    e.stopPropagation();
+  }
+
+  function handlePublishButtonClick(e: React.MouseEvent) {
+    if (!props.main) {
+      window.alert(
+        "Before publishing, please add a main point to your message"
+      );
+    } else {
+      props.publishMessage({
+        messageId: props.messageId,
+        history,
+      });
+    }
+    e.stopPropagation();
+  }
 
   return (
     <MessageWrapper
@@ -138,19 +181,30 @@ const MessageListItem = (props: AllProps) => {
         darkMode={props.darkMode}
         suppressAutoFocus={true}
       >
-        {renderHamburger && props.type !== "publishedMessage" && (
+        {renderHamburger && props.isDraft && (
           <Hamburger
             onMouseEnter={handleHamburgerMouseEnter}
             darkMode={props.darkMode}
           />
         )}
-        {renderHoverOptions && props.type !== "publishedMessage" && (
-          <HoverOptions
-            params={props.params}
-            type={props.type}
-            id={props.messageId}
-            darkMode={props.darkMode}
-          />
+        {renderHoverOptions && props.isDraft && (
+          <HoverContainer darkMode={props.darkMode}>
+            {props.pointsAreSelected && (
+              <PointsMoveButton
+                handleClick={handlePointsMoveButtonClick}
+                darkMode={props.darkMode}
+              />
+            )}
+            <PublishButton
+              handleClick={handlePublishButtonClick}
+              darkMode={props.darkMode}
+            />
+            <TrashButton
+              handleClick={handleTrashButtonClick}
+              messageOrPoint="message"
+              darkMode={props.darkMode}
+            />
+          </HoverContainer>
         )}
       </Point>
       <Banner
@@ -192,7 +246,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     ? state.userIdentities.byId[message.author]
     : state.authors.byId[message.author];
 
-  // Display a random point from the message if no main point exists
+  // Display a point from the message if no main point exists
   const displayPointId =
     message.main ??
     Object.values(
@@ -206,15 +260,19 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     state.drag.context &&
     state.drag.context.region === "parking" &&
     state.drag.context.index === ownProps.index &&
-    ownProps.type === "draftMessage"
+    ownProps.isDraft
   )
     isDragHovered = true;
 
+  const pointsAreSelected = state.selectedPoints.pointIds.length !== 0;
+
   return {
     author,
+    main: message.main,
     displayPoint,
     referenceData,
     isDragHovered,
+    pointsAreSelected,
   };
 };
 
@@ -222,6 +280,8 @@ const mapDispatchToProps = {
   setCurrentMessage,
   pointsMoveToMessage,
   hoverOver,
+  draftMessageDelete,
+  publishMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageListItem);

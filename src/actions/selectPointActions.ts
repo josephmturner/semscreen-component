@@ -20,7 +20,12 @@ import { ThunkAction } from "redux-thunk";
 import { History } from "history";
 import { AppState } from "../reducers";
 import { Action, Actions } from "./constants";
-import { getReferencedPointId } from "../dataModels/pointUtils";
+import {
+  getReferencedPointId,
+  getOriginalAuthorId,
+  getOriginalMessageId,
+} from "../dataModels/pointUtils";
+import { PointReferenceI } from "../dataModels/dataModels";
 
 export interface SetSelectedPointsParams {
   pointIds: string[];
@@ -50,6 +55,8 @@ export const togglePoint = (
 
 export interface ViewOriginalMessageParams {
   pointId: string;
+  referenceData: PointReferenceI;
+  history: History;
 }
 
 export const viewOriginalMessage = (
@@ -64,6 +71,11 @@ export const viewOriginalMessage = (
       appState
     ) as string;
     dispatch(setSelectedPoints({ pointIds: [referencedPointId] }));
+
+    const originalAuthorId = getOriginalAuthorId(params.referenceData);
+    const originalMessageId = getOriginalMessageId(params.referenceData);
+
+    params.history.push(`/u/${originalAuthorId}/m/${originalMessageId}`);
   };
 };
 

@@ -109,12 +109,6 @@ export interface CursorPositionI {
   index: number;
 }
 
-export type HoverOptionsType =
-  | "draftPoint"
-  | "publishedPoint"
-  | "draftMessage"
-  | "publishedMessage";
-
 export interface UserIdentity extends AuthorI {
   _rev: string;
 }

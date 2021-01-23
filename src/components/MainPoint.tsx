@@ -17,6 +17,8 @@
   along with U4U.  If not, see <https://www.gnu.org/licenses/>.
 */
 import React, { useRef } from "react";
+import { useHistory } from "react-router-dom";
+
 import {
   PointI,
   PointReferenceI,
@@ -29,8 +31,10 @@ import {
 import { useDragPoint } from "../hooks/useDragPoint";
 import Point from "./Point";
 import { PointWrapper } from "./StyledPoint";
-import HoverOptions from "./HoverOptions";
 import { Hamburger } from "./Hamburger";
+import { HoverContainer } from "./hover-buttons/HoverContainer";
+import { ViewOriginalMessageButton } from "./hover-buttons/ViewOriginalMessageButton";
+import { TrashButton } from "./hover-buttons/TrashButton";
 
 import { useHoverOptions } from "../hooks/useHoverOptions";
 
@@ -47,6 +51,8 @@ import {
   SetSelectedPointsParams,
   togglePoint,
   TogglePointParams,
+  viewOriginalMessage,
+  ViewOriginalMessageParams,
 } from "../actions/selectPointActions";
 
 interface OwnProps {
@@ -65,10 +71,14 @@ interface AllProps extends OwnProps {
   draftPointsDelete: (params: DraftPointsDeleteParams) => void;
   togglePoint: (params: TogglePointParams) => void;
   setSelectedPoints: (params: SetSelectedPointsParams) => void;
+  viewOriginalMessage: (params: ViewOriginalMessageParams) => void;
 }
 
 const MainPoint = (props: AllProps) => {
+  const { pointId, referenceData } = props;
   const { messageId } = props.params;
+
+  const history = useHistory();
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!props.isDraft) {
@@ -87,7 +97,7 @@ const MainPoint = (props: AllProps) => {
   };
 
   const handleShapeIconClick = (e: React.MouseEvent) => {
-    props.togglePoint({ pointId: props.pointId });
+    props.togglePoint({ pointId });
     e.stopPropagation();
   };
 
@@ -102,13 +112,13 @@ const MainPoint = (props: AllProps) => {
   const handleBlur = () => {
     if (!props.point.content)
       props.draftPointsDelete({
-        pointIds: [props.pointId],
+        pointIds: [pointId],
         messageId,
         deleteSelectedPoints: false,
       });
   };
 
-  const { drag, preview } = useDragPoint(props.pointId, 0);
+  const { drag, preview } = useDragPoint(pointId, 0);
 
   //TODO: fix ref type
   const pointRef = useRef<any>(null);
@@ -124,6 +134,25 @@ const MainPoint = (props: AllProps) => {
     handlePointMouseLeave,
   } = useHoverOptions();
 
+  function handleViewOriginalMessageButtonClick(e: React.MouseEvent) {
+    if (referenceData === undefined) return;
+    props.viewOriginalMessage({
+      pointId,
+      referenceData,
+      history,
+    });
+    e.stopPropagation();
+  }
+
+  function handleTrashButtonClick(e: React.MouseEvent) {
+    props.draftPointsDelete({
+      pointIds: [pointId],
+      messageId: props.params.messageId,
+      deleteSelectedPoints: true,
+    });
+    e.stopPropagation();
+  }
+
   return (
     <PointWrapper
       onMouseEnter={handlePointMouseEnter}
@@ -132,9 +161,9 @@ const MainPoint = (props: AllProps) => {
       darkMode={props.darkMode}
     >
       <Point
-        id={props.pointId}
+        id={pointId}
         displayPoint={props.point}
-        referenceData={props.referenceData}
+        referenceData={referenceData}
         isMainPoint={true}
         isSelected={props.isSelected}
         readOnlyOverride={!props.isDraft}
@@ -154,13 +183,26 @@ const MainPoint = (props: AllProps) => {
           />
         )}
         {renderHoverOptions && (
-          <HoverOptions
-            params={props.params}
-            type={props.isDraft ? "draftPoint" : "publishedPoint"}
-            id={props.pointId}
+          <HoverContainer
             darkMode={props.darkMode}
             isSelected={props.isSelected}
-          />
+          >
+            {referenceData && (
+              <ViewOriginalMessageButton
+                handleClick={handleViewOriginalMessageButtonClick}
+                darkMode={props.darkMode}
+                isSelected={props.isSelected}
+              />
+            )}
+            {props.isDraft && (
+              <TrashButton
+                handleClick={handleTrashButtonClick}
+                messageOrPoint="message"
+                darkMode={props.darkMode}
+                isSelected={props.isSelected}
+              />
+            )}
+          </HoverContainer>
         )}
       </Point>
     </PointWrapper>
@@ -183,6 +225,7 @@ const mapDispatchToProps = {
   draftPointsDelete,
   togglePoint,
   setSelectedPoints,
+  viewOriginalMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainPoint);

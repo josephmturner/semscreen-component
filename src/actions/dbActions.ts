@@ -184,8 +184,7 @@ export interface PointMapping {
 }
 
 export interface PublishMessageParams {
-  message: MessageI;
-  points: PointMapping;
+  messageId: string;
   history: History;
 }
 
@@ -202,8 +201,12 @@ export const publishMessage = (
         );
       const db = state.db.db;
 
+      const { messageId: _messageId } = params;
+      const _message = state.draftMessages.byId[_messageId];
+      const _points = state.draftPoints.byId;
+
       try {
-        const messageId = await db.addMessage(params.message, params.points);
+        const messageId = await db.addMessage(_message, _points);
         const { messages, points } = await _getMessagesAndPoints(
           [messageId],
           db,
