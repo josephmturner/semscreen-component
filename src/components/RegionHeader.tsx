@@ -21,22 +21,26 @@ import styled from "styled-components";
 import { PointShape } from "../dataModels/dataModels";
 import AllShapes from "./AllShapes";
 
-//TODO: Properly type ref
-const RegionHeader = React.forwardRef(
-  (props: { shape: PointShape; darkMode?: boolean }, ref: any) => {
-    return (
-      <StyledSpan ref={ref}>
-        <AllShapes shape={props.shape} darkMode={props.darkMode} />
-        {props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1)}
-      </StyledSpan>
-    );
-  }
-);
+interface Props {
+  shape: PointShape;
+  isExpanded: boolean;
+  darkMode?: boolean;
+}
 
-const StyledSpan = styled.span`
+const RegionHeader = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
+  return (
+    <StyledSpan ref={ref} isExpanded={props.isExpanded}>
+      <AllShapes shape={props.shape} darkMode={props.darkMode} />
+      {props.shape.slice(0, 1).toUpperCase() + props.shape.slice(1)}
+    </StyledSpan>
+  );
+});
+
+const StyledSpan = styled.span<{ isExpanded: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: ${(props) => props.isExpanded && "1.5rem"};
 `;
 
 export default RegionHeader;

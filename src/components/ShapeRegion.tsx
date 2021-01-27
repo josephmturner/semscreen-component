@@ -61,6 +61,7 @@ interface AllProps extends OwnProps {
   pointIds: string[];
   isDraft: boolean;
   isExpanded: boolean;
+  isMinimized: boolean;
   draftPointCreate: (params: DraftPointCreateParams) => void;
   pointsMoveWithinMessage: (params: PointsMoveWithinMessageParams) => void;
   setExpandedRegion: (params: ExpandedRegionParams) => void;
@@ -184,11 +185,14 @@ const ShapeRegion = (props: AllProps) => {
       ref={expandRef}
     >
       <InnerContainer>
-        <RegionHeader
-          ref={regionHeaderRef}
-          shape={shape}
-          darkMode={props.darkMode}
-        />
+        {!props.isMinimized && (
+          <RegionHeader
+            ref={regionHeaderRef}
+            isExpanded={props.isExpanded}
+            shape={shape}
+            darkMode={props.darkMode}
+          />
+        )}
         {listItems}
         {props.isExpanded &&
           props.isDraft &&
@@ -252,6 +256,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
   const message = getMessageById(messageId, state);
 
   const isExpanded = state.expandedRegion.region === ownProps.shape;
+  const isMinimized = !!state.expandedRegion.region && !isExpanded;
 
   return {
     pointIds: message.shapes[ownProps.shape],
@@ -259,6 +264,7 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps) => {
     hoverIndex,
     isDraft,
     isExpanded,
+    isMinimized,
   };
 };
 
